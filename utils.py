@@ -77,3 +77,20 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
         response = session.get(url, stream=True)
 
     return _process_response(response, root, filename)
+
+
+if __name__ == "__main__":
+    # Lakh Midi
+    download_from_url('http://hog.ee.columbia.edu/craffel/lmd/lmd_full.tar.gz')
+    # NMD
+    # download_from_url('http://abc.sourceforge.net/NMD/nmd/NMD.zip')
+    # MAESTRO
+    # download_from_url('https://storage.googleapis.com/magentadata/datasets/maestro/v2.0.0/maestro-v2.0.0.zip')
+    #
+    # JSB
+    # download_from_url('http://www-etud.iro.umontreal.ca/~boulanni/JSB%20Chorales.zip')
+    # PIANO MIDI
+    # download_from_url('http://www-etud.iro.umontreal.ca/~boulanni/Piano-midi.de.zip')
+
+    # TODO: BPS_FH, (https://github.com/Tsung-Ping/functional-harmony), git clone?
+    # TODO: Musedata, where is the data?
