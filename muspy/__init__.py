@@ -6,7 +6,8 @@ A Python package for processing symbolic music and working with common music
 datasets.
 """
 
-from muspy.classes import (
+from . import datasets, io
+from .classes import (
     Annotation,
     KeySignature,
     Lyric,
@@ -19,19 +20,21 @@ from muspy.classes import (
     TimingInfo,
     Track,
 )
-from muspy.music import Music
+from .music import Music
 
 __all__ = [
     "Annotation",
     "KeySignature",
+    "Lyric",
     "MetaData",
+    "Music",
+    "Note",
     "SongInfo",
     "SourceInfo",
-    "Lyric",
-    "Note",
-    "Music",
-    "TimeSignature",
-    "Track",
     "Tempo",
+    "TimeSignature",
     "TimingInfo",
+    "Track",
+    "datasets",
+    "io",
 ]
