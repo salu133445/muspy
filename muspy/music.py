@@ -12,6 +12,7 @@ import yaml
 import muspy.io
 from muspy.classes import (
     Annotation,
+    Base,
     KeySignature,
     Lyric,
     MetaData,
@@ -25,25 +26,31 @@ from muspy.classes import (
 )
 
 
-def ordered_dump(data, stream=None, dumper=yaml.Dumper, **kwargs):
+class OrderedDumper(yaml.SafeDumper):
+    """A dumper that supports OrderedDict."""
+
+    def increase_indent(self, flow=False, indentless=False):
+        return super(OrderedDumper, self).increase_indent(flow, False)
+
+
+def _dict_representer(dumper, data):
+    return dumper.represent_mapping(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
+    )
+
+
+OrderedDumper.add_representer(OrderedDict, _dict_representer)
+
+
+def ordered_dump(data):
     """Dump data to YAML, which supports OrderedDict.
 
     Code adapted from https://stackoverflow.com/a/21912744.
     """
-
-    class OrderedDumper(dumper):
-        """A dumper that supports OrderedDict."""
-
-    def _dict_representer(dumper, data):
-        return dumper.represent_mapping(
-            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
-        )
-
-    OrderedDumper.add_representer(OrderedDict, _dict_representer)
-    return yaml.dump(data, stream, OrderedDumper, **kwargs)
+    return yaml.dump(data, Dumper=OrderedDumper)
 
 
-class Music:
+class Music(Base):
     """A universal container for music data.
 
     Attributes
@@ -56,11 +63,22 @@ class Music:
         A list of :class:'muspy.Annotation' object.
     """
 
+    _attributes = [
+        "timing",
+        "time_signatures",
+        "key_signatures",
+        "tempos",
+        "downbeats",
+        "lyrics",
+        "annotations",
+        "tracks",
+        "meta",
+    ]
+
     def __init__(
         self,
         obj=None,
-        tracks=None,
-        metadata=None,
+        meta_data=None,
         timing_info=None,
         time_signatures=None,
         key_signatures=None,
@@ -68,6 +86,7 @@ class Music:
         downbeats=None,
         lyrics=None,
         annotations=None,
+        tracks=None,
     ):
         if obj is not None:
             if obj.endswith((".midi", ".mid", ".mxml", ".xml")):
@@ -78,7 +97,6 @@ class Music:
                 raise TypeError("Expect a file or a parsable object.")
             return
 
-        self.metadata = metadata if metadata is not None else []
         self.timing = timing_info if timing_info is not None else []
         self.time_signatures = time_signatures if time_signatures is not None else []
         self.key_signatures = key_signatures if key_signatures is not None else []
@@ -87,10 +105,10 @@ class Music:
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
+        self.meta = meta_data if meta_data is not None else []
 
     def reset(self):
         """Reset the object."""
-        self.metadata = MetaData()
         self.timing = TimingInfo()
         self.time_signatures = []
         self.key_signatures = []
@@ -98,6 +116,7 @@ class Music:
         self.lyrics = []
         self.annotations = []
         self.tracks = []
+        self.meta = MetaData()
 
     def parse(self, obj):
         """Load from a file or a parsable object."""
@@ -135,28 +154,13 @@ class Music:
 
         self.reset()
 
-        # Meta data
-        song_info = SongInfo(
-            data["meta"]["song"]["title"],
-            data["meta"]["song"]["artist"],
-            data["meta"]["song"]["composers"],
-        )
-        source_info = SourceInfo(
-            data["meta"]["source"]["id"],
-            data["meta"]["source"]["collection"],
-            data["meta"]["source"]["filename"],
-            data["meta"]["source"]["format"],
-        )
-        self.metadata = MetaData(data["meta"]["schema_version"], song_info, source_info)
-
         # Global data
         self.timing = TimingInfo(
-            data["global"]["timing"]["is_symbolic_timing"],
-            data["global"]["timing"]["beat_resolution"],
+            data["timing"]["is_symbolic_timing"], data["timing"]["beat_resolution"],
         )
 
-        if data["global"]["time_signatures"] is not None:
-            for time_signature in data["global"]["time_signatures"]:
+        if data["time_signatures"] is not None:
+            for time_signature in data["time_signatures"]:
                 self.time_signatures.append(
                     TimeSignature(
                         time_signature["time"],
@@ -165,8 +169,8 @@ class Music:
                     )
                 )
 
-        if data["global"]["key_signatures"] is not None:
-            for key_signature in data["global"]["key_signatures"]:
+        if data["key_signatures"] is not None:
+            for key_signature in data["key_signatures"]:
                 self.key_signatures.append(
                     KeySignature(
                         key_signature["time"],
@@ -175,19 +179,19 @@ class Music:
                     )
                 )
 
-        if data["global"]["tempos"] is not None:
-            for tempo in data["global"]["tempos"]:
+        if data["tempos"] is not None:
+            for tempo in data["tempos"]:
                 self.tempos.append(Tempo(tempo["time"], tempo["tempo"]))
 
-        if data["global"]["downbeats"] is not None:
-            self.downbeats = data["global"]["downbeats"]
+        if data["downbeats"] is not None:
+            self.downbeats = data["downbeats"]
 
-        if data["global"]["lyrics"] is not None:
-            for lyric in data["global"]["lyrics"]:
+        if data["lyrics"] is not None:
+            for lyric in data["lyrics"]:
                 self.lyrics.append(Lyric(lyric["time"], lyric["lyric"]))
 
-        if data["global"]["annotations"] is not None:
-            for annotation in data["global"]["annotations"]:
+        if data["annotations"] is not None:
+            for annotation in data["annotations"]:
                 self.annotations.append(
                     Annotation(annotation["time"], annotation["annotation"])
                 )
@@ -196,7 +200,7 @@ class Music:
         self.tracks = []
         if data["tracks"] is not None:
             for track in data["tracks"]:
-                notes, annotations = [], []
+                notes, annotations, lyrics = [], [], []
                 for note in track["notes"]:
                     notes.append(
                         Note(
@@ -207,6 +211,8 @@ class Music:
                     annotations.append(
                         Annotation(annotation["time"], annotation["annotation"])
                     )
+                for lyric in track["lyrics"]:
+                    lyrics.append(Annotation(lyric["time"], lyric["lyric"]))
                 self.tracks.append(
                     Track(
                         track["name"],
@@ -214,129 +220,30 @@ class Music:
                         track["is_drum"],
                         notes,
                         annotations,
+                        lyrics,
                     )
                 )
-
-    def to_dict(self):
-        """Convert the music object into a dictionary."""
-        data = OrderedDict(
-            [("meta", OrderedDict()), ("global", OrderedDict()), ("tracks", [])]
-        )
 
         # Meta data
-        data["meta"]["schema_version"] = self.metadata.schema_version
-
-        data["meta"]["song"] = OrderedDict(
-            [
-                ("title", self.metadata.song.title),
-                ("artist", self.metadata.song.artist),
-                ("composers", self.metadata.song.composers),
-            ]
+        song_info = SongInfo(
+            data["meta"]["song"]["title"],
+            data["meta"]["song"]["artist"],
+            data["meta"]["song"]["composers"],
         )
-
-        data["meta"]["source"] = OrderedDict(
-            [
-                ("id", self.metadata.source.id),
-                ("collection", self.metadata.source.collection),
-                ("filename", self.metadata.source.filename),
-                ("format", self.metadata.source.format),
-            ]
+        source_info = SourceInfo(
+            data["meta"]["source"]["collection"],
+            data["meta"]["source"]["filename"],
+            data["meta"]["source"]["format"],
+            data["meta"]["source"]["id"],
         )
-
-        # Global data
-        data["global"]["timing"] = OrderedDict(
-            [
-                ("is_symbolic_timing", self.timing.is_symbolic_timing),
-                ("beat_resolution", self.timing.beat_resolution),
-            ]
-        )
-
-        data["global"]["time_signatures"] = []
-        for time_signature in self.time_signatures:
-            data["global"]["time_signatures"].append(
-                OrderedDict(
-                    [
-                        ("time", time_signature.time),
-                        ("numerator", time_signature.numerator),
-                        ("denominator", time_signature.denominator),
-                    ]
-                )
-            )
-
-        data["global"]["key_signatures"] = []
-        for key_signature in self.key_signatures:
-            data["global"]["key_signatures"].append(
-                OrderedDict(
-                    [
-                        ("time", key_signature.time),
-                        ("root", key_signature.root),
-                        ("mode", key_signature.mode),
-                    ]
-                )
-            )
-
-        data["global"]["tempos"] = []
-        for tempo in self.tempos:
-            data["global"]["tempos"].append(
-                OrderedDict([("time", tempo.time), ("tempo", tempo.tempo)])
-            )
-
-        data["global"]["downbeats"] = self.downbeats
-
-        data["global"]["lyrics"] = []
-        for lyric in self.lyrics:
-            data["global"]["lyrics"].append(
-                OrderedDict([("time", lyric.time), ("lyric", lyric.data)])
-            )
-
-        data["global"]["annotations"] = []
-        for annotation in self.annotations:
-            data["global"]["annotations"].append(
-                OrderedDict(
-                    [("time", annotation.time), ("annotation", annotation.data)]
-                )
-            )
-
-        # Track-specific data
-        for track in self.tracks:
-            notes, annotations = [], []
-            for note in track.notes:
-                notes.append(
-                    OrderedDict(
-                        [
-                            ("start", note.start),
-                            ("end", note.end),
-                            ("pitch", note.pitch),
-                            ("velocity", note.velocity),
-                        ]
-                    )
-                )
-            for annotation in track.annotations:
-                annotations.append(
-                    OrderedDict(
-                        [("time", annotation.time), ("annotation", annotation.data)]
-                    )
-                )
-            data["tracks"].append(
-                OrderedDict(
-                    [
-                        ("name", track.name),
-                        ("program", track.program),
-                        ("is_drum", track.is_drum),
-                        ("notes", notes),
-                        ("annotations", annotations),
-                    ]
-                )
-            )
-
-        return data
+        self.meta = MetaData(data["meta"]["schema_version"], song_info, source_info)
 
     def serialize(self, format_="json"):
         """Serialize to JSON or YAML string."""
         if format_ == "json":
-            return json.dumps(self.to_dict())
+            return json.dumps(self.to_ordered_dict())
         if format_ == "yaml":
-            return ordered_dump(self.to_dict(), Dumper=yaml.SafeDumper)
+            return ordered_dump(self.to_ordered_dict())
         raise ValueError("`format_` should be either 'json' or 'yaml'.")
 
     def save(self, filename):
