@@ -1,12 +1,50 @@
 """Core functionality."""
+from collections import OrderedDict
+
 from muspy.schemas import SCHEMA_VERSION
 
 DEFAULT_BEAT_RESOLUTION = 24
 
 
-class SongInfo:
-    """
-    A container for song information.
+class Base:
+    """Base container."""
+
+    _attributes = []
+
+    def __repr__(self):
+        return (
+            type(self).__name__
+            + "("
+            + ", ".join(
+                [key + "=" + repr(getattr(self, key)) for key in self._attributes]
+            )
+            + ")"
+        )
+
+    def to_ordered_dict(self):
+        """Convert to OrderedDict."""
+        ordered_dict = OrderedDict()
+        for key in self._attributes:
+            value = getattr(self, key)
+            if hasattr(value, "to_ordered_dict"):
+                ordered_dict[key] = value.to_ordered_dict()
+            elif isinstance(value, list):
+                ordered_dict[key] = [
+                    v.to_ordered_dict() if hasattr(v, "to_ordered_dict") else v
+                    for v in value
+                ]
+            elif isinstance(value, dict):
+                ordered_dict[key] = {
+                    k: v.to_ordered_dict() if hasattr(v, "to_ordered_dict") else v
+                    for k, v in value.items()
+                }
+            else:
+                ordered_dict[key] = value
+        return ordered_dict
+
+
+class SongInfo(Base):
+    """A container for song information.
 
     Attributes
     ----------
@@ -18,73 +56,61 @@ class SongInfo:
         Composers of the song.
     """
 
+    _attributes = ["title", "artist", "composers"]
+
     def __init__(self, title=None, artist=None, composers=None):
         self.title = title
         self.artist = artist
         self.composers = composers
 
-    def __repr__(self):
-        return "SongInfo(title={}, artist={}, composers={})".format(
-            self.title, self.artist, self.composers
-        )
 
-
-class SourceInfo:
-    """
-    A container for source information.
+class SourceInfo(Base):
+    """A container for source information.
 
     Attributes
     ----------
-    id_ : str
-        Unique ID of the file
     collection : str
         Name of the collection name.
     filename : str
         Path to the file in the collection.
-    format_ : {'midi', 'musicxml', 'abc', None}
+    format : {'midi', 'musicxml', 'abc', None}
         Format of the source file
+    id : str
+        Unique ID of the file
     """
 
-    def __init__(self, id_=None, collection=None, filename=None, format_=None):
-        self.id = id_
+    _attributes = ["collection", "filename", "format", "id"]
+
+    def __init__(self, collection=None, filename=None, format_=None, id_=None):
         self.collection = collection
         self.filename = filename
         self.format = format_
-
-    def __repr__(self):
-        return "SourceInfo(src_id={}, collection={}, filename={}, format={})".format(
-            self.id, self.collection, self.filename, self.format
-        )
+        self.id = id_
 
 
-class MetaData:
-    """
-    A container for meta data.
+class MetaData(Base):
+    """A container for meta data.
 
     Attributes
     ----------
     version : str
         Song title.
-    song_info : :class:'muspy.SongInfo` object
+    song : :class:'muspy.SongInfo` object
         Soong infomation.
-    source_info : :class:'muspy.SourceInfo` object
+    source : :class:'muspy.SourceInfo` object
         Source infomation.
     """
 
-    def __init__(self, schema_version=SCHEMA_VERSION, song_info=None, source_info=None):
+    _attributes = ["schema_version", "song", "source"]
+
+    def __init__(self, schema_version=SCHEMA_VERSION, song=None, source=None):
         self.schema_version = schema_version
-        self.song = song_info if song_info is not None else SongInfo()
-        self.source = source_info if source_info is not None else SourceInfo()
-
-    def __repr__(self):
-        return "MetaData(schema_version={}, song_info={}, source_info={})".format(
-            self.schema_version, self.song, self.source
-        )
+        self.song = song if song is not None else SongInfo()
+        self.source = source if source is not None else SourceInfo()
 
 
-class TimingInfo:
-    """
-    A container for song information.
+class TimingInfo(Base):
+    """A container for song information.
 
     Attributes
     ----------
@@ -94,21 +120,17 @@ class TimingInfo:
         Time steps per beat (only effective when `is_symbolic_timing` is true).
     """
 
+    _attributes = ["is_symbolic_timing", "beat_resolution"]
+
     def __init__(
         self, is_symbolic_timing=True, beat_resolution=DEFAULT_BEAT_RESOLUTION
     ):
         self.is_symbolic_timing = is_symbolic_timing
         self.beat_resolution = beat_resolution
 
-    def __repr__(self):
-        return "TimingInfo(is_symbolic_timing={}, beat_resolution={})".format(
-            self.is_symbolic_timing, self.beat_resolution
-        )
 
-
-class Note:
-    """
-    A container for note.
+class Note(Base):
+    """A container for note.
 
     Attributes
     ----------
@@ -128,16 +150,13 @@ class Note:
 
     """
 
+    _attributes = ["start", "end", "pitch", "velocity"]
+
     def __init__(self, start, end, pitch, velocity):
         self.start = start
         self.end = end
         self.pitch = pitch
         self.velocity = velocity
-
-    def __repr__(self):
-        return "Note(start={:f}, end={:f}, pitch={}, velocity={})".format(
-            self.start, self.end, self.pitch, self.velocity
-        )
 
     @property
     def duration(self):
@@ -145,15 +164,14 @@ class Note:
         return self.end - self.start
 
 
-class Annotation:
-    """
-    A container for annotation.
+class Annotation(Base):
+    """A container for annotation.
 
     Attributes
     ----------
     time : float
-        Start time of the note, in time steps or seconds (see Note).
-    annotation : str
+        Start time of the annotation, in time steps or seconds (see Note).
+    annotation : any object
         Annotation of any type.
 
     Note
@@ -162,28 +180,40 @@ class Annotation:
 
     """
 
+    _attributes = ["time", "annotation"]
+
     def __init__(self, time, annotation):
         self.time = time
-        self.data = annotation
-
-    def __repr__(self):
-        return "Annotation(time={:f}, annotation={})".format(self.time, self.data)
+        self.annotation = annotation
 
 
-class Lyric(Annotation):
-    """A container for lyric."""
+class Lyric(Base):
+    """A container for lyric.
+
+    Attributes
+    ----------
+    time : float
+        Start time of the lyric, in time steps or seconds (see Note).
+    lyric : str
+        The lyric.
+
+    Note
+    ----
+    The timing unit is determined by higher-level objects."""
+
+    _attributes = ["time", "lyric"]
 
     def __init__(self, time, lyric):
         if not isinstance(lyric, str):
             raise TypeError(
                 "Expect `lyric` of str type, but got {}.".format(type(lyric))
             )
-        super().__init__(time, lyric)
+        self.time = time
+        self.lyric = lyric
 
 
-class TimeSignature:
-    """
-    A container for time signature.
+class TimeSignature(Base):
+    """A container for time signature.
 
     Attributes
     ----------
@@ -200,20 +230,16 @@ class TimeSignature:
 
     """
 
+    _attributes = ["time", "numerator", "denominator"]
+
     def __init__(self, time, numerator, denominator):
         self.time = time
         self.numerator = numerator
         self.denominator = denominator
 
-    def __repr__(self):
-        return "TimeSignature(time={:f}, numerator={}, denominator={})".format(
-            self.time, self.numerator, self.denominator
-        )
 
-
-class KeySignature:
-    """
-    A container for key signature.
+class KeySignature(Base):
+    """A container for key signature.
 
     Attributes
     ----------
@@ -230,20 +256,16 @@ class KeySignature:
 
     """
 
+    _attributes = ["time", "root", "mode"]
+
     def __init__(self, time, root, mode):
         self.time = time
         self.root = root
         self.mode = mode
 
-    def __repr__(self):
-        return "TimeSignature(time={:f}, root={}, mode={})".format(
-            self.time, self.root, self.mode
-        )
 
-
-class Tempo:
-    """
-    A container for key signature.
+class Tempo(Base):
+    """A container for key signature.
 
     Attributes
     ----------
@@ -258,17 +280,15 @@ class Tempo:
 
     """
 
+    _attributes = ["time", "tempo"]
+
     def __init__(self, time, tempo):
         self.time = time
         self.tempo = tempo
 
-    def __repr__(self):
-        return "Tempo(time={:f}, tempo={:f})".format(self.time, self.tempo)
 
-
-class Track:
-    """
-    A container for music track.
+class Track(Base):
+    """A container for music track.
 
     Attributes
     ----------
@@ -283,21 +303,27 @@ class Track:
         A list of notes.
     annotations : list of :class:'muspy.Annotation' objects
         A list of annotations.
+    lyrics : list of :class:'muspy.Lyric' objects
+        A list of lyrics.
     """
 
+    _attributes = ["name", "program", "is_drum", "notes", "lyrics", "annotations"]
+
     def __init__(
-        self, name="unknown", program=0, is_drum=False, notes=None, annotations=None
+        self,
+        name="unknown",
+        program=0,
+        is_drum=False,
+        notes=None,
+        lyrics=None,
+        annotations=None,
     ):
-        self.notes = notes if notes is not None else []
-        self.annotations = annotations if annotations is not None else []
+        self.name = name
         self.program = program
         self.is_drum = is_drum
-        self.name = name
-
-    def __repr__(self):
-        return "Track(name={}, program={}, is_drum={}, notes={})".format(
-            self.name, self.program, self.is_drum, self.notes
-        )
+        self.notes = notes if notes is not None else []
+        self.lyrics = lyrics if lyrics is not None else []
+        self.annotations = annotations if annotations is not None else []
 
     def append(self, obj):
         """Append a note or an annotation."""
@@ -305,6 +331,8 @@ class Track:
             self.notes.append(obj)
         elif isinstance(obj, Annotation):
             self.annotations.append(obj)
+        elif isinstance(obj, Lyric):
+            self.lyrics.append(obj)
         else:
             raise TypeError(
                 "Expect Note or Annotation object, but got {}.".format(type(obj))
@@ -313,4 +341,5 @@ class Track:
     def sort(self):
         """Sort the notes and annotations with respect to event time."""
         self.notes.sort(key=lambda x: x.start)
+        self.lyrics.sort(key=lambda x: x.time)
         self.annotations.sort(key=lambda x: x.time)
