@@ -32,10 +32,10 @@ def download_from_url(url, path=None, root='.data', overwrite=False):
             filename = filename[0]
         path = os.path.join(root, filename)
         if os.path.exists(path):
-            logging.info('File %s already exists.' % path)
+            logging.info('File %s already exists.', path)
             if not overwrite:
                 return path
-            logging.info('Overwriting file %s.' % path)
+            logging.info('Overwriting file %s.', path)
         logging.info('Downloading file {} to {}.'.format(filename, path))
         with open(path, "wb") as file:
             with tqdm(total=total_size, unit='B',
