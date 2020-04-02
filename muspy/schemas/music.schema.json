@@ -4,182 +4,122 @@
     "description": "A simple, intuitive format for symbolic music",
     "type": "object",
     "properties": {
-        "meta": {
-            "description": "Meta data",
+        "timing": {
+            "description": "Timing system",
             "type": "object",
             "properties": {
-                "version": {
-                    "description": "Schema version",
-                    "type": "string",
-                    "pattern": "[0-9].[0-9]"
+                "is_symbolic_timing": {
+                    "description": "If true, the timing is in time steps. Otherwise, it's in seconds.",
+                    "type": "boolean"
                 },
-                "song": {
-                    "description": "Song information",
-                    "type": "object",
-                    "properties": {
-                        "title": {
-                            "description": "Song title",
-                            "type": ["string", "null"]
-                        },
-                        "artist": {
-                            "description": "Main artist of the song",
-                            "type": ["string", "null"]
-                        },
-                        "composers": {
-                            "description": "Composers of the song",
-                            "type": ["array", "null"],
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                },
-                "source": {
-                    "description": "Source information",
-                    "type": "object",
-                    "properties": {
-                        "id": {
-                            "description": "Unique ID of the file",
-                            "type": ["string", "null"]
-                        },
-                        "filename": {
-                            "description": "Path to the file in the collection",
-                            "type": ["string", "null"]
-                        },
-                        "collection": {
-                            "description": "Name of the collection",
-                            "type": ["string", "null"]
-                        },
-                        "format": {
-                            "description": "Format of the source file {midi, musicxml, abc, null}",
-                            "type": ["string", "null"]
-                        }
+                "beat_resolution": {
+                    "description": "Time steps per beat (only effective when `is_symbolic_timing` is true)",
+                    "type": ["integer", "null"]
+                }
+            }
+        },
+        "time_signatures": {
+            "description": "Time signatures",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Event time",
+                        "type": "number"
+                    },
+                    "numerator": {
+                        "description": "Numerator of time signature",
+                        "type": "integer"
+                    },
+                    "denominator": {
+                        "description": "Denominator of time signature",
+                        "type": "integer"
                     }
                 }
             }
         },
-        "global": {
-            "description": "Global data",
-            "type": "object",
-            "properties": {
-                "timing": {
-                    "description": "Timing system",
-                    "type": "object",
-                    "properties": {
-                        "is_symbolic_timing": {
-                            "description": "If true, the timing is in time steps. Otherwise, it's in seconds.",
-                            "type": "boolean"
-                        },
-                        "beat_resolution": {
-                            "description": "Time steps per beat (only effective when `is_symbolic_timing` is true)",
-                            "type": ["integer", "null"]
-                        }
+        "key_signatures": {
+            "description": "Key signatures",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Event time",
+                        "type": "number"
+                    },
+                    "root": {
+                        "description": "Root: {C, C#, Db, D, D#, Eb, E, F, F#, Gb, G, G#, Ab, A, A#, Bb, B}",
+                        "enum": ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"]
+                    },
+                    "mode": {
+                        "description": "Mode: {major, minor, null}",
+                        "enum": ["major", "minor", null]
                     }
-                },
-                "time_signatures": {
-                    "description": "Time signatures",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "description": "Event time",
-                                "type": "number"
-                            },
-				            "numerator": {
-                                "description": "Numerator of time signature",
-                                "type": "integer"
-                            },
-				            "denominator": {
-                                "description": "Denominator of time signature",
-                                "type": "integer"
-                            }
-                        }
-                    }
-                },
-                "key_signatures": {
-                    "description": "Key signatures",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "description": "Event time",
-                                "type": "number"
-                            },
-				            "root": {
-                                "description": "Root: {C, C#, Db, D, D#, Eb, E, F, F#, Gb, G, G#, Ab, A, A#, Bb, B}",
-                                "enum": ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"]
-                            },
-				            "mode": {
-                                "description": "Mode: {major, minor, null}",
-                                "enum": ["major", "minor", null]
-                            }
-                        }
-                    }
-                },
-                "tempos": {
-                    "description": "Tempos",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "description": "Event time",
-                                "type": "number"
-                            },
-				            "tempo": {
-                                "description": "Tempo in bpm (beats per minute)",
-                                "type": "number"
-                            }
-                        }
-                    }
-                },
-                "downbeats": {
-                    "description": "Downbeat positions",
-                    "type": ["array", "null"],
-                    "items": {
-                        "description": "Downbeat time",
+                }
+            }
+        },
+        "tempos": {
+            "description": "Tempos",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Event time",
+                        "type": "number"
+                    },
+                    "tempo": {
+                        "description": "Tempo in bpm (beats per minute)",
                         "type": "number"
                     }
-                },
-                "lyrics": {
-                    "description": "Global lyrics",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "description": "Event time",
-                                "type": "number"
-                            },
-                            "lyric": {
-                                "description": "lyric",
-                                "type": "string"
-                            }
-                        }
+                }
+            }
+        },
+        "downbeats": {
+            "description": "Downbeat positions",
+            "type": ["array", "null"],
+            "items": {
+                "description": "Downbeat time",
+                "type": "number"
+            }
+        },
+        "lyrics": {
+            "description": "Global lyrics",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Event time",
+                        "type": "number"
+                    },
+                    "lyric": {
+                        "description": "Content of lyric",
+                        "type": "string"
                     }
-                },
-                "annotations": {
-                    "description": "Global annotations",
-                    "type": ["array", "null"],
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "description": "Event time",
-                                "type": "number"
-                            },
-                            "annotation": {
-                                "description": "Content of annotation"
-                            }
-                        }
+                }
+            }
+        },
+        "annotations": {
+            "description": "Global annotations",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Event time",
+                        "type": "number"
+                    },
+                    "annotation": {
+                        "description": "Content of annotation"
                     }
                 }
             }
         },
         "tracks": {
-            "description": "Track-specific data",
+            "description": "Tracks",
             "type": ["array", "null"],
             "items": {
                 "type": "object",
@@ -232,7 +172,7 @@
                                     "type": "number"
                                 },
                                 "lyric": {
-                                    "description": "lyric",
+                                    "description": "Content of lyric",
                                     "type": "string"
                                 }
                             }
@@ -253,6 +193,60 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    },
+    "meta": {
+        "description": "Meta data",
+        "type": "object",
+        "properties": {
+            "version": {
+                "description": "Schema version",
+                "type": "string",
+                "pattern": "[0-9].[0-9]"
+            },
+            "song": {
+                "description": "Song information",
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "Song title",
+                        "type": ["string", "null"]
+                    },
+                    "artist": {
+                        "description": "Main artist of the song",
+                        "type": ["string", "null"]
+                    },
+                    "composers": {
+                        "description": "Composers of the song",
+                        "type": ["array", "null"],
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "source": {
+                "description": "Source information",
+                "type": "object",
+                "properties": {
+                    "filename": {
+                        "description": "Path to the file in the collection",
+                        "type": ["string", "null"]
+                    },
+                    "collection": {
+                        "description": "Name of the collection",
+                        "type": ["string", "null"]
+                    },
+                    "format": {
+                        "description": "Format of the source file {midi, musicxml, abc, null}",
+                        "type": ["string", "null"]
+                    },
+                    "id": {
+                        "description": "Unique ID of the file",
+                        "type": ["string", "null"]
                     }
                 }
             }

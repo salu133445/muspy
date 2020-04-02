@@ -1,44 +1,16 @@
 # MusPy YAML schema v0.0
-meta: include("meta_")
-global: include("global_")
+
+timing: include("timing")
+time_signatures: list(include("time_signature"))
+key_signatures: list(include("key_signature"))
+tempos: list(include("tempo"))
+downbeats: list(num())
+lyrics: list(include("lyric"))
+annotations: list(include("annotation"))
 tracks: any(list(include("track")), null())
+meta: include("meta_")
 
 ---
-
-meta_:
-  schema_version: regex("[0-9].[0-9]")
-  song: include("song_info")
-  source: include("source_info")
-
-global_:
-  timing: include("timing")
-  time_signatures: list(include("time_signature"))
-  key_signatures: list(include("key_signature"))
-  tempos: list(include("tempo"))
-  downbeats: list(num())
-  lyrics: list(include("lyric"))
-  annotations: list(include("annotation"))
-
-track:
-  name: str()
-  program: int()
-  is_drum: bool()
-  notes: list(include("note"))
-  lyrics: list(include("lyric"))
-  annotations: list(include("annotation"))
-
----
-
-source_info:
-  id: str(required=False)
-  collection: str(required=False)
-  filename: str(required=False)
-  format: str(required=False)
-
-song_info:
-  title: str(required=False)
-  artist: str(required=False)
-  composers: list(str(), required=False)
 
 timing:
   is_symbolic_timing: bool()
@@ -58,6 +30,16 @@ tempo:
   time: num()
   tempo: num()
 
+---
+
+track:
+  name: str()
+  program: int()
+  is_drum: bool()
+  notes: list(include("note"))
+  lyrics: list(include("lyric"))
+  annotations: list(include("annotation"))
+
 note:
   start: num()
   end: num()
@@ -71,3 +53,19 @@ lyric:
 annotation:
   time: num()
   annotation: any(bool(), num(), str(), list(), map())
+
+meta_:
+  schema_version: regex("[0-9].[0-9]")
+  song: include("song_info")
+  source: include("source_info")
+
+source_info:
+  collection: str(required=False)
+  filename: str(required=False)
+  format: str(required=False)
+  id: str(required=False)
+
+song_info:
+  title: str(required=False)
+  artist: str(required=False)
+  composers: list(str(), required=False)

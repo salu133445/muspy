@@ -1,86 +1,58 @@
 # An example yaml
 
-# === Meta data ===
-meta:
-  # Schema version
-  schema_version: "0.0"
+# Timing system
+timing:
+  # If true, the timing is in time steps. Otherwise, it's in seconds.
+  is_symbolic_timing: true
+  # Time steps per beat (only effective when `is_symbolic_timing` is true)
+  beat_resolution: 4
 
-  # Song information
-  song:
-    # Song title
-    title: Für Elise
-    # Main artist of the song
-    artist: Ludwig van Beethoven
-    # Composers of the song
-    composers:
-      - Ludwig van Beethoven
+# Time signatures
+time_signatures:
+  - # Event time
+    time: 0
+    # Numerator of time signature
+    numerator: 3
+    # Denominator of time signature
+    denominator: 8
 
-  # Source information
-  source:
-    # Unique ID of the file
-    id: "0"
-    # Name of the collection
-    collection: collection
-    # Path to the file in the collection
-    filename: example.yaml
-    # Format of the source file {midi, musicxml, abc, null}
-    format: null
+# Key signatures
+key_signatures:
+  - # Event time
+    time: 0
+    # Root: {C, C#, Db, D, D#, Eb, E, F, F#, Gb, G, G#, Ab, A, A#, Bb, B}
+    root: A
+    # Mode: {major, minor, null}
+    mode: minor
 
-# === Global data ===
-global:
-  # Timing system
-  timing:
-    # If true, the timing is in time steps. Otherwise, it's in seconds.
-    is_symbolic_timing: true
-    # Time steps per beat (only effective when `is_symbolic_timing` is true)
-    beat_resolution: 4
+# Tempos
+tempos:
+  - # Event time
+    time: 0
+    # Tempo in bpm (beats per minute)
+    tempo: 120
 
-  # Time signatures
-  time_signatures:
-    - # Event time
-      time: 0
-      # Numerator of time signature
-      numerator: 3
-      # Denominator of time signature
-      denominator: 8
+# Downbeat positions
+downbeats:
+  # Downbeat time
+  - 4
+  - 16
 
-  # Key signatures
-  key_signatures:
-    - # Event time
-      time: 0
-      # Root: {C, C#, Db, D, D#, Eb, E, F, F#, Gb, G, G#, Ab, A, A#, Bb, B}
-      root: A
-      # Mode: {major, minor, null}
-      mode: minor
+# Global lyrics
+lyrics:
+  - # Event time
+    time: 0
+    # Content of lyric
+    lyric: nothing but a lyric
 
-  # Tempos
-  tempos:
-    - # Event time
-      time: 0
-      # Tempo in bpm (beats per minute)
-      tempo: 120
+# Global annotations
+annotations:
+  - # Event time
+    time: 0
+    # Content of annotation
+    annotation: nothing but an annotation
 
-  # Downbeat positions
-  downbeats:
-    # Downbeat time
-    - 4
-    - 16
-
-  # Global lyric
-  lyrics:
-    - # Event time
-      time: 0
-      # Lyric
-      lyric: nothing but a lyric
-
-  # Global annotations
-  annotations:
-    - # Event time
-      time: 0
-      # Content of annotation
-      annotation: nothing but an annotation
-
-# === Track-specific data ===
+# Tracks
 tracks:
   - # Name of track
     name: melody
@@ -97,7 +69,7 @@ tracks:
         # Note pitch
         pitch: 76
         # Note velocity
-        velocity: 76
+        velocity: 127
       - {start: 2, end: 4, pitch: 75, velocity: 127}
       - {start: 4, end: 6, pitch: 76, velocity: 127}
       - {start: 6, end: 8, pitch: 75, velocity: 127}
@@ -111,7 +83,7 @@ tracks:
     lyrics:
       - # Event time
         time: 0
-        # Lyric
+        # Content of lyric
         lyric: nothing but a lyric
 
     # Track-specific annotations
@@ -120,3 +92,29 @@ tracks:
         time: 0
         # Content of annotation
         annotation: nothing but an annotation
+
+# Meta data
+meta:
+  # Schema version
+  schema_version: "0.0"
+
+  # Song information
+  song:
+    # Song title
+    title: Für Elise
+    # Main artist of the song
+    artist: Ludwig van Beethoven
+    # Composers of the song
+    composers:
+      - Ludwig van Beethoven
+
+  # Source information
+  source:
+    # Name of the collection
+    collection: collection
+    # Path to the file in the collection
+    filename: example.yaml
+    # Format of the source file {midi, musicxml, abc, null}
+    format: null
+    # Unique ID of the file
+    id: "0"
