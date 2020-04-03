@@ -55,12 +55,24 @@ class Music(Base):
 
     Attributes
     ----------
-    is_symbolic_timing : bool
-        A boolean indicating if it is in symbolic timing. Defaults to True.
-    beat_resolution : list of Note
-        Time steps per beat (only effective when `is_symbolic_timing` is true).
-    annotations : list of :class:'muspy.Annotation'
-        A list of :class:'muspy.Annotation' object.
+    timing : :class:muspy.TimingInfo object
+        A timing info object. See :class:`muspy.TimingInfo` for details.
+    time_signatures : list of :class:`muspy.TimeSignature` object
+        Time signatures. See :class:`muspy.TimeSignature` for details.
+    key_signatures : list of :class:`muspy.KeySignature` object
+        Time signatures. See :class:`muspy.KeySignature` for details.
+    tempos : list of :class:muspy.Tempo object
+        Tempos. See :class:`muspy.Tempo` for details.
+    downbeats : list of float
+        Downbeat positions.
+    lyrics : list of :class:`muspy.Lyric`
+        Lyrics. See :class:`muspy.Lyric` for details.
+    annotations : list of :class:`muspy.Annotation`
+        Annotations. See :class:`muspy.Annotation` for details.
+    tracks : list of :class:`muspy.Track`
+        Music tracks. See :class:`muspy.Track` for details.
+    meta : :class:`muspy.MetaData` object
+        Meta data. See :class:`muspy.MetaData` for details.
     """
 
     _attributes = [
@@ -119,7 +131,13 @@ class Music(Base):
         self.meta = MetaData()
 
     def parse(self, obj):
-        """Load from a file or a parsable object."""
+        """Load from a file or a parsable object.
+
+        Parameters
+        ----------
+        obj : str or :class:`pretty_midi.PrettyMIDI` object
+            Path to the file to parse or the object to parse.
+        """
         if isinstance(obj, str):
             if obj.endswith((".mid", ".midi")):
                 muspy.io.midi.parse_midi(self, obj)
@@ -135,7 +153,13 @@ class Music(Base):
             )
 
     def load(self, filename):
-        """Load from a file."""
+        """Load from a file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to the file to load.
+        """
         if filename.endswith(".json"):
             with open("muspy/schemas/music.schema.json") as in_file:
                 schema = json.load(in_file)
@@ -239,7 +263,13 @@ class Music(Base):
         self.meta = MetaData(data["meta"]["schema_version"], song_info, source_info)
 
     def serialize(self, format_="json"):
-        """Serialize to JSON or YAML string."""
+        """Serialize to JSON or YAML string.
+
+        Parameters
+        ----------
+        format_ : {'json', 'yaml'}
+            Target file format.
+        """
         if format_ == "json":
             return json.dumps(self.to_ordered_dict())
         if format_ == "yaml":
@@ -247,7 +277,13 @@ class Music(Base):
         raise ValueError("`format_` should be either 'json' or 'yaml'.")
 
     def save(self, filename):
-        """Save to a file."""
+        """Save to a file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to save the file. Acceptable extensions are 'json' and 'yaml'.
+        """
         ext = os.path.splitext(filename.lower())[1]
         if not ext:
             raise ValueError("Filename must have an extension.")
