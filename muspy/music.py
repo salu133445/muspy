@@ -1,5 +1,4 @@
 """Core MusPy music object."""
-
 import json
 import os.path
 from collections import OrderedDict
@@ -9,8 +8,7 @@ import pretty_midi
 import yamale
 import yaml
 
-import muspy.io
-from muspy.classes import (
+from .classes import (
     Annotation,
     Base,
     KeySignature,
@@ -23,6 +21,20 @@ from muspy.classes import (
     TimeSignature,
     TimingInfo,
     Track,
+)
+from .io import (
+    parse_pretty_midi,
+    read_midi,
+    read_musicxml,
+    to_pretty_midi,
+    to_pypianoroll,
+    write_midi,
+    write_musicxml,
+)
+from .representations import (
+    to_event_representation,
+    to_note_representation,
+    to_pianoroll_representation,
 )
 
 
@@ -110,8 +122,12 @@ class Music(Base):
             return
 
         self.timing = timing_info if timing_info is not None else []
-        self.time_signatures = time_signatures if time_signatures is not None else []
-        self.key_signatures = key_signatures if key_signatures is not None else []
+        self.time_signatures = (
+            time_signatures if time_signatures is not None else []
+        )
+        self.key_signatures = (
+            key_signatures if key_signatures is not None else []
+        )
         self.tempos = tempos if tempos is not None else []
         self.downbeats = downbeats if downbeats is not None else []
         self.lyrics = lyrics if lyrics is not None else []
@@ -139,17 +155,21 @@ class Music(Base):
             Path to the file to parse or the object to parse.
         """
         if isinstance(obj, str):
-            if obj.endswith((".mid", ".midi")):
-                muspy.io.midi.parse_midi(self, obj)
-            elif obj.endswith((".mxml", ".xml")):
-                muspy.io.musicxml.parse_musicxml(self, obj)
+            if obj.lower().endswith((".mid", ".midi")):
+                read_midi(self, obj)
+            elif obj.lower().endswith((".mxml", ".xml")):
+                read_musicxml(self, obj)
             else:
-                raise TypeError("Unrecognized extension (expect MIDI or MusicXML).")
+                raise TypeError(
+                    "Unrecognized extension (expect MIDI or MusicXML)."
+                )
         elif isinstance(obj, pretty_midi.PrettyMIDI):
-            muspy.io.midi.parse_pretty_midi(self, obj)
+            parse_pretty_midi(self, obj)
         else:
             raise TypeError(
-                "Expect a file or a parsable object, but got {}.".format(type(obj))
+                "Expect a file or a parsable object, but got {}.".format(
+                    type(obj)
+                )
             )
 
     def load(self, filename):
@@ -160,14 +180,14 @@ class Music(Base):
         filename : str
             Path to the file to load.
         """
-        if filename.endswith(".json"):
+        if filename.lower().endswith(".json"):
             with open("muspy/schemas/music.schema.json") as in_file:
                 schema = json.load(in_file)
             with open(filename) as in_file:
                 data = json.load(in_file)
             jsonschema.validate(data, schema)
 
-        elif filename.endswith((".yaml", ".yml")):
+        elif filename.lower().endswith((".yaml", ".yml")):
             schema = yamale.make_schema("muspy/schemas/music.schema.yaml")
             data = yamale.make_data(filename)
             yamale.validate(schema, data)
@@ -180,7 +200,8 @@ class Music(Base):
 
         # Global data
         self.timing = TimingInfo(
-            data["timing"]["is_symbolic_timing"], data["timing"]["beat_resolution"],
+            data["timing"]["is_symbolic_timing"],
+            data["timing"]["beat_resolution"],
         )
 
         if data["time_signatures"] is not None:
@@ -228,12 +249,17 @@ class Music(Base):
                 for note in track["notes"]:
                     notes.append(
                         Note(
-                            note["start"], note["end"], note["pitch"], note["velocity"]
+                            note["start"],
+                            note["end"],
+                            note["pitch"],
+                            note["velocity"],
                         )
                     )
                 for annotation in track["annotations"]:
                     annotations.append(
-                        Annotation(annotation["time"], annotation["annotation"])
+                        Annotation(
+                            annotation["time"], annotation["annotation"]
+                        )
                     )
                 for lyric in track["lyrics"]:
                     lyrics.append(Annotation(lyric["time"], lyric["lyric"]))
@@ -260,7 +286,9 @@ class Music(Base):
             data["meta"]["source"]["format"],
             data["meta"]["source"]["id"],
         )
-        self.meta = MetaData(data["meta"]["schema_version"], song_info, source_info)
+        self.meta = MetaData(
+            data["meta"]["schema_version"], song_info, source_info
+        )
 
     def serialize(self, format_="json"):
         """Serialize to JSON or YAML string.
@@ -270,9 +298,9 @@ class Music(Base):
         format_ : {'json', 'yaml'}
             Target file format.
         """
-        if format_ == "json":
+        if format_.lower() == "json":
             return json.dumps(self.to_ordered_dict())
-        if format_ == "yaml":
+        if format_.lower() in ("yaml", "yml"):
             return ordered_dump(self.to_ordered_dict())
         raise ValueError("`format_` should be either 'json' or 'yaml'.")
 
@@ -282,10 +310,74 @@ class Music(Base):
         Parameters
         ----------
         filename : str
-            Path to save the file. Acceptable extensions are 'json' and 'yaml'.
+            Path to save the file. Supported extensions are `.json` and `.yaml`.
+
+        Note
+        ----
+        To write to other formats such as MIDI or MusicXML, see
+        :meth:`muspy.Music.write`.
         """
-        ext = os.path.splitext(filename.lower())[1]
+        ext = os.path.splitext(filename)[1]
         if not ext:
             raise ValueError("Filename must have an extension.")
         with open(filename, "w") as out_file:
             out_file.write(self.serialize(ext[1:]))
+
+    def write(self, filename):
+        """Write to a file in a specific format.
+
+        Parameters
+        ----------
+        filename : str
+            Path to write the file. Supported extensions are `.mxml` and `.mid`.
+        """
+        ext = os.path.splitext(filename)[1]
+        if not ext:
+            raise ValueError("Filename must have an extension.")
+        if ext.lower() == ".mxml":
+            return write_musicxml(self, filename)
+        if ext.lower() in (".midi", ".mid"):
+            return write_midi(self, filename)
+        raise ValueError("Unsupported file extension : {}.".format(ext))
+
+    def to(self, target=None):
+        """Convert to a target representation.
+
+        Parameters
+        ----------
+        target : str
+            Target representation. Supported values are
+        """
+        if target.lower() in ("event", "event-based"):
+            return self.to_event_representation()
+        if target.lower() in ("note", "note-based"):
+            return self.to_note_representation()
+        if target.lower() in ("pianoroll"):
+            return self.to_pianoroll_representation()
+        if target.lower() in ("pretty_midi"):
+            return self.to_pretty_midi()
+        if target.lower() in ("pypianoroll"):
+            return self.to_pypianoroll()
+        raise ValueError(
+            "Unsupported target representation : {}.".format(target)
+        )
+
+    def to_event_representation(self):
+        """Convert to event-based representation."""
+        to_event_representation(self)
+
+    def to_note_representation(self):
+        """Convert to note-based representation."""
+        to_note_representation(self)
+
+    def to_pianoroll_representation(self):
+        """Convert to pianoroll representation."""
+        to_pianoroll_representation(self)
+
+    def to_pretty_midi(self):
+        """Convert to a :class:`pretty_midi.PrettyMIDI` object."""
+        to_pretty_midi(self)
+
+    def to_pypianoroll(self):
+        """Convert to a :class:`pypianoroll.Multitrack` object."""
+        to_pypianoroll(self)
