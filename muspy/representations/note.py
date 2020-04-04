@@ -1,7 +1,7 @@
 """Utilities for note-based representations."""
 
 
-def music_to_note_representation(music):
+def to_note_representation(music):
     """Convert a :class:muspy.Music object to a note-based representation.
 
     Parameters
