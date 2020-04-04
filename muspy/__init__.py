@@ -5,8 +5,7 @@ MusPy
 A Python package for processing symbolic music and working with common music
 datasets.
 """
-
-from . import datasets, io
+from . import datasets, io, metrics, representations, schemas, visualization
 from .classes import (
     Annotation,
     KeySignature,
@@ -37,4 +36,8 @@ __all__ = [
     "Track",
     "datasets",
     "io",
+    "representations",
+    "metrics",
+    "visualization",
+    "schemas",
 ]
