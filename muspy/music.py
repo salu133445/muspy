@@ -181,18 +181,18 @@ class Music(Base):
             Path to the file to load.
         """
         if filename.lower().endswith(".json"):
-            with open("muspy/schemas/music.schema.json") as in_file:
-                schema = json.load(in_file)
-            with open(filename) as in_file:
-                data = json.load(in_file)
+            with open("muspy/schemas/music.schema.json") as f:
+                schema = json.load(f)
+            with open(filename) as f:
+                data = json.load(f)
             jsonschema.validate(data, schema)
 
         elif filename.lower().endswith((".yaml", ".yml")):
             schema = yamale.make_schema("muspy/schemas/music.schema.yaml")
             data = yamale.make_data(filename)
             yamale.validate(schema, data)
-            with open(filename) as in_file:
-                data = yaml.safe_load(in_file)
+            with open(filename) as f:
+                data = yaml.safe_load(f)
         else:
             raise TypeError("Unrecognized extension (expect JSON or YAML).")
 
@@ -295,8 +295,8 @@ class Music(Base):
 
         Parameters
         ----------
-        format_ : {'json', 'yaml'}
-            Target file format.
+        format_ : {'json', 'yaml'}, optional
+            Target file format. Defaults to 'json'.
         """
         if format_.lower() == "json":
             return json.dumps(self.to_ordered_dict())
@@ -340,13 +340,14 @@ class Music(Base):
             return write_midi(self, filename)
         raise ValueError("Unsupported file extension : {}.".format(ext))
 
-    def to(self, target=None):
+    def to(self, target):
         """Convert to a target representation.
 
         Parameters
         ----------
         target : str
-            Target representation. Supported values are
+            Target representation. Supported values are 'event', 'note',
+            'pianoroll', 'pretty_midi', 'pypianoroll'.
         """
         if target.lower() in ("event", "event-based"):
             return self.to_event_representation()
