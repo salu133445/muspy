@@ -1,96 +1,165 @@
-import os, re
-import logging
-from tqdm import tqdm
+"""Dataset utilities."""
+import gzip
+import hashlib
+import os
+import os.path
+import shutil
+import tarfile
+import urllib
+import zipfile
+
 import requests
+from tqdm import tqdm
 
 
-def download_from_url(url, path=None, root='.data', overwrite=False):
-    """
-    Code modified from https://github.com/pytorch/text/blob/master/torchtext/utils.py
-    Download file for Google Drive.
-    Returns the path to the downloaded file.
-    Arguments:
-        url: the url of the file
-        path: explicitly set the filename, otherwise attempts to
-            detect the file name from URL header. (None)
-        root: download folder used to store the file in (.data)
-        overwrite: overwrite existing files (False)
-    Examples:
-        >>> url = 'http://www.quest.dcs.shef.ac.uk/wmt16_files_mmt/validation.tar.gz'
-        >>> torchtext.utils.download_from_url(url)
-        >>> '.data/validation.tar.gz'
+class ProgressBar:
+    """A callable progress bar object.
+
+    Note
+    ----
+    Code is adapted from https://stackoverflow.com/a/53643011.
     """
 
-    def _process_response(r, root, filename):
-        chunk_size = 16 * 1024
-        total_size = int(r.headers.get('Content-length', 0))
-        if filename is None:
-            d = r.headers['content-disposition']
-            filename = re.findall("filename=\"(.+)\"", d)
-            if filename is None:
-                raise RuntimeError("Filename could not be autodetected")
-            filename = filename[0]
-        path = os.path.join(root, filename)
-        if os.path.exists(path):
-            logging.info('File %s already exists.', path)
-            if not overwrite:
-                return path
-            logging.info('Overwriting file %s.', path)
-        logging.info('Downloading file {} to {}.'.format(filename, path))
-        with open(path, "wb") as file:
-            with tqdm(total=total_size, unit='B',
-                      unit_scale=1, desc=path.split('/')[-1]) as t:
-                for chunk in r.iter_content(chunk_size):
-                    if chunk:
-                        file.write(chunk)
-                        t.update(len(chunk))
-        logging.info('File {} downloaded.'.format(path))
-        return path
+    def __init__(self):
+        self.pbar = None
 
-    if path is None:
-        _, filename = os.path.split(url)
-    else:
-        root, filename = os.path.split(path)
+    def __call__(self, block_num, block_size, total_size):
+        if self.pbar is None:
+            self.pbar = tqdm(total=total_size)
 
-    if not os.path.exists(root):
-        raise RuntimeError(
-            "Download directory {} does not exist. "
-            "Did you create it?".format(root))
+        downloaded = block_num * block_size
+        self.pbar.update(downloaded)
 
-    if 'drive.google.com' not in url:
-        response = requests.get(url, headers={'User-Agent': 'Mozilla/5.0'}, stream=True)
-        return _process_response(response, root, filename)
-    else:
-        # google drive links get filename from google drive
-        filename = None
 
-    logging.info('Downloading from Google Drive; may take a few minutes')
-    confirm_token = None
+def compute_md5(filename, chunk_size):
+    """Calculate MD5 checksum, chunk by chunk."""
+    md5 = hashlib.md5()
+    with open(filename, "rb") as f:
+        for chunk in iter(lambda: f.read(chunk_size), b""):
+            md5.update(chunk)
+    return md5.hexdigest()
+
+
+def check_md5(filename, md5, chunk_size=1024 * 1024):
+    """Check if the MD5 checksum of the file matches the give one."""
+    return md5 == compute_md5(filename, chunk_size)
+
+
+def download_url(url, root, filename=None, md5=None):
+    """Download a file from a URL to the target root directory.
+
+    Parameters
+    ----------
+    url : str
+        URL to download file from.
+    root : str
+        Root directory to store the downloaded files.
+    filename : str
+        Filename to save. If None, infer it from the basename of the URL.
+    md5 : str
+        MD5 checksum of the download. If None, do not check
+    """
+    if filename is None:
+        filename = os.path.basename(url)
+    root = os.path.expanduser(root)
+    filename = os.path.join(root, filename)
+
+    # Make sure root directory exists
+    os.makedirs(root, exist_ok=True)
+
+    # Download the file
+    urllib.request.urlretrieve(url, filename, reporthook=ProgressBar())
+
+    # Check MD5 checksum of the downloaded file
+    if not check_md5(filename, md5):
+        raise RuntimeError("Downloaded file is corrupted.")
+
+
+def _get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith("download_warning"):
+            return value
+    return None
+
+
+def _save_response_content(response, destination, chunk_size=32768):
+    with open(destination, "wb") as f:
+        pbar = tqdm(total=None)
+        progress = 0
+        for chunk in response.iter_content(chunk_size):
+            if chunk:  # filter out keep-alive new chunks
+                f.write(chunk)
+                progress += len(chunk)
+                pbar.update(progress - pbar.n)
+
+
+def download_google_drive_file(file_id, root, filename=None, md5=None):
+    """Download a Google Drive file to the target root directory.
+
+    Parameters
+    ----------
+    file_id : str
+        ID of the target file on .
+    root : str
+        Directory to place downloaded file in
+    filename : str, optional
+        Name to save the file under. If None, use the id of the file.
+    md5 : str, optional
+        MD5 checksum of the download. If None, do not check
+
+    Note
+    ----
+    Code is adapted from https://stackoverflow.com/a/39225039.
+    """
+    if filename is None:
+        filename = file_id
+    root = os.path.expanduser(root)
+    filename = os.path.join(root, filename)
+
+    # Make sure root directory exists
+    os.makedirs(root, exist_ok=True)
+
     session = requests.Session()
-    response = session.get(url, stream=True)
-    for k, v in response.cookies.items():
-        if k.startswith("download_warning"):
-            confirm_token = v
+    url = "https://docs.google.com/uc?export=download"
+    response = session.get(url, params={"id": file_id}, stream=True)
 
-    if confirm_token:
-        url = url + "&confirm=" + confirm_token
-        response = session.get(url, stream=True)
+    token = _get_confirm_token(response)
+    if token:
+        params = {"id": file_id, "confirm": token}
+        response = session.get(url, params=params, stream=True)
 
-    return _process_response(response, root, filename)
+    _save_response_content(response, filename)
+
+    # Check MD5 checksum of the downloaded file
+    if not check_md5(filename, md5):
+        raise RuntimeError("Downloaded file is corrupted.")
 
 
-if __name__ == "__main__":
-    # Lakh Midi
-    download_from_url('http://hog.ee.columbia.edu/craffel/lmd/lmd_full.tar.gz')
-    # NMD
-    # download_from_url('http://abc.sourceforge.net/NMD/nmd/NMD.zip')
-    # MAESTRO
-    # download_from_url('https://storage.googleapis.com/magentadata/datasets/maestro/v2.0.0/maestro-v2.0.0.zip')
-    #
-    # JSB
-    # download_from_url('http://www-etud.iro.umontreal.ca/~boulanni/JSB%20Chorales.zip')
-    # PIANO MIDI
-    # download_from_url('http://www-etud.iro.umontreal.ca/~boulanni/Piano-midi.de.zip')
+def extract_archive(filename, root=None, cleanup=False):
+    """Extract an archive with format inferred from the filename."""
+    if root is None:
+        root = os.path.dirname(filename)
 
-    # TODO: BPS_FH, (https://github.com/Tsung-Ping/functional-harmony), git clone?
-    # TODO: Musedata, where is the data?
+    if filename.endswith(".tar"):
+        with tarfile.open(filename, "r") as tar:
+            tar.extractall(path=root)
+    elif filename.endswith((".tar.gz", ".tgz")):
+        with tarfile.open(filename, "r:gz") as tar:
+            tar.extractall(path=root)
+    elif filename.endswith(".tar.xz"):
+        with tarfile.open(filename, "r:xz") as tar:
+            tar.extractall(path=root)
+    elif filename.endswith(".gz"):
+        filepath = os.path.join(
+            root, os.path.splitext(os.path.basename(filename))[0]
+        )
+        with gzip.open(filename, "rb") as f_in, open(filepath, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    elif filename.endswith(".zip"):
+        with zipfile.ZipFile(filename, "r") as f:
+            f.extractall(root)
+    else:
+        raise ValueError("Extraction of {} not supported".format(filename))
+
+    if cleanup:
+        os.remove(filename)
