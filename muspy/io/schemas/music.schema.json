@@ -4,6 +4,60 @@
     "description": "A simple, intuitive format for symbolic music",
     "type": "object",
     "properties": {
+        "meta": {
+            "description": "Meta data",
+            "type": "object",
+            "properties": {
+                "version": {
+                    "description": "Schema version",
+                    "type": "string",
+                    "pattern": "[0-9].[0-9]"
+                },
+                "song": {
+                    "description": "Song information",
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "description": "Song title",
+                            "type": ["string", "null"]
+                        },
+                        "artist": {
+                            "description": "Main artist of the song",
+                            "type": ["string", "null"]
+                        },
+                        "composers": {
+                            "description": "Composers of the song",
+                            "type": ["array", "null"],
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "source": {
+                    "description": "Source information",
+                    "type": "object",
+                    "properties": {
+                        "filename": {
+                            "description": "Path to the file in the collection",
+                            "type": ["string", "null"]
+                        },
+                        "collection": {
+                            "description": "Name of the collection",
+                            "type": ["string", "null"]
+                        },
+                        "format": {
+                            "description": "Format of the source file {midi, musicxml, abc, null}",
+                            "type": ["string", "null"]
+                        },
+                        "id": {
+                            "description": "Unique ID of the file",
+                            "type": ["string", "null"]
+                        }
+                    }
+                }
+            }
+        },
         "timing": {
             "description": "Timing system",
             "type": "object",
@@ -193,60 +247,6 @@
                                 }
                             }
                         }
-                    }
-                }
-            }
-        }
-    },
-    "meta": {
-        "description": "Meta data",
-        "type": "object",
-        "properties": {
-            "version": {
-                "description": "Schema version",
-                "type": "string",
-                "pattern": "[0-9].[0-9]"
-            },
-            "song": {
-                "description": "Song information",
-                "type": "object",
-                "properties": {
-                    "title": {
-                        "description": "Song title",
-                        "type": ["string", "null"]
-                    },
-                    "artist": {
-                        "description": "Main artist of the song",
-                        "type": ["string", "null"]
-                    },
-                    "composers": {
-                        "description": "Composers of the song",
-                        "type": ["array", "null"],
-                        "items": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "source": {
-                "description": "Source information",
-                "type": "object",
-                "properties": {
-                    "filename": {
-                        "description": "Path to the file in the collection",
-                        "type": ["string", "null"]
-                    },
-                    "collection": {
-                        "description": "Name of the collection",
-                        "type": ["string", "null"]
-                    },
-                    "format": {
-                        "description": "Format of the source file {midi, musicxml, abc, null}",
-                        "type": ["string", "null"]
-                    },
-                    "id": {
-                        "description": "Unique ID of the file",
-                        "type": ["string", "null"]
                     }
                 }
             }
