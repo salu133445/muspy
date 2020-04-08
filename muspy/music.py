@@ -1,33 +1,18 @@
-"""Core MusPy music object."""
-import json
-import os.path
-from collections import OrderedDict
+"""Core music object."""
+from pathlib import Path
+from typing import Union
 
-import jsonschema
-import pretty_midi
-import yamale
-import yaml
+from pretty_midi import PrettyMIDI
+from pypianoroll import Multitrack
 
-from .classes import (
-    Annotation,
-    Base,
-    KeySignature,
-    Lyric,
-    MetaData,
-    Note,
-    SongInfo,
-    SourceInfo,
-    Tempo,
-    TimeSignature,
-    TimingInfo,
-    Track,
-)
+from .classes import Base, MetaData, TimingInfo
 from .io import (
-    parse_pretty_midi,
-    read_midi,
-    read_musicxml,
+    save,
+    save_json,
+    save_yaml,
     to_pretty_midi,
     to_pypianoroll,
+    write,
     write_midi,
     write_musicxml,
 )
@@ -36,30 +21,7 @@ from .representations import (
     to_note_representation,
     to_pianoroll_representation,
 )
-
-
-class OrderedDumper(yaml.SafeDumper):
-    """A dumper that supports OrderedDict."""
-
-    def increase_indent(self, flow=False, indentless=False):
-        return super(OrderedDumper, self).increase_indent(flow, False)
-
-
-def _dict_representer(dumper, data):
-    return dumper.represent_mapping(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
-    )
-
-
-OrderedDumper.add_representer(OrderedDict, _dict_representer)
-
-
-def ordered_dump(data):
-    """Dump data to YAML, which supports OrderedDict.
-
-    Code adapted from https://stackoverflow.com/a/21912744.
-    """
-    return yaml.dump(data, Dumper=OrderedDumper)
+from .utils import append, sort
 
 
 class Music(Base):
@@ -67,15 +29,15 @@ class Music(Base):
 
     Attributes
     ----------
-    timing : :class:muspy.TimingInfo object
+    timing : :class:`muspy.TimingInfo` object
         A timing info object. See :class:`muspy.TimingInfo` for details.
     time_signatures : list of :class:`muspy.TimeSignature` object
         Time signatures. See :class:`muspy.TimeSignature` for details.
     key_signatures : list of :class:`muspy.KeySignature` object
         Time signatures. See :class:`muspy.KeySignature` for details.
-    tempos : list of :class:muspy.Tempo object
+    tempos : list of :class:`muspy.Tempo` object
         Tempos. See :class:`muspy.Tempo` for details.
-    downbeats : list of float
+    downbeats : list of int or float
         Downbeat positions.
     lyrics : list of :class:`muspy.Lyric`
         Lyrics. See :class:`muspy.Lyric` for details.
@@ -83,8 +45,9 @@ class Music(Base):
         Annotations. See :class:`muspy.Annotation` for details.
     tracks : list of :class:`muspy.Track`
         Music tracks. See :class:`muspy.Track` for details.
-    meta : :class:`muspy.MetaData` object
+    meta_data : :class:`muspy.MetaData` object
         Meta data. See :class:`muspy.MetaData` for details.
+
     """
 
     _attributes = [
@@ -96,13 +59,11 @@ class Music(Base):
         "lyrics",
         "annotations",
         "tracks",
-        "meta",
+        "meta_data",
     ]
 
     def __init__(
         self,
-        obj=None,
-        meta_data=None,
         timing_info=None,
         time_signatures=None,
         key_signatures=None,
@@ -111,17 +72,10 @@ class Music(Base):
         lyrics=None,
         annotations=None,
         tracks=None,
+        meta_data=None,
     ):
-        if obj is not None:
-            if obj.endswith((".midi", ".mid", ".mxml", ".xml")):
-                self.parse(obj)
-            elif obj.endswith((".json", ".yaml", ".yml")):
-                self.load(obj)
-            else:
-                raise TypeError("Expect a file or a parsable object.")
-            return
-
-        self.timing = timing_info if timing_info is not None else []
+        self.meta_data = meta_data if meta_data is not None else MetaData()
+        self.timing = timing_info if timing_info is not None else TimingInfo()
         self.time_signatures = (
             time_signatures if time_signatures is not None else []
         )
@@ -133,10 +87,10 @@ class Music(Base):
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
-        self.meta = meta_data if meta_data is not None else []
 
     def reset(self):
         """Reset the object."""
+        self.meta_data = MetaData()
         self.timing = TimingInfo()
         self.time_signatures = []
         self.key_signatures = []
@@ -144,241 +98,183 @@ class Music(Base):
         self.lyrics = []
         self.annotations = []
         self.tracks = []
-        self.meta = MetaData()
 
-    def parse(self, obj):
-        """Load from a file or a parsable object.
-
-        Parameters
-        ----------
-        obj : str or :class:`pretty_midi.PrettyMIDI` object
-            Path to the file to parse or the object to parse.
-        """
-        if isinstance(obj, str):
-            if obj.lower().endswith((".mid", ".midi")):
-                read_midi(self, obj)
-            elif obj.lower().endswith((".mxml", ".xml")):
-                read_musicxml(self, obj)
-            else:
-                raise TypeError(
-                    "Unrecognized extension (expect MIDI or MusicXML)."
-                )
-        elif isinstance(obj, pretty_midi.PrettyMIDI):
-            parse_pretty_midi(self, obj)
-        else:
-            raise TypeError(
-                "Expect a file or a parsable object, but got {}.".format(
-                    type(obj)
-                )
-            )
-
-    def load(self, filename):
-        """Load from a file.
+    def append(self, obj):
+        """Append an object to the correseponding list.
 
         Parameters
         ----------
-        filename : str
-            Path to the file to load.
+        obj : Muspy objects (see below)
+            Object to be appended. Supported object types are
+            :class:`Muspy.TimeSignature`, :class:`Muspy.KeySignature`,
+            :class:`Muspy.Tempo`, :class:`Muspy.Lyric`,
+            :class:`Muspy.Annotation` and :class:`Muspy.Track` objects.
+
+        See Also
+        --------
+        :meth:`muspy.append`: equivalent function
+
         """
-        if filename.lower().endswith(".json"):
-            with open("muspy/schemas/music.schema.json") as f:
-                schema = json.load(f)
-            with open(filename) as f:
-                data = json.load(f)
-            jsonschema.validate(data, schema)
+        append(self, obj)
 
-        elif filename.lower().endswith((".yaml", ".yml")):
-            schema = yamale.make_schema("muspy/schemas/music.schema.yaml")
-            data = yamale.make_data(filename)
-            yamale.validate(schema, data)
-            with open(filename) as f:
-                data = yaml.safe_load(f)
-        else:
-            raise TypeError("Unrecognized extension (expect JSON or YAML).")
+    def sort(self):
+        """Sort the time-stamped objects with respect to event time.
 
-        self.reset()
+        Refer to :meth:`muspy.sort`: for full documentation.
 
-        # Global data
-        self.timing = TimingInfo(
-            data["timing"]["is_symbolic_timing"],
-            data["timing"]["beat_resolution"],
-        )
+        See Also
+        --------
+        :meth:`muspy.sort`: equivalent function
 
-        if data["time_signatures"] is not None:
-            for time_signature in data["time_signatures"]:
-                self.time_signatures.append(
-                    TimeSignature(
-                        time_signature["time"],
-                        time_signature["numerator"],
-                        time_signature["denominator"],
-                    )
-                )
+        """
+        sort(self)
 
-        if data["key_signatures"] is not None:
-            for key_signature in data["key_signatures"]:
-                self.key_signatures.append(
-                    KeySignature(
-                        key_signature["time"],
-                        key_signature["root"],
-                        key_signature["mode"],
-                    )
-                )
+    def save(self, path: Union[str, Path]):
+        """Save loselessly to a JSON or a YAML file.
 
-        if data["tempos"] is not None:
-            for tempo in data["tempos"]:
-                self.tempos.append(Tempo(tempo["time"], tempo["tempo"]))
-
-        if data["downbeats"] is not None:
-            self.downbeats = data["downbeats"]
-
-        if data["lyrics"] is not None:
-            for lyric in data["lyrics"]:
-                self.lyrics.append(Lyric(lyric["time"], lyric["lyric"]))
-
-        if data["annotations"] is not None:
-            for annotation in data["annotations"]:
-                self.annotations.append(
-                    Annotation(annotation["time"], annotation["annotation"])
-                )
-
-        # Track-specific data
-        self.tracks = []
-        if data["tracks"] is not None:
-            for track in data["tracks"]:
-                notes, annotations, lyrics = [], [], []
-                for note in track["notes"]:
-                    notes.append(
-                        Note(
-                            note["start"],
-                            note["end"],
-                            note["pitch"],
-                            note["velocity"],
-                        )
-                    )
-                for annotation in track["annotations"]:
-                    annotations.append(
-                        Annotation(
-                            annotation["time"], annotation["annotation"]
-                        )
-                    )
-                for lyric in track["lyrics"]:
-                    lyrics.append(Annotation(lyric["time"], lyric["lyric"]))
-                self.tracks.append(
-                    Track(
-                        track["name"],
-                        track["program"],
-                        track["is_drum"],
-                        notes,
-                        annotations,
-                        lyrics,
-                    )
-                )
-
-        # Meta data
-        song_info = SongInfo(
-            data["meta"]["song"]["title"],
-            data["meta"]["song"]["artist"],
-            data["meta"]["song"]["composers"],
-        )
-        source_info = SourceInfo(
-            data["meta"]["source"]["collection"],
-            data["meta"]["source"]["filename"],
-            data["meta"]["source"]["format"],
-            data["meta"]["source"]["id"],
-        )
-        self.meta = MetaData(
-            data["meta"]["schema_version"], song_info, source_info
-        )
-
-    def serialize(self, format_="json"):
-        """Serialize to JSON or YAML string.
+        Refer to :meth:`muspy.save`: for full documentation.
 
         Parameters
         ----------
-        format_ : {'json', 'yaml'}, optional
-            Target file format. Defaults to 'json'.
-        """
-        if format_.lower() == "json":
-            return json.dumps(self.to_ordered_dict())
-        if format_.lower() in ("yaml", "yml"):
-            return ordered_dump(self.to_ordered_dict())
-        raise ValueError("`format_` should be either 'json' or 'yaml'.")
+        path : str or :class:`pathlib.Path`
+            Path to save the file. The file format is inferred from the
+            extension.
 
-    def save(self, filename):
-        """Save to a file.
+        See Also
+        --------
+        - :meth:`muspy.save`: equivalent function
+        - :meth:`muspy.write`: write to other formats such as MIDI and MusicXML
+
+        """
+        save(self, path)
+
+    def save_json(self, path: Union[str, Path]):
+        """Save loselessly to a JSON file.
+
+        Refer to :meth:`muspy.save_json`: for full documentation.
 
         Parameters
         ----------
-        filename : str
-            Path to save the file. Supported extensions are `.json` and `.yaml`.
+        path : str or :class:`pathlib.Path`
+            Path to save the JSON file.
 
-        Note
-        ----
-        To write to other formats such as MIDI or MusicXML, see
-        :meth:`muspy.Music.write`.
+        See Also
+        --------
+        :meth:`muspy.save_json`: equivalent function
+
         """
-        ext = os.path.splitext(filename)[1]
-        if not ext:
-            raise ValueError("Filename must have an extension.")
-        with open(filename, "w") as out_file:
-            out_file.write(self.serialize(ext[1:]))
+        save_json(self, path)
 
-    def write(self, filename):
-        """Write to a file in a specific format.
+    def save_yaml(self, path: Union[str, Path]):
+        """Save loselessly to a YAML file.
+
+        Refer to :meth:`muspy.save_yaml`: for full documentation.
 
         Parameters
         ----------
-        filename : str
-            Path to write the file. Supported extensions are `.mxml` and `.mid`.
+        path : str or :class:`pathlib.Path`
+            Path to save the YAML file.
+
+        See Also
+        --------
+        :meth:`muspy.save_yaml`: equivalent function
+
         """
-        ext = os.path.splitext(filename)[1]
-        if not ext:
-            raise ValueError("Filename must have an extension.")
-        if ext.lower() == ".mxml":
-            return write_musicxml(self, filename)
-        if ext.lower() in (".midi", ".mid"):
-            return write_midi(self, filename)
-        raise ValueError("Unsupported file extension : {}.".format(ext))
+        save_yaml(self, path)
+
+    def write(self, path: Union[str, Path]):
+        """Write to a MIDI or a MusicXML file.
+
+        Refer to :meth:`muspy.write`: for full documentation.
+
+        Parameters
+        ----------
+        path : str or :class:`pathlib.Path`
+            Path to write the file. The file format is inferred from the
+            extension.
+
+        See Also
+        --------
+        - :meth:`muspy.write`: equivalent function
+        - :meth:`muspy.save`: losslessly save to a JSON and a YAML file
+
+        """
+        write(self, path)
+
+    def write_midi(self, path: Union[str, Path]):
+        """Write to a MIDI file.
+
+        Refer to :meth:`muspy.write_midi`: for full documentation.
+
+        Parameters
+        ----------
+        path : str or :class:`pathlib.Path`
+            Path to write the MIDI file.
+
+        See Also
+        --------
+        :class:`muspy.write_midi(self, path)`: equivalent function
+
+        """
+        write_midi(self, path)
+
+    def write_musicxml(self, path: Union[str, Path]):
+        """Write to a MusicXML file.
+
+        Refer to :meth:`muspy.write_musicxml`: for full documentation.
+
+        Parameters
+        ----------
+        path : str or :class:`pathlib.Path`
+            Path to write the MusicXML file.
+
+        See Also
+        --------
+        :class:`muspy.write_musicxml(self, path)`: equivalent function
+
+        """
+        write_musicxml(self, path)
 
     def to(self, target):
-        """Convert to a target representation.
+        """Convert to a target representation or .
 
         Parameters
         ----------
         target : str
             Target representation. Supported values are 'event', 'note',
             'pianoroll', 'pretty_midi', 'pypianoroll'.
+
         """
         if target.lower() in ("event", "event-based"):
-            return self.to_event_representation()
+            return to_event_representation(self)
         if target.lower() in ("note", "note-based"):
-            return self.to_note_representation()
+            return to_note_representation(self)
         if target.lower() in ("pianoroll"):
-            return self.to_pianoroll_representation()
+            return to_pianoroll_representation(self)
         if target.lower() in ("pretty_midi"):
-            return self.to_pretty_midi()
+            return to_pretty_midi(self)
         if target.lower() in ("pypianoroll"):
-            return self.to_pypianoroll()
+            return to_pypianoroll(self)
         raise ValueError(
             "Unsupported target representation : {}.".format(target)
         )
 
     def to_event_representation(self):
-        """Convert to event-based representation."""
+        """Return the event-based representation."""
         to_event_representation(self)
 
     def to_note_representation(self):
-        """Convert to note-based representation."""
+        """Return the note-based representation."""
         to_note_representation(self)
 
     def to_pianoroll_representation(self):
-        """Convert to pianoroll representation."""
+        """Return the pianoroll representation."""
         to_pianoroll_representation(self)
 
-    def to_pretty_midi(self):
-        """Convert to a :class:`pretty_midi.PrettyMIDI` object."""
+    def to_pretty_midi(self) -> PrettyMIDI:
+        """Return as a PrettyMIDI object."""
         to_pretty_midi(self)
 
-    def to_pypianoroll(self):
-        """Convert to a :class:`pypianoroll.Multitrack` object."""
+    def to_pypianoroll(self) -> Multitrack:
+        """Return as a Multitrack object."""
         to_pypianoroll(self)
