@@ -83,7 +83,7 @@ def download_url(
 
     """
     urllib.request.urlretrieve(url, str(path), reporthook=_ProgressBar())
-    if not check_md5(path, md5):
+    if md5 is not None and not check_md5(path, md5):
         raise RuntimeError("Downloaded file is corrupted.")
 
 
@@ -135,7 +135,7 @@ def download_google_drive_file(
 
     _save_response_content(response, str(path))
 
-    if not check_md5(path, md5):
+    if md5 is not None and not check_md5(path, md5):
         raise RuntimeError("Downloaded file is corrupted.")
 
 
@@ -154,9 +154,10 @@ def extract_archive(
     path : str or :class:`pathlib.Path`
         Path to the archive to be extracted.
     root : str or :class:`pathlib.Path`, optional
-        Root directory to save the extracted file. Default to
+        Root directory to save the extracted file. If None, use the dirname
+        of `path`.
     cleanup : bool
-        Whether to remove the original archive. Default to False.
+        Whether to remove the original archive. Defaults to False.
 
     """
     path = str(path)
@@ -179,8 +180,8 @@ def extract_archive(
         with gzip.open(str(path), "rb") as f_in, open(filename, "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
     elif path.lower().endswith(".zip"):
-        with zipfile.ZipFile(str(path), "r") as f:
-            f.extractall(root)
+        with zipfile.ZipFile(str(path), "r") as zip_file:
+            zip_file.extractall(root)
     else:
         raise ValueError("Extraction of {} not supported".format(path))
 

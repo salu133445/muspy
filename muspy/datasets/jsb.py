@@ -5,12 +5,13 @@ from .base import MusicDataset
 class JSBChoralesDataset(MusicDataset):
     """Johann Sebastian Bach Chorales Dataset."""
 
-    sources = {
+    _sources = {
         "jsb": {
             "filename": "JSB Chorales.zip",
             "url": "http://www-etud.iro.umontreal.ca/~boulanni/JSB%20Chorales.zip",
+            "archive": True,
             "md5": None,
         }
     }
 
-    default_subsets = ["jsb"]
+    _default_subsets = ["jsb"]

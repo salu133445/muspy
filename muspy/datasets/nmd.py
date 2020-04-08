@@ -5,13 +5,14 @@ from .base import MusicDataset
 class NottinghamMusicDatabase(MusicDataset):
     """Nottingham Music Database."""
 
-    sources = {
+    _sources = {
         "nmd": {
             "filename": "NMD.zip",
             # TODO: this link seems no longer available?
             "url": "http://abc.sourceforge.net/NMD/nmd/NMD.zip",
+            "archive": True,
             "md5": None,
         }
     }
 
-    default_subsets = ["nmd"]
+    _default_subsets = ["nmd"]
