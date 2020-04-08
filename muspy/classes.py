@@ -1,12 +1,17 @@
 """Core classes."""
+from abc import ABC, abstractmethod
 from collections import OrderedDict
+from typing import Any, List, Optional, Union
 
 from .io import DEFAULT_SCHEMA_VERSION
+from .utils import validate_list
 
 DEFAULT_BEAT_RESOLUTION = 24
 
+# pylint: disable=super-init-not-called
 
-class Base:
+
+class Base(ABC):
     """Base container for all the MusPy objects.
 
     It implements the following three handy methods.
@@ -17,9 +22,20 @@ class Base:
       in a dictionary.
     - Method `to_ordered_dict` that returns the object as an OrderedDict.
 
+    Notes
+    -----
+    This is the base class for MusPy objects. To add a new class, please
+    inherit from this class and set the class variables `_attributes`
+    properly. The list `_attributes` contains all the attribute keys of the
+    class so that the above methods can be implemented.
+
     """
 
-    _attributes = []
+    _attributes: List[str] = []
+
+    @abstractmethod
+    def __init__(self, **kwargs):
+        raise NotImplementedError
 
     def __repr__(self):
         return (
@@ -35,7 +51,7 @@ class Base:
         )
 
     @classmethod
-    def from_dict(cls, dict_):
+    def from_dict(cls, dict_: dict):
         """Return an instance constructed from a dictionary.
 
         Parameters
@@ -50,7 +66,7 @@ class Base:
                 ValueError("Missing value for attribute {}.".format(key))
         return cls(**dict_)
 
-    def to_ordered_dict(self):
+    def to_ordered_dict(self) -> OrderedDict:
         """Return the object as an OrderedDict."""
         ordered_dict = OrderedDict()
         for key in self._attributes:
@@ -73,27 +89,57 @@ class Base:
                 ordered_dict[key] = value
         return ordered_dict
 
+    @abstractmethod
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        raise NotImplementedError
+
+    def is_valid(self):
+        """Return True if all attributes are valid."""
+        try:
+            self.validate()
+        except (TypeError, ValueError):
+            return False
+        return True
+
 
 class SongInfo(Base):
     """A container for song information.
 
     Attributes
     ----------
-    title : str
+    title : str, optional
         Song title.
-    artist : str
+    artist : str, optional
         Main artist of the song.
-    composers : list of str
+    composers : list of str, optional
         Composers of the song.
 
     """
 
     _attributes = ["title", "artist", "composers"]
 
-    def __init__(self, title=None, artist=None, composers=None):
+    def __init__(
+        self,
+        title: Optional[str] = None,
+        artist: Optional[str] = None,
+        composers: Optional[List[str]] = None,
+    ):
         self.title = title
         self.artist = artist
         self.composers = composers
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.title, str):
+            raise TypeError("`title` must be a string.")
+        if not isinstance(self.artist, str):
+            raise TypeError("`artist` must be a string.")
+        if not isinstance(self.composers, list):
+            raise TypeError("`composers` must be a list.")
+        for composer in self.composers:
+            if not isinstance(composer, str):
+                raise TypeError("`composers` must be a list of string.")
 
 
 class SourceInfo(Base):
@@ -101,24 +147,42 @@ class SourceInfo(Base):
 
     Attributes
     ----------
-    collection : str
+    collection : str, optional
         Name of the collection name.
-    filename : str
+    filename : str, optional
         Path to the file in the collection.
-    format : {'midi', 'musicxml', 'abc', None}
+    format : {'midi', 'musicxml'}, optional
         Format of the source file
-    id : str
+    id : str, optional
         Unique ID of the file
 
     """
 
     _attributes = ["collection", "filename", "format", "id"]
 
-    def __init__(self, collection=None, filename=None, format_=None, id_=None):
+    def __init__(
+        self,
+        collection: Optional[str] = None,
+        filename: Optional[str] = None,
+        format_: Optional[str] = None,
+        id_: Optional[str] = None,
+    ):
         self.collection = collection
         self.filename = filename
         self.format = format_
         self.id = id_
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.collection, str):
+            raise TypeError("`collection` must be a string.")
+        if not isinstance(self.filename, str):
+            raise TypeError("`filename` must be a string.")
+        if self.format is not None:
+            if not isinstance(self.format, str):
+                raise TypeError("`format` must be a string.")
+            if self.format not in ("midi", "musicxml", None):
+                raise ValueError("`format` must be one of 'midi', 'musicxml'.")
 
 
 class MetaData(Base):
@@ -128,9 +192,9 @@ class MetaData(Base):
     ----------
     schema_version : str
         Schema version.
-    song_info : :class:'muspy.SongInfo` object
+    song_info : :class:'muspy.SongInfo` object, optional
         Soong infomation.
-    source_info : :class:'muspy.SourceInfo` object
+    source_info : :class:'muspy.SourceInfo` object, optional
         Source infomation.
 
     """
@@ -139,15 +203,26 @@ class MetaData(Base):
 
     def __init__(
         self,
-        schema_version=DEFAULT_SCHEMA_VERSION,
-        song_info=None,
-        source_info=None,
+        schema_version: str = DEFAULT_SCHEMA_VERSION,
+        song_info: Optional[str] = None,
+        source_info: Optional[str] = None,
     ):
         self.schema_version = schema_version
         self.song_info = song_info if song_info is not None else SongInfo()
         self.source_info = (
             source_info if source_info is not None else SourceInfo()
         )
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.schema_version, str):
+            raise TypeError("`schema_version` must be a string.")
+        if not isinstance(self.song_info, SongInfo):
+            raise TypeError("`song_info` must be of type SongInfo.")
+        if not isinstance(self.source_info, SourceInfo):
+            raise TypeError("`source_info` must be of type SourceInfo.")
+        self.song_info.validate()
+        self.source_info.validate()
 
 
 class TimingInfo(Base):
@@ -165,10 +240,21 @@ class TimingInfo(Base):
     _attributes = ["is_symbolic_timing", "beat_resolution"]
 
     def __init__(
-        self, is_symbolic_timing=True, beat_resolution=DEFAULT_BEAT_RESOLUTION
+        self,
+        is_symbolic_timing: bool = True,
+        beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
     ):
         self.is_symbolic_timing = is_symbolic_timing
         self.beat_resolution = beat_resolution
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.is_symbolic_timing, bool):
+            raise TypeError("`is_symbolic_timing` must be a boolean.")
+        if not isinstance(self.beat_resolution, int):
+            raise TypeError("`beat_resolution` must be an integer.")
+        if self.beat_resolution < 1:
+            raise ValueError("`beat_resolution` must be a positive integer.")
 
 
 class Note(Base):
@@ -176,13 +262,13 @@ class Note(Base):
 
     Attributes
     ----------
-    start : float
+    start : int or float
         Start time of the note, in time steps or seconds (see Note).
-    end : float
+    end : int or float
         End time of the note, in time steps or seconds (see Note).
-    pitch : int
+    pitch : int or float
         Note pitch, as a MIDI note number.
-    velocity : int
+    velocity : int or float
         Note velocity.
 
 
@@ -194,7 +280,13 @@ class Note(Base):
 
     _attributes = ["start", "end", "pitch", "velocity"]
 
-    def __init__(self, start, end, pitch, velocity):
+    def __init__(
+        self,
+        start: Union[int, float],
+        end: Union[int, float],
+        pitch: Union[int, float],
+        velocity: Union[int, float],
+    ):
         self.start = start
         self.end = end
         self.pitch = pitch
@@ -205,28 +297,55 @@ class Note(Base):
         """Duration of the note."""
         return self.end - self.start
 
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.start, (int, float)):
+            raise TypeError("`start` must be an integer or a float.")
+        if not isinstance(self.end, (int, float)):
+            raise TypeError("`end` must be an integer or a float.")
+        if not isinstance(self.pitch, int):
+            raise TypeError("`pitch` must be an integer.")
+        if not isinstance(self.velocity, int):
+            raise TypeError("`velocity` must be an integer.")
+        if self.start < 0:
+            raise ValueError("`start` must be a positive number.")
+        if self.end < self.start:
+            raise ValueError("`end` must be greater than `start`.")
+        if 0 <= self.pitch < 128:
+            raise ValueError("`pitch` must be in between 0 to 127.")
+        if 0 <= self.velocity < 128:
+            raise ValueError("`velocity` must be in between 0 to 127.")
 
-class Annotation(Base):
-    """A container for annotation.
+    def transpose(self, semitone: int):
+        """Transpose the note by a number of semitones.
 
-    Attributes
-    ----------
-    time : float
-        Start time of the annotation, in time steps or seconds (see Note).
-    annotation : any object
-        Annotation of any type.
+        Parameters
+        ----------
+        semitone : int
+            The number of semitones to transpose the note. A positive value
+            raises the pitch, while a negative value lowers the pitch.
 
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
+        """
+        self.pitch += semitone
 
-    """
+    def clip(
+        self, lower: Union[int, float] = 0, upper: Union[int, float] = 127
+    ):
+        """Clip the velocity of the note.
 
-    _attributes = ["time", "annotation"]
+        Parameters
+        ----------
+        lower : int or float, optional
+            Lower bound. Defaults to 0.
+        upper : int or float, optional
+            Upper bound. Defaults to 127.
 
-    def __init__(self, time, annotation):
-        self.time = time
-        self.annotation = annotation
+        """
+        assert upper >= lower, "`upper` must be greater than `lower`."
+        if self.velocity > upper:
+            self.velocity = upper
+        elif self.velocity < lower:
+            self.velocity = lower
 
 
 class Lyric(Base):
@@ -234,7 +353,7 @@ class Lyric(Base):
 
     Attributes
     ----------
-    time : float
+    time : int or float
         Start time of the lyric, in time steps or seconds (see Note).
     lyric : str
         The lyric.
@@ -247,13 +366,48 @@ class Lyric(Base):
 
     _attributes = ["time", "lyric"]
 
-    def __init__(self, time, lyric):
-        if not isinstance(lyric, str):
-            raise TypeError(
-                "Expect `lyric` of str type, but got {}.".format(type(lyric))
-            )
+    def __init__(self, time: Union[int, float], lyric: str):
         self.time = time
         self.lyric = lyric
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.time, (int, float)):
+            raise TypeError("`time` must be an integer or a float.")
+        if not isinstance(self.lyric, str):
+            raise TypeError("`lyric` must be a string.")
+        if self.time < 0:
+            raise ValueError("`time` must be a positive number.")
+
+
+class Annotation(Base):
+    """A container for annotation.
+
+    Attributes
+    ----------
+    time : int or float
+        Start time of the annotation, in time steps or seconds (see Note).
+    annotation : any object
+        Annotation of any type.
+
+    Note
+    ----
+    The timing unit is determined by higher-level objects.
+
+    """
+
+    _attributes = ["time", "annotation"]
+
+    def __init__(self, time: Union[int, float], annotation: Any):
+        self.time = time
+        self.annotation = annotation
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.time, (int, float)):
+            raise TypeError("`time` must be an integer or a float.")
+        if self.time < 0:
+            raise ValueError("`time` must be a positive number.")
 
 
 class TimeSignature(Base):
@@ -261,7 +415,7 @@ class TimeSignature(Base):
 
     Attributes
     ----------
-    time : float
+    time : int or float
         Start time of the time signature, in time steps or seconds (see Note).
     numerator : int
         Numerator of the time signature.
@@ -276,10 +430,25 @@ class TimeSignature(Base):
 
     _attributes = ["time", "numerator", "denominator"]
 
-    def __init__(self, time, numerator, denominator):
+    def __init__(
+        self, time: Union[int, float], numerator: int, denominator: int
+    ):
         self.time = time
         self.numerator = numerator
         self.denominator = denominator
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.time, (int, float)):
+            raise TypeError("`time` must be an integer or a float.")
+        if not isinstance(self.numerator, int):
+            raise TypeError("`numerator` must be an integer.")
+        if not isinstance(self.denominator, int):
+            raise TypeError("`denominator` must be an integer.")
+        if self.numerator < 1:
+            raise ValueError("`numerator` must be a positive number.")
+        if self.denominator < 1:
+            raise ValueError("`denominator` must be a positive number.")
 
 
 class KeySignature(Base):
@@ -287,7 +456,7 @@ class KeySignature(Base):
 
     Attributes
     ----------
-    time : float
+    time : int or float
         Start time of the key signature, in time steps or seconds (see Note).
     root : str
         Root of the key signature.
@@ -302,10 +471,19 @@ class KeySignature(Base):
 
     _attributes = ["time", "root", "mode"]
 
-    def __init__(self, time, root, mode):
+    def __init__(self, time: Union[int, float], root: str, mode: str):
         self.time = time
         self.root = root
         self.mode = mode
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.time, (int, float)):
+            raise TypeError("`time` must be an integer or a float.")
+        if not isinstance(self.root, str):
+            raise TypeError("`root` must be an integer.")
+        if not isinstance(self.mode, str):
+            raise TypeError("`mode` must be an integer.")
 
 
 class Tempo(Base):
@@ -315,7 +493,7 @@ class Tempo(Base):
     ----------
     time : float
         Start time of the key signature, in time steps or seconds (see Note).
-    tempo : float
+    tempo : int or float
         Tempo in bpm (beats per minute)
 
     Note
@@ -326,9 +504,16 @@ class Tempo(Base):
 
     _attributes = ["time", "tempo"]
 
-    def __init__(self, time, tempo):
+    def __init__(self, time: Union[int, float], tempo: Union[int, float]):
         self.time = time
         self.tempo = tempo
+
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.time, (int, float)):
+            raise TypeError("`time` must be an integer or a float.")
+        if not isinstance(self.tempo, (int, float)):
+            raise TypeError("`tempo` must be an integer or a float.")
 
 
 class Track(Base):
@@ -363,12 +548,12 @@ class Track(Base):
 
     def __init__(
         self,
-        name="unknown",
-        program=0,
-        is_drum=False,
-        notes=None,
-        lyrics=None,
-        annotations=None,
+        name: str = "unknown",
+        program: int = 0,
+        is_drum: bool = False,
+        notes: List[Note] = None,
+        lyrics: List[Lyric] = None,
+        annotations: List[Annotation] = None,
     ):
         self.name = name
         self.program = program
@@ -377,7 +562,21 @@ class Track(Base):
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
 
-    def append(self, obj):
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.name, str):
+            raise TypeError("`program` must be a string.")
+        if not isinstance(self.program, int):
+            raise TypeError("`program` must be an integer.")
+        if self.program < 0 or self.program > 127:
+            raise ValueError("`program` must be in between 0 to 127.")
+        if not isinstance(self.is_drum, bool):
+            raise TypeError("`is_drum` must be a boolean.")
+        validate_list(self.notes, "notes")
+        validate_list(self.lyrics, "lyrics")
+        validate_list(self.annotations, "annotations")
+
+    def append(self, obj: Union[Note, Lyric, Annotation]):
         """Append an object to the correseponding list.
 
         Parameters
@@ -389,16 +588,32 @@ class Track(Base):
         """
         if isinstance(obj, Note):
             self.notes.append(obj)
-        elif isinstance(obj, Annotation):
-            self.annotations.append(obj)
         elif isinstance(obj, Lyric):
             self.lyrics.append(obj)
+        elif isinstance(obj, Annotation):
+            self.annotations.append(obj)
         else:
             raise TypeError(
                 "Expect Note, Lyric or Annotation object, but got {}.".format(
                     type(obj)
                 )
             )
+
+    def clip(
+        self, lower: Union[int, float] = 0, upper: Union[int, float] = 127
+    ):
+        """Clip the velocity of each note.
+
+        Parameters
+        ----------
+        lower : int or float, optional
+            Lower bound. Defaults to 0.
+        upper : int or float, optional
+            Upper bound. Defaults to 127.
+
+        """
+        for note in self.notes:
+            note.clip(lower, upper)
 
     def sort(self):
         """Sort the time-stamped objects with respect to event time.
@@ -408,3 +623,28 @@ class Track(Base):
         self.notes.sort(key=lambda x: x.start)
         self.lyrics.sort(key=lambda x: x.time)
         self.annotations.sort(key=lambda x: x.time)
+
+    def transpose(self, semitone: int):
+        """Transpose all the notes by a number of semitones.
+
+        Parameters
+        ----------
+        semitone : int
+            The number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the pitches.
+
+        """
+        for note in self.notes:
+            note.transpose(semitone)
+
+    def remove_invalid(self):
+        """Remove invalid notes, lyrics and annotations of the object."""
+        self.lyrics = [
+            lyric for lyric in self.lyrics if lyric.lyric and lyric.time > 0
+        ]
+        self.annotations = [
+            annotation
+            for annotation in self.annotations
+            if annotation.time > 0
+        ]
+        self.validate()
