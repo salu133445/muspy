@@ -1,13 +1,23 @@
-"""Core functionality."""
+"""Core classes."""
 from collections import OrderedDict
 
-from muspy.schemas import SCHEMA_VERSION
+from .io import DEFAULT_SCHEMA_VERSION
 
 DEFAULT_BEAT_RESOLUTION = 24
 
 
 class Base:
-    """Base container."""
+    """Base container for all the MusPy objects.
+
+    It implements the following three handy methods.
+
+    - Intuitive and meaningful `__repr__` in the form of
+      `class_name(attr_1=value_1, attr_2=value_2,...)`.
+    - Method `from_dict` that sets the attributes by the corresponding values
+      in a dictionary.
+    - Method `to_ordered_dict` that returns the object as an OrderedDict.
+
+    """
 
     _attributes = []
 
@@ -16,13 +26,32 @@ class Base:
             type(self).__name__
             + "("
             + ", ".join(
-                [key + "=" + repr(getattr(self, key)) for key in self._attributes]
+                [
+                    key + "=" + repr(getattr(self, key))
+                    for key in self._attributes
+                ]
             )
             + ")"
         )
 
+    @classmethod
+    def from_dict(cls, dict_):
+        """Return an instance constructed from a dictionary.
+
+        Parameters
+        ----------
+        dict_ : dict
+            A dictionary that stores the attributes and their values as
+            key-value pairs.
+
+        """
+        for key in cls._attributes:
+            if key not in dict_:
+                ValueError("Missing value for attribute {}.".format(key))
+        return cls(**dict_)
+
     def to_ordered_dict(self):
-        """Convert to OrderedDict."""
+        """Return the object as an OrderedDict."""
         ordered_dict = OrderedDict()
         for key in self._attributes:
             value = getattr(self, key)
@@ -35,7 +64,9 @@ class Base:
                 ]
             elif isinstance(value, dict):
                 ordered_dict[key] = {
-                    k: v.to_ordered_dict() if hasattr(v, "to_ordered_dict") else v
+                    k: v.to_ordered_dict()
+                    if hasattr(v, "to_ordered_dict")
+                    else v
                     for k, v in value.items()
                 }
             else:
@@ -54,6 +85,7 @@ class SongInfo(Base):
         Main artist of the song.
     composers : list of str
         Composers of the song.
+
     """
 
     _attributes = ["title", "artist", "composers"]
@@ -77,6 +109,7 @@ class SourceInfo(Base):
         Format of the source file
     id : str
         Unique ID of the file
+
     """
 
     _attributes = ["collection", "filename", "format", "id"]
@@ -93,20 +126,28 @@ class MetaData(Base):
 
     Attributes
     ----------
-    version : str
-        Song title.
-    song : :class:'muspy.SongInfo` object
+    schema_version : str
+        Schema version.
+    song_info : :class:'muspy.SongInfo` object
         Soong infomation.
-    source : :class:'muspy.SourceInfo` object
+    source_info : :class:'muspy.SourceInfo` object
         Source infomation.
+
     """
 
-    _attributes = ["schema_version", "song", "source"]
+    _attributes = ["schema_version", "song_info", "source"]
 
-    def __init__(self, schema_version=SCHEMA_VERSION, song=None, source=None):
+    def __init__(
+        self,
+        schema_version=DEFAULT_SCHEMA_VERSION,
+        song_info=None,
+        source_info=None,
+    ):
         self.schema_version = schema_version
-        self.song = song if song is not None else SongInfo()
-        self.source = source if source is not None else SourceInfo()
+        self.song_info = song_info if song_info is not None else SongInfo()
+        self.source_info = (
+            source_info if source_info is not None else SourceInfo()
+        )
 
 
 class TimingInfo(Base):
@@ -118,6 +159,7 @@ class TimingInfo(Base):
         If true, the timing is in time steps. Otherwise, it's in seconds.
     beat_resolution : int
         Time steps per beat (only effective when `is_symbolic_timing` is true).
+
     """
 
     _attributes = ["is_symbolic_timing", "beat_resolution"]
@@ -199,7 +241,9 @@ class Lyric(Base):
 
     Note
     ----
-    The timing unit is determined by higher-level objects."""
+    The timing unit is determined by higher-level objects.
+
+    """
 
     _attributes = ["time", "lyric"]
 
@@ -305,9 +349,17 @@ class Track(Base):
         A list of annotations.
     lyrics : list of :class:'muspy.Lyric' objects
         A list of lyrics.
+
     """
 
-    _attributes = ["name", "program", "is_drum", "notes", "lyrics", "annotations"]
+    _attributes = [
+        "name",
+        "program",
+        "is_drum",
+        "notes",
+        "lyrics",
+        "annotations",
+    ]
 
     def __init__(
         self,
@@ -326,7 +378,15 @@ class Track(Base):
         self.annotations = annotations if annotations is not None else []
 
     def append(self, obj):
-        """Append a note or an annotation."""
+        """Append an object to the correseponding list.
+
+        Parameters
+        ----------
+        obj : Muspy objects (see below)
+            Object to be appended. Supported object types are
+            :class:`Muspy.Note`, :class:`Muspy.Annotation` and
+            :class:`Muspy.Lyric` objects.
+        """
         if isinstance(obj, Note):
             self.notes.append(obj)
         elif isinstance(obj, Annotation):
@@ -335,11 +395,16 @@ class Track(Base):
             self.lyrics.append(obj)
         else:
             raise TypeError(
-                "Expect Note or Annotation object, but got {}.".format(type(obj))
+                "Expect Note, Lyric or Annotation object, but got {}.".format(
+                    type(obj)
+                )
             )
 
     def sort(self):
-        """Sort the notes and annotations with respect to event time."""
+        """Sort the time-stamped objects with respect to event time.
+
+        This will sort notes, lyrics and annotations.
+        """
         self.notes.sort(key=lambda x: x.start)
         self.lyrics.sort(key=lambda x: x.time)
         self.annotations.sort(key=lambda x: x.time)
