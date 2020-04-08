@@ -5,7 +5,17 @@ from typing import Union
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
-from .classes import Base, MetaData, TimingInfo
+from .classes import (
+    Annotation,
+    Base,
+    KeySignature,
+    Lyric,
+    MetaData,
+    Tempo,
+    TimeSignature,
+    TimingInfo,
+    Track,
+)
 from .io import (
     save,
     save_json,
@@ -20,8 +30,11 @@ from .representations import (
     to_event_representation,
     to_note_representation,
     to_pianoroll_representation,
+    to_representation,
 )
-from .utils import append, sort
+from .utils import validate_list
+
+# pylint: disable=super-init-not-called
 
 
 class Music(Base):
@@ -99,6 +112,36 @@ class Music(Base):
         self.annotations = []
         self.tracks = []
 
+    def validate(self):
+        """Validate the object, and raise errors for invalid attributes."""
+        if not isinstance(self.meta_data, MetaData):
+            return TypeError("`meta_data` must be of type MetaData.")
+        if not isinstance(self.timing, TimingInfo):
+            return TypeError("`timing` must be of type TimingInfo.")
+        self.meta_data.validate()
+        self.timing.validate()
+        validate_list(self.time_signatures, "time_signatures")
+        validate_list(self.key_signatures, "key_signatures")
+        validate_list(self.tempos, "tempos")
+        validate_list(self.lyrics, "lyrics")
+        validate_list(self.annotations, "annotations")
+        validate_list(self.tracks, "tracks")
+
+    def standardize(self):
+        """Standardize the object."""
+        for track in self.tracks:
+            track.standardize()
+        self.lyrics = [
+            lyric for lyric in self.lyrics if lyric.lyric and lyric.time > 0
+        ]
+        self.annotations = [
+            annotation
+            for annotation in self.annotations
+            if annotation.time > 0
+        ]
+        # TODO: NEXT
+        self.validate()
+
     def append(self, obj):
         """Append an object to the correseponding list.
 
@@ -115,7 +158,39 @@ class Music(Base):
         :meth:`muspy.append`: equivalent function
 
         """
-        append(self, obj)
+        if isinstance(obj, TimeSignature):
+            self.time_signatures.append(obj)
+        elif isinstance(obj, KeySignature):
+            self.key_signatures.append(obj)
+        elif isinstance(obj, Tempo):
+            self.tempos.append(obj)
+        elif isinstance(obj, Lyric):
+            self.lyrics.append(obj)
+        elif isinstance(obj, Annotation):
+            self.annotations.append(obj)
+        elif isinstance(obj, Track):
+            self.tracks.append(obj)
+        else:
+            raise TypeError(
+                "Expect TimeSignature, KeySignature, Tempo, Note, Lyric, "
+                "Annotation or Track object, but got {}.".format(type(obj))
+            )
+
+    def clip(
+        self, lower: Union[int, float] = 0, upper: Union[int, float] = 127
+    ):
+        """Clip the velocity of each note for each track.
+
+        Parameters
+        ----------
+        lower : int or float, optional
+            Lower bound. Defaults to 0.
+        upper : int or float, optional
+            Upper bound. Defaults to 127.
+
+        """
+        for track in self.tracks:
+            track.clip(lower, upper)
 
     def sort(self):
         """Sort the time-stamped objects with respect to event time.
@@ -127,7 +202,26 @@ class Music(Base):
         :meth:`muspy.sort`: equivalent function
 
         """
-        sort(self)
+        self.time_signatures.sort(key=lambda x: x.start)
+        self.key_signatures.sort(key=lambda x: x.time)
+        self.tempos.sort(key=lambda x: x.time)
+        self.lyrics.sort(key=lambda x: x.time)
+        self.annotations.sort(key=lambda x: x.time)
+        for track in self.tracks:
+            track.sort()
+
+    def transpose(self, semitone):
+        """Transpose all the notes for all tracks by a number of semitones.
+
+        Parameters
+        ----------
+        semitone : int
+            The number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the pitches.
+
+        """
+        for track in self.tracks:
+            track.transpose(semitone)
 
     def save(self, path: Union[str, Path]):
         """Save loselessly to a JSON or a YAML file.
@@ -235,8 +329,8 @@ class Music(Base):
         """
         write_musicxml(self, path)
 
-    def to(self, target):
-        """Convert to a target representation or .
+    def to(self, target: str):
+        """Convert to a target representation, object or dataset.
 
         Parameters
         ----------
@@ -245,19 +339,32 @@ class Music(Base):
             'pianoroll', 'pretty_midi', 'pypianoroll'.
 
         """
-        if target.lower() in ("event", "event-based"):
-            return to_event_representation(self)
-        if target.lower() in ("note", "note-based"):
-            return to_note_representation(self)
-        if target.lower() in ("pianoroll"):
-            return to_pianoroll_representation(self)
+        if target.lower() in (
+            "event",
+            "event-based",
+            "note",
+            "note-based",
+            "pianoroll",
+            "piano-roll",
+        ):
+            return to_representation(self, target)
         if target.lower() in ("pretty_midi"):
             return to_pretty_midi(self)
         if target.lower() in ("pypianoroll"):
             return to_pypianoroll(self)
-        raise ValueError(
-            "Unsupported target representation : {}.".format(target)
-        )
+        raise ValueError("Unsupported target : {}.".format(target))
+
+    def to_representation(self, target: str):
+        """Convert to a target representation.
+
+        Parameters
+        ----------
+        target : str
+            Target representation. Supported values are 'event', 'note',
+            'pianoroll'.
+
+        """
+        return to_representation(self, target)
 
     def to_event_representation(self):
         """Return the event-based representation."""
