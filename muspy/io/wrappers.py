@@ -3,9 +3,9 @@ from pathlib import Path
 from typing import Union
 
 from ..music import Music
+from .json import load_json, save_json
 from .midi import read_midi, write_midi
 from .musicxml import read_musicxml, write_musicxml
-from .json import load_json, save_json
 from .yaml import load_yaml, save_yaml
 
 
@@ -26,7 +26,7 @@ def read(path: Union[str, Path]) -> Music:
     """
     if str(path).lower().endswith((".mid", ".midi")):
         return read_midi(path)
-    if str(path).lower().endswith((".mxml", ".xml")):
+    if str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
         return read_musicxml(path)
     raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
 
@@ -50,7 +50,7 @@ def write(music: Music, path: Union[str, Path]):
     """
     if str(path).lower().endswith((".mid", ".midi")):
         return write_midi(music, path)
-    if str(path).lower().endswith((".mxml", ".xml")):
+    if str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
         return write_musicxml(music, path)
     raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
 
