@@ -585,6 +585,7 @@ class Track(Base):
             Object to be appended. Supported object types are
             :class:`Muspy.Note`, :class:`Muspy.Annotation` and
             :class:`Muspy.Lyric` objects.
+
         """
         if isinstance(obj, Note):
             self.notes.append(obj)

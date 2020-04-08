@@ -18,13 +18,17 @@ def append(
 ):
     """Append an object to the correseponding list.
 
+    If `obj1` is of type :class:`muspy.Music`, `obj2` can be
+    :class:`Muspy.TimeSignature`, :class:`Muspy.KeySignature`,
+    :class:`Muspy.Tempo`, :class:`Muspy.Lyric`, :class:`Muspy.Annotation`
+    or :class:`Muspy.Track`. If `obj1` is of type :class:`muspy.Track`,
+    `obj2` can be :class:`Muspy.Note`, :class:`Muspy.Lyric` or
+    :class:`Muspy.Annotation`.
+
     Parameters
     ----------
     obj : Muspy objects (see below)
-        Object to be appended. Supported object types are
-        :class:`Muspy.TimeSignature`, :class:`Muspy.KeySignature`,
-        :class:`Muspy.Tempo`, :class:`Muspy.Lyric`,
-        :class:`Muspy.Annotation` and :class:`Muspy.Track` objects.
+        Object to be appended.
 
     """
     obj1.append(obj2)
@@ -40,8 +44,7 @@ def sort(obj: Union[Music, Track]):
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
-    object
+    obj : :class:`muspy.Music` or :class:`muspy.Track`object
         Object to be sorted.
 
     """
@@ -57,7 +60,7 @@ def clip(
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track`
+    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
     object
         Object to be clipped.
     lower : int or float, optional
@@ -70,13 +73,17 @@ def clip(
 
 
 def transpose(obj: Union[Music, Track, Note], semitone: int):
-    """Transpose the notes for each track.
+    """Transpose all the notes by a number of semitones.
 
     Parameters
     ----------
     obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
     object
-        Object to be transposes.
+        Object to be transposed.
+    semitone : int
+        The number of semitones to transpose the notes. A positive value
+        raises the pitches, while a negative value lowers the pitches.
+
 
     """
     obj.transpose(semitone)

@@ -210,7 +210,7 @@ class Music(Base):
         for track in self.tracks:
             track.sort()
 
-    def transpose(self, semitone):
+    def transpose(self, semitone: int):
         """Transpose all the notes for all tracks by a number of semitones.
 
         Parameters
