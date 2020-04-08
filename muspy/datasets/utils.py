@@ -7,12 +7,14 @@ import shutil
 import tarfile
 import urllib
 import zipfile
+from pathlib import Path
+from typing import Optional, Union
 
 import requests
 from tqdm import tqdm
 
 
-class ProgressBar:
+class _ProgressBar:
     """A callable progress bar object.
 
     Note
@@ -31,47 +33,57 @@ class ProgressBar:
         self.pbar.update(downloaded)
 
 
-def compute_md5(filename, chunk_size):
-    """Calculate MD5 checksum, chunk by chunk."""
+def compute_md5(path: Union[str, Path], chunk_size: int):
+    """Return the MD5 checksum of a file, calculated chunk by chunk.
+
+    Parameters
+    ----------
+    path : str or :class:`pathlib.Path`
+        Path to the file to be read.
+    chunk_size : int
+        Chunk size used to calculate the MD5 checksum.
+
+    """
     md5 = hashlib.md5()
-    with open(filename, "rb") as f:
+    with open(str(path), "rb") as f:
         for chunk in iter(lambda: f.read(chunk_size), b""):
             md5.update(chunk)
     return md5.hexdigest()
 
 
-def check_md5(filename, md5, chunk_size=1024 * 1024):
-    """Check if the MD5 checksum of the file matches the give one."""
-    return md5 == compute_md5(filename, chunk_size)
+def check_md5(path: Union[str, Path], md5: str, chunk_size: int = 1024 * 1024):
+    """Check if the MD5 checksum of a file matches the expected one.
+
+    Parameters
+    ----------
+    path : str or :class:`pathlib.Path`
+        Path to the file to be check.
+    md5 : str, optional
+        Expected MD5 checksum of the file.
+    chunk_size : int
+        Chunk size used to calculate the MD5 checksum.
+
+    """
+    return md5 == compute_md5(path, chunk_size)
 
 
-def download_url(url, root, filename=None, md5=None):
-    """Download a file from a URL to the target root directory.
+def download_url(
+    url: str, path: Union[str, Path], md5: Optional[str] = None,
+):
+    """Download a file from a URL.
 
     Parameters
     ----------
     url : str
-        URL to download file from.
-    root : str
-        Root directory to store the downloaded files.
-    filename : str
-        Filename to save. If None, infer it from the basename of the URL.
-    md5 : str
-        MD5 checksum of the download. If None, do not check
+        URL to the file to be downloaded.
+    path : str or :class:`pathlib.Path`
+        Path to save the downloaded file.
+    md5 : str, optional
+        Expected MD5 checksum of the downloaded file. If None, do not check.
+
     """
-    if filename is None:
-        filename = os.path.basename(url)
-    root = os.path.expanduser(root)
-    filename = os.path.join(root, filename)
-
-    # Make sure root directory exists
-    os.makedirs(root, exist_ok=True)
-
-    # Download the file
-    urllib.request.urlretrieve(url, filename, reporthook=ProgressBar())
-
-    # Check MD5 checksum of the downloaded file
-    if not check_md5(filename, md5):
+    urllib.request.urlretrieve(url, str(path), reporthook=_ProgressBar())
+    if not check_md5(path, md5):
         raise RuntimeError("Downloaded file is corrupted.")
 
 
@@ -93,32 +105,25 @@ def _save_response_content(response, destination, chunk_size=32768):
                 pbar.update(progress - pbar.n)
 
 
-def download_google_drive_file(file_id, root, filename=None, md5=None):
-    """Download a Google Drive file to the target root directory.
+def download_google_drive_file(
+    file_id: str, path: Union[str, Path], md5: Optional[str] = None,
+):
+    """Download a file from Google Drive.
 
     Parameters
     ----------
     file_id : str
-        ID of the target file on .
-    root : str
-        Directory to place downloaded file in
-    filename : str, optional
-        Name to save the file under. If None, use the id of the file.
+        ID of the the file to be downloaded.
+    path : str or :class:`pathlib.Path`
+        Path to save the downloaded file.
     md5 : str, optional
-        MD5 checksum of the download. If None, do not check
+        Expected MD5 checksum of the downloaded file. If None, do not check.
 
     Note
     ----
     Code is adapted from https://stackoverflow.com/a/39225039.
+
     """
-    if filename is None:
-        filename = file_id
-    root = os.path.expanduser(root)
-    filename = os.path.join(root, filename)
-
-    # Make sure root directory exists
-    os.makedirs(root, exist_ok=True)
-
     session = requests.Session()
     url = "https://docs.google.com/uc?export=download"
     response = session.get(url, params={"id": file_id}, stream=True)
@@ -128,38 +133,56 @@ def download_google_drive_file(file_id, root, filename=None, md5=None):
         params = {"id": file_id, "confirm": token}
         response = session.get(url, params=params, stream=True)
 
-    _save_response_content(response, filename)
+    _save_response_content(response, str(path))
 
-    # Check MD5 checksum of the downloaded file
-    if not check_md5(filename, md5):
+    if not check_md5(path, md5):
         raise RuntimeError("Downloaded file is corrupted.")
 
 
-def extract_archive(filename, root=None, cleanup=False):
-    """Extract an archive with format inferred from the filename."""
-    if root is None:
-        root = os.path.dirname(filename)
+def extract_archive(
+    path: Union[str, Path],
+    root: Optional[Union[str, Path]] = None,
+    cleanup: bool = False,
+):
+    """Extract an archive, with format inferred from the extension.
 
-    if filename.endswith(".tar"):
-        with tarfile.open(filename, "r") as tar:
-            tar.extractall(path=root)
-    elif filename.endswith((".tar.gz", ".tgz")):
-        with tarfile.open(filename, "r:gz") as tar:
-            tar.extractall(path=root)
-    elif filename.endswith(".tar.xz"):
-        with tarfile.open(filename, "r:xz") as tar:
-            tar.extractall(path=root)
-    elif filename.endswith(".gz"):
-        filepath = os.path.join(
-            root, os.path.splitext(os.path.basename(filename))[0]
+    Supported extensions are '.tar', '.tar.gz', '.tgz', '.tar.xz', '.txz',
+    '.gz' and '.zip'.
+
+    Parameters
+    ----------
+    path : str or :class:`pathlib.Path`
+        Path to the archive to be extracted.
+    root : str or :class:`pathlib.Path`, optional
+        Root directory to save the extracted file. Default to
+    cleanup : bool
+        Whether to remove the original archive. Default to False.
+
+    """
+    path = str(path)
+    if root is None:
+        root = os.path.dirname(str(path))
+
+    if path.lower().endswith(".tar"):
+        with tarfile.open(str(path), "r") as f:
+            f.extractall(path=root)
+    elif path.lower().endswith((".tar.gz", ".tgz")):
+        with tarfile.open(str(path), "r:gz") as f:
+            f.extractall(path=root)
+    elif path.lower().endswith((".tar.xz", ".txz")):
+        with tarfile.open(str(path), "r:xz") as f:
+            f.extractall(path=root)
+    elif path.lower().endswith(".gz"):
+        filename = os.path.join(
+            root, os.path.splitext(os.path.basename(path))[0]
         )
-        with gzip.open(filename, "rb") as f_in, open(filepath, "wb") as f_out:
+        with gzip.open(str(path), "rb") as f_in, open(filename, "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
-    elif filename.endswith(".zip"):
-        with zipfile.ZipFile(filename, "r") as f:
+    elif path.lower().endswith(".zip"):
+        with zipfile.ZipFile(str(path), "r") as f:
             f.extractall(root)
     else:
-        raise ValueError("Extraction of {} not supported".format(filename))
+        raise ValueError("Extraction of {} not supported".format(path))
 
     if cleanup:
-        os.remove(filename)
+        os.remove(path)
