@@ -1,4 +1,5 @@
 """Utilities for I/O utilities."""
+from typing import Mapping
 from collections import OrderedDict
 
 from ..classes import (
@@ -17,7 +18,7 @@ from ..classes import (
 from ..music import Music
 
 
-def to_ordered_dict(music) -> OrderedDict:
+def to_ordered_dict(music: Music) -> OrderedDict:
     """Return an OrderedDict converted from a Music object.
 
     Parameters
@@ -34,7 +35,7 @@ def to_ordered_dict(music) -> OrderedDict:
     return music.to_ordered_dict()
 
 
-def from_dict(data: dict) -> Music:
+def from_dict(data: Mapping) -> Music:
     """Return a Music object loaded from a dictionary.
 
     Parameters
@@ -49,6 +50,13 @@ def from_dict(data: dict) -> Music:
 
     """
     music = Music()
+
+    # Meta data
+    song_info = SongInfo.from_dict(data["meta"]["song"],)
+    source_info = SourceInfo.from_dict(data["meta"]["source"])
+    music.meta_data = MetaData(
+        data["meta"]["schema_version"], song_info, source_info
+    )
 
     # Global data
     music.timing = TimingInfo.from_dict(data["timing"])
@@ -99,12 +107,5 @@ def from_dict(data: dict) -> Music:
                     lyrics,
                 )
             )
-
-    # Meta data
-    song_info = SongInfo.from_dict(data["meta"]["song"],)
-    source_info = SourceInfo.from_dict(data["meta"]["source"])
-    music.meta_data = MetaData(
-        data["meta"]["schema_version"], song_info, source_info
-    )
 
     return music
