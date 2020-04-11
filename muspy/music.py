@@ -1,6 +1,6 @@
 """Core music object."""
 from pathlib import Path
-from typing import Union
+from typing import Union, List, Optional
 
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
@@ -32,7 +32,7 @@ from .representations import (
     to_pianoroll_representation,
     to_representation,
 )
-from .utils import validate_list
+from .utils import remove_invalid_from_list, validate_list
 
 # pylint: disable=super-init-not-called
 
@@ -77,15 +77,15 @@ class Music(Base):
 
     def __init__(
         self,
-        timing_info=None,
-        time_signatures=None,
-        key_signatures=None,
-        tempos=None,
-        downbeats=None,
-        lyrics=None,
-        annotations=None,
-        tracks=None,
-        meta_data=None,
+        meta_data: Optional[MetaData] = None,
+        timing_info: Optional[TimingInfo] = None,
+        time_signatures: Optional[List[TimeSignature]] = None,
+        key_signatures: Optional[List[KeySignature]] = None,
+        tempos: Optional[List[Tempo]] = None,
+        downbeats: Optional[List[Union[int, float]]] = None,
+        lyrics: Optional[List[Lyric]] = None,
+        annotations: Optional[List[Annotation]] = None,
+        tracks: Optional[List[Track]] = None,
     ):
         self.meta_data = meta_data if meta_data is not None else MetaData()
         self.timing = timing_info if timing_info is not None else TimingInfo()
@@ -115,32 +115,63 @@ class Music(Base):
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""
         if not isinstance(self.meta_data, MetaData):
-            return TypeError("`meta_data` must be of type MetaData.")
+            raise TypeError("`meta_data` must be of type MetaData.")
         if not isinstance(self.timing, TimingInfo):
-            return TypeError("`timing` must be of type TimingInfo.")
+            raise TypeError("`timing` must be of type TimingInfo.")
         self.meta_data.validate()
         self.timing.validate()
-        validate_list(self.time_signatures, "time_signatures")
-        validate_list(self.key_signatures, "key_signatures")
-        validate_list(self.tempos, "tempos")
-        validate_list(self.lyrics, "lyrics")
-        validate_list(self.annotations, "annotations")
-        validate_list(self.tracks, "tracks")
+        validate_list(self.time_signatures)
+        validate_list(self.key_signatures)
+        validate_list(self.tempos)
+        validate_list(self.lyrics)
+        validate_list(self.annotations)
+        validate_list(self.tracks)
 
-    def standardize(self):
-        """Standardize the object."""
+    def remove_invalid(self):
+        """Remove invalid objects.
+
+        This includes time signatures, key signatures, tempos, lyrics and
+        annotations, along with notes, lyrics and annotations for each track.
+
+        """
+        self.time_signatures = remove_invalid_from_list(self.time_signatures)
+        self.key_signatures = remove_invalid_from_list(self.key_signatures)
+        self.tempos = remove_invalid_from_list(self.tempos)
+        self.lyrics = remove_invalid_from_list(self.lyrics)
+        self.annotations = remove_invalid_from_list(self.annotations)
         for track in self.tracks:
-            track.standardize()
-        self.lyrics = [
-            lyric for lyric in self.lyrics if lyric.lyric and lyric.time > 0
-        ]
-        self.annotations = [
-            annotation
-            for annotation in self.annotations
-            if annotation.time > 0
-        ]
-        # TODO: NEXT
-        self.validate()
+            track.remove_invalid()
+
+    def get_active_length(self, is_sorted=False) -> Union[int, float]:
+        """Return the end time of the last note in all tracks."""
+        return max(
+            [track.get_active_length(is_sorted) for track in self.tracks]
+        )
+
+    def get_length(self, is_sorted=False) -> Union[int, float]:
+        """Return the time of the last event in all tracks.
+
+        This includes time signatures, key signatures, tempos notes onsets,
+        note offsets, lyrics and annotations.
+
+        """
+        if is_sorted:
+            return max(
+                self.get_active_length(is_sorted),
+                self.time_signatures[-1].time,
+                self.key_signatures[-1].time,
+                self.tempos[-1].time,
+                self.lyrics[-1].time,
+                self.annotations[-1].time,
+            )
+        return max(
+            self.get_active_length(is_sorted),
+            max([time_sign.time for time_sign in self.time_signatures]),
+            max([key_sign.time for key_sign in self.key_signatures]),
+            max([tempo.time for tempo in self.tempos]),
+            max([lyric.time for lyric in self.lyrics]),
+            max([annotation.time for annotation in self.annotations]),
+        )
 
     def append(self, obj):
         """Append an object to the correseponding list.
@@ -152,10 +183,6 @@ class Music(Base):
             :class:`Muspy.TimeSignature`, :class:`Muspy.KeySignature`,
             :class:`Muspy.Tempo`, :class:`Muspy.Lyric`,
             :class:`Muspy.Annotation` and :class:`Muspy.Track` objects.
-
-        See Also
-        --------
-        :meth:`muspy.append`: equivalent function
 
         """
         if isinstance(obj, TimeSignature):

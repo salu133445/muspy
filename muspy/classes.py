@@ -1,10 +1,10 @@
 """Core classes."""
 from abc import ABC, abstractmethod
 from collections import OrderedDict
-from typing import Any, List, Optional, Union
+from typing import Any, List, Mapping, Optional, Union
 
 from .io import DEFAULT_SCHEMA_VERSION
-from .utils import validate_list
+from .utils import remove_invalid_from_list, validate_list
 
 DEFAULT_BEAT_RESOLUTION = 24
 
@@ -12,7 +12,7 @@ DEFAULT_BEAT_RESOLUTION = 24
 
 
 class Base(ABC):
-    """Base container for all the MusPy objects.
+    """Base container for MusPy objects.
 
     It implements the following three handy methods.
 
@@ -51,7 +51,7 @@ class Base(ABC):
         )
 
     @classmethod
-    def from_dict(cls, dict_: dict):
+    def from_dict(cls, dict_: Mapping):
         """Return an instance constructed from a dictionary.
 
         Parameters
@@ -491,9 +491,9 @@ class Tempo(Base):
 
     Attributes
     ----------
-    time : float
+    time : int or float
         Start time of the key signature, in time steps or seconds (see Note).
-    tempo : int or float
+    tempo : float
         Tempo in bpm (beats per minute)
 
     Note
@@ -506,12 +506,12 @@ class Tempo(Base):
 
     def __init__(self, time: Union[int, float], tempo: Union[int, float]):
         self.time = time
-        self.tempo = tempo
+        self.tempo = float(tempo)
 
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""
         if not isinstance(self.time, (int, float)):
-            raise TypeError("`time` must be an integer or a float.")
+            raise TypeError("`time` must be an integer or float.")
         if not isinstance(self.tempo, (int, float)):
             raise TypeError("`tempo` must be an integer or a float.")
 
@@ -551,9 +551,9 @@ class Track(Base):
         name: str = "unknown",
         program: int = 0,
         is_drum: bool = False,
-        notes: List[Note] = None,
-        lyrics: List[Lyric] = None,
-        annotations: List[Annotation] = None,
+        notes: Optional[List[Note]] = None,
+        lyrics: Optional[List[Lyric]] = None,
+        annotations: Optional[List[Annotation]] = None,
     ):
         self.name = name
         self.program = program
@@ -572,9 +572,45 @@ class Track(Base):
             raise ValueError("`program` must be in between 0 to 127.")
         if not isinstance(self.is_drum, bool):
             raise TypeError("`is_drum` must be a boolean.")
-        validate_list(self.notes, "notes")
-        validate_list(self.lyrics, "lyrics")
-        validate_list(self.annotations, "annotations")
+        if not isinstance(self.notes, list):
+            raise TypeError("`notes` must be a list.")
+        if not isinstance(self.lyrics, list):
+            raise TypeError("`lyrics` must be a list.")
+        if not isinstance(self.annotations, list):
+            raise TypeError("`annotations` must be a list.")
+        validate_list(self.notes)
+        validate_list(self.lyrics)
+        validate_list(self.annotations)
+
+    def remove_invalid(self):
+        """Remove invalid objects, including notes, lyrics and annotations."""
+        self.notes = remove_invalid_from_list(self.notes)
+        self.lyrics = remove_invalid_from_list(self.lyrics)
+        self.annotations = remove_invalid_from_list(self.annotations)
+
+    def get_active_length(self, is_sorted=False) -> Union[int, float]:
+        """Return the end time of the last note."""
+        if is_sorted:
+            return self.notes[-1].end
+        return max([note.end for note in self.notes])
+
+    def get_length(self, is_sorted=False) -> Union[int, float]:
+        """Return the time of the last event.
+
+        This includes notes onsets, note offsets, lyrics and annotations.
+
+        """
+        if is_sorted:
+            return max(
+                self.get_active_length(is_sorted),
+                self.lyrics[-1].time,
+                self.annotations[-1].time,
+            )
+        return max(
+            self.get_active_length(is_sorted),
+            max([lyric.time for lyric in self.lyrics]),
+            max([annotation.time for annotation in self.annotations]),
+        )
 
     def append(self, obj: Union[Note, Lyric, Annotation]):
         """Append an object to the correseponding list.
@@ -620,13 +656,14 @@ class Track(Base):
         """Sort the time-stamped objects with respect to event time.
 
         This will sort notes, lyrics and annotations.
+
         """
         self.notes.sort(key=lambda x: x.start)
         self.lyrics.sort(key=lambda x: x.time)
         self.annotations.sort(key=lambda x: x.time)
 
     def transpose(self, semitone: int):
-        """Transpose all the notes by a number of semitones.
+        """Transpose the notes by a number of semitones.
 
         Parameters
         ----------
@@ -637,15 +674,3 @@ class Track(Base):
         """
         for note in self.notes:
             note.transpose(semitone)
-
-    def remove_invalid(self):
-        """Remove invalid notes, lyrics and annotations of the object."""
-        self.lyrics = [
-            lyric for lyric in self.lyrics if lyric.lyric and lyric.time > 0
-        ]
-        self.annotations = [
-            annotation
-            for annotation in self.annotations
-            if annotation.time > 0
-        ]
-        self.validate()
