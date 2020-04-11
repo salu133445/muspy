@@ -1,5 +1,5 @@
 """Pianoroll I/O utilities."""
-from pypianoroll import Multitrack
+from pypianoroll import Multitrack, Track
 
 from ..music import Music
 
@@ -36,6 +36,15 @@ def to_pypianoroll(music: Music) -> Multitrack:
     multitrack : :class:`pypianoroll.Multitrack` object
         Converted Multitrack object.
     """
+    if music.timing.is_symbolic_timing:
+        raise NotImplementedError
+
     multitrack = Multitrack()
-    # TODO: Not implemented yet
+
+    tracks = []
+    for track in music.tracks:
+        pianoroll = None
+        tracks.append(
+            Track(pianoroll, track.program, track.is_drum, track.name)
+        )
     return multitrack
