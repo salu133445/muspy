@@ -1,16 +1,20 @@
 """Utilities."""
-from typing import Union
+from bisect import bisect_left, bisect_right
+from typing import List, Union
 
-from .classes import Note, Track
+from .classes import DEFAULT_BEAT_RESOLUTION, Note, Tempo, Track
 from .music import Music
 
 
-def validate_list(list_, name: str):
+def validate_list(list_: List):
     """Validate a list of objects by calling their method `validate`."""
-    if not isinstance(list_, list):
-        raise TypeError("{} must be a list.".format(name))
     for item in list_:
         item.validate()
+
+
+def remove_invalid_from_list(list_: List) -> List:
+    """Return a list with invalid items removed."""
+    return [item for item in list_ if item.is_valid()]
 
 
 def append(
@@ -27,7 +31,7 @@ def append(
 
     Parameters
     ----------
-    obj : Muspy objects (see below)
+    obj : MusPy objects (see below)
         Object to be appended.
 
     """
@@ -84,13 +88,69 @@ def transpose(obj: Union[Music, Track, Note], semitone: int):
         The number of semitones to transpose the notes. A positive value
         raises the pitches, while a negative value lowers the pitches.
 
-
     """
     obj.transpose(semitone)
 
 
-def quantize(music: Music, unit: int = 16, is_symbolic_timing: bool = True):
+def quantize_absolute_timing(
+    music: Music,
+    step: Union[int, float],
+    beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+):
+    """Quantize all the time-stamped objects, assuming absolute timing.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Object to be quantized.
+    step : int or float
+        Length of quantization step, in seconds.
+    beat_resolution
+
+    """
+    if music.timing.is_symbolic_timing:
+        return
+
+    bpm = 60 / (step * beat_resolution)
+    music.tempos = [Tempo(0.0, bpm)]
+
+    for track in music.tracks:
+        for note in track.notes:
+            note.start = round(note.start / step)
+            note.end = round(note.end / step)
+    music.timing.is_symbolic_timing = True
+
+
+def quantize_by_beats(music: Music, beats: List[Union[int, float]]):
+    """Quantize all the symbolic-time-stamped objects.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Object to be quantized.
+    step : int or float
+        Length of quantization step, in seconds.
+
+    """
+    if music.timing.is_symbolic_timing:
+        return
+    beats = [float(beat) for beat in beats]
+    for track in music.tracks:
+        for note in track.notes:
+            note.start = bisect_left(beats, note.start)
+            note.end = bisect_right(beats, note.end)
+    music.timing.is_symbolic_timing = True
+
+
+def quantize(
+    music: Music,
+    step: Union[int, float],
+    beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+):
     """Quantize all the time-stamped objects."""
+    if not music.timing.is_symbolic_timing:
+        quantize_absolute_timing(music, step, beat_resolution)
+
     # if music.down_beats:
     # if not music.time_signature_changes:
     #     raise ValueError("")
