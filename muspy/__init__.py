@@ -20,7 +20,6 @@ from .classes import (
     Track,
 )
 from .io import (
-    DEFAULT_SCHEMA_VERSION,
     load,
     load_json,
     load_yaml,
@@ -35,7 +34,16 @@ from .io import (
     write_musicxml,
 )
 from .music import Music
-from .utils import append
+from .schemas import DEFAULT_SCHEMA_VERSION
+from .utils import (
+    append,
+    clip,
+    quantize,
+    quantize_absolute_timing,
+    quantize_by_beats,
+    transpose,
+)
+from .version import __version__
 
 __all__ = [
     "Annotation",
@@ -51,12 +59,17 @@ __all__ = [
     "TimeSignature",
     "TimingInfo",
     "Track",
+    "__version__",
     "append",
+    "clip",
     "datasets",
     "load",
     "load_json",
     "load_yaml",
     "metrics",
+    "quantize",
+    "quantize_absolute_timing",
+    "quantize_by_beats",
     "read",
     "read_midi",
     "read_musicxml",
@@ -64,6 +77,7 @@ __all__ = [
     "save",
     "save_json",
     "save_yaml",
+    "transpose",
     "visualization",
     "write",
     "write_midi",
