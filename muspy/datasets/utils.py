@@ -38,7 +38,7 @@ def compute_md5(path: Union[str, Path], chunk_size: int):
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the file to be read.
     chunk_size : int
         Chunk size used to calculate the MD5 checksum.
@@ -56,7 +56,7 @@ def check_md5(path: Union[str, Path], md5: str, chunk_size: int = 1024 * 1024):
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the file to be check.
     md5 : str, optional
         Expected MD5 checksum of the file.
@@ -76,7 +76,7 @@ def download_url(
     ----------
     url : str
         URL to the file to be downloaded.
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to save the downloaded file.
     md5 : str, optional
         Expected MD5 checksum of the downloaded file. If None, do not check.
@@ -114,7 +114,7 @@ def download_google_drive_file(
     ----------
     file_id : str
         ID of the the file to be downloaded.
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to save the downloaded file.
     md5 : str, optional
         Expected MD5 checksum of the downloaded file. If None, do not check.
@@ -151,9 +151,9 @@ def extract_archive(
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the archive to be extracted.
-    root : str or :class:`pathlib.Path`, optional
+    root : str or Path, optional
         Root directory to save the extracted file. If None, use the dirname
         of `path`.
     cleanup : bool

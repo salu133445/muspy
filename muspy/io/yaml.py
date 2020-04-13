@@ -61,9 +61,9 @@ def load_yaml(
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the file to be loaded.
-    schema_path : str or :class:`pathlib.Path`, optional
+    schema_path : str or Path, optional
         Path to the schema file. If given, validate the loaded data by the
         schema.
 
@@ -84,7 +84,7 @@ def save_yaml(music: "Music", path: Union[str, Path]):
     ----------
     music : :class:`muspy.Music` object
         MusPy Music object to be saved.
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to save the YAML file.
 
     """

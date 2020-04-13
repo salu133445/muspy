@@ -11,7 +11,7 @@ class MusicDataset:
 
     Attributes
     ----------
-    root : str or :class:`pathlib.Path`
+    root : str or Path
         Root directory of the dataset.
 
     Notes

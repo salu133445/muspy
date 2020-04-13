@@ -538,11 +538,11 @@ class Track(Base):
         Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).
     is_drum : bool
         A boolean indicating if it is a percussion track. Defaults to False.
-    notes : list of :class:'muspy.Note` objects
+    notes : list of :class:`muspy.Note` objects
         A list of notes.
-    annotations : list of :class:'muspy.Annotation' objects
+    annotations : list of :class:`muspy.Annotation` objects
         A list of annotations.
-    lyrics : list of :class:'muspy.Lyric' objects
+    lyrics : list of :class:`muspy.Lyric` objects
         A list of lyrics.
 
     """

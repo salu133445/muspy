@@ -12,11 +12,11 @@ def append(
     """Append an object to the correseponding list.
 
     If `obj1` is of type :class:`muspy.Music`, `obj2` can be
-    :class:`Muspy.TimeSignature`, :class:`Muspy.KeySignature`,
-    :class:`Muspy.Tempo`, :class:`Muspy.Lyric`, :class:`Muspy.Annotation`
-    or :class:`Muspy.Track`. If `obj1` is of type :class:`muspy.Track`,
-    `obj2` can be :class:`Muspy.Note`, :class:`Muspy.Lyric` or
-    :class:`Muspy.Annotation`.
+    :class:`muspy.TimeSignature`, :class:`muspy.KeySignature`,
+    :class:`muspy.Tempo`, :class:`muspy.Lyric`, :class:`muspy.Annotation`
+    or :class:`muspy.Track`. If `obj1` is of type :class:`muspy.Track`,
+    `obj2` can be :class:`muspy.Note`, :class:`muspy.Lyric` or
+    :class:`muspy.Annotation`.
 
     Parameters
     ----------
@@ -94,7 +94,8 @@ def quantize_absolute_timing(
         Object to be quantized.
     step : int or float
         Length of quantization step, in seconds.
-    beat_resolution
+    beat_resolution : int
+        Time steps per beat.
 
     """
     if music.timing.is_symbolic_timing:

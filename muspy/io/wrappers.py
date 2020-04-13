@@ -16,7 +16,7 @@ def read(path: Union[str, Path]) -> "Music":
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the file to be read. The file format is inferred from the
         extension.
 
@@ -24,6 +24,10 @@ def read(path: Union[str, Path]) -> "Music":
     -------
     :class:`muspy.Music` object
         Converted MusPy Music object.
+
+    See Also
+    --------
+    :func:`muspy.io.load`: load from a JSON or a YAML file
 
     """
     if str(path).lower().endswith((".mid", ".midi")):
@@ -41,13 +45,13 @@ def write(music: "Music", path: Union[str, Path]):
     music : :class:`muspy.Music` object
         MusPy Music object to be converted. The file format is inferred from
         the extension.
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to write the file. The file format is inferred from the
         extension.
 
     See Also
     --------
-    :meth:`muspy.save`: losslessly save to a JSON and a YAML file
+    :func:`muspy.io.save`: losslessly save to a JSON or a YAML file
 
     """
     if str(path).lower().endswith((".mid", ".midi")):
@@ -62,7 +66,7 @@ def load(path: Union[str, Path]) -> "Music":
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the file to be loaded. The file format is inferred from the
         extension.
 
@@ -70,6 +74,10 @@ def load(path: Union[str, Path]) -> "Music":
     -------
     :class:`muspy.Music` object
         Loaded MusPy Music object.
+
+    See Also
+    --------
+    :func:`muspy.io.read`: read from other formats such as MIDI and MusicXML
 
     """
     if str(path).lower().endswith(".json"):
@@ -86,13 +94,13 @@ def save(music: "Music", path: Union[str, Path]):
     ----------
     music : :class:`muspy.Music` object
         MusPy Music object to be saved.
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to save the file. The file format is inferred from the
         extension.
 
     See Also
     --------
-    :meth:`muspy.write`: write to other formats such as MIDI and MusicXML
+    :func:`muspy.io.write`: write to other formats such as MIDI and MusicXML
 
     Notes
     -----

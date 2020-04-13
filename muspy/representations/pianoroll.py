@@ -2,11 +2,11 @@
 
 
 def to_pianoroll_representation(music):
-    """Convert a :class:muspy.Music object to a pianoroll representation.
+    """Convert a :class:`muspy.Music` object to a pianoroll representation.
 
     Parameters
     ----------
-    music : :class:muspy.Music object
+    music : :class:`muspy.Music` object
         Music object to convert.
     """
     pass

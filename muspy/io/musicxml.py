@@ -11,7 +11,7 @@ def read_musicxml(path: Union[str, Path]) -> "Music":
 
     Parameters
     ----------
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to the MusicXML file to be read.
 
     """
@@ -27,7 +27,7 @@ def write_musicxml(music: "Music", path: Union[str, Path]):
     ----------
     music : :class:`muspy.Music` object
         MusPy Music object to be converted.
-    path : str or :class:`pathlib.Path`
+    path : str or Path
         Path to write the MusicXML file.
 
     """
