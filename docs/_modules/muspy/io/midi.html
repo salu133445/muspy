@@ -1,0 +1,357 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>muspy.io.midi &mdash; MusPy  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> MusPy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../music.html">Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">Core Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../utilities.html">Manipulation Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>muspy.io.midi</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for muspy.io.midi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;MIDI I/O utilities.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">pretty_midi</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PrettyMIDI</span><span class="p">,</span>
+    <span class="n">key_name_to_key_number</span><span class="p">,</span>
+    <span class="n">key_number_to_key_name</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">KeySignature</span><span class="p">,</span>
+    <span class="n">Lyric</span><span class="p">,</span>
+    <span class="n">MetaData</span><span class="p">,</span>
+    <span class="n">Note</span><span class="p">,</span>
+    <span class="n">TimeSignature</span><span class="p">,</span>
+    <span class="n">TimingInfo</span><span class="p">,</span>
+    <span class="n">Track</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+
+
+<span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a PrettyMIDI object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : :class:`pretty_midi.PrettyMIDI` object</span>
+<span class="sd">        PrettyMIDI object to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Converted MusPy Music object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">TimeSignature</span><span class="p">(</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">time_signature_changes</span>
+    <span class="p">]</span>
+
+    <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">KeySignature</span><span class="p">(</span>
+            <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+            <span class="n">key_number_to_key_name</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">key_number</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">key_number_to_key_name</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">key_number</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">key_signature_changes</span>
+    <span class="p">]</span>
+
+    <span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">Lyric</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]</span>
+
+    <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span>
+        <span class="p">]</span>
+        <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Track</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">notes</span><span class="p">))</span>
+
+    <span class="n">music</span> <span class="o">=</span> <span class="n">Music</span><span class="p">(</span>
+        <span class="n">meta_data</span><span class="o">=</span><span class="n">MetaData</span><span class="p">(),</span>
+        <span class="n">timing_info</span><span class="o">=</span><span class="n">TimingInfo</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
+        <span class="n">key_signatures</span><span class="o">=</span><span class="n">key_signatures</span><span class="p">,</span>
+        <span class="n">lyrics</span><span class="o">=</span><span class="n">lyrics</span><span class="p">,</span>
+        <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">music</span>
+
+
+<div class="viewcode-block" id="read_midi"><a class="viewcode-back" href="../../../io.html#muspy.io.read_midi">[docs]</a><span class="k">def</span> <span class="nf">read_midi</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to the MIDI file to be read.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">        Converted MusPy Music object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">PrettyMIDI</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrettyMIDI</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a PrettyMIDI object converted from a Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        MusPy Music object to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pm : :class:`pretty_midi.PrettyMIDI`</span>
+<span class="sd">        Converted PrettyMIDI object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">PrettyMIDI</span><span class="p">()</span>
+
+    <span class="n">pm</span><span class="o">.</span><span class="n">time_signature_changes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pretty_midi</span><span class="o">.</span><span class="n">TimeSignature</span><span class="p">(</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span>
+    <span class="p">]</span>
+
+    <span class="n">pm</span><span class="o">.</span><span class="n">key_signature_changes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pretty_midi</span><span class="o">.</span><span class="n">KeySignature</span><span class="p">(</span>
+            <span class="n">key_name_to_key_number</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span>
+    <span class="p">]</span>
+
+    <span class="n">pm</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pretty_midi</span><span class="o">.</span><span class="n">Lyric</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">lyric</span><span class="p">,</span> <span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">lyrics</span>
+    <span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">instrument</span> <span class="o">=</span> <span class="n">pretty_midi</span><span class="o">.</span><span class="n">Instrument</span><span class="p">(</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span>
+        <span class="p">)</span>
+        <span class="n">instrument</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span>
+        <span class="p">]</span>
+        <span class="n">pm</span><span class="o">.</span><span class="n">instruments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instrument</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pm</span>
+
+
+<div class="viewcode-block" id="write_midi"><a class="viewcode-back" href="../../../io.html#muspy.io.write_midi">[docs]</a><span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to write the MIDI file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="n">pm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, ISMIR Anonymous Submission
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
