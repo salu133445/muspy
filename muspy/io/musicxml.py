@@ -1,11 +1,12 @@
 """MusicXML I/O utilities."""
 from pathlib import Path
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
-from ..music import Music
+if TYPE_CHECKING:
+    from ..music import Music
 
 
-def read_musicxml(path: Union[str, Path]) -> Music:
+def read_musicxml(path: Union[str, Path]) -> "Music":
     """Read a MusicXML file into a Music object.
 
     Parameters
@@ -19,7 +20,7 @@ def read_musicxml(path: Union[str, Path]) -> Music:
     return music
 
 
-def write_musicxml(music: Music, path: Union[str, Path]):
+def write_musicxml(music: "Music", path: Union[str, Path]):
     """Write a Music object to a MusicXML file.
 
     Parameters

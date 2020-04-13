@@ -1,15 +1,17 @@
 """Wrappers for I/O utilities."""
 from pathlib import Path
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
-from ..music import Music
 from .json import load_json, save_json
 from .midi import read_midi, write_midi
 from .musicxml import read_musicxml, write_musicxml
 from .yaml import load_yaml, save_yaml
 
+if TYPE_CHECKING:
+    from ..music import Music
 
-def read(path: Union[str, Path]) -> Music:
+
+def read(path: Union[str, Path]) -> "Music":
     """Read a MIDI or a MusicXML file into a Music object.
 
     Parameters
@@ -31,7 +33,7 @@ def read(path: Union[str, Path]) -> Music:
     raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
 
 
-def write(music: Music, path: Union[str, Path]):
+def write(music: "Music", path: Union[str, Path]):
     """Write a MusPy Music object to a MIDI or a MusicXML file.
 
     Parameters
@@ -55,7 +57,7 @@ def write(music: Music, path: Union[str, Path]):
     raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
 
 
-def load(path: Union[str, Path]) -> Music:
+def load(path: Union[str, Path]) -> "Music":
     """Return a Music object loaded from a JSON or a YAML file.
 
     Parameters
@@ -77,7 +79,7 @@ def load(path: Union[str, Path]) -> Music:
     raise TypeError("Got unsupported file format (expect JSON or YAML).")
 
 
-def save(music: Music, path: Union[str, Path]):
+def save(music: "Music", path: Union[str, Path]):
     """Save a Music object loselessly to a JSON or a YAML file.
 
     Parameters

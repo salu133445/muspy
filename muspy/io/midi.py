@@ -1,12 +1,12 @@
 """MIDI I/O utilities."""
 from pathlib import Path
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import pretty_midi
 from pretty_midi import (
     PrettyMIDI,
-    key_number_to_key_name,
     key_name_to_key_number,
+    key_number_to_key_name,
 )
 
 from ..classes import (
@@ -18,10 +18,12 @@ from ..classes import (
     TimingInfo,
     Track,
 )
-from ..music import Music
+
+if TYPE_CHECKING:
+    from ..music import Music
 
 
-def from_pretty_midi(pm: PrettyMIDI) -> Music:
+def from_pretty_midi(pm: PrettyMIDI) -> "Music":
     """Return a Music object converted from a PrettyMIDI object.
 
     Parameters
@@ -75,7 +77,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
     return music
 
 
-def read_midi(path: Union[str, Path]) -> Music:
+def read_midi(path: Union[str, Path]) -> "Music":
     """Read a MIDI file into a Music object.
 
     Parameters
@@ -93,7 +95,7 @@ def read_midi(path: Union[str, Path]) -> Music:
     return from_pretty_midi(pm)
 
 
-def to_pretty_midi(music: Music) -> PrettyMIDI:
+def to_pretty_midi(music: "Music") -> PrettyMIDI:
     """Return a PrettyMIDI object converted from a Music object.
 
     Parameters
@@ -148,7 +150,7 @@ def to_pretty_midi(music: Music) -> PrettyMIDI:
     return pm
 
 
-def write_midi(music: Music, path: Union[str, Path]):
+def write_midi(music: "Music", path: Union[str, Path]):
     """Write a Music object to a MIDI file.
 
     Parameters

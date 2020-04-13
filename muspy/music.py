@@ -1,6 +1,6 @@
 """Core music object."""
 from pathlib import Path
-from typing import Union, List, Optional
+from typing import List, Optional, Union
 
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
@@ -15,6 +15,8 @@ from .classes import (
     TimeSignature,
     TimingInfo,
     Track,
+    remove_invalid_from_list,
+    validate_list,
 )
 from .io import (
     save,
@@ -32,7 +34,6 @@ from .representations import (
     to_pianoroll_representation,
     to_representation,
 )
-from .utils import remove_invalid_from_list, validate_list
 
 # pylint: disable=super-init-not-called
 

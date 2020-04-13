@@ -6,17 +6,6 @@ from .classes import DEFAULT_BEAT_RESOLUTION, Note, Tempo, Track
 from .music import Music
 
 
-def validate_list(list_: List):
-    """Validate a list of objects by calling their method `validate`."""
-    for item in list_:
-        item.validate()
-
-
-def remove_invalid_from_list(list_: List) -> List:
-    """Return a list with invalid items removed."""
-    return [item for item in list_ if item.is_valid()]
-
-
 def append(
     obj1: Union[Music, Track], obj2,
 ):

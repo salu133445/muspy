@@ -1,12 +1,14 @@
 """JSON I/O utilities."""
 import json
 from pathlib import Path
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import jsonschema
 
-from ..music import Music
 from .utils import from_dict
+
+if TYPE_CHECKING:
+    from ..music import Music
 
 
 def get_json_schema_path() -> str:
@@ -29,7 +31,7 @@ def _load_json(
 
 def load_json(
     path: Union[str, Path], schema_path: Optional[Union[str, Path]] = None
-) -> Music:
+) -> "Music":
     """Return a Music object loaded from a JSON file.
 
     Parameters
@@ -50,7 +52,7 @@ def load_json(
     return from_dict(data)
 
 
-def save_json(music: Music, path: Union[str, Path]):
+def save_json(music: "Music", path: Union[str, Path]):
     """Save a Music object to a JSON file.
 
     Parameters

@@ -1,6 +1,6 @@
 """Utilities for I/O utilities."""
-from typing import Mapping
 from collections import OrderedDict
+from typing import TYPE_CHECKING, Mapping
 
 from ..classes import (
     Annotation,
@@ -15,10 +15,12 @@ from ..classes import (
     TimingInfo,
     Track,
 )
-from ..music import Music
+
+if TYPE_CHECKING:
+    from ..music import Music
 
 
-def to_ordered_dict(music: Music) -> OrderedDict:
+def to_ordered_dict(music: "Music") -> OrderedDict:
     """Return an OrderedDict converted from a Music object.
 
     Parameters
@@ -35,7 +37,7 @@ def to_ordered_dict(music: Music) -> OrderedDict:
     return music.to_ordered_dict()
 
 
-def from_dict(data: Mapping) -> Music:
+def from_dict(data: Mapping) -> "Music":
     """Return a Music object loaded from a dictionary.
 
     Parameters

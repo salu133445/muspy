@@ -1,10 +1,13 @@
 """Pianoroll I/O utilities."""
+from typing import TYPE_CHECKING
+
 from pypianoroll import Multitrack, Track
 
-from ..music import Music
+if TYPE_CHECKING:
+    from ..music import Music
 
 
-def from_pypianoroll(obj: Multitrack) -> Music:
+def from_pypianoroll(obj: Multitrack) -> "Music":
     """Return a Music object converted from a Multitrack object.
 
     Parameters
@@ -23,7 +26,7 @@ def from_pypianoroll(obj: Multitrack) -> Music:
     return music
 
 
-def to_pypianoroll(music: Music) -> Multitrack:
+def to_pypianoroll(music: "Music") -> Multitrack:
     """Return a Multitrack object converted from a Music object.
 
     Parameters

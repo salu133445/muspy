@@ -1,11 +1,15 @@
 """Wrappers for representation utilities."""
-from ..music import Music
+from typing import TYPE_CHECKING
+
 from .event import to_event_representation
 from .note import to_note_representation
 from .pianoroll import to_pianoroll_representation
 
+if TYPE_CHECKING:
+    from ..music import Music
 
-def to_representation(music: Music, target: str):
+
+def to_representation(music: "Music", target: str):
     """Convert to a target representation.
 
     Parameters

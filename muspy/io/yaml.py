@@ -1,13 +1,15 @@
 """YAML I/O utilities."""
 from collections import OrderedDict
 from pathlib import Path
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import yamale
 import yaml
 
-from ..music import Music
 from .utils import from_dict
+
+if TYPE_CHECKING:
+    from ..music import Music
 
 
 class OrderedDumper(yaml.SafeDumper):
@@ -54,7 +56,7 @@ def _load_yaml(
 
 def load_yaml(
     path: Union[str, Path], schema_path: Optional[Union[str, Path]] = None
-) -> Music:
+) -> "Music":
     """Return a Music object loaded from a YAML file.
 
     Parameters
@@ -75,7 +77,7 @@ def load_yaml(
     return from_dict(data)
 
 
-def save_yaml(music: Music, path: Union[str, Path]):
+def save_yaml(music: "Music", path: Union[str, Path]):
     """Save a Music object to a YAML file.
 
     Parameters

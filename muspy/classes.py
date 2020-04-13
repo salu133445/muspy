@@ -3,12 +3,22 @@ from abc import ABC, abstractmethod
 from collections import OrderedDict
 from typing import Any, List, Mapping, Optional, Union
 
-from .io import DEFAULT_SCHEMA_VERSION
-from .utils import remove_invalid_from_list, validate_list
+from .schemas import DEFAULT_SCHEMA_VERSION
 
 DEFAULT_BEAT_RESOLUTION = 24
 
 # pylint: disable=super-init-not-called
+
+
+def validate_list(list_: List):
+    """Validate a list of objects by calling their method `validate`."""
+    for item in list_:
+        item.validate()
+
+
+def remove_invalid_from_list(list_: List) -> List:
+    """Return a list with invalid items removed."""
+    return [item for item in list_ if item.is_valid()]
 
 
 class Base(ABC):
@@ -199,7 +209,7 @@ class MetaData(Base):
 
     """
 
-    _attributes = ["schema_version", "song_info", "source"]
+    _attributes = ["schema_version", "song_info", "source_info"]
 
     def __init__(
         self,
