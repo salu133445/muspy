@@ -19,21 +19,9 @@ from .classes import (
     TimingInfo,
     Track,
 )
-from .io import (
-    load,
-    load_json,
-    load_yaml,
-    read,
-    read_midi,
-    read_musicxml,
-    save,
-    save_json,
-    save_yaml,
-    write,
-    write_midi,
-    write_musicxml,
-)
+from .io import from_dict, load, read, save, to_ordered_dict, write
 from .music import Music
+from .representations import to_representation
 from .schemas import DEFAULT_SCHEMA_VERSION
 from .utils import (
     append,
@@ -63,23 +51,18 @@ __all__ = [
     "append",
     "clip",
     "datasets",
+    "from_dict",
     "load",
-    "load_json",
-    "load_yaml",
     "metrics",
     "quantize",
     "quantize_absolute_timing",
     "quantize_by_beats",
     "read",
-    "read_midi",
-    "read_musicxml",
     "representations",
     "save",
-    "save_json",
-    "save_yaml",
+    "to_ordered_dict",
+    "to_representation",
     "transpose",
     "visualization",
     "write",
-    "write_midi",
-    "write_musicxml",
 ]
