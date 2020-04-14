@@ -1,6 +1,6 @@
 """Core music object."""
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Mapping
 
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
@@ -101,6 +101,66 @@ class Music(Base):
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
+
+    @classmethod
+    def from_dict(cls, dict_: Mapping):
+        """Return an instance constructed from a dictionary.
+
+        Parameters
+        ----------
+        dict_ : dict
+            A dictionary that stores the attributes and their values as
+            key-value pairs.
+
+        """
+        # Meta data
+        meta_data = MetaData.from_dict(dict_["meta"])
+
+        # Global data
+        timing = TimingInfo.from_dict(dict_["timing"])
+
+        if dict_["time_signatures"] is not None:
+            time_signatures = [
+                TimeSignature.from_dict(time_signature)
+                for time_signature in dict_["time_signatures"]
+            ]
+
+        if dict_["key_signatures"] is not None:
+            key_signatures = [
+                KeySignature.from_dict(key_signature)
+                for key_signature in dict_["key_signatures"]
+            ]
+
+        if dict_["tempos"] is not None:
+            tempos = [Tempo.from_dict(tempo) for tempo in dict_["tempos"]]
+
+        if dict_["downbeats"] is not None:
+            downbeats = dict_["downbeats"]
+
+        if dict_["lyrics"] is not None:
+            lyrics = [Lyric.from_dict(lyric) for lyric in dict_["lyrics"]]
+
+        if dict_["annotations"] is not None:
+            annotations = [
+                Annotation.from_dict(annotation)
+                for annotation in dict_["annotations"]
+            ]
+
+        # Track-specific data
+        if dict_["tracks"] is not None:
+            tracks = [Track.from_dict(track) for track in dict_["tracks"]]
+
+        return cls(
+            meta_data,
+            timing,
+            time_signatures,
+            key_signatures,
+            tempos,
+            downbeats,
+            lyrics,
+            annotations,
+            tracks,
+        )
 
     def reset(self):
         """Reset the object."""

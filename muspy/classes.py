@@ -218,9 +218,21 @@ class MetaData(Base):
         source_info: Optional[str] = None,
     ):
         self.schema_version = schema_version
-        self.song_info = song_info if song_info is not None else SongInfo()
-        self.source_info = (
-            source_info if source_info is not None else SourceInfo()
+    @classmethod
+    def from_dict(cls, dict_: Mapping):
+        """Return an instance constructed from a dictionary.
+
+        Parameters
+        ----------
+        dict_ : dict
+            A dictionary that stores the attributes and their values as
+            key-value pairs.
+
+        """
+        return cls(
+            dict_["schema_version"],
+            SongInfo.from_dict(dict_["song"]),
+            SourceInfo.from_dict(dict_["source"]),
         )
 
     def validate(self):
@@ -571,6 +583,38 @@ class Track(Base):
         self.notes = notes if notes is not None else []
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
+
+    @classmethod
+    def from_dict(cls, dict_: Mapping):
+        """Return an instance constructed from a dictionary.
+
+        Parameters
+        ----------
+        dict_ : dict
+            A dictionary that stores the attributes and their values as
+            key-value pairs.
+
+        """
+        notes = [Note.from_dict(note) for note in dict_["notes"]]
+
+        annotations = [
+            Annotation.from_dict(annotation)
+            for annotation in dict_["annotations"]
+        ]
+
+        lyrics = [
+            Annotation(lyric["time"], lyric["lyric"])
+            for lyric in dict_["lyrics"]
+        ]
+
+        return cls(
+            dict_["name"],
+            dict_["program"],
+            dict_["is_drum"],
+            notes,
+            annotations,
+            lyrics,
+        )
 
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""
