@@ -279,11 +279,8 @@ class Music(Base):
     def sort(self):
         """Sort the time-stamped objects with respect to event time.
 
-        Refer to :func:`muspy.sort`: for full documentation.
-
-        See Also
-        --------
-        :func:`muspy.sort`: equivalent function
+        This will sort time signatures, key signatures, tempos, lyrics and
+        annotations, along with notes, lyrics and annotations for each track.
 
         """
         self.time_signatures.sort(key=lambda x: x.start)
@@ -300,8 +297,8 @@ class Music(Base):
         Parameters
         ----------
         semitone : int
-            The number of semitones to transpose the notes. A positive value
-            raises the pitches, while a negative value lowers the pitches.
+            Number of semitones to transpose the notes. A positive value raises
+            the pitches, while a negative value lowers the pitches.
 
         """
         for track in self.tracks:
@@ -310,7 +307,7 @@ class Music(Base):
     def save(self, path: Union[str, Path]):
         """Save loselessly to a JSON or a YAML file.
 
-        Refer to :func:`muspy.io.save`: for full documentation.
+        Refer to :func:`muspy.save`: for full documentation.
 
         Parameters
         ----------
@@ -320,8 +317,8 @@ class Music(Base):
 
         See Also
         --------
-        :func:`muspy.io.save`: equivalent function
-        :func:`muspy.io.write`: write to other formats such as MIDI and MusicXML
+        :func:`muspy.save`: equivalent function
+        :func:`muspy.write`: write to other formats such as MIDI and MusicXML
 
         """
         save(self, path)
@@ -329,7 +326,7 @@ class Music(Base):
     def save_json(self, path: Union[str, Path]):
         """Save loselessly to a JSON file.
 
-        Refer to :func:`muspy.io.save_json`: for full documentation.
+        Refer to :func:`muspy.save_json`: for full documentation.
 
         Parameters
         ----------
@@ -338,7 +335,7 @@ class Music(Base):
 
         See Also
         --------
-        :func:`muspy.io.save_json`: equivalent function
+        :func:`muspy.save_json`: equivalent function
 
         """
         save_json(self, path)
@@ -346,7 +343,7 @@ class Music(Base):
     def save_yaml(self, path: Union[str, Path]):
         """Save loselessly to a YAML file.
 
-        Refer to :func:`muspy.io.save_yaml`: for full documentation.
+        Refer to :func:`muspy.save_yaml`: for full documentation.
 
         Parameters
         ----------
@@ -355,7 +352,7 @@ class Music(Base):
 
         See Also
         --------
-        :func:`muspy.io.save_yaml`: equivalent function
+        :func:`muspy.save_yaml`: equivalent function
 
         """
         save_yaml(self, path)
@@ -363,7 +360,7 @@ class Music(Base):
     def write(self, path: Union[str, Path]):
         """Write to a MIDI or a MusicXML file.
 
-        Refer to :func:`muspy.io.write`: for full documentation.
+        Refer to :func:`muspy.write`: for full documentation.
 
         Parameters
         ----------
@@ -373,8 +370,8 @@ class Music(Base):
 
         See Also
         --------
-        :func:`muspy.io.write`: equivalent function
-        :func:`muspy.io.save`: losslessly save to a JSON and a YAML file
+        :func:`muspy.write`: equivalent function
+        :func:`muspy.save`: losslessly save to a JSON and a YAML file
 
         """
         write(self, path)
@@ -382,7 +379,7 @@ class Music(Base):
     def write_midi(self, path: Union[str, Path]):
         """Write to a MIDI file.
 
-        Refer to :func:`muspy.io.write_midi`: for full documentation.
+        Refer to :func:`muspy.write_midi`: for full documentation.
 
         Parameters
         ----------
@@ -391,7 +388,7 @@ class Music(Base):
 
         See Also
         --------
-        :func:`muspy.io.write_midi(self, path)`: equivalent function
+        :func:`muspy.write_midi`: equivalent function
 
         """
         write_midi(self, path)
@@ -399,7 +396,7 @@ class Music(Base):
     def write_musicxml(self, path: Union[str, Path]):
         """Write to a MusicXML file.
 
-        Refer to :func:`muspy.io.write_musicxml`: for full documentation.
+        Refer to :func:`muspy.write_musicxml`: for full documentation.
 
         Parameters
         ----------
@@ -408,7 +405,7 @@ class Music(Base):
 
         See Also
         --------
-        :func:`muspy.io.write_musicxml(self, path)`: equivalent function
+        :func:`muspy.write_musicxml`: equivalent function
 
         """
         write_musicxml(self, path)

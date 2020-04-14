@@ -4,22 +4,22 @@ Output Interface
 Wrappers
 --------
 
-.. autofunction:: muspy.outputs.save
-.. autofunction:: muspy.outputs.write
-.. autofunction:: muspy.outputs.to_object
+.. autofunction:: muspy.save
+.. autofunction:: muspy.write
+.. autofunction:: muspy.to_object
 
 
 Formats
 -------
 
-.. autofunction:: muspy.outputs.save_json
-.. autofunction:: muspy.outputs.save_yaml
-.. autofunction:: muspy.outputs.write_midi
-.. autofunction:: muspy.outputs.write_musicxml
+.. autofunction:: muspy.save_json
+.. autofunction:: muspy.save_yaml
+.. autofunction:: muspy.write_midi
+.. autofunction:: muspy.write_musicxml
 
 
 Objects
 -------
 
-.. autofunction:: muspy.outputs.to_pretty_midi
-.. autofunction:: muspy.outputs.to_pypianoroll
+.. autofunction:: muspy.to_pretty_midi
+.. autofunction:: muspy.to_pypianoroll

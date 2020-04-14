@@ -39,7 +39,7 @@ def append(
 
     Parameters
     ----------
-    obj : MusPy objects (see below)
+    obj : MusPy objects (see above)
         Object to be appended.
 
     """

@@ -65,7 +65,9 @@ autoclass_content = "both"
 autodoc_typehints = "none"
 autodoc_default_flags = ["members"]
 intersphinx_mapping = {
-    "numpy": ("http://docs.scipy.org/doc/numpy/", None),
+    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
-    "matplotlib": ("http://matplotlib.org", None),
+    "matplotlib": ("https://matplotlib.org/", None),
+    "pretty_midi": ("https://craffel.github.io/pretty-midi/", None),
+    "pypianoroll": ("https://salu133445.github.io/pypianoroll/", None),
 }

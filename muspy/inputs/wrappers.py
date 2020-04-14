@@ -53,7 +53,7 @@ def read(path: Union[str, Path]) -> Music:
 
     See Also
     --------
-    :func:`muspy.io.load`: load from a JSON or a YAML file
+    :func:`muspy.load`: load from a JSON or a YAML file
 
     """
     if str(path).lower().endswith((".mid", ".midi")):
@@ -79,7 +79,7 @@ def load(path: Union[str, Path]) -> Music:
 
     See Also
     --------
-    :func:`muspy.io.read`: read from other formats such as MIDI and MusicXML
+    :func:`muspy.read`: read from other formats such as MIDI and MusicXML
 
     """
     if str(path).lower().endswith(".json"):

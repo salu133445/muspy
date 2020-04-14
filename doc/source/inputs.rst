@@ -4,22 +4,22 @@ Input Interface
 Wrappers
 --------
 
-.. autofunction:: muspy.inputs.read
-.. autofunction:: muspy.inputs.load
-.. autofunction:: muspy.inputs.from_object
+.. autofunction:: muspy.read
+.. autofunction:: muspy.load
+.. autofunction:: muspy.from_object
 
 
 Formats
 -------
 
-.. autofunction:: muspy.inputs.load_json
-.. autofunction:: muspy.inputs.load_yaml
-.. autofunction:: muspy.inputs.read_midi
-.. autofunction:: muspy.inputs.read_musicxml
+.. autofunction:: muspy.load_json
+.. autofunction:: muspy.load_yaml
+.. autofunction:: muspy.read_midi
+.. autofunction:: muspy.read_musicxml
 
 
 Objects
 -------
 
-.. autofunction:: muspy.inputs.from_pretty_midi
-.. autofunction:: muspy.inputs.from_pypianoroll
+.. autofunction:: muspy.from_pretty_midi
+.. autofunction:: muspy.from_pypianoroll
