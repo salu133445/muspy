@@ -6,12 +6,12 @@ A Python package for processing symbolic music and working with common music
 datasets.
 """
 from . import (
-    inputs,
-    outputs,
-    schemas,
     datasets,
+    inputs,
     metrics,
+    outputs,
     representations,
+    schemas,
     visualization,
 )
 from .classes import (
@@ -28,8 +28,8 @@ from .classes import (
     Track,
 )
 from .inputs import *  # noqa: F401,F403
-from .outputs import *  # noqa: F401,F403
 from .music import Music
+from .outputs import *  # noqa: F401,F403
 from .representations import *  # noqa: F401,F403
 from .schemas import *  # noqa: F401,F403
 from .utils import (
@@ -38,6 +38,7 @@ from .utils import (
     quantize,
     quantize_absolute_timing,
     quantize_by_beats,
+    sort,
     to_ordered_dict,
     transpose,
 )
@@ -65,6 +66,7 @@ __all__ = [
     "quantize_absolute_timing",
     "quantize_by_beats",
     "representations",
+    "sort",
     "to_ordered_dict",
     "transpose",
     "visualization",

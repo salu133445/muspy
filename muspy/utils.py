@@ -56,7 +56,7 @@ def sort(obj: Union[Music, Track]):
 
     Parameters
     ----------
-    obj : :class:`muspy.Music` or :class:`muspy.Track`object
+    obj : :class:`muspy.Music` or :class:`muspy.Track` object
         Object to be sorted.
 
     """
