@@ -306,11 +306,7 @@ class Note(Base):
     _attributes = ["start", "end", "pitch", "velocity"]
 
     def __init__(
-        self,
-        start: Union[int, float],
-        end: Union[int, float],
-        pitch: Union[int, float],
-        velocity: Union[int, float],
+        self, start: float, end: float, pitch: float, velocity: float,
     ):
         self.start = start
         self.end = end
@@ -353,9 +349,7 @@ class Note(Base):
         """
         self.pitch += semitone
 
-    def clip(
-        self, lower: Union[int, float] = 0, upper: Union[int, float] = 127
-    ):
+    def clip(self, lower: float = 0, upper: float = 127):
         """Clip the velocity of the note.
 
         Parameters
@@ -391,7 +385,7 @@ class Lyric(Base):
 
     _attributes = ["time", "lyric"]
 
-    def __init__(self, time: Union[int, float], lyric: str):
+    def __init__(self, time: float, lyric: str):
         self.time = time
         self.lyric = lyric
 
@@ -423,7 +417,7 @@ class Annotation(Base):
 
     _attributes = ["time", "annotation"]
 
-    def __init__(self, time: Union[int, float], annotation: Any):
+    def __init__(self, time: float, annotation: Any):
         self.time = time
         self.annotation = annotation
 
@@ -455,9 +449,7 @@ class TimeSignature(Base):
 
     _attributes = ["time", "numerator", "denominator"]
 
-    def __init__(
-        self, time: Union[int, float], numerator: int, denominator: int
-    ):
+    def __init__(self, time: float, numerator: int, denominator: int):
         self.time = time
         self.numerator = numerator
         self.denominator = denominator
@@ -496,7 +488,7 @@ class KeySignature(Base):
 
     _attributes = ["time", "root", "mode"]
 
-    def __init__(self, time: Union[int, float], root: str, mode: str):
+    def __init__(self, time: float, root: str, mode: str):
         self.time = time
         self.root = root
         self.mode = mode
@@ -529,7 +521,7 @@ class Tempo(Base):
 
     _attributes = ["time", "tempo"]
 
-    def __init__(self, time: Union[int, float], tempo: Union[int, float]):
+    def __init__(self, time: float, tempo: float):
         self.time = time
         self.tempo = float(tempo)
 
@@ -645,13 +637,13 @@ class Track(Base):
         self.lyrics = remove_invalid_from_list(self.lyrics)
         self.annotations = remove_invalid_from_list(self.annotations)
 
-    def get_active_length(self, is_sorted=False) -> Union[int, float]:
+    def get_active_length(self, is_sorted=False) -> float:
         """Return the end time of the last note."""
         if is_sorted:
             return self.notes[-1].end
         return max([note.end for note in self.notes])
 
-    def get_length(self, is_sorted=False) -> Union[int, float]:
+    def get_length(self, is_sorted=False) -> float:
         """Return the time of the last event.
 
         This includes notes onsets, note offsets, lyrics and annotations.
@@ -693,9 +685,7 @@ class Track(Base):
                 )
             )
 
-    def clip(
-        self, lower: Union[int, float] = 0, upper: Union[int, float] = 127
-    ):
+    def clip(self, lower: float = 0, upper: float = 127):
         """Clip the velocity of each note.
 
         Parameters

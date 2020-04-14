@@ -63,9 +63,7 @@ def sort(obj: Union[Music, Track]):
 
 
 def clip(
-    obj: Union[Music, Track, Note],
-    lower: Union[int, float] = 0,
-    upper: Union[int, float] = 127,
+    obj: Union[Music, Track, Note], lower: float = 0, upper: float = 127,
 ):
     """Clip the velocity of each note.
 
@@ -100,9 +98,7 @@ def transpose(obj: Union[Music, Track, Note], semitone: int):
 
 
 def quantize_absolute_timing(
-    music: Music,
-    step: Union[int, float],
-    beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+    music: Music, step: float, beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
 ):
     """Quantize all the time-stamped objects, assuming absolute timing.
 
@@ -129,14 +125,14 @@ def quantize_absolute_timing(
     music.timing.is_symbolic_timing = True
 
 
-def quantize_by_beats(music: Music, beats: List[Union[int, float]]):
+def quantize_by_beats(music: Music, beats: List[float]):
     """Quantize all the symbolic-time-stamped objects.
 
     Parameters
     ----------
     music : :class:`muspy.Music` object
         Object to be quantized.
-    step : int or float
+    step : np.ndarray or list of int or float
         Length of quantization step, in seconds.
 
     """
@@ -151,9 +147,7 @@ def quantize_by_beats(music: Music, beats: List[Union[int, float]]):
 
 
 def quantize(
-    music: Music,
-    step: Union[int, float],
-    beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+    music: Music, step: float, beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
 ):
     """Quantize all the time-stamped objects."""
     if not music.timing.is_symbolic_timing:
