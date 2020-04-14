@@ -82,7 +82,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../music.html">Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classes.html">Core Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utilities.html">Manipulation Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../io.html">I/O Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Input Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../outputs.html">Output Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
 </ul>
@@ -150,7 +151,7 @@
   <h1>Source code for muspy.music</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Core music object.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
@@ -168,22 +169,18 @@
     <span class="n">remove_invalid_from_list</span><span class="p">,</span>
     <span class="n">validate_list</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.io</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">.outputs</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">save</span><span class="p">,</span>
     <span class="n">save_json</span><span class="p">,</span>
     <span class="n">save_yaml</span><span class="p">,</span>
+    <span class="n">to_object</span><span class="p">,</span>
     <span class="n">to_pretty_midi</span><span class="p">,</span>
     <span class="n">to_pypianoroll</span><span class="p">,</span>
     <span class="n">write</span><span class="p">,</span>
     <span class="n">write_midi</span><span class="p">,</span>
     <span class="n">write_musicxml</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.representations</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">to_event_representation</span><span class="p">,</span>
-    <span class="n">to_note_representation</span><span class="p">,</span>
-    <span class="n">to_pianoroll_representation</span><span class="p">,</span>
-    <span class="n">to_representation</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.representations</span> <span class="kn">import</span> <span class="n">to_representation</span>
 
 <span class="c1"># pylint: disable=super-init-not-called</span>
 
@@ -215,6 +212,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;meta_data&quot;</span><span class="p">,</span>
         <span class="s2">&quot;timing&quot;</span><span class="p">,</span>
         <span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span>
         <span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span>
@@ -223,7 +221,6 @@
         <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tracks&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;meta_data&quot;</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -251,6 +248,66 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracks</span> <span class="k">if</span> <span class="n">tracks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Music.from_dict"><a class="viewcode-back" href="../../music.html#muspy.Music.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dict_ : dict</span>
+<span class="sd">            A dictionary that stores the attributes and their values as</span>
+<span class="sd">            key-value pairs.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Meta data</span>
+        <span class="n">meta_data</span> <span class="o">=</span> <span class="n">MetaData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">])</span>
+
+        <span class="c1"># Global data</span>
+        <span class="n">timing</span> <span class="o">=</span> <span class="n">TimingInfo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;timing&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">TimeSignature</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">time_signature</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">KeySignature</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span><span class="n">Tempo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span> <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">downbeats</span> <span class="o">=</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">Lyric</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">lyric</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">annotations</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">Annotation</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">]</span>
+            <span class="p">]</span>
+
+        <span class="c1"># Track-specific data</span>
+        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tracks&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">Track</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tracks&quot;</span><span class="p">]]</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">meta_data</span><span class="p">,</span>
+            <span class="n">timing</span><span class="p">,</span>
+            <span class="n">time_signatures</span><span class="p">,</span>
+            <span class="n">key_signatures</span><span class="p">,</span>
+            <span class="n">tempos</span><span class="p">,</span>
+            <span class="n">downbeats</span><span class="p">,</span>
+            <span class="n">lyrics</span><span class="p">,</span>
+            <span class="n">annotations</span><span class="p">,</span>
+            <span class="n">tracks</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Music.reset"><a class="viewcode-back" href="../../music.html#muspy.Music.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Reset the object.&quot;&quot;&quot;</span>
@@ -507,38 +564,32 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">write_musicxml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to"><a class="viewcode-back" href="../../music.html#muspy.Music.to">[docs]</a>    <span class="k">def</span> <span class="nf">to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert to a target representation, object or dataset.</span>
+<div class="viewcode-block" id="Music.to_object"><a class="viewcode-back" href="../../music.html#muspy.Music.to_object">[docs]</a>    <span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Convert to a target class.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        target : str</span>
-<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
-<span class="sd">            &#39;pianoroll&#39;, &#39;pretty_midi&#39;, &#39;pypianoroll&#39;.</span>
+<span class="sd">            Target class. Supported values are &#39;pretty_midi&#39; and &#39;pypianoroll&#39;.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s2">&quot;event&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;event-based&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;note&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;note-based&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;piano-roll&quot;</span><span class="p">,</span>
-        <span class="p">):</span>
-            <span class="k">return</span> <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pretty_midi&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pypianoroll&quot;</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported target : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">to_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Music.to_pretty_midi"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pretty_midi">[docs]</a>    <span class="k">def</span> <span class="nf">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrettyMIDI</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return as a PrettyMIDI object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Music.to_pypianoroll"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pypianoroll">[docs]</a>    <span class="k">def</span> <span class="nf">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Multitrack</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return as a Multitrack object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Music.to_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert to a target representation.</span>
+        <span class="sd">&quot;&quot;&quot;Convert to a target class.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        target : str</span>
-<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
+<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39; and</span>
 <span class="sd">            &#39;pianoroll&#39;.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -546,23 +597,15 @@
 
 <div class="viewcode-block" id="Music.to_event_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_event_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_event_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the event-based representation.&quot;&quot;&quot;</span>
-        <span class="n">to_event_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Music.to_note_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_note_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_note_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the note-based representation.&quot;&quot;&quot;</span>
-        <span class="n">to_note_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+        <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;note&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Music.to_pianoroll_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pianoroll_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_pianoroll_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the pianoroll representation.&quot;&quot;&quot;</span>
-        <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Music.to_pretty_midi"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pretty_midi">[docs]</a>    <span class="k">def</span> <span class="nf">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrettyMIDI</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return as a PrettyMIDI object.&quot;&quot;&quot;</span>
-        <span class="n">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Music.to_pypianoroll"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pypianoroll">[docs]</a>    <span class="k">def</span> <span class="nf">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Multitrack</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return as a Multitrack object.&quot;&quot;&quot;</span>
-        <span class="n">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+        <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;pianoroll&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

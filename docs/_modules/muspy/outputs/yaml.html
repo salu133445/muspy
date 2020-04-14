@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.io.yaml &mdash; MusPy  documentation</title>
+  <title>muspy.outputs.yaml &mdash; MusPy  documentation</title>
   
 
   
@@ -82,7 +82,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../music.html">Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes.html">Core Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../utilities.html">Manipulation Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">I/O Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../inputs.html">Input Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../outputs.html">Output Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 </ul>
@@ -132,7 +133,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.io.yaml</li>
+      <li>muspy.outputs.yaml</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -147,16 +148,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.io.yaml</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;YAML I/O utilities.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.outputs.yaml</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;YAML output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">yamale</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
-
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">from_dict</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
@@ -186,48 +184,7 @@
     <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">OrderedDumper</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_yaml_schema_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the path to the YAML schema.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;music.schema.yaml&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_load_yaml</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Load data from a YAML file, and validate it by a schema if given.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">schema_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">yamale</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-        <span class="n">schema</span> <span class="o">=</span> <span class="n">yamale</span><span class="o">.</span><span class="n">make_schema</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">schema_path</span><span class="p">))</span>
-        <span class="n">yamale</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data</span>
-
-
-<div class="viewcode-block" id="load_yaml"><a class="viewcode-back" href="../../../io.html#muspy.io.load_yaml">[docs]</a><span class="k">def</span> <span class="nf">load_yaml</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object loaded from a YAML file.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the file to be loaded.</span>
-<span class="sd">    schema_path : str or Path, optional</span>
-<span class="sd">        Path to the schema file. If given, validate the loaded data by the</span>
-<span class="sd">        schema.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
-<span class="sd">        Loaded MusPy Music object.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">_load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="save_yaml"><a class="viewcode-back" href="../../../io.html#muspy.io.save_yaml">[docs]</a><span class="k">def</span> <span class="nf">save_yaml</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="save_yaml"><a class="viewcode-back" href="../../../outputs.html#muspy.outputs.save_yaml">[docs]</a><span class="k">def</span> <span class="nf">save_yaml</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Save a Music object to a YAML file.</span>
 
 <span class="sd">    Parameters</span>
