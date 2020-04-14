@@ -202,22 +202,25 @@ class MetaData(Base):
     ----------
     schema_version : str
         Schema version.
-    song_info : :class:'muspy.SongInfo` object, optional
+    song : :class:'muspy.SongInfo` object, optional
         Soong infomation.
-    source_info : :class:'muspy.SourceInfo` object, optional
+    source : :class:'muspy.SourceInfo` object, optional
         Source infomation.
 
     """
 
-    _attributes = ["schema_version", "song_info", "source_info"]
+    _attributes = ["schema_version", "song", "source"]
 
     def __init__(
         self,
         schema_version: str = DEFAULT_SCHEMA_VERSION,
-        song_info: Optional[str] = None,
-        source_info: Optional[str] = None,
+        song: Optional[str] = None,
+        source: Optional[str] = None,
     ):
         self.schema_version = schema_version
+        self.song = song if song is not None else SongInfo()
+        self.source = source if source is not None else SourceInfo()
+
     @classmethod
     def from_dict(cls, dict_: Mapping):
         """Return an instance constructed from a dictionary.
@@ -239,12 +242,12 @@ class MetaData(Base):
         """Validate the object, and raise errors for invalid attributes."""
         if not isinstance(self.schema_version, str):
             raise TypeError("`schema_version` must be a string.")
-        if not isinstance(self.song_info, SongInfo):
+        if not isinstance(self.song, SongInfo):
             raise TypeError("`song_info` must be of type SongInfo.")
-        if not isinstance(self.source_info, SourceInfo):
+        if not isinstance(self.source, SourceInfo):
             raise TypeError("`source_info` must be of type SourceInfo.")
-        self.song_info.validate()
-        self.source_info.validate()
+        self.song.validate()
+        self.source.validate()
 
 
 class TimingInfo(Base):
