@@ -1,4 +1,5 @@
 """Utilities."""
+import warnings
 from bisect import bisect_left, bisect_right
 from collections import OrderedDict
 from typing import List, Union
@@ -137,6 +138,7 @@ def quantize_by_beats(music: Music, beats: List[float]):
 
     """
     if music.timing.is_symbolic_timing:
+        warnings.warn("Skipped as the music object is in symbolic timing.")
         return
     beats = [float(beat) for beat in beats]
     for track in music.tracks:
