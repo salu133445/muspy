@@ -5,7 +5,15 @@ MusPy
 A Python package for processing symbolic music and working with common music
 datasets.
 """
-from . import datasets, metrics, representations, visualization
+from . import (
+    inputs,
+    outputs,
+    schemas,
+    datasets,
+    metrics,
+    representations,
+    visualization,
+)
 from .classes import (
     Annotation,
     KeySignature,
@@ -19,24 +27,24 @@ from .classes import (
     TimingInfo,
     Track,
 )
-from .io import from_dict, load, read, save, write
+from .inputs import *  # noqa: F401,F403
+from .outputs import *  # noqa: F401,F403
 from .music import Music
-from .representations import to_representation
-from .schemas import DEFAULT_SCHEMA_VERSION
+from .representations import *  # noqa: F401,F403
+from .schemas import *  # noqa: F401,F403
 from .utils import (
     append,
     clip,
     quantize,
     quantize_absolute_timing,
     quantize_by_beats,
-    transpose,
     to_ordered_dict,
+    transpose,
 )
 from .version import __version__
 
 __all__ = [
     "Annotation",
-    "DEFAULT_SCHEMA_VERSION",
     "KeySignature",
     "Lyric",
     "MetaData",
@@ -52,18 +60,16 @@ __all__ = [
     "append",
     "clip",
     "datasets",
-    "from_dict",
-    "load",
     "metrics",
     "quantize",
     "quantize_absolute_timing",
     "quantize_by_beats",
-    "read",
     "representations",
-    "save",
     "to_ordered_dict",
-    "to_representation",
     "transpose",
     "visualization",
-    "write",
 ]
+__all__.extend(inputs.__all__)
+__all__.extend(outputs.__all__)
+__all__.extend(representations.__all__)
+__all__.extend(schemas.__all__)

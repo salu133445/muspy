@@ -1,40 +1,43 @@
-"""Wrappers for I/O utilities."""
+"""Wrappers for output interface."""
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
-from .json import load_json, save_json
-from .midi import read_midi, write_midi
-from .musicxml import read_musicxml, write_musicxml
-from .yaml import load_yaml, save_yaml
+from pretty_midi import PrettyMIDI
+from pypianoroll import Multitrack
+
+from .json import save_json
+from .midi import to_pretty_midi, write_midi
+from .musicxml import write_musicxml
+from .pianoroll import to_pypianoroll
+from .yaml import save_yaml
 
 if TYPE_CHECKING:
     from ..music import Music
 
 
-def read(path: Union[str, Path]) -> "Music":
-    """Read a MIDI or a MusicXML file into a Music object.
+def to_object(music: "Music", target: str) -> Union[PrettyMIDI, Multitrack]:
+    """Return a PrettyMIDI or a Multitrack object converted from a Music object.
 
     Parameters
     ----------
-    path : str or Path
-        Path to the file to be read. The file format is inferred from the
-        extension.
+    music : :class:`muspy.Music` object
+        MusPy Music object to be converted.
+    target : str
+        Target class. Supported values are 'pretty_midi' and 'pypianoroll'.
 
     Returns
     -------
-    :class:`muspy.Music` object
-        Converted MusPy Music object.
-
-    See Also
-    --------
-    :func:`muspy.io.load`: load from a JSON or a YAML file
+    pm : :class:`pretty_midi.PrettyMIDI`
+        Converted PrettyMIDI object.
 
     """
-    if str(path).lower().endswith((".mid", ".midi")):
-        return read_midi(path)
-    if str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
-        return read_musicxml(path)
-    raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
+    if target.lower() == "pretty_midi":
+        return to_pretty_midi(music)
+    if target.lower() == "pypianoroll":
+        return to_pypianoroll(music)
+    raise ValueError(
+        "Got unsupported target class (expect 'pretty_midi' or 'pypianoroll')."
+    )
 
 
 def write(music: "Music", path: Union[str, Path]):
@@ -59,32 +62,6 @@ def write(music: "Music", path: Union[str, Path]):
     if str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
         return write_musicxml(music, path)
     raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
-
-
-def load(path: Union[str, Path]) -> "Music":
-    """Return a Music object loaded from a JSON or a YAML file.
-
-    Parameters
-    ----------
-    path : str or Path
-        Path to the file to be loaded. The file format is inferred from the
-        extension.
-
-    Returns
-    -------
-    :class:`muspy.Music` object
-        Loaded MusPy Music object.
-
-    See Also
-    --------
-    :func:`muspy.io.read`: read from other formats such as MIDI and MusicXML
-
-    """
-    if str(path).lower().endswith(".json"):
-        return load_json(path)
-    if str(path).lower().endswith((".yaml", ".yml")):
-        return load_yaml(path)
-    raise TypeError("Got unsupported file format (expect JSON or YAML).")
 
 
 def save(music: "Music", path: Union[str, Path]):

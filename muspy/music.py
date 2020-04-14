@@ -1,6 +1,6 @@
 """Core music object."""
 from pathlib import Path
-from typing import List, Optional, Union, Mapping
+from typing import List, Mapping, Optional, Union
 
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
@@ -18,22 +18,18 @@ from .classes import (
     remove_invalid_from_list,
     validate_list,
 )
-from .io import (
+from .outputs import (
     save,
     save_json,
     save_yaml,
+    to_object,
     to_pretty_midi,
     to_pypianoroll,
     write,
     write_midi,
     write_musicxml,
 )
-from .representations import (
-    to_event_representation,
-    to_note_representation,
-    to_pianoroll_representation,
-    to_representation,
-)
+from .representations import to_representation
 
 # pylint: disable=super-init-not-called
 
@@ -65,6 +61,7 @@ class Music(Base):
     """
 
     _attributes = [
+        "meta_data",
         "timing",
         "time_signatures",
         "key_signatures",
@@ -73,7 +70,6 @@ class Music(Base):
         "lyrics",
         "annotations",
         "tracks",
-        "meta_data",
     ]
 
     def __init__(
@@ -103,7 +99,7 @@ class Music(Base):
         self.tracks = tracks if tracks is not None else []
 
     @classmethod
-    def from_dict(cls, dict_: Mapping):
+    def from_dict(cls, dict_: Mapping) -> "Music":
         """Return an instance constructed from a dictionary.
 
         Parameters
@@ -417,38 +413,32 @@ class Music(Base):
         """
         write_musicxml(self, path)
 
-    def to(self, target: str):
-        """Convert to a target representation, object or dataset.
+    def to_object(self, target: str):
+        """Convert to a target class.
 
         Parameters
         ----------
         target : str
-            Target representation. Supported values are 'event', 'note',
-            'pianoroll', 'pretty_midi', 'pypianoroll'.
+            Target class. Supported values are 'pretty_midi' and 'pypianoroll'.
 
         """
-        if target.lower() in (
-            "event",
-            "event-based",
-            "note",
-            "note-based",
-            "pianoroll",
-            "piano-roll",
-        ):
-            return to_representation(self, target)
-        if target.lower() in ("pretty_midi"):
-            return to_pretty_midi(self)
-        if target.lower() in ("pypianoroll"):
-            return to_pypianoroll(self)
-        raise ValueError("Unsupported target : {}.".format(target))
+        return to_object(self, target)
+
+    def to_pretty_midi(self) -> PrettyMIDI:
+        """Return as a PrettyMIDI object."""
+        return to_pretty_midi(self)
+
+    def to_pypianoroll(self) -> Multitrack:
+        """Return as a Multitrack object."""
+        return to_pypianoroll(self)
 
     def to_representation(self, target: str):
-        """Convert to a target representation.
+        """Convert to a target class.
 
         Parameters
         ----------
         target : str
-            Target representation. Supported values are 'event', 'note',
+            Target representation. Supported values are 'event', 'note' and
             'pianoroll'.
 
         """
@@ -456,20 +446,12 @@ class Music(Base):
 
     def to_event_representation(self):
         """Return the event-based representation."""
-        to_event_representation(self)
+        to_representation(self, "event")
 
     def to_note_representation(self):
         """Return the note-based representation."""
-        to_note_representation(self)
+        to_representation(self, "note")
 
     def to_pianoroll_representation(self):
         """Return the pianoroll representation."""
-        to_pianoroll_representation(self)
-
-    def to_pretty_midi(self) -> PrettyMIDI:
-        """Return as a PrettyMIDI object."""
-        to_pretty_midi(self)
-
-    def to_pypianoroll(self) -> Multitrack:
-        """Return as a Multitrack object."""
-        to_pypianoroll(self)
+        to_representation(self, "pianoroll")
