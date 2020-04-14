@@ -7,7 +7,8 @@ MusPy documentation
    music
    classes
    utilities
-   io
+   inputs
+   outputs
    datasets
    representations
 
