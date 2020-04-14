@@ -1,9 +1,27 @@
 """Utilities."""
 from bisect import bisect_left, bisect_right
+from collections import OrderedDict
 from typing import List, Union
 
 from .classes import DEFAULT_BEAT_RESOLUTION, Note, Tempo, Track
 from .music import Music
+
+
+def to_ordered_dict(music: Music) -> OrderedDict:
+    """Return an OrderedDict converted from a Music object.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        MusPy music object to be converted.
+
+    Returns
+    -------
+    OrderedDict
+        Converted OrderedDict.
+
+    """
+    return music.to_ordered_dict()
 
 
 def append(

@@ -19,7 +19,7 @@ from .classes import (
     TimingInfo,
     Track,
 )
-from .io import from_dict, load, read, save, to_ordered_dict, write
+from .io import from_dict, load, read, save, write
 from .music import Music
 from .representations import to_representation
 from .schemas import DEFAULT_SCHEMA_VERSION
@@ -30,6 +30,7 @@ from .utils import (
     quantize_absolute_timing,
     quantize_by_beats,
     transpose,
+    to_ordered_dict,
 )
 from .version import __version__
 
