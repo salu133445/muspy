@@ -2,4 +2,5 @@
 Input Interface
 ===============
 
-TBA
+.. automodule:: muspy.inputs
+    :members:

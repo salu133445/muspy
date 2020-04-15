@@ -1,16 +1,30 @@
+===================
 MusPy documentation
 ===================
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
 
-   music
-   classes
-   utilities
-   inputs
-   outputs
-   datasets
-   representations
+    music
+    inputs
+    outputs
+    representations
+    datasets
+    schemas
+    metrics
+    visualization
+
+
+
+User Guide
+==========
+
+.. toctree::
+    :maxdepth: 2
+    :glob:
+
+    doc/index
+
 
 
 Indices and tables

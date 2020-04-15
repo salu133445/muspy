@@ -2,4 +2,5 @@
 Output Interface
 ================
 
-TBA
+.. automodule:: muspy.outputs
+    :members:

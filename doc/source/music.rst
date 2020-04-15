@@ -1,5 +1,7 @@
+============
 Music Object
 ============
 
-.. autoclass:: muspy.Music
-   :members:
+The core object of MusPy is the :class:`muspy.Music` object.
+
+TBA
