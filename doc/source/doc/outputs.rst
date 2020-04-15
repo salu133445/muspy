@@ -1,6 +1,6 @@
-================
-Output Interface
-================
+=============
+muspy.outputs
+=============
 
 .. automodule:: muspy.outputs
     :members:

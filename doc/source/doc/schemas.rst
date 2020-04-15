@@ -1,6 +1,6 @@
-================
-Schema Utilities
-================
+=============
+muspy.schemas
+=============
 
 .. automodule:: muspy.schemas
     :members:
