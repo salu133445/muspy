@@ -1,9 +1,6 @@
-============
-Core Classes
-============
-
-.. automodule:: muspy.music
-    :members:
+=============
+muspy.classes
+=============
 
 .. automodule:: muspy.classes
     :members:
