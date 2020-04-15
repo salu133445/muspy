@@ -54,6 +54,11 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"  # "alabaster"
+html_theme_options = {
+    "logo_only": True,
+    "titles_only": True,
+}
+html_logo = os.path.join("figs", "muspy.svg")
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
