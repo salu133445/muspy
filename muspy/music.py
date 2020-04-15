@@ -1,4 +1,10 @@
-"""Core music object."""
+"""
+Music object
+============
+
+Th is the core class of MusPy.
+
+"""
 from pathlib import Path
 from typing import List, Mapping, Optional, Union
 
@@ -31,11 +37,25 @@ from .outputs import (
 )
 from .representations import to_representation
 
+__all__ = ["Music"]
+
 # pylint: disable=super-init-not-called
 
 
 class Music(Base):
-    """A universal container for music data.
+    """A simple yet universal container for symbolic music.
+
+    This is the core class of MusPy, which provides I/O interfaces for common
+    formats. A Music object can be constructed in the following ways.
+
+    - :meth:`muspy.Music`: Construct by setting values for attributes.
+    - :meth:`muspy.Music.from_dict`: Construct from a dictionary that stores
+      the attributes and their values as key-value pairs.
+    - :func:`muspy.read`: Read from a MIDI or a MusicXML file.
+    - :func:`muspy.load`: Load from a JSON or a YAML file saved by
+      :func:`muspy.save` or :class:`muspy.Music.save`.
+    - :func:`muspy.from_object`: Convert from a :class:`pretty_midi.PrettyMIDI`
+      or :class:`pypianoroll.Multitrack` object.
 
     Attributes
     ----------

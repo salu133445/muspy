@@ -1,4 +1,11 @@
-"""Representation utilities."""
+"""
+Representations
+===============
+
+This module provides functions for converting a Music object to and from
+common representations.
+
+"""
 from .event import to_event_representation
 from .note import to_note_representation
 from .pianoroll import to_pianoroll_representation

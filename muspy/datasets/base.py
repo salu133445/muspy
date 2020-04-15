@@ -14,6 +14,12 @@ class MusicDataset:
     root : str or Path
         Root directory of the dataset.
 
+    Parameters
+    ----------
+    download : bool, optional
+        Whether to download the dataset after initialization. Defaults to
+        False.
+
     Notes
     -----
     This is the base class for any MusPy music dataset. To add a new
@@ -27,20 +33,18 @@ class MusicDataset:
     - archive (bool): Whether the file is an archive.
     - md5 (str, optional): Expected MD5 checksum of the file.
 
-    Here is an example.
+    Here is an example.::
 
-    ```
-    _sources = {
-        "example": {
-            "filename": "example.tar.gz",
-            "url": "https://www.example.com/example.tar.gz",
-            "archive": True,
-            "md5": None,
+        _sources = {
+            "example": {
+                "filename": "example.tar.gz",
+                "url": "https://www.example.com/example.tar.gz",
+                "archive": True,
+                "md5": None,
+            }
         }
-    }
 
-    _default_subsets = ["example"]
-    ```
+        _default_subsets = ["example"]
 
     """
 

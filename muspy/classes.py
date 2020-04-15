@@ -1,9 +1,31 @@
-"""Core classes."""
+"""
+Core classes
+============
+
+These are the core classes of MusPy. All these objects inherit from
+the base class :class:`muspy.Base`.
+
+"""
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from typing import Any, List, Mapping, Optional, Union
 
 from .schemas import DEFAULT_SCHEMA_VERSION
+
+__all__ = [
+    "Annotation",
+    "Base",
+    "KeySignature",
+    "Lyric",
+    "MetaData",
+    "Note",
+    "SongInfo",
+    "SourceInfo",
+    "Tempo",
+    "TimeSignature",
+    "TimingInfo",
+    "Track",
+]
 
 DEFAULT_BEAT_RESOLUTION = 24
 
@@ -22,7 +44,7 @@ def remove_invalid_from_list(list_: List) -> List:
 
 
 class Base(ABC):
-    """Base container for MusPy objects.
+    """Base class for MusPy objects.
 
     It implements the following three handy methods.
 
