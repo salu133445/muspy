@@ -1,4 +1,6 @@
-"""Output interface.
+"""
+Output Interfaces
+=================
 
 MusPy provides the following output interfaces.
 

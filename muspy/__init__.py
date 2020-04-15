@@ -29,14 +29,16 @@ from .version import __version__
 
 __all__ = [
     "__version__",
+    "classes",
+    "core",
     "datasets",
     "inputs",
     "metrics",
+    "music",
     "outputs",
     "representations",
     "schemas",
     "visualization",
-    "classes",
 ]
 __all__.extend(classes.__all__)
 __all__.extend(core.__all__)

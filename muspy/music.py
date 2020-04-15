@@ -2,7 +2,7 @@
 Music object
 ============
 
-Th is the core class of MusPy.
+This is the core class of MusPy.
 
 """
 from pathlib import Path

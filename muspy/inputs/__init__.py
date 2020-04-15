@@ -1,4 +1,6 @@
-"""Input interfaces.
+"""
+Input Interfaces
+================
 
 MusPy provides the following input interfaces.
 
