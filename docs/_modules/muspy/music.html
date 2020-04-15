@@ -80,12 +80,16 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../classes.html">Core Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../utilities.html">Manipulation Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Input Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../outputs.html">Output Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schemas.html">Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
             
@@ -149,7 +153,13 @@
            <div itemprop="articleBody">
             
   <h1>Source code for muspy.music</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Core music object.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Music object</span>
+<span class="sd">============</span>
+
+<span class="sd">Th is the core class of MusPy.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -182,11 +192,25 @@
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.representations</span> <span class="kn">import</span> <span class="n">to_representation</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Music&quot;</span><span class="p">]</span>
+
 <span class="c1"># pylint: disable=super-init-not-called</span>
 
 
-<div class="viewcode-block" id="Music"><a class="viewcode-back" href="../../music.html#muspy.Music">[docs]</a><span class="k">class</span> <span class="nc">Music</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A universal container for music data.</span>
+<div class="viewcode-block" id="Music"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music">[docs]</a><span class="k">class</span> <span class="nc">Music</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A simple yet universal container for symbolic music.</span>
+
+<span class="sd">    This is the core class of MusPy, which provides I/O interfaces for common</span>
+<span class="sd">    formats. A Music object can be constructed in the following ways.</span>
+
+<span class="sd">    - :meth:`muspy.Music`: Construct by setting values for attributes.</span>
+<span class="sd">    - :meth:`muspy.Music.from_dict`: Construct from a dictionary that stores</span>
+<span class="sd">      the attributes and their values as key-value pairs.</span>
+<span class="sd">    - :func:`muspy.read`: Read from a MIDI or a MusicXML file.</span>
+<span class="sd">    - :func:`muspy.load`: Load from a JSON or a YAML file saved by</span>
+<span class="sd">      :func:`muspy.save` or :class:`muspy.Music.save`.</span>
+<span class="sd">    - :func:`muspy.from_object`: Convert from a :class:`pretty_midi.PrettyMIDI`</span>
+<span class="sd">      or :class:`pypianoroll.Multitrack` object.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -249,7 +273,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracks</span> <span class="k">if</span> <span class="n">tracks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Music.from_dict"><a class="viewcode-back" href="../../music.html#muspy.Music.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Music.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
@@ -309,7 +333,7 @@
             <span class="n">tracks</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.reset"><a class="viewcode-back" href="../../music.html#muspy.Music.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.reset"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Reset the object.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timing</span> <span class="o">=</span> <span class="n">TimingInfo</span><span class="p">()</span>
@@ -320,7 +344,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-<div class="viewcode-block" id="Music.validate"><a class="viewcode-back" href="../../music.html#muspy.Music.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`meta_data` must be of type MetaData.&quot;</span><span class="p">)</span>
@@ -335,7 +359,7 @@
         <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
         <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.remove_invalid"><a class="viewcode-back" href="../../music.html#muspy.Music.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove invalid objects.</span>
 
 <span class="sd">        This includes time signatures, key signatures, tempos, lyrics and</span>
@@ -350,13 +374,13 @@
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
             <span class="n">track</span><span class="o">.</span><span class="n">remove_invalid</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Music.get_active_length"><a class="viewcode-back" href="../../music.html#muspy.Music.get_active_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="Music.get_active_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.get_active_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Return the end time of the last note in all tracks.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
             <span class="p">[</span><span class="n">track</span><span class="o">.</span><span class="n">get_active_length</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">]</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.get_length"><a class="viewcode-back" href="../../music.html#muspy.Music.get_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<div class="viewcode-block" id="Music.get_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.get_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last event in all tracks.</span>
 
 <span class="sd">        This includes time signatures, key signatures, tempos notes onsets,</span>
@@ -381,7 +405,7 @@
             <span class="nb">max</span><span class="p">([</span><span class="n">annotation</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">]),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.append"><a class="viewcode-back" href="../../music.html#muspy.Music.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
 
 <span class="sd">        Parameters</span>
@@ -411,7 +435,7 @@
                 <span class="s2">&quot;Annotation or Track object, but got </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.clip"><a class="viewcode-back" href="../../music.html#muspy.Music.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
+<div class="viewcode-block" id="Music.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">127</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clip the velocity of each note for each track.</span>
@@ -427,14 +451,11 @@
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
             <span class="n">track</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.sort"><a class="viewcode-back" href="../../music.html#muspy.Music.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sort the time-stamped objects with respect to event time.</span>
 
-<span class="sd">        Refer to :func:`muspy.sort`: for full documentation.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.sort`: equivalent function</span>
+<span class="sd">        This will sort time signatures, key signatures, tempos, lyrics and</span>
+<span class="sd">        annotations, along with notes, lyrics and annotations for each track.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
@@ -445,23 +466,23 @@
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
             <span class="n">track</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Music.transpose"><a class="viewcode-back" href="../../music.html#muspy.Music.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transpose all the notes for all tracks by a number of semitones.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        semitone : int</span>
-<span class="sd">            The number of semitones to transpose the notes. A positive value</span>
-<span class="sd">            raises the pitches, while a negative value lowers the pitches.</span>
+<span class="sd">            Number of semitones to transpose the notes. A positive value raises</span>
+<span class="sd">            the pitches, while a negative value lowers the pitches.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
             <span class="n">track</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">semitone</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.save"><a class="viewcode-back" href="../../music.html#muspy.Music.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.save"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Save loselessly to a JSON or a YAML file.</span>
 
-<span class="sd">        Refer to :func:`muspy.io.save`: for full documentation.</span>
+<span class="sd">        Refer to :func:`muspy.save`: for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -471,16 +492,16 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.io.save`: equivalent function</span>
-<span class="sd">        :func:`muspy.io.write`: write to other formats such as MIDI and MusicXML</span>
+<span class="sd">        :func:`muspy.save`: equivalent function</span>
+<span class="sd">        :func:`muspy.write`: write to other formats such as MIDI and MusicXML</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.save_json"><a class="viewcode-back" href="../../music.html#muspy.Music.save_json">[docs]</a>    <span class="k">def</span> <span class="nf">save_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.save_json"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.save_json">[docs]</a>    <span class="k">def</span> <span class="nf">save_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Save loselessly to a JSON file.</span>
 
-<span class="sd">        Refer to :func:`muspy.io.save_json`: for full documentation.</span>
+<span class="sd">        Refer to :func:`muspy.save_json`: for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -489,15 +510,15 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.io.save_json`: equivalent function</span>
+<span class="sd">        :func:`muspy.save_json`: equivalent function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.save_yaml"><a class="viewcode-back" href="../../music.html#muspy.Music.save_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">save_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.save_yaml"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.save_yaml">[docs]</a>    <span class="k">def</span> <span class="nf">save_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Save loselessly to a YAML file.</span>
 
-<span class="sd">        Refer to :func:`muspy.io.save_yaml`: for full documentation.</span>
+<span class="sd">        Refer to :func:`muspy.save_yaml`: for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -506,15 +527,15 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.io.save_yaml`: equivalent function</span>
+<span class="sd">        :func:`muspy.save_yaml`: equivalent function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.write"><a class="viewcode-back" href="../../music.html#muspy.Music.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.write"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Write to a MIDI or a MusicXML file.</span>
 
-<span class="sd">        Refer to :func:`muspy.io.write`: for full documentation.</span>
+<span class="sd">        Refer to :func:`muspy.write`: for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -524,16 +545,16 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.io.write`: equivalent function</span>
-<span class="sd">        :func:`muspy.io.save`: losslessly save to a JSON and a YAML file</span>
+<span class="sd">        :func:`muspy.write`: equivalent function</span>
+<span class="sd">        :func:`muspy.save`: losslessly save to a JSON and a YAML file</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.write_midi"><a class="viewcode-back" href="../../music.html#muspy.Music.write_midi">[docs]</a>    <span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.write_midi"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.write_midi">[docs]</a>    <span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Write to a MIDI file.</span>
 
-<span class="sd">        Refer to :func:`muspy.io.write_midi`: for full documentation.</span>
+<span class="sd">        Refer to :func:`muspy.write_midi`: for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -542,15 +563,15 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.io.write_midi(self, path)`: equivalent function</span>
+<span class="sd">        :func:`muspy.write_midi`: equivalent function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.write_musicxml"><a class="viewcode-back" href="../../music.html#muspy.Music.write_musicxml">[docs]</a>    <span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.write_musicxml"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.write_musicxml">[docs]</a>    <span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Write to a MusicXML file.</span>
 
-<span class="sd">        Refer to :func:`muspy.io.write_musicxml`: for full documentation.</span>
+<span class="sd">        Refer to :func:`muspy.write_musicxml`: for full documentation.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -559,12 +580,12 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.io.write_musicxml(self, path)`: equivalent function</span>
+<span class="sd">        :func:`muspy.write_musicxml`: equivalent function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">write_musicxml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_object"><a class="viewcode-back" href="../../music.html#muspy.Music.to_object">[docs]</a>    <span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.to_object"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_object">[docs]</a>    <span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Convert to a target class.</span>
 
 <span class="sd">        Parameters</span>
@@ -575,15 +596,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_pretty_midi"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pretty_midi">[docs]</a>    <span class="k">def</span> <span class="nf">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrettyMIDI</span><span class="p">:</span>
+<div class="viewcode-block" id="Music.to_pretty_midi"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_pretty_midi">[docs]</a>    <span class="k">def</span> <span class="nf">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PrettyMIDI</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return as a PrettyMIDI object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_pypianoroll"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pypianoroll">[docs]</a>    <span class="k">def</span> <span class="nf">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Multitrack</span><span class="p">:</span>
+<div class="viewcode-block" id="Music.to_pypianoroll"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_pypianoroll">[docs]</a>    <span class="k">def</span> <span class="nf">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Multitrack</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return as a Multitrack object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_pypianoroll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.to_representation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Convert to a target class.</span>
 
 <span class="sd">        Parameters</span>
@@ -595,15 +616,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_event_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_event_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_event_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.to_event_representation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_event_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_event_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the event-based representation.&quot;&quot;&quot;</span>
         <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_note_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_note_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_note_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.to_note_representation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_note_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_note_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the note-based representation.&quot;&quot;&quot;</span>
         <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;note&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.to_pianoroll_representation"><a class="viewcode-back" href="../../music.html#muspy.Music.to_pianoroll_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_pianoroll_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Music.to_pianoroll_representation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.to_pianoroll_representation">[docs]</a>    <span class="k">def</span> <span class="nf">to_pianoroll_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the pianoroll representation.&quot;&quot;&quot;</span>
         <span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;pianoroll&quot;</span><span class="p">)</span></div></div>
 </pre></div>

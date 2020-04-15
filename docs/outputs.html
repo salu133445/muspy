@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Datasets" href="datasets.html" />
+    <link rel="next" title="Representations" href="representations.html" />
     <link rel="prev" title="Input Interface" href="inputs.html" /> 
 </head>
 
@@ -82,12 +82,16 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classes.html">Core Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utilities.html">Manipulation Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inputs.html">Input Interface</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Output Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
 </ul>
 
             
@@ -154,173 +158,7 @@
             
   <div class="section" id="output-interface">
 <h1>Output Interface<a class="headerlink" href="#output-interface" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="wrappers">
-<h2>Wrappers<a class="headerlink" href="#wrappers" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="muspy.outputs.save">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/wrappers.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save a Music object loselessly to a JSON or a YAML file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be saved.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the file. The file format is inferred from the
-extension.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.io.write()</span></code></dt><dd><p>write to other formats such as MIDI and MusicXML</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">Notes</p>
-<p>The conversion can be lossy if any nonserializable object is used (for
-example, in an Annotation object, which can store data of any type).</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.write">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/wrappers.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write a MusPy Music object to a MIDI or a MusicXML file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted. The file format is inferred from
-the extension.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the file. The file format is inferred from the
-extension.</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.io.save()</span></code></dt><dd><p>losslessly save to a JSON or a YAML file</p>
-</dd>
-</dl>
-</div>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.to_object">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/wrappers.html#to_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a PrettyMIDI or a Multitrack object converted from a Music object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p></li>
-<li><p><strong>target</strong> (<em>str</em>) – Target class. Supported values are ‘pretty_midi’ and ‘pypianoroll’.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>pm</strong> – Converted PrettyMIDI object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="formats">
-<h2>Formats<a class="headerlink" href="#formats" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="muspy.outputs.save_json">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">save_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/json.html#save_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.save_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save a Music object to a JSON file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be saved.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the JSON file.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.save_yaml">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">save_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/yaml.html#save_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.save_yaml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Save a Music object to a YAML file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be saved.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the YAML file.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.write_midi">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/midi.html#write_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.write_midi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write a Music object to a MIDI file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the MIDI file.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.write_musicxml">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">write_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/musicxml.html#write_musicxml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.write_musicxml" title="Permalink to this definition">¶</a></dt>
-<dd><p>Write a Music object to a MusicXML file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the MusicXML file.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="objects">
-<h2>Objects<a class="headerlink" href="#objects" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt id="muspy.outputs.to_pretty_midi">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pretty_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/midi.html#to_pretty_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pretty_midi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a PrettyMIDI object converted from a Music object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>pm</strong> – Converted PrettyMIDI object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.to_pypianoroll">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pypianoroll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/pianoroll.html#to_pypianoroll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pypianoroll" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a Multitrack object converted from a Music object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="music.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>multitrack</strong> – Converted Multitrack object.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
+<p>TBA</p>
 </div>
 
 
@@ -331,7 +169,7 @@ extension.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="datasets.html" class="btn btn-neutral float-right" title="Datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="representations.html" class="btn btn-neutral float-right" title="Representations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="inputs.html" class="btn btn-neutral float-left" title="Input Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

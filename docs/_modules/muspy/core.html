@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.utils &mdash; MusPy  documentation</title>
+  <title>muspy.core &mdash; MusPy  documentation</title>
   
 
   
@@ -80,12 +80,16 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../classes.html">Core Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../utilities.html">Manipulation Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Input Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../outputs.html">Output Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schemas.html">Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
             
@@ -133,7 +137,7 @@
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.utils</li>
+      <li>muspy.core</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -148,8 +152,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Utilities.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.core</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Core functions</span>
+<span class="sd">==============</span>
+
+<span class="sd">Core functions that can be applied to a :class:`muspy.Music` object.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">bisect</span> <span class="kn">import</span> <span class="n">bisect_left</span><span class="p">,</span> <span class="n">bisect_right</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
@@ -158,8 +168,19 @@
 <span class="kn">from</span> <span class="nn">.classes</span> <span class="kn">import</span> <span class="n">DEFAULT_BEAT_RESOLUTION</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">.music</span> <span class="kn">import</span> <span class="n">Music</span>
 
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;append&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;quantize&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;quantize_absolute_timing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;quantize_by_beats&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sort&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;transpose&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
-<span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+
+<div class="viewcode-block" id="to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.to_ordered_dict">[docs]</a><span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return an OrderedDict converted from a Music object.</span>
 
 <span class="sd">    Parameters</span>
@@ -173,10 +194,10 @@
 <span class="sd">        Converted OrderedDict.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="append"><a class="viewcode-back" href="../../utilities.html#muspy.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span>
+<div class="viewcode-block" id="append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span>
     <span class="n">obj1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">obj2</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
@@ -190,14 +211,14 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : MusPy objects (see below)</span>
+<span class="sd">    obj : MusPy objects (see above)</span>
 <span class="sd">        Object to be appended.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">obj1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../utilities.html#muspy.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">]):</span>
+<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Sort all the time-stamped objects with respect to event time.</span>
 
 <span class="sd">    If a :class:`muspy.Music` is given, this will sort time signatures, key</span>
@@ -214,7 +235,7 @@
     <span class="n">obj</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../utilities.html#muspy.clip">[docs]</a><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
+<div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.clip">[docs]</a><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">],</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Clip the velocity of each note.</span>
@@ -233,7 +254,7 @@
     <span class="n">obj</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../utilities.html#muspy.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">],</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">],</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Transpose all the notes by a number of semitones.</span>
 
 <span class="sd">    Parameters</span>
@@ -249,7 +270,7 @@
     <span class="n">obj</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">semitone</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">quantize_absolute_timing</span><span class="p">(</span>
+<div class="viewcode-block" id="quantize_absolute_timing"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.quantize_absolute_timing">[docs]</a><span class="k">def</span> <span class="nf">quantize_absolute_timing</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beat_resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_BEAT_RESOLUTION</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Quantize all the time-stamped objects, assuming absolute timing.</span>
@@ -274,10 +295,10 @@
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">/</span> <span class="n">step</span><span class="p">)</span>
             <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">/</span> <span class="n">step</span><span class="p">)</span>
-    <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
-<span class="k">def</span> <span class="nf">quantize_by_beats</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">beats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<div class="viewcode-block" id="quantize_by_beats"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.quantize_by_beats">[docs]</a><span class="k">def</span> <span class="nf">quantize_by_beats</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">beats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Quantize all the symbolic-time-stamped objects.</span>
 
 <span class="sd">    Parameters</span>
@@ -296,15 +317,15 @@
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">bisect_left</span><span class="p">(</span><span class="n">beats</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
             <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">bisect_right</span><span class="p">(</span><span class="n">beats</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
-    <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span> <span class="o">=</span> <span class="kc">True</span></div>
 
 
-<span class="k">def</span> <span class="nf">quantize</span><span class="p">(</span>
+<div class="viewcode-block" id="quantize"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.quantize">[docs]</a><span class="k">def</span> <span class="nf">quantize</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">beat_resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_BEAT_RESOLUTION</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Quantize all the time-stamped objects.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span><span class="p">:</span>
-        <span class="n">quantize_absolute_timing</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">beat_resolution</span><span class="p">)</span>
+        <span class="n">quantize_absolute_timing</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">beat_resolution</span><span class="p">)</span></div>
 
     <span class="c1"># if music.down_beats:</span>
     <span class="c1"># if not music.time_signature_changes:</span>

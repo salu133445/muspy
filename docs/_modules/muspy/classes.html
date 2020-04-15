@@ -80,12 +80,16 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../classes.html">Core Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../utilities.html">Manipulation Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Input Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../outputs.html">Output Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schemas.html">Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
             
@@ -149,12 +153,34 @@
            <div itemprop="articleBody">
             
   <h1>Source code for muspy.classes</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Core classes.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Core classes</span>
+<span class="sd">============</span>
+
+<span class="sd">These are the core classes of MusPy. All these objects inherit from</span>
+<span class="sd">the base class :class:`muspy.Base`.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.schemas</span> <span class="kn">import</span> <span class="n">DEFAULT_SCHEMA_VERSION</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Annotation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Base&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;KeySignature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Lyric&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MetaData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Note&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SongInfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SourceInfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Tempo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeSignature&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimingInfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Track&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 
 <span class="n">DEFAULT_BEAT_RESOLUTION</span> <span class="o">=</span> <span class="mi">24</span>
 
@@ -172,8 +198,8 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()]</span>
 
 
-<span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base container for MusPy objects.</span>
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for MusPy objects.</span>
 
 <span class="sd">    It implements the following three handy methods.</span>
 
@@ -211,7 +237,7 @@
             <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
         <span class="p">)</span>
 
-    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
@@ -225,9 +251,9 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">:</span>
                 <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing value for attribute </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">dict_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">dict_</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the object as an OrderedDict.&quot;&quot;&quot;</span>
         <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
@@ -248,23 +274,23 @@
                 <span class="p">}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ordered_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">return</span> <span class="n">ordered_dict</span>
+        <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
-    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.validate">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
-    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return True if all attributes are valid.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="SongInfo"><a class="viewcode-back" href="../../classes.html#muspy.SongInfo">[docs]</a><span class="k">class</span> <span class="nc">SongInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="SongInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SongInfo">[docs]</a><span class="k">class</span> <span class="nc">SongInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for song information.</span>
 
 <span class="sd">    Attributes</span>
@@ -290,7 +316,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">artist</span> <span class="o">=</span> <span class="n">artist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">composers</span> <span class="o">=</span> <span class="n">composers</span>
 
-<div class="viewcode-block" id="SongInfo.validate"><a class="viewcode-back" href="../../classes.html#muspy.SongInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SongInfo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SongInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`title` must be a string.&quot;</span><span class="p">)</span>
@@ -303,7 +329,7 @@
                 <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`composers` must be a list of string.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="SourceInfo"><a class="viewcode-back" href="../../classes.html#muspy.SourceInfo">[docs]</a><span class="k">class</span> <span class="nc">SourceInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="SourceInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SourceInfo">[docs]</a><span class="k">class</span> <span class="nc">SourceInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for source information.</span>
 
 <span class="sd">    Attributes</span>
@@ -333,7 +359,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">format_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">id_</span>
 
-<div class="viewcode-block" id="SourceInfo.validate"><a class="viewcode-back" href="../../classes.html#muspy.SourceInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SourceInfo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SourceInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`collection` must be a string.&quot;</span><span class="p">)</span>
@@ -346,7 +372,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`format` must be one of &#39;midi&#39;, &#39;musicxml&#39;.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="MetaData"><a class="viewcode-back" href="../../classes.html#muspy.MetaData">[docs]</a><span class="k">class</span> <span class="nc">MetaData</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="MetaData"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData">[docs]</a><span class="k">class</span> <span class="nc">MetaData</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for meta data.</span>
 
 <span class="sd">    Attributes</span>
@@ -372,7 +398,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">song</span> <span class="o">=</span> <span class="n">song</span> <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">SongInfo</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span> <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">SourceInfo</span><span class="p">()</span>
 
-<div class="viewcode-block" id="MetaData.from_dict"><a class="viewcode-back" href="../../classes.html#muspy.MetaData.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="MetaData.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
@@ -389,7 +415,7 @@
             <span class="n">SourceInfo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="MetaData.validate"><a class="viewcode-back" href="../../classes.html#muspy.MetaData.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MetaData.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_version</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`schema_version` must be a string.&quot;</span><span class="p">)</span>
@@ -401,7 +427,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="TimingInfo"><a class="viewcode-back" href="../../classes.html#muspy.TimingInfo">[docs]</a><span class="k">class</span> <span class="nc">TimingInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="TimingInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimingInfo">[docs]</a><span class="k">class</span> <span class="nc">TimingInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for song information.</span>
 
 <span class="sd">    Attributes</span>
@@ -423,7 +449,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic_timing</span> <span class="o">=</span> <span class="n">is_symbolic_timing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">beat_resolution</span> <span class="o">=</span> <span class="n">beat_resolution</span>
 
-<div class="viewcode-block" id="TimingInfo.validate"><a class="viewcode-back" href="../../classes.html#muspy.TimingInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TimingInfo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimingInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic_timing</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`is_symbolic_timing` must be a boolean.&quot;</span><span class="p">)</span>
@@ -433,7 +459,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`beat_resolution` must be a positive integer.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Note"><a class="viewcode-back" href="../../classes.html#muspy.Note">[docs]</a><span class="k">class</span> <span class="nc">Note</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Note"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note">[docs]</a><span class="k">class</span> <span class="nc">Note</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for note.</span>
 
 <span class="sd">    Attributes</span>
@@ -469,7 +495,7 @@
         <span class="sd">&quot;&quot;&quot;Duration of the note.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
 
-<div class="viewcode-block" id="Note.validate"><a class="viewcode-back" href="../../classes.html#muspy.Note.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Note.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`start` must be an integer or a float.&quot;</span><span class="p">)</span>
@@ -488,7 +514,7 @@
         <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`velocity` must be in between 0 to 127.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Note.transpose"><a class="viewcode-back" href="../../classes.html#muspy.Note.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="Note.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transpose the note by a number of semitones.</span>
 
 <span class="sd">        Parameters</span>
@@ -500,7 +526,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">+=</span> <span class="n">semitone</span></div>
 
-<div class="viewcode-block" id="Note.clip"><a class="viewcode-back" href="../../classes.html#muspy.Note.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
+<div class="viewcode-block" id="Note.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clip the velocity of the note.</span>
 
 <span class="sd">        Parameters</span>
@@ -518,7 +544,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">lower</span></div></div>
 
 
-<div class="viewcode-block" id="Lyric"><a class="viewcode-back" href="../../classes.html#muspy.Lyric">[docs]</a><span class="k">class</span> <span class="nc">Lyric</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Lyric"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Lyric">[docs]</a><span class="k">class</span> <span class="nc">Lyric</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for lyric.</span>
 
 <span class="sd">    Attributes</span>
@@ -540,7 +566,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyric</span> <span class="o">=</span> <span class="n">lyric</span>
 
-<div class="viewcode-block" id="Lyric.validate"><a class="viewcode-back" href="../../classes.html#muspy.Lyric.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Lyric.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Lyric.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
@@ -550,7 +576,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be a positive number.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../../classes.html#muspy.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for annotation.</span>
 
 <span class="sd">    Attributes</span>
@@ -572,7 +598,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">annotation</span>
 
-<div class="viewcode-block" id="Annotation.validate"><a class="viewcode-back" href="../../classes.html#muspy.Annotation.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Annotation.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Annotation.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
@@ -580,7 +606,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be a positive number.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="TimeSignature"><a class="viewcode-back" href="../../classes.html#muspy.TimeSignature">[docs]</a><span class="k">class</span> <span class="nc">TimeSignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimeSignature">[docs]</a><span class="k">class</span> <span class="nc">TimeSignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for time signature.</span>
 
 <span class="sd">    Attributes</span>
@@ -605,7 +631,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">=</span> <span class="n">numerator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">=</span> <span class="n">denominator</span>
 
-<div class="viewcode-block" id="TimeSignature.validate"><a class="viewcode-back" href="../../classes.html#muspy.TimeSignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TimeSignature.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimeSignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
@@ -619,7 +645,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`denominator` must be a positive number.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="KeySignature"><a class="viewcode-back" href="../../classes.html#muspy.KeySignature">[docs]</a><span class="k">class</span> <span class="nc">KeySignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="KeySignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.KeySignature">[docs]</a><span class="k">class</span> <span class="nc">KeySignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for key signature.</span>
 
 <span class="sd">    Attributes</span>
@@ -644,7 +670,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
 
-<div class="viewcode-block" id="KeySignature.validate"><a class="viewcode-back" href="../../classes.html#muspy.KeySignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="KeySignature.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.KeySignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
@@ -654,7 +680,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`mode` must be an integer.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Tempo"><a class="viewcode-back" href="../../classes.html#muspy.Tempo">[docs]</a><span class="k">class</span> <span class="nc">Tempo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Tempo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Tempo">[docs]</a><span class="k">class</span> <span class="nc">Tempo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for key signature.</span>
 
 <span class="sd">    Attributes</span>
@@ -676,7 +702,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tempo.validate"><a class="viewcode-back" href="../../classes.html#muspy.Tempo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tempo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Tempo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or float.&quot;</span><span class="p">)</span>
@@ -684,7 +710,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`tempo` must be an integer or a float.&quot;</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../classes.html#muspy.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for music track.</span>
 
 <span class="sd">    Attributes</span>
@@ -730,7 +756,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Track.from_dict"><a class="viewcode-back" href="../../classes.html#muspy.Track.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Track.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
@@ -762,7 +788,7 @@
             <span class="n">lyrics</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.validate"><a class="viewcode-back" href="../../classes.html#muspy.Track.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Track.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`program` must be a string.&quot;</span><span class="p">)</span>
@@ -782,19 +808,19 @@
         <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">)</span>
         <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.remove_invalid"><a class="viewcode-back" href="../../classes.html#muspy.Track.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Track.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove invalid objects, including notes, lyrics and annotations.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.get_active_length"><a class="viewcode-back" href="../../classes.html#muspy.Track.get_active_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Track.get_active_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_active_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the end time of the last note.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="Track.get_length"><a class="viewcode-back" href="../../classes.html#muspy.Track.get_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Track.get_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
 
 <span class="sd">        This includes notes onsets, note offsets, lyrics and annotations.</span>
@@ -812,7 +838,7 @@
             <span class="nb">max</span><span class="p">([</span><span class="n">annotation</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">]),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.append"><a class="viewcode-back" href="../../classes.html#muspy.Track.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">]):</span>
+<div class="viewcode-block" id="Track.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
 
 <span class="sd">        Parameters</span>
@@ -836,7 +862,7 @@
                 <span class="p">)</span>
             <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.clip"><a class="viewcode-back" href="../../classes.html#muspy.Track.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
+<div class="viewcode-block" id="Track.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clip the velocity of each note.</span>
 
 <span class="sd">        Parameters</span>
@@ -850,7 +876,7 @@
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">note</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.sort"><a class="viewcode-back" href="../../classes.html#muspy.Track.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Track.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sort the time-stamped objects with respect to event time.</span>
 
 <span class="sd">        This will sort notes, lyrics and annotations.</span>
@@ -860,7 +886,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.transpose"><a class="viewcode-back" href="../../classes.html#muspy.Track.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="Track.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
 
 <span class="sd">        Parameters</span>

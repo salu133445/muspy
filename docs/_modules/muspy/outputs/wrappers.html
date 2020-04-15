@@ -80,12 +80,16 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">Core Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../utilities.html">Manipulation Utilities</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../inputs.html">Input Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../outputs.html">Output Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../schemas.html">Schemas</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
             
@@ -166,7 +170,7 @@
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../outputs.html#muspy.outputs.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">]:</span>
+<div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a PrettyMIDI or a Multitrack object converted from a Music object.</span>
 
 <span class="sd">    Parameters</span>
@@ -191,7 +195,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write"><a class="viewcode-back" href="../../../outputs.html#muspy.outputs.write">[docs]</a><span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="write"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write">[docs]</a><span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Write a MusPy Music object to a MIDI or a MusicXML file.</span>
 
 <span class="sd">    Parameters</span>
@@ -205,7 +209,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.io.save`: losslessly save to a JSON or a YAML file</span>
+<span class="sd">    :func:`muspy.save`: losslessly save to a JSON or a YAML file</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mid&quot;</span><span class="p">,</span> <span class="s2">&quot;.midi&quot;</span><span class="p">)):</span>
@@ -215,7 +219,7 @@
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Got unsupported file format (expect MIDI or MusicXML).&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../../outputs.html#muspy.outputs.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="save"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Save a Music object loselessly to a JSON or a YAML file.</span>
 
 <span class="sd">    Parameters</span>
@@ -228,7 +232,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.io.write`: write to other formats such as MIDI and MusicXML</span>
+<span class="sd">    :func:`muspy.write`: write to other formats such as MIDI and MusicXML</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
