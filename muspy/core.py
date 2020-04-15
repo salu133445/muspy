@@ -1,4 +1,10 @@
-"""Utilities."""
+"""
+Core functions
+==============
+
+Core functions that can be applied to a :class:`muspy.Music` object.
+
+"""
 import warnings
 from bisect import bisect_left, bisect_right
 from collections import OrderedDict
@@ -6,6 +12,17 @@ from typing import List, Union
 
 from .classes import DEFAULT_BEAT_RESOLUTION, Note, Tempo, Track
 from .music import Music
+
+__all__ = [
+    "append",
+    "clip",
+    "quantize",
+    "quantize_absolute_timing",
+    "quantize_by_beats",
+    "sort",
+    "to_ordered_dict",
+    "transpose",
+]
 
 
 def to_ordered_dict(music: Music) -> OrderedDict:
