@@ -104,12 +104,12 @@
                         "type": "number"
                     },
                     "root": {
-                        "description": "Root: {C, C#, Db, D, D#, Eb, E, F, F#, Gb, G, G#, Ab, A, A#, Bb, B}",
-                        "enum": ["C", "C#", "Db", "D", "D#", "Eb", "E", "F", "F#", "Gb", "G", "G#", "Ab", "A", "A#", "Bb", "B"]
+                        "description": "Root: {A, B, C, D, E, F, G} with optional suffix {#, b}",
+                        "type": "string"
                     },
                     "mode": {
-                        "description": "Mode: {major, minor, null}",
-                        "enum": ["major", "minor", null]
+                        "description": "Mode: {major, minor}",
+                        "enum": ["major", "minor"]
                     }
                 }
             }
@@ -168,6 +168,10 @@
                     },
                     "annotation": {
                         "description": "Content of annotation"
+                    },
+                    "group": {
+                        "description": "Annotation group",
+                        "type": "string"
                     }
                 }
             }
@@ -178,10 +182,6 @@
             "items": {
                 "type": "object",
                 "properties": {
-                    "name": {
-                        "description": "Name of track",
-                        "type": ["string", "null"]
-                    },
                     "program": {
                         "description": "# Program number (according to General MIDI specification)",
                         "type": "number"
@@ -189,6 +189,10 @@
                     "is_drum": {
                         "description": "A boolean indicator that indicates whether it is a percussion track",
                         "type": "boolean"
+                    },
+                    "name": {
+                        "description": "Name of track",
+                        "type": ["string", "null"]
                     },
                     "notes": {
                         "description": "Notes",
@@ -244,6 +248,10 @@
                                 },
                                 "annotation": {
                                     "description": "Content of annotation"
+                                },
+                                "group": {
+                                    "description": "Annotation group",
+                                    "type": "string"
                                 }
                             }
                         }

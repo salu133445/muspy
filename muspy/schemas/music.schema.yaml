@@ -24,7 +24,7 @@ time_signature:
 key_signature:
   time: num()
   root: str()
-  mode: str()
+  mode: enum('major', 'minor')
 
 tempo:
   time: num()
@@ -33,9 +33,9 @@ tempo:
 ---
 
 track:
-  name: str()
   program: int()
   is_drum: bool()
+  name: str()
   notes: list(include("note"))
   lyrics: list(include("lyric"))
   annotations: list(include("annotation"))
@@ -53,6 +53,7 @@ lyric:
 annotation:
   time: num()
   annotation: any(bool(), num(), str(), list(), map())
+  group: str(required=False)
 
 meta_:
   schema_version: regex("[0-9].[0-9]")
