@@ -154,12 +154,12 @@ class SongInfo(Base):
 
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""
-        if not isinstance(self.title, str):
-            raise TypeError("`title` must be a string.")
-        if not isinstance(self.artist, str):
-            raise TypeError("`artist` must be a string.")
-        if not isinstance(self.composers, list):
-            raise TypeError("`composers` must be a list.")
+        if not isinstance(self.title, (str, type(None))):
+            raise TypeError("`title` must be a string or None.")
+        if not isinstance(self.artist, (str, type(None))):
+            raise TypeError("`artist` must be a string or None.")
+        if not isinstance(self.composers, (list, type(None))):
+            raise TypeError("`composers` must be a list or None.")
         for composer in self.composers:
             if not isinstance(composer, str):
                 raise TypeError("`composers` must be a list of string.")
@@ -197,15 +197,16 @@ class SourceInfo(Base):
 
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""
-        if not isinstance(self.collection, str):
-            raise TypeError("`collection` must be a string.")
-        if not isinstance(self.filename, str):
-            raise TypeError("`filename` must be a string.")
-        if self.format is not None:
-            if not isinstance(self.format, str):
-                raise TypeError("`format` must be a string.")
-            if self.format not in ("midi", "musicxml", None):
-                raise ValueError("`format` must be one of 'midi', 'musicxml'.")
+        if not isinstance(self.collection, (str, type(None))):
+            raise TypeError("`collection` must be a string or None.")
+        if not isinstance(self.filename, (str, type(None))):
+            raise TypeError("`filename` must be a string or None.")
+        if not isinstance(self.format, (str, type(None))):
+            raise TypeError("`format` must be a string or None.")
+        if not isinstance(self.id, (str, type(None))):
+            raise TypeError("`id` must be a string or None.")
+        if self.format not in ("midi", "musicxml", None):
+            raise ValueError("`format` must be one of 'midi', 'musicxml'.")
 
 
 class MetaData(Base):
@@ -227,8 +228,8 @@ class MetaData(Base):
     def __init__(
         self,
         schema_version: str = DEFAULT_SCHEMA_VERSION,
-        song: Optional[str] = None,
-        source: Optional[str] = None,
+        song: Optional[SongInfo] = None,
+        source: Optional[SourceInfo] = None,
     ):
         self.schema_version = schema_version
         self.song = song if song is not None else SongInfo()
@@ -289,8 +290,8 @@ class TimingInfo(Base):
         """Validate the object, and raise errors for invalid attributes."""
         if not isinstance(self.is_symbolic_timing, bool):
             raise TypeError("`is_symbolic_timing` must be a boolean.")
-        if not isinstance(self.beat_resolution, int):
-            raise TypeError("`beat_resolution` must be an integer.")
+        if not isinstance(self.beat_resolution, (int, type(None))):
+            raise TypeError("`beat_resolution` must be an integer or None.")
         if self.beat_resolution < 1:
             raise ValueError("`beat_resolution` must be a positive integer.")
 
@@ -301,18 +302,13 @@ class Note(Base):
     Attributes
     ----------
     start : int or float
-        Start time of the note, in time steps or seconds (see Note).
+        Start time of the note, in time steps or seconds.
     end : int or float
-        End time of the note, in time steps or seconds (see Note).
+        End time of the note, in time steps or seconds.
     pitch : int or float
         Note pitch, as a MIDI note number.
     velocity : int or float
         Note velocity.
-
-
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
 
     """
 
@@ -386,13 +382,9 @@ class Lyric(Base):
     Attributes
     ----------
     time : int or float
-        Start time of the lyric, in time steps or seconds (see Note).
+        Start time of the lyric, in time steps or seconds.
     lyric : str
         The lyric.
-
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
 
     """
 
@@ -418,13 +410,11 @@ class Annotation(Base):
     Attributes
     ----------
     time : int or float
-        Start time of the annotation, in time steps or seconds (see Note).
+        Start time of the annotation, in time steps or seconds.
     annotation : any object
         Annotation of any type.
-
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
+    group : str, optional
+        Group name for better organizing the annotations.
 
     """
 
@@ -441,6 +431,8 @@ class Annotation(Base):
         """Validate the object, and raise errors for invalid attributes."""
         if not isinstance(self.time, (int, float)):
             raise TypeError("`time` must be an integer or a float.")
+        if not isinstance(self.group, (str, type(None))):
+            raise TypeError("`group` must be a string or None.")
         if self.time < 0:
             raise ValueError("`time` must be a positive number.")
 
@@ -451,15 +443,11 @@ class TimeSignature(Base):
     Attributes
     ----------
     time : int or float
-        Start time of the time signature, in time steps or seconds (see Note).
+        Start time of the time signature, in time steps or seconds.
     numerator : int
         Numerator of the time signature.
     denominator : int
         Denominator of the time signature.
-
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
 
     """
 
@@ -490,15 +478,11 @@ class KeySignature(Base):
     Attributes
     ----------
     time : int or float
-        Start time of the key signature, in time steps or seconds (see Note).
+        Start time of the key signature, in time steps or seconds.
     root : str
         Root of the key signature.
     mode : str
         Mode of the key signature.
-
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
 
     """
 
@@ -525,13 +509,9 @@ class Tempo(Base):
     Attributes
     ----------
     time : int or float
-        Start time of the key signature, in time steps or seconds (see Note).
+        Start time of the key signature, in time steps or seconds.
     tempo : float
         Tempo in bpm (beats per minute)
-
-    Note
-    ----
-    The timing unit is determined by higher-level objects.
 
     """
 
@@ -571,9 +551,9 @@ class Track(Base):
     """
 
     _attributes = [
-        "name",
         "program",
         "is_drum",
+        "name",
         "notes",
         "lyrics",
         "annotations",
@@ -581,16 +561,16 @@ class Track(Base):
 
     def __init__(
         self,
-        name: str = "unknown",
         program: int = 0,
         is_drum: bool = False,
+        name: Optional[str] = None,
         notes: Optional[List[Note]] = None,
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
     ):
-        self.name = name
         self.program = program
         self.is_drum = is_drum
+        self.name = name
         self.notes = notes if notes is not None else []
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
