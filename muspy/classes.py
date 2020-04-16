@@ -27,8 +27,6 @@ __all__ = [
     "Track",
 ]
 
-DEFAULT_BEAT_RESOLUTION = 24
-
 # pylint: disable=super-init-not-called
 
 
@@ -70,17 +68,17 @@ class Base(ABC):
         raise NotImplementedError
 
     def __repr__(self):
-        return (
-            type(self).__name__
-            + "("
-            + ", ".join(
-                [
-                    key + "=" + repr(getattr(self, key))
-                    for key in self._attributes
-                ]
-            )
-            + ")"
-        )
+        to_join = []
+        for key in self._attributes:
+            value = getattr(self, key)
+            if isinstance(value, list):
+                if value:
+                    to_join.append(key + "=[]")
+                else:
+                    to_join.append(key + "=[...]")
+            else:
+                to_join.append(key + "=" + repr(value))
+        return type(self).__name__ + "(" + ", ".join(to_join) + ")"
 
     @classmethod
     def from_dict(cls, dict_: Mapping):
@@ -110,13 +108,6 @@ class Base(ABC):
                     v.to_ordered_dict() if hasattr(v, "to_ordered_dict") else v
                     for v in value
                 ]
-            elif isinstance(value, dict):
-                ordered_dict[key] = {
-                    k: v.to_ordered_dict()
-                    if hasattr(v, "to_ordered_dict")
-                    else v
-                    for k, v in value.items()
-                }
             else:
                 ordered_dict[key] = value
         return ordered_dict
@@ -279,7 +270,7 @@ class TimingInfo(Base):
     ----------
     is_symbolic_timing : bool
         If true, the timing is in time steps. Otherwise, it's in seconds.
-    beat_resolution : int
+    beat_resolution : int, optional
         Time steps per beat (only effective when `is_symbolic_timing` is true).
 
     """
@@ -289,7 +280,7 @@ class TimingInfo(Base):
     def __init__(
         self,
         is_symbolic_timing: bool = True,
-        beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+        beat_resolution: Optional[int] = None,
     ):
         self.is_symbolic_timing = is_symbolic_timing
         self.beat_resolution = beat_resolution
@@ -439,9 +430,12 @@ class Annotation(Base):
 
     _attributes = ["time", "annotation"]
 
-    def __init__(self, time: float, annotation: Any):
+    def __init__(
+        self, time: float, annotation: Any, group: Optional[str] = None
+    ):
         self.time = time
         self.annotation = annotation
+        self.group = group
 
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""

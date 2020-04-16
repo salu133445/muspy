@@ -1,6 +1,6 @@
-=========
-MusPy API
-=========
+=====
+muspy
+=====
 
 .. automodule:: muspy
     :members:

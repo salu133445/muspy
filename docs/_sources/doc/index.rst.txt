@@ -4,6 +4,15 @@ Technical Documentation
 
 .. toctree::
     :titlesonly:
-    :glob:
 
-    *
+    muspy
+    classes
+    core
+    datasets
+    inputs
+    metrics
+    music
+    outputs
+    representations
+    schemas
+    visualization
