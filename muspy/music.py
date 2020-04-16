@@ -396,7 +396,7 @@ class Music(Base):
         """
         write(self, path)
 
-    def write_midi(self, path: Union[str, Path]):
+    def write_midi(self, path: Union[str, Path], backend=None):
         """Write to a MIDI file.
 
         Refer to :func:`muspy.write_midi`: for full documentation.

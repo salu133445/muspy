@@ -10,7 +10,7 @@ from bisect import bisect_left, bisect_right
 from collections import OrderedDict
 from typing import List, Union
 
-from .classes import DEFAULT_BEAT_RESOLUTION, Note, Tempo, Track
+from .classes import Note, Tempo, Track
 from .music import Music
 
 __all__ = [
@@ -116,7 +116,10 @@ def transpose(obj: Union[Music, Track, Note], semitone: int):
 
 
 def quantize_absolute_timing(
-    music: Music, step: float, beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+    music: Music,
+    step: float,
+    beat_resolution: int,
+    first_beat_time: float = 0.0,
 ):
     """Quantize all the time-stamped objects, assuming absolute timing.
 
@@ -131,16 +134,34 @@ def quantize_absolute_timing(
 
     """
     if music.timing.is_symbolic_timing:
+        warnings.warn("Skipped as the music object is in symbolic timing.")
         return
+
+    def _quantize(time):
+        """Return quantized time."""
+        return round((time - first_beat_time) / step)
 
     bpm = 60 / (step * beat_resolution)
     music.tempos = [Tempo(0.0, bpm)]
+    music.timing.is_symbolic_timing = True
+
+    for time_signature in music.time_signatures:
+        time_signature.time = _quantize(time_signature.time)
+    for key_signature in music.key_signatures:
+        key_signature.time = _quantize(key_signature.time)
+    for lyric in music.lyrics:
+        lyric.time = _quantize(lyric.time)
+    for annotation in music.annotations:
+        annotation.time = _quantize(annotation.time)
 
     for track in music.tracks:
         for note in track.notes:
-            note.start = round(note.start / step)
-            note.end = round(note.end / step)
-    music.timing.is_symbolic_timing = True
+            note.start = _quantize(note.start)
+            note.end = _quantize(note.end)
+        for lyric in track.lyrics:
+            lyric.time = _quantize(lyric.time)
+        for annotation in track.annotations:
+            annotation.time = _quantize(annotation.time)
 
 
 def quantize_by_beats(music: Music, beats: List[float]):
@@ -165,8 +186,35 @@ def quantize_by_beats(music: Music, beats: List[float]):
     music.timing.is_symbolic_timing = True
 
 
+def quantize_to_resolution(music: Music, beat_resolution: int):
+    """Quantize all the symbolic time-stamped objects.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Object to be quantized.
+    beat_resolution : int
+        Target beat resolution in time steps per beat .
+
+    """
+    return
+
+
+def quantize_by_factor(music: Music, factor: float):
+    """Quantize all the symbolic time-stamped objects.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Object to be quantized.
+    factor : float
+        Length of quantization step, in seconds.
+
+    """
+
+
 def quantize(
-    music: Music, step: float, beat_resolution: int = DEFAULT_BEAT_RESOLUTION,
+    music: Music, step: float, beat_resolution: int,
 ):
     """Quantize all the time-stamped objects."""
     if not music.timing.is_symbolic_timing:
