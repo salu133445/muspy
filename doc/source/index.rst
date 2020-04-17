@@ -6,8 +6,7 @@ MusPy documentation
     :titlesonly:
 
     music
-    inputs
-    outputs
+    io
     representations
     datasets
     schemas

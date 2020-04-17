@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Output Interface &mdash; MusPy  documentation</title>
+  <title>Data I/O &mdash; MusPy  documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Representations" href="representations.html" />
-    <link rel="prev" title="Input Interface" href="inputs.html" /> 
+    <link rel="prev" title="Music Object" href="music.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,8 +85,7 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inputs.html">Input Interface</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Output Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas</a></li>
@@ -140,13 +139,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Output Interface</li>
+      <li>Data I/O</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/outputs.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/io.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -159,9 +158,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="output-interface">
-<h1>Output Interface<a class="headerlink" href="#output-interface" title="Permalink to this headline">¶</a></h1>
-<p>TBA</p>
+  <div class="section" id="data-i-o">
+<h1>Data I/O<a class="headerlink" href="#data-i-o" title="Permalink to this headline">¶</a></h1>
+<p>MusPy provides three type of data I/O interface.</p>
+<ul class="simple">
+<li><p>Read to and write from MIDI or MusicXML formats</p></li>
+<li><p>Save to and load from native JSON and YAML formats</p></li>
+<li><p>Convert to and from objects in friend packages</p></li>
+</ul>
+<div class="section" id="read-write-for-common-formats">
+<h2>Read/Write for common formats<a class="headerlink" href="#read-write-for-common-formats" title="Permalink to this headline">¶</a></h2>
+<p>MusPy supports read/write functions for MIDI nad MusicXML formats.</p>
+<ul class="simple">
+<li><p>MIDI: <a class="reference internal" href="doc/muspy.html#muspy.read_midi" title="muspy.read_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read_midi()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.write_midi" title="muspy.write_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_midi()</span></code></a></p></li>
+<li><p>MusicXML: and <a class="reference internal" href="doc/muspy.html#muspy.write_musicxml" title="muspy.write_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_musicxml()</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="saving-and-loading-music-objects">
+<h2>Saving and Loading Music objects<a class="headerlink" href="#saving-and-loading-music-objects" title="Permalink to this headline">¶</a></h2>
+<p>MusPy supports save/load functions for losslessly storing Music object.</p>
+<ul class="simple">
+<li><p>JSON: <a class="reference internal" href="doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.load_json" title="muspy.load_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_json()</span></code></a></p></li>
+<li><p>YAML: <a class="reference internal" href="doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.load_yaml" title="muspy.load_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_yaml()</span></code></a></p></li>
+</ul>
+</div>
+<div class="section" id="cconvert-to-and-from-objects-of-friend-packages">
+<h2>CConvert to and from objects of friend packages<a class="headerlink" href="#cconvert-to-and-from-objects-of-friend-packages" title="Permalink to this headline">¶</a></h2>
+<p>MusPy supports conversion between <a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> objects and objects from
+friend packages, such as pretty_midi and pypianoorll.</p>
+<ul class="simple">
+<li><p>pretty_midi: <a class="reference internal" href="doc/muspy.html#muspy.from_pretty_midi" title="muspy.from_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pretty_midi()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.to_pretty_midi" title="muspy.to_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pretty_midi()</span></code></a></p></li>
+<li><p>pypianoroll: <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pypianorll()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pypianorll()</span></code></p></li>
+</ul>
+</div>
 </div>
 
 
@@ -175,7 +204,7 @@
         <a href="representations.html" class="btn btn-neutral float-right" title="Representations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="inputs.html" class="btn btn-neutral float-left" title="Input Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="music.html" class="btn btn-neutral float-left" title="Music Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
