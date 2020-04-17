@@ -102,9 +102,9 @@ class MetaData(Base):
     ----------
     schema_version : str
         Schema version.
-    song : :class:'muspy.SongInfo` object, optional
+    song : :class:`muspy.SongInfo` object, optional
         Soong infomation.
-    source : :class:'muspy.SourceInfo` object, optional
+    source : :class:`muspy.SourceInfo` object, optional
         Source infomation.
 
     """
@@ -167,7 +167,7 @@ class Timing(ComplexBase):
     resolution : int, optional
         Time steps per beat (only effective when `is_symbolic` is true).
         If `is_symbolic` is True, defaults to `muspy.DEFAULT_RESOLUTION`.
-    tempos : list of :class:`Muspy.Tempo`
+    tempos : list of :class:`muspy.Tempo`
         A list of tempos.
 
     """

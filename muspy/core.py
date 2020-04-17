@@ -103,7 +103,7 @@ def clip(
     Parameters
     ----------
     obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
-    object
+          object
         Object to be clipped.
     lower : int or float, optional
         Lower bound. Defaults to 0.
@@ -139,7 +139,7 @@ def get_end_time(
     Parameters
     ----------
     obj : :class:`muspy.Music`, :class:`muspy.Track` or
-    :class:`muspy.Timing` object
+          :class:`muspy.Timing` object
         Object to be inspected.
     is_sorted : bool
         Whether all the list attributes are sorted. Defaults to False.
