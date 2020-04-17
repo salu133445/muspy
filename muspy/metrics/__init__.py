@@ -7,3 +7,9 @@ object. This can be useful for analyzing datasets and evaluating
 generative models.
 
 """
+from .basic import PPL, BLEU
+
+__all__ = [
+    "PPL",
+    "BLEU"
+]
