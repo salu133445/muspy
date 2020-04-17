@@ -121,3 +121,19 @@ class MusicDataset:
         """Return a PyTorch dataset (`torch.utils.data.dataset`)."""
         # import tensorflow
         pass
+
+    def pitch2idx(self):
+        """
+            convert pitch to index
+        :return:
+        """
+        pass
+
+    def idx2pitch(self, inputs, requires_midi=False):
+        """
+            convert index to pitch
+
+        :return:
+        """
+        pass
+
