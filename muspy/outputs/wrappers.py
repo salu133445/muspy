@@ -54,7 +54,7 @@ def write(music: "Music", path: Union[str, Path]):
 
     See Also
     --------
-    :func:`muspy.save`: losslessly save to a JSON or a YAML file
+    :func:`muspy.save`: Losslessly save to a JSON or a YAML file.
 
     """
     if str(path).lower().endswith((".mid", ".midi")):
@@ -77,7 +77,7 @@ def save(music: "Music", path: Union[str, Path]):
 
     See Also
     --------
-    :func:`muspy.write`: write to other formats such as MIDI and MusicXML
+    :func:`muspy.write`: Write to other formats such as MIDI and MusicXML.
 
     Notes
     -----
