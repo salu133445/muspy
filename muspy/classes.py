@@ -12,6 +12,8 @@ from typing import Any, List, Mapping, Optional, Union
 
 from .schemas import DEFAULT_SCHEMA_VERSION
 
+DEFAULT_RESOLUTION = 24
+
 __all__ = [
     "Annotation",
     "Base",
@@ -23,7 +25,7 @@ __all__ = [
     "SourceInfo",
     "Tempo",
     "TimeSignature",
-    "TimingInfo",
+    "Timing",
     "Track",
 ]
 
@@ -264,36 +266,34 @@ class MetaData(Base):
         self.source.validate()
 
 
-class TimingInfo(Base):
+class Timing(Base):
     """A container for song information.
 
     Attributes
     ----------
-    is_symbolic_timing : bool
-        If true, the timing is in time steps. Otherwise, it's in seconds.
-    beat_resolution : int, optional
-        Time steps per beat (only effective when `is_symbolic_timing` is true).
+    is_symbolic : bool
+        If true, the timing is in time steps, otherwise in seconds.
+    resolution : int, optional
+        Time steps per beat (only effective when `is_symbolic` is true).
 
     """
 
-    _attributes = ["is_symbolic_timing", "beat_resolution"]
+    _attributes = ["is_symbolic", "resolution"]
 
     def __init__(
-        self,
-        is_symbolic_timing: bool = True,
-        beat_resolution: Optional[int] = None,
+        self, is_symbolic: bool = True, resolution: int = DEFAULT_RESOLUTION,
     ):
-        self.is_symbolic_timing = is_symbolic_timing
-        self.beat_resolution = beat_resolution
+        self.is_symbolic = is_symbolic
+        self.resolution = resolution
 
     def validate(self):
         """Validate the object, and raise errors for invalid attributes."""
-        if not isinstance(self.is_symbolic_timing, bool):
-            raise TypeError("`is_symbolic_timing` must be a boolean.")
-        if not isinstance(self.beat_resolution, (int, type(None))):
-            raise TypeError("`beat_resolution` must be an integer or None.")
-        if self.beat_resolution < 1:
-            raise ValueError("`beat_resolution` must be a positive integer.")
+        if not isinstance(self.is_symbolic, bool):
+            raise TypeError("`is_symbolic` must be a boolean.")
+        if self.is_symbolic and not isinstance(self.resolution, int):
+            raise ValueError("`resolution` must be an integer.")
+        if self.is_symbolic and self.resolution < 1:
+            raise ValueError("`resolution` must be a positive integer.")
 
 
 class Note(Base):

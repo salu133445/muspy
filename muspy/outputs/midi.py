@@ -24,7 +24,7 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
         Converted PrettyMIDI object.
 
     """
-    if music.timing.is_symbolic_timing:
+    if music.timing.is_symbolic:
         raise NotImplementedError
 
     pm = PrettyMIDI()
@@ -112,7 +112,7 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
 
     """
     # Create a MIDI file object
-    midi = MidiFile(type=1, ticks_per_beat=music.timing.beat_resolution)
+    midi = MidiFile(type=1, ticks_per_beat=music.timing.resolution)
 
     # Create a track to store the meta data
     meta_track = MidiTrack()

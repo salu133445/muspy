@@ -16,7 +16,7 @@ from ..classes import (
     SourceInfo,
     Tempo,
     TimeSignature,
-    TimingInfo,
+    Timing,
     Track,
 )
 from ..music import Music
@@ -70,7 +70,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
 
     return Music(
         meta_data=MetaData(),
-        timing_info=TimingInfo(False),
+        timing=Timing(False),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
         lyrics=lyrics,
@@ -320,9 +320,7 @@ def read_midi_mido(
 
     return Music(
         meta_data=MetaData(source=SourceInfo(format_="midi")),
-        timing_info=TimingInfo(
-            is_symbolic_timing=True, beat_resolution=midi.ticks_per_beat
-        ),
+        timing=Timing(is_symbolic=True, resolution=midi.ticks_per_beat),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
         tempos=tempos,
