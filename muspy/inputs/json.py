@@ -33,4 +33,4 @@ def load_json(
         with open(str(schema_path)) as f:
             schema = json.load(f)
         jsonschema.validate(data, schema)
-    return Music(**data)
+    return Music.from_dict(data)

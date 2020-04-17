@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
 import pretty_midi
-from mido import Message, MidiFile, MidiTrack, bpm2tempo
+from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 from pretty_midi import PrettyMIDI
 
 if TYPE_CHECKING:
@@ -119,20 +119,19 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
     midi.tracks.append(meta_track)
 
     # Tempos
-    if music.timing.tempos is not None:
-        for tempo in music.timing.tempos:
-            meta_track.append(
-                Message(
-                    "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.tempo),
-                )
+    for tempo in music.timing.tempos:
+        meta_track.append(
+            MetaMessage(
+                "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.tempo),
             )
+        )
 
     # Key signatures
     for key_signature in music.key_signatures:
         suffix = "m" if key_signature.mode == "minor" else ""
         meta_track.append(
-            Message(
-                "time_signature",
+            MetaMessage(
+                "key_signature",
                 time=key_signature.time,
                 key=key_signature.root + suffix,
             )
@@ -141,7 +140,7 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
     # Time signatures
     for time_signature in music.time_signatures:
         meta_track.append(
-            Message(
+            MetaMessage(
                 "time_signature",
                 time=time_signature.time,
                 numerator=time_signature.numerator,
@@ -151,17 +150,21 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
 
     # Lyrics
     for lyric in music.lyrics:
-        meta_track.append(Message("lyrics", time=lyric.time, text=lyric.lyric))
+        meta_track.append(
+            MetaMessage("lyrics", time=lyric.time, text=lyric.lyric)
+        )
 
     # Annotations
     for annotation in music.annotations:
         # Marker messages
         if annotation.group == "marker":
-            meta_track.append(Message("marker", text=annotation.annotation))
+            meta_track.append(
+                MetaMessage("marker", text=annotation.annotation)
+            )
         # Text messages
         elif isinstance(annotation.annotation, str):
             meta_track.append(
-                Message(
+                MetaMessage(
                     "text", time=annotation.time, text=annotation.annotation
                 )
             )
@@ -173,6 +176,12 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
         midi_track = MidiTrack()
         midi.tracks.append(midi_track)
 
+        # Track name messages
+        if track.name is not None:
+            midi_track.append(
+                MetaMessage("track_name", time=0, name=track.name)
+            )
+
         # Program change messages
         channel = 9 if track.is_drum else 0
         midi_track.append(
@@ -182,10 +191,6 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
                 program=track.program,
                 channel=channel,
             )
-        )
-        # Track name messages
-        midi_track.append(
-            Message("track_name", time=0, name=track.name, channel=channel)
         )
 
         # Note on and note off messages
