@@ -69,7 +69,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
         tracks.append(Track(track.program, track.is_drum, track.name, notes))
 
     return Music(
-        meta_data=MetaData(source=SourceInfo(format="midi")),
+        meta=MetaData(source=SourceInfo(format="midi")),
         timing=Timing(False),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
@@ -319,7 +319,7 @@ def read_midi_mido(
         music_tracks.extend(track.values())
 
     return Music(
-        meta_data=MetaData(source=SourceInfo(format="midi")),
+        meta=MetaData(source=SourceInfo(format="midi")),
         timing=Timing(
             is_symbolic=True, resolution=midi.ticks_per_beat, tempos=tempos
         ),
