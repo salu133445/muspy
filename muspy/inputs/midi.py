@@ -16,7 +16,7 @@ from ..classes import (
     SourceInfo,
     Tempo,
     TimeSignature,
-    TimingInfo,
+    Timing,
     Track,
 )
 from ..music import Music
@@ -40,15 +40,6 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
         Converted MusPy Music object.
 
     """
-    time_signatures = [
-        TimeSignature(
-            time_signature.time,
-            time_signature.numerator,
-            time_signature.denominator,
-        )
-        for time_signature in pm.time_signature_changes
-    ]
-
     key_signatures = [
         KeySignature(
             key_signature.time,
@@ -56,6 +47,15 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
             key_number_to_key_name(key_signature.key_number).split()[1],
         )
         for key_signature in pm.key_signature_changes
+    ]
+
+    time_signatures = [
+        TimeSignature(
+            time_signature.time,
+            time_signature.numerator,
+            time_signature.denominator,
+        )
+        for time_signature in pm.time_signature_changes
     ]
 
     lyrics = [Lyric(lyric.time, lyric.text) for lyric in pm.lyrics]
@@ -69,8 +69,8 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
         tracks.append(Track(track.program, track.is_drum, track.name, notes))
 
     return Music(
-        meta_data=MetaData(),
-        timing_info=TimingInfo(False),
+        meta_data=MetaData(source=SourceInfo(format="midi")),
+        timing=Timing(False),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
         lyrics=lyrics,
@@ -319,13 +319,12 @@ def read_midi_mido(
         music_tracks.extend(track.values())
 
     return Music(
-        meta_data=MetaData(source=SourceInfo(format_="midi")),
-        timing_info=TimingInfo(
-            is_symbolic_timing=True, beat_resolution=midi.ticks_per_beat
+        meta_data=MetaData(source=SourceInfo(format="midi")),
+        timing=Timing(
+            is_symbolic=True, resolution=midi.ticks_per_beat, tempos=tempos
         ),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
-        tempos=tempos,
         lyrics=lyrics,
         tracks=music_tracks,
     )

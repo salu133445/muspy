@@ -164,15 +164,16 @@
 <span class="sd">the base class :class:`muspy.Base`.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.schemas</span> <span class="kn">import</span> <span class="n">DEFAULT_SCHEMA_VERSION</span>
+
+<span class="n">DEFAULT_RESOLUTION</span> <span class="o">=</span> <span class="mi">24</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Annotation&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Base&quot;</span><span class="p">,</span>
     <span class="s2">&quot;KeySignature&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Lyric&quot;</span><span class="p">,</span>
     <span class="s2">&quot;MetaData&quot;</span><span class="p">,</span>
@@ -181,116 +182,11 @@
     <span class="s2">&quot;SourceInfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Tempo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;TimeSignature&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TimingInfo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Timing&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Track&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="n">DEFAULT_BEAT_RESOLUTION</span> <span class="o">=</span> <span class="mi">24</span>
-
 <span class="c1"># pylint: disable=super-init-not-called</span>
-
-
-<span class="k">def</span> <span class="nf">validate_list</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="n">List</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Validate a list of objects by calling their method `validate`.&quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_</span><span class="p">:</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-
-
-<span class="k">def</span> <span class="nf">remove_invalid_from_list</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="n">List</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a list with invalid items removed.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()]</span>
-
-
-<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for MusPy objects.</span>
-
-<span class="sd">    It implements the following three handy methods.</span>
-
-<span class="sd">    - Intuitive and meaningful `__repr__` in the form of</span>
-<span class="sd">      `class_name(attr_1=value_1, attr_2=value_2,...)`.</span>
-<span class="sd">    - Method `from_dict` that sets the attributes by the corresponding values</span>
-<span class="sd">      in a dictionary.</span>
-<span class="sd">    - Method `to_ordered_dict` that returns the object as an OrderedDict.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This is the base class for MusPy objects. To add a new class, please</span>
-<span class="sd">    inherit from this class and set the class variables `_attributes`</span>
-<span class="sd">    properly. The list `_attributes` contains all the attribute keys of the</span>
-<span class="sd">    class so that the above methods can be implemented.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-
-    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="o">+</span> <span class="s2">&quot;(&quot;</span>
-            <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">key</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">))</span>
-                    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span>
-                <span class="p">]</span>
-            <span class="p">)</span>
-            <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
-        <span class="p">)</span>
-
-<div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dict_ : dict</span>
-<span class="sd">            A dictionary that stores the attributes and their values as</span>
-<span class="sd">            key-value pairs.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">:</span>
-                <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing value for attribute </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">dict_</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the object as an OrderedDict.&quot;&quot;&quot;</span>
-        <span class="n">ordered_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">):</span>
-                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                    <span class="n">v</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
-                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span>
-                <span class="p">]</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-                    <span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">()</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">)</span>
-                    <span class="k">else</span> <span class="n">v</span>
-                    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                <span class="p">}</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-        <span class="k">return</span> <span class="n">ordered_dict</span></div>
-
-<div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.validate">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-<div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return True if all attributes are valid.&quot;&quot;&quot;</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span></div></div>
 
 
 <div class="viewcode-block" id="SongInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SongInfo">[docs]</a><span class="k">class</span> <span class="nc">SongInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -307,7 +203,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;composers&quot;</span><span class="p">]</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;composers&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;artist&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -317,19 +216,7 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">artist</span> <span class="o">=</span> <span class="n">artist</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">composers</span> <span class="o">=</span> <span class="n">composers</span>
-
-<div class="viewcode-block" id="SongInfo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SongInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`title` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`artist` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">composers</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`composers` must be a list.&quot;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">composer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">composers</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">composer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`composers` must be a list of string.&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">composers</span> <span class="o">=</span> <span class="n">composers</span> <span class="k">if</span> <span class="n">composers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="SourceInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SourceInfo">[docs]</a><span class="k">class</span> <span class="nc">SourceInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -348,31 +235,22 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">collection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">format_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">id_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">format_</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">id_</span>
-
-<div class="viewcode-block" id="SourceInfo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SourceInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">collection</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`collection` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`filename` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`format` must be a string.&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;midi&quot;</span><span class="p">,</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`format` must be one of &#39;midi&#39;, &#39;musicxml&#39;.&quot;</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span></div>
 
 
 <div class="viewcode-block" id="MetaData"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData">[docs]</a><span class="k">class</span> <span class="nc">MetaData</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -389,77 +267,230 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">]</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="n">SongInfo</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">SourceInfo</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">schema_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_SCHEMA_VERSION</span><span class="p">,</span>
-        <span class="n">song</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">song</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SongInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SourceInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_version</span> <span class="o">=</span> <span class="n">schema_version</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">song</span> <span class="o">=</span> <span class="n">song</span> <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">SongInfo</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span> <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">SourceInfo</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">song</span> <span class="o">=</span> <span class="n">song</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
 
-<div class="viewcode-block" id="MetaData.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
+<div class="viewcode-block" id="MetaData.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is invalid.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dict_ : dict</span>
-<span class="sd">            A dictionary that stores the attributes and their values as</span>
-<span class="sd">            key-value pairs.</span>
+<span class="sd">        When `attr` is not given, check all attributes.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;schema_version&quot;</span><span class="p">],</span>
-            <span class="n">SongInfo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;song&quot;</span><span class="p">]),</span>
-            <span class="n">SourceInfo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;source&quot;</span><span class="p">]),</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="MetaData.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema_version</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`schema_version` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">song</span><span class="p">,</span> <span class="n">SongInfo</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`song_info` must be of type SongInfo.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span> <span class="n">SourceInfo</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`source_info` must be of type SourceInfo.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">song</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span></div></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_version</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`schema_version` must not be None.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span></div></div>
 
 
-<div class="viewcode-block" id="TimingInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimingInfo">[docs]</a><span class="k">class</span> <span class="nc">TimingInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Tempo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Tempo">[docs]</a><span class="k">class</span> <span class="nc">Tempo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for key signature.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int or float</span>
+<span class="sd">        Start time of the key signature, in time steps or seconds.</span>
+<span class="sd">    tempo : float</span>
+<span class="sd">        Tempo in bpm (beats per minute).</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;tempo&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
+    <span class="p">)</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tempo</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo</span> <span class="o">=</span> <span class="n">tempo</span></div>
+
+
+<div class="viewcode-block" id="Timing"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing">[docs]</a><span class="k">class</span> <span class="nc">Timing</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for song information.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    is_symbolic_timing : bool</span>
-<span class="sd">        If true, the timing is in time steps. Otherwise, it&#39;s in seconds.</span>
-<span class="sd">    beat_resolution : int</span>
-<span class="sd">        Time steps per beat (only effective when `is_symbolic_timing` is true).</span>
+<span class="sd">    is_symbolic : bool</span>
+<span class="sd">        If true, the timing is in time steps, otherwise in seconds.</span>
+<span class="sd">    resolution : int, optional</span>
+<span class="sd">        Time steps per beat (only effective when `is_symbolic` is true).</span>
+<span class="sd">        If `is_symbolic` is True, defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">    tempos : list of :class:`Muspy.Tempo`</span>
+<span class="sd">        A list of tempos.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_symbolic_timing&quot;</span><span class="p">,</span> <span class="s2">&quot;beat_resolution&quot;</span><span class="p">]</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;is_symbolic&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">is_symbolic_timing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">beat_resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_BEAT_RESOLUTION</span><span class="p">,</span>
+        <span class="n">is_symbolic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tempos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic_timing</span> <span class="o">=</span> <span class="n">is_symbolic_timing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">beat_resolution</span> <span class="o">=</span> <span class="n">beat_resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic</span> <span class="o">=</span> <span class="n">is_symbolic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">DEFAULT_RESOLUTION</span>
+            <span class="k">if</span> <span class="n">is_symbolic</span> <span class="ow">and</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="n">resolution</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="n">tempos</span> <span class="k">if</span> <span class="n">tempos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="TimingInfo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimingInfo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic_timing</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`is_symbolic_timing` must be a boolean.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beat_resolution</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`beat_resolution` must be an integer.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">beat_resolution</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`beat_resolution` must be a positive integer.&quot;</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="Timing.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;is_symbolic&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="s2">&quot;is_symbolic&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`resolution` must be positive.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Timing.remove_duplicate_changes"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.remove_duplicate_changes">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove duplicate tempo changes.&quot;&quot;&quot;</span>
+        <span class="n">tempos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">next_tempo</span>
+            <span class="k">for</span> <span class="n">tempo</span><span class="p">,</span> <span class="n">next_tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempos</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">tempos</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="n">tempo</span><span class="o">.</span><span class="n">tempo</span> <span class="o">!=</span> <span class="n">next_tempo</span><span class="o">.</span><span class="n">tempo</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tempos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Timing.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the time of the last tempo event.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        is_sorted : bool</span>
+<span class="sd">            Whether the tempos are sorted. Defaults to False.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="KeySignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.KeySignature">[docs]</a><span class="k">class</span> <span class="nc">KeySignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for key signature.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int or float</span>
+<span class="sd">        Start time of the key signature, in time steps or seconds.</span>
+<span class="sd">    root : str</span>
+<span class="sd">        Root of the key signature.</span>
+<span class="sd">    mode : str</span>
+<span class="sd">        Mode of the key signature.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span></div>
+
+
+<div class="viewcode-block" id="TimeSignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimeSignature">[docs]</a><span class="k">class</span> <span class="nc">TimeSignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for time signature.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int or float</span>
+<span class="sd">        Start time of the time signature, in time steps or seconds.</span>
+<span class="sd">    numerator : int</span>
+<span class="sd">        Numerator of the time signature.</span>
+<span class="sd">    denominator : int</span>
+<span class="sd">        Denominator of the time signature.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;numerator&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;denominator&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">numerator</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">denominator</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">=</span> <span class="n">numerator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">=</span> <span class="n">denominator</span>
+
+<div class="viewcode-block" id="TimeSignature.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimeSignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`numerator` must be positive.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`denominator` must be positive.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Lyric"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Lyric">[docs]</a><span class="k">class</span> <span class="nc">Lyric</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for lyric.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int or float</span>
+<span class="sd">        Start time of the lyric, in time steps or seconds.</span>
+<span class="sd">    lyric : str</span>
+<span class="sd">        The lyric.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;lyric&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lyric</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyric</span> <span class="o">=</span> <span class="n">lyric</span></div>
+
+
+<div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for annotation.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int or float</span>
+<span class="sd">        Start time of the annotation, in time steps or seconds.</span>
+<span class="sd">    annotation : any object</span>
+<span class="sd">        Annotation of any type.</span>
+<span class="sd">    group : str, optional</span>
+<span class="sd">        Group name for better organizing the annotations.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;annotation&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+    <span class="p">)</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">annotation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span></div>
 
 
 <div class="viewcode-block" id="Note"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note">[docs]</a><span class="k">class</span> <span class="nc">Note</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -468,25 +499,28 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    start : int or float</span>
-<span class="sd">        Start time of the note, in time steps or seconds (see Note).</span>
+<span class="sd">        Start time of the note, in time steps or seconds.</span>
 <span class="sd">    end : int or float</span>
-<span class="sd">        End time of the note, in time steps or seconds (see Note).</span>
-<span class="sd">    pitch : int or float</span>
+<span class="sd">        End time of the note, in time steps or seconds.</span>
+<span class="sd">    pitch : int</span>
 <span class="sd">        Note pitch, as a MIDI note number.</span>
-<span class="sd">    velocity : int or float</span>
+<span class="sd">    velocity : int</span>
 <span class="sd">        Note velocity.</span>
-
-
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    The timing unit is determined by higher-level objects.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">]</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pitch</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
@@ -499,17 +533,10 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
 
 <div class="viewcode-block" id="Note.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`start` must be an integer or a float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`end` must be an integer or a float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`pitch` must be an integer.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`velocity` must be an integer.&quot;</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`start` must be a positive number.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`start` must be nonnegative.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`end` must be greater than `start`.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
@@ -547,184 +574,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">lower</span></div></div>
 
 
-<div class="viewcode-block" id="Lyric"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Lyric">[docs]</a><span class="k">class</span> <span class="nc">Lyric</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for lyric.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the lyric, in time steps or seconds (see Note).</span>
-<span class="sd">    lyric : str</span>
-<span class="sd">        The lyric.</span>
-
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    The timing unit is determined by higher-level objects.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;lyric&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lyric</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lyric</span> <span class="o">=</span> <span class="n">lyric</span>
-
-<div class="viewcode-block" id="Lyric.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Lyric.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyric</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`lyric` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be a positive number.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for annotation.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the annotation, in time steps or seconds (see Note).</span>
-<span class="sd">    annotation : any object</span>
-<span class="sd">        Annotation of any type.</span>
-
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    The timing unit is determined by higher-level objects.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;annotation&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">annotation</span>
-
-<div class="viewcode-block" id="Annotation.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Annotation.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be a positive number.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="TimeSignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimeSignature">[docs]</a><span class="k">class</span> <span class="nc">TimeSignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for time signature.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the time signature, in time steps or seconds (see Note).</span>
-<span class="sd">    numerator : int</span>
-<span class="sd">        Numerator of the time signature.</span>
-<span class="sd">    denominator : int</span>
-<span class="sd">        Denominator of the time signature.</span>
-
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    The timing unit is determined by higher-level objects.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;numerator&quot;</span><span class="p">,</span> <span class="s2">&quot;denominator&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">numerator</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">denominator</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">=</span> <span class="n">numerator</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">=</span> <span class="n">denominator</span>
-
-<div class="viewcode-block" id="TimeSignature.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.TimeSignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`numerator` must be an integer.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`denominator` must be an integer.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`numerator` must be a positive number.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`denominator` must be a positive number.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="KeySignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.KeySignature">[docs]</a><span class="k">class</span> <span class="nc">KeySignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for key signature.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the key signature, in time steps or seconds (see Note).</span>
-<span class="sd">    root : str</span>
-<span class="sd">        Root of the key signature.</span>
-<span class="sd">    mode : str</span>
-<span class="sd">        Mode of the key signature.</span>
-
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    The timing unit is determined by higher-level objects.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
-
-<div class="viewcode-block" id="KeySignature.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.KeySignature.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or a float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`root` must be an integer.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`mode` must be an integer.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="Tempo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Tempo">[docs]</a><span class="k">class</span> <span class="nc">Tempo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for key signature.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the key signature, in time steps or seconds (see Note).</span>
-<span class="sd">    tempo : float</span>
-<span class="sd">        Tempo in bpm (beats per minute)</span>
-
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    The timing unit is determined by higher-level objects.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;tempo&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tempo</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Tempo.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Tempo.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`time` must be an integer or float.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempo</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`tempo` must be an integer or a float.&quot;</span><span class="p">)</span></div></div>
-
-
-<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for music track.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Name of the track. Defaults to &#39;unknown&#39;.</span>
 <span class="sd">    program : int</span>
 <span class="sd">        A program number according to General MIDI specification [1].</span>
 <span class="sd">        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).</span>
 <span class="sd">    is_drum : bool</span>
 <span class="sd">        A boolean indicating if it is a percussion track. Defaults to False.</span>
+<span class="sd">    name : str</span>
+<span class="sd">        Name of the track. Defaults to &#39;unknown&#39;.</span>
 <span class="sd">    notes : list of :class:`muspy.Note` objects</span>
 <span class="sd">        A list of notes.</span>
 <span class="sd">    annotations : list of :class:`muspy.Annotation` objects</span>
@@ -734,136 +595,69 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;program&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;is_drum&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;notes&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;program&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;is_drum&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">Note</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
         <span class="n">program</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">is_drum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">notes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">=</span> <span class="n">program</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span> <span class="o">=</span> <span class="n">is_drum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">notes</span> <span class="k">if</span> <span class="n">notes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Track.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dict_ : dict</span>
-<span class="sd">            A dictionary that stores the attributes and their values as</span>
-<span class="sd">            key-value pairs.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="n">Note</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">]]</span>
-
-        <span class="n">annotations</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Annotation</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">]</span>
-        <span class="p">]</span>
-
-        <span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Annotation</span><span class="p">(</span><span class="n">lyric</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">lyric</span><span class="p">[</span><span class="s2">&quot;lyric&quot;</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">]</span>
-        <span class="p">]</span>
-
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-            <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">],</span>
-            <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;is_drum&quot;</span><span class="p">],</span>
-            <span class="n">notes</span><span class="p">,</span>
-            <span class="n">annotations</span><span class="p">,</span>
-            <span class="n">lyrics</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
 <div class="viewcode-block" id="Track.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`program` must be a string.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`program` must be an integer.&quot;</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`program` must not be None.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`is_drum` must not be None.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`program` must be in between 0 to 127.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`is_drum` must be a boolean.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`notes` must be a list.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`lyrics` must be a list.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`annotations` must be a list.&quot;</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span></div>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`program` must be in between 0 to 127.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove invalid objects, including notes, lyrics and annotations.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Track.get_active_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_active_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the end time of the last note.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">([</span><span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">])</span></div>
-
-<div class="viewcode-block" id="Track.get_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Track.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
 
-<span class="sd">        This includes notes onsets, note offsets, lyrics and annotations.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_active_length</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_active_length</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">annotation</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">]),</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="Track.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Note</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
+<span class="sd">        This includes notes note offsets, lyrics and annotations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        obj : Muspy objects (see below)</span>
-<span class="sd">            Object to be appended. Supported object types are</span>
-<span class="sd">            :class:`Muspy.Note`, :class:`Muspy.Annotation` and</span>
-<span class="sd">            :class:`Muspy.Lyric` objects.</span>
+<span class="sd">        is_sorted : bool</span>
+<span class="sd">            Whether all the list attributes are sorted. Defaults to False.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Note</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Expect Note, Lyric or Annotation object, but got </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                    <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span></div>
+
+        <span class="k">def</span> <span class="nf">_get_end_time</span><span class="p">(</span><span class="n">list_</span><span class="p">,</span> <span class="n">ref_attr</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">list_</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">list_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ref_attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Track.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clip the velocity of each note.</span>
@@ -878,16 +672,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">note</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Track.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sort the time-stamped objects with respect to event time.</span>
-
-<span class="sd">        This will sort notes, lyrics and annotations.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Track.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>

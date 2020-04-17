@@ -260,7 +260,7 @@ extension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a></dt><dd><p>read from other formats such as MIDI and MusicXML</p>
+<dt><a class="reference internal" href="muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a></dt><dd><p>Read from other formats such as MIDI and MusicXML.</p>
 </dd>
 </dl>
 </div>
@@ -327,7 +327,7 @@ extension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="muspy.html#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a></dt><dd><p>load from a JSON or a YAML file</p>
+<dt><a class="reference internal" href="muspy.html#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a></dt><dd><p>Load from a JSON or a YAML file.</p>
 </dd>
 </dl>
 </div>
@@ -335,11 +335,25 @@ extension.</p>
 
 <dl class="py function">
 <dt id="muspy.inputs.read_midi">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">read_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/midi.html#read_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.read_midi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">read_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">backend</span><span class="o">=</span><span class="default_value">'mido'</span></em>, <em class="sig-param"><span class="n">duplicate_note_mode</span><span class="o">=</span><span class="default_value">'fifo'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/midi.html#read_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.read_midi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a MIDI file into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MIDI file to be read.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MIDI file to be read.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em>) – Backend to use.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off message is
+presetned while there are multiple correspoding note on messages
+that have not yet been closed, we need a policy to decide which note
+on messages to close. Defaults to ‘fifo’. Only used when
+<cite>backend=’mido’</cite>.</p>
+<ul>
+<li><p>’fifo’ (first in first out): close the earliest note on</p></li>
+<li><p>’lifo’ (first in first out):close the latest note on</p></li>
+<li><p>’close_all’: close all note on messages</p></li>
+</ul>
+</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Converted MusPy Music object.</p>

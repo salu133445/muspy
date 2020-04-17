@@ -62,34 +62,13 @@
             "description": "Timing system",
             "type": "object",
             "properties": {
-                "is_symbolic_timing": {
+                "is_symbolic": {
                     "description": "If true, the timing is in time steps, otherwise in seconds",
                     "type": "boolean"
                 },
-                "beat_resolution": {
+                "resolution": {
                     "description": "Time steps per beat (only meaningful when `is_symbolic_timing` is true)",
                     "type": ["integer", "null"]
-                }
-            }
-        },
-        "time_signatures": {
-            "description": "Time signatures",
-            "type": ["array", "null"],
-            "items": {
-                "type": "object",
-                "properties": {
-                    "time": {
-                        "description": "Event time",
-                        "type": "number"
-                    },
-                    "numerator": {
-                        "description": "Numerator of time signature",
-                        "type": "integer"
-                    },
-                    "denominator": {
-                        "description": "Denominator of time signature",
-                        "type": "integer"
-                    }
                 }
             }
         },
@@ -110,6 +89,27 @@
                     "mode": {
                         "description": "Mode: {major, minor}",
                         "enum": ["major", "minor"]
+                    }
+                }
+            }
+        },
+        "time_signatures": {
+            "description": "Time signatures",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Event time",
+                        "type": "number"
+                    },
+                    "numerator": {
+                        "description": "Numerator of time signature",
+                        "type": "integer"
+                    },
+                    "denominator": {
+                        "description": "Denominator of time signature",
+                        "type": "integer"
                     }
                 }
             }

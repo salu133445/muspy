@@ -161,6 +161,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pretty_midi</span>
+<span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">MidiTrack</span><span class="p">,</span> <span class="n">bpm2tempo</span>
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -181,19 +182,10 @@
 <span class="sd">        Converted PrettyMIDI object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic_timing</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="n">pm</span> <span class="o">=</span> <span class="n">PrettyMIDI</span><span class="p">()</span>
-
-    <span class="n">pm</span><span class="o">.</span><span class="n">time_signature_changes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">pretty_midi</span><span class="o">.</span><span class="n">TimeSignature</span><span class="p">(</span>
-            <span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
-            <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
-            <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span>
-    <span class="p">]</span>
 
     <span class="n">pm</span><span class="o">.</span><span class="n">key_signature_changes</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">pretty_midi</span><span class="o">.</span><span class="n">KeySignature</span><span class="p">(</span>
@@ -203,6 +195,15 @@
             <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span>
+    <span class="p">]</span>
+
+    <span class="n">pm</span><span class="o">.</span><span class="n">time_signature_changes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">pretty_midi</span><span class="o">.</span><span class="n">TimeSignature</span><span class="p">(</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span>
     <span class="p">]</span>
 
     <span class="n">pm</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span>
@@ -222,8 +223,28 @@
     <span class="k">return</span> <span class="n">pm</span></div>
 
 
-<div class="viewcode-block" id="write_midi"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write_midi">[docs]</a><span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="write_midi"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write_midi">[docs]</a><span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mido&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to write the MIDI file.</span>
+<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}</span>
+<span class="sd">        Backend to use.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;mido&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">write_midi_mido</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;pretty_midi&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">write_midi_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`backend` must by one of &#39;mido&#39; and &#39;pretty_midi&#39;.&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">write_midi_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI file using pretty_midi as backend.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -234,7 +255,132 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pm</span> <span class="o">=</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="n">pm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
+    <span class="n">pm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">write_midi_mido</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI file using mido as backend.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to write the MIDI file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a MIDI file object</span>
+    <span class="n">midi</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ticks_per_beat</span><span class="o">=</span><span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+
+    <span class="c1"># Create a track to store the meta data</span>
+    <span class="n">meta_track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>
+    <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meta_track</span><span class="p">)</span>
+
+    <span class="c1"># Tempos</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">tempos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+            <span class="n">meta_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Message</span><span class="p">(</span>
+                    <span class="s2">&quot;set_tempo&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">tempo</span><span class="o">=</span><span class="n">bpm2tempo</span><span class="p">(</span><span class="n">tempo</span><span class="o">.</span><span class="n">tempo</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Key signatures</span>
+    <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span> <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;minor&quot;</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">meta_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span>
+                <span class="s2">&quot;time_signature&quot;</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Time signatures</span>
+    <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span>
+        <span class="n">meta_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span>
+                <span class="s2">&quot;time_signature&quot;</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                <span class="n">numerator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+                <span class="n">denominator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Lyrics</span>
+    <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">lyrics</span><span class="p">:</span>
+        <span class="n">meta_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">lyric</span><span class="o">.</span><span class="n">lyric</span><span class="p">))</span>
+
+    <span class="c1"># Annotations</span>
+    <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">annotations</span><span class="p">:</span>
+        <span class="c1"># Marker messages</span>
+        <span class="k">if</span> <span class="n">annotation</span><span class="o">.</span><span class="n">group</span> <span class="o">==</span> <span class="s2">&quot;marker&quot;</span><span class="p">:</span>
+            <span class="n">meta_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Message</span><span class="p">(</span><span class="s2">&quot;marker&quot;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="p">))</span>
+        <span class="c1"># Text messages</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">meta_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Message</span><span class="p">(</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">annotation</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Iterate over music tracks</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+
+        <span class="c1"># Create a new MIDI track</span>
+        <span class="n">midi_track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>
+        <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">midi_track</span><span class="p">)</span>
+
+        <span class="c1"># Program change messages</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="mi">9</span> <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span>
+                <span class="s2">&quot;program_change&quot;</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">program</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1"># Track name messages</span>
+        <span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;track_name&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Note on and note off messages</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Message</span><span class="p">(</span>
+                    <span class="s2">&quot;note_on&quot;</span><span class="p">,</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                    <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+                    <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Message</span><span class="p">(</span>
+                    <span class="s2">&quot;note_off&quot;</span><span class="p">,</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+                    <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+                    <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Convert to delta time</span>
+    <span class="k">for</span> <span class="n">midi_track</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="c1"># Sort messages by time</span>
+        <span class="n">midi_track</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="c1"># Set current time to zero</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1"># Convert to delta time</span>
+        <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">midi_track</span><span class="p">:</span>
+            <span class="n">time_</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">time</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">time</span> <span class="o">-=</span> <span class="n">time</span>
+            <span class="n">time</span> <span class="o">=</span> <span class="n">time_</span>
+
+    <span class="c1"># Write to a MIDI file</span>
+    <span class="n">midi</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 </pre></div>
 
            </div>

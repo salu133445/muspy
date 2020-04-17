@@ -24,19 +24,10 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
         Converted PrettyMIDI object.
 
     """
-    if music.timing.is_symbolic_timing:
+    if music.timing.is_symbolic:
         raise NotImplementedError
 
     pm = PrettyMIDI()
-
-    pm.time_signature_changes = [
-        pretty_midi.TimeSignature(
-            time_signature.numerator,
-            time_signature.denominator,
-            time_signature.time,
-        )
-        for time_signature in music.time_signatures
-    ]
 
     pm.key_signature_changes = [
         pretty_midi.KeySignature(
@@ -46,6 +37,15 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
             key_signature.time,
         )
         for key_signature in music.key_signatures
+    ]
+
+    pm.time_signature_changes = [
+        pretty_midi.TimeSignature(
+            time_signature.numerator,
+            time_signature.denominator,
+            time_signature.time,
+        )
+        for time_signature in music.time_signatures
     ]
 
     pm.lyrics = [
@@ -112,17 +112,29 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
 
     """
     # Create a MIDI file object
-    midi = MidiFile(type=1, ticks_per_beat=music.timing.beat_resolution)
+    midi = MidiFile(type=1, ticks_per_beat=music.timing.resolution)
 
     # Create a track to store the meta data
     meta_track = MidiTrack()
     midi.tracks.append(meta_track)
 
     # Tempos
-    for tempo in music.tempos:
+    if music.timing.tempos is not None:
+        for tempo in music.timing.tempos:
+            meta_track.append(
+                Message(
+                    "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.tempo),
+                )
+            )
+
+    # Key signatures
+    for key_signature in music.key_signatures:
+        suffix = "m" if key_signature.mode == "minor" else ""
         meta_track.append(
             Message(
-                "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.tempo),
+                "time_signature",
+                time=key_signature.time,
+                key=key_signature.root + suffix,
             )
         )
 
@@ -134,17 +146,6 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
                 time=time_signature.time,
                 numerator=time_signature.numerator,
                 denominator=time_signature.denominator,
-            )
-        )
-
-    # Key signatures
-    for key_signature in music.key_signatures:
-        suffix = "m" if key_signature.mode == "minor" else ""
-        meta_track.append(
-            Message(
-                "time_signature",
-                time=key_signature.time,
-                key=key_signature.root + suffix,
             )
         )
 
