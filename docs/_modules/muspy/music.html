@@ -163,24 +163,24 @@
 <span class="sd">This is the core class of MusPy.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">bisect</span> <span class="kn">import</span> <span class="n">bisect_left</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.classes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Annotation</span><span class="p">,</span>
-    <span class="n">Base</span><span class="p">,</span>
     <span class="n">KeySignature</span><span class="p">,</span>
     <span class="n">Lyric</span><span class="p">,</span>
     <span class="n">MetaData</span><span class="p">,</span>
     <span class="n">Tempo</span><span class="p">,</span>
     <span class="n">TimeSignature</span><span class="p">,</span>
-    <span class="n">TimingInfo</span><span class="p">,</span>
+    <span class="n">Timing</span><span class="p">,</span>
     <span class="n">Track</span><span class="p">,</span>
-    <span class="n">remove_invalid_from_list</span><span class="p">,</span>
-    <span class="n">validate_list</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.outputs</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">save</span><span class="p">,</span>
@@ -200,7 +200,7 @@
 <span class="c1"># pylint: disable=super-init-not-called</span>
 
 
-<div class="viewcode-block" id="Music"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music">[docs]</a><span class="k">class</span> <span class="nc">Music</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Music"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music">[docs]</a><span class="k">class</span> <span class="nc">Music</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A simple yet universal container for symbolic music.</span>
 
 <span class="sd">    This is the core class of MusPy, which provides I/O interfaces for common</span>
@@ -217,14 +217,14 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    timing : :class:`muspy.TimingInfo` object</span>
-<span class="sd">        A timing info object. See :class:`muspy.TimingInfo` for details.</span>
-<span class="sd">    time_signatures : list of :class:`muspy.TimeSignature` object</span>
-<span class="sd">        Time signatures. See :class:`muspy.TimeSignature` for details.</span>
+<span class="sd">    meta : :class:`muspy.MetaData` object</span>
+<span class="sd">        Meta data. See :class:`muspy.MetaData` for details.</span>
+<span class="sd">    timing : :class:`muspy.Timing` object</span>
+<span class="sd">        A timing info object. See :class:`muspy.Timing` for details.</span>
 <span class="sd">    key_signatures : list of :class:`muspy.KeySignature` object</span>
 <span class="sd">        Time signatures. See :class:`muspy.KeySignature` for details.</span>
-<span class="sd">    tempos : list of :class:`muspy.Tempo` object</span>
-<span class="sd">        Tempos. See :class:`muspy.Tempo` for details.</span>
+<span class="sd">    time_signatures : list of :class:`muspy.TimeSignature` object</span>
+<span class="sd">        Time signatures. See :class:`muspy.TimeSignature` for details.</span>
 <span class="sd">    downbeats : list of int or float</span>
 <span class="sd">        Downbeat positions.</span>
 <span class="sd">    lyrics : list of :class:`muspy.Lyric`</span>
@@ -233,17 +233,26 @@
 <span class="sd">        Annotations. See :class:`muspy.Annotation` for details.</span>
 <span class="sd">    tracks : list of :class:`muspy.Track`</span>
 <span class="sd">        Music tracks. See :class:`muspy.Track` for details.</span>
-<span class="sd">    meta_data : :class:`muspy.MetaData` object</span>
-<span class="sd">        Meta data. See :class:`muspy.MetaData` for details.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;meta_data&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;timing&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;timing&quot;</span><span class="p">,</span> <span class="n">Timing</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;downbeats&quot;</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;tracks&quot;</span><span class="p">,</span> <span class="n">Track</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">]</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;tempos&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span>
         <span class="s2">&quot;downbeats&quot;</span><span class="p">,</span>
         <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
@@ -252,161 +261,131 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">meta_data</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MetaData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">timing_info</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimingInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">time_signatures</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MetaData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">timing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Timing</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">key_signatures</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tempos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">downbeats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">time_signatures</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">downbeats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tracks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span> <span class="o">=</span> <span class="n">meta_data</span> <span class="k">if</span> <span class="n">meta_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">MetaData</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span> <span class="o">=</span> <span class="n">timing_info</span> <span class="k">if</span> <span class="n">timing_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">TimingInfo</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">time_signatures</span> <span class="k">if</span> <span class="n">time_signatures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span> <span class="o">=</span> <span class="n">timing</span> <span class="k">if</span> <span class="n">timing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Timing</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">key_signatures</span> <span class="k">if</span> <span class="n">key_signatures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="n">tempos</span> <span class="k">if</span> <span class="n">tempos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">time_signatures</span> <span class="k">if</span> <span class="n">time_signatures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">downbeats</span> <span class="o">=</span> <span class="n">downbeats</span> <span class="k">if</span> <span class="n">downbeats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracks</span> <span class="k">if</span> <span class="n">tracks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
-<div class="viewcode-block" id="Music.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
+<div class="viewcode-block" id="Music.remove_duplicate_changes"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.remove_duplicate_changes">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove duplicate key signature, time signature and tempo changes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">remove_duplicate_changes</span><span class="p">()</span>
+
+        <span class="n">key_signs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">next_key_sign</span>
+            <span class="k">for</span> <span class="n">key_sign</span><span class="p">,</span> <span class="n">next_key_sign</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">key_signs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">key_signs</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="n">key_sign</span><span class="o">.</span><span class="n">numerator</span> <span class="o">!=</span> <span class="n">next_key_sign</span><span class="o">.</span><span class="n">numerator</span>
+            <span class="ow">or</span> <span class="n">key_sign</span><span class="o">.</span><span class="n">denominator</span> <span class="o">!=</span> <span class="n">next_key_sign</span><span class="o">.</span><span class="n">denominator</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">key_signs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">time_signs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">next_time_sign</span>
+            <span class="k">for</span> <span class="n">time_sign</span><span class="p">,</span> <span class="n">next_time_sign</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">time_signs</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">time_signs</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">time_sign</span><span class="o">.</span><span class="n">numerator</span> <span class="o">!=</span> <span class="n">next_time_sign</span><span class="o">.</span><span class="n">numerator</span>
+            <span class="ow">or</span> <span class="n">time_sign</span><span class="o">.</span><span class="n">denominator</span> <span class="o">!=</span> <span class="n">next_time_sign</span><span class="o">.</span><span class="n">denominator</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">time_signs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Music.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the time of the last event in all tracks.</span>
+
+<span class="sd">        This includes tempos, key signatures, time signatures, notes offsets,</span>
+<span class="sd">        lyrics and annotations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        dict_ : dict</span>
-<span class="sd">            A dictionary that stores the attributes and their values as</span>
-<span class="sd">            key-value pairs.</span>
+<span class="sd">        is_sorted : bool</span>
+<span class="sd">            Whether all the list attributes are sorted. Defaults to False.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Meta data</span>
-        <span class="n">meta_data</span> <span class="o">=</span> <span class="n">MetaData</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;meta&quot;</span><span class="p">])</span>
 
-        <span class="c1"># Global data</span>
-        <span class="n">timing</span> <span class="o">=</span> <span class="n">TimingInfo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;timing&quot;</span><span class="p">])</span>
+        <span class="k">def</span> <span class="nf">_get_end_time</span><span class="p">(</span><span class="n">list_</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">list_</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">list_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span>
+            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">TimeSignature</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">time_signature</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">]</span>
-            <span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">KeySignature</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">]</span>
-            <span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span><span class="n">Tempo</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span> <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">]]</span>
-
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">downbeats</span> <span class="o">=</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">Lyric</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">lyric</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">]]</span>
-
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">annotations</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">Annotation</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">annotation</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;annotations&quot;</span><span class="p">]</span>
-            <span class="p">]</span>
-
-        <span class="c1"># Track-specific data</span>
-        <span class="k">if</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tracks&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">Track</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">dict_</span><span class="p">[</span><span class="s2">&quot;tracks&quot;</span><span class="p">]]</span>
-
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
-            <span class="n">meta_data</span><span class="p">,</span>
-            <span class="n">timing</span><span class="p">,</span>
-            <span class="n">time_signatures</span><span class="p">,</span>
-            <span class="n">key_signatures</span><span class="p">,</span>
-            <span class="n">tempos</span><span class="p">,</span>
-            <span class="n">downbeats</span><span class="p">,</span>
-            <span class="n">lyrics</span><span class="p">,</span>
-            <span class="n">annotations</span><span class="p">,</span>
-            <span class="n">tracks</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="Music.reset"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Reset the object.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span> <span class="o">=</span> <span class="n">TimingInfo</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span></div>
-
-<div class="viewcode-block" id="Music.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Validate the object, and raise errors for invalid attributes.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`meta_data` must be of type MetaData.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="p">,</span> <span class="n">TimingInfo</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`timing` must be of type TimingInfo.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta_data</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
-        <span class="n">validate_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Music.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Remove invalid objects.</span>
-
-<span class="sd">        This includes time signatures, key signatures, tempos, lyrics and</span>
-<span class="sd">        annotations, along with notes, lyrics and annotations for each track.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">remove_invalid_from_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-            <span class="n">track</span><span class="o">.</span><span class="n">remove_invalid</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Music.get_active_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.get_active_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_active_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the end time of the last note in all tracks.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">track</span><span class="o">.</span><span class="n">get_active_length</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">]</span>
-        <span class="p">)</span></div>
-
-<div class="viewcode-block" id="Music.get_length"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.get_length">[docs]</a>    <span class="k">def</span> <span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the time of the last event in all tracks.</span>
-
-<span class="sd">        This includes time signatures, key signatures, tempos notes onsets,</span>
-<span class="sd">        note offsets, lyrics and annotations.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_active_length</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+            <span class="n">track_end_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span>
             <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">track_end_time</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_active_length</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">time_sign</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">time_sign</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">]),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">key_sign</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">key_sign</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">]),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">]),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]),</span>
-            <span class="nb">max</span><span class="p">([</span><span class="n">annotation</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">]),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">),</span>
+            <span class="n">track_end_time</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Music.adjust_resolution"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.adjust_resolution">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_resolution</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adjust resolution and update the timing of time-stamped objects.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        target : int, optional</span>
+<span class="sd">            Target resolution.</span>
+<span class="sd">        factor : int or float, optional</span>
+<span class="sd">            Factor used to adjust the resolution based on the formula:</span>
+<span class="sd">            `new_resolution = old_resolution * factor`. For example, a factor of</span>
+<span class="sd">            2 double the resolution, and a factor of 0.5 halve the resolution.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only works for music object in symbolic timing.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`resolution` must not be None.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`resolution` must be positive.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`target` and `factor` must not be both None.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either `target` or `factor` must be given.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`target` must be an integer.&quot;</span><span class="p">)</span>
+            <span class="n">target_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">factor_</span> <span class="o">=</span> <span class="n">target</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span>
+
+        <span class="k">if</span> <span class="n">factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">new_resolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">factor</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">new_resolution</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`factor` must be a factor of the resolution.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">factor_</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+            <span class="n">target_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_resolution</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="k">lambda</span> <span class="n">time</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span> <span class="o">/</span> <span class="n">factor_</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Music.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
@@ -415,32 +394,16 @@
 <span class="sd">        ----------</span>
 <span class="sd">        obj : Muspy objects (see below)</span>
 <span class="sd">            Object to be appended. Supported object types are</span>
-<span class="sd">            :class:`muspy.TimeSignature`, :class:`muspy.KeySignature`,</span>
+<span class="sd">            :class:`muspy.KeySignature`, :class:`muspy.TimeSignature`,</span>
 <span class="sd">            :class:`muspy.Tempo`, :class:`muspy.Lyric`,</span>
 <span class="sd">            :class:`muspy.Annotation` and :class:`muspy.Track` objects.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Track</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Expect TimeSignature, KeySignature, Tempo, Note, Lyric, &quot;</span>
-                <span class="s2">&quot;Annotation or Track object, but got </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
-            <span class="p">)</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mi">127</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="Music.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clip the velocity of each note for each track.</span>
 
 <span class="sd">        Parameters</span>
@@ -454,16 +417,79 @@
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
             <span class="n">track</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="Music.quantize"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.quantize">[docs]</a>    <span class="k">def</span> <span class="nf">quantize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">beats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bpm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">update_tempos</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Quantize the timing of time-stamped objects.</span>
+
+<span class="sd">        If `beats` is given, use it as the beat locations and quantize the</span>
+<span class="sd">        timing accordingly.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        resolution : int</span>
+<span class="sd">            Time steps per beat.</span>
+<span class="sd">        beats : list of float, optional</span>
+<span class="sd">            Sorted list of beat positions in ascending order, assuming no</span>
+<span class="sd">            duplicate values.</span>
+<span class="sd">        bpm : int or float, optional</span>
+<span class="sd">            Length of quantization step, in seconds.</span>
+<span class="sd">        offset : float, optional</span>
+<span class="sd">            Offset of the beat pulse train. This can be useful to set the start</span>
+<span class="sd">            time of the first beat. Defaults to 0.</span>
+<span class="sd">        update_tempos : bool, optional</span>
+<span class="sd">            Whether to update the tempos. Defaults to True.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`resolution` must not be None.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate the timing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only works for music object in absolute timing.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">beats</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bpm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`bpm` must not be None when `beats` is None.&quot;</span><span class="p">)</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">bpm</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="k">lambda</span> <span class="n">time</span><span class="p">:</span> <span class="nb">round</span><span class="p">((</span><span class="n">time</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
+            <span class="k">if</span> <span class="n">update_tempos</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span><span class="n">Tempo</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">bpm</span><span class="p">)]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Get the anchor points (midpoints of adjacent beat locations)</span>
+            <span class="n">anchors</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">beat</span> <span class="o">+</span> <span class="n">next_beat</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="k">for</span> <span class="n">beat</span><span class="p">,</span> <span class="n">next_beat</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">beats</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">beats</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="p">]</span>
+            <span class="c1"># The first anchor points is at the first beat</span>
+            <span class="n">anchors</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">beats</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="k">lambda</span> <span class="n">time</span><span class="p">:</span> <span class="n">bisect_left</span><span class="p">(</span><span class="n">anchors</span><span class="p">,</span> <span class="n">time</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
+            <span class="k">if</span> <span class="n">update_tempos</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+                <span class="c1"># self.timing.tempos = ...</span>
+
 <div class="viewcode-block" id="Music.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sort the time-stamped objects with respect to event time.</span>
 
-<span class="sd">        This will sort time signatures, key signatures, tempos, lyrics and</span>
+<span class="sd">        This will sort tempos, key signatures, time signatures, lyrics and</span>
 <span class="sd">        annotations, along with notes, lyrics and annotations for each track.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
@@ -495,8 +521,7 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.save`: equivalent function</span>
-<span class="sd">        :func:`muspy.write`: write to other formats such as MIDI and MusicXML</span>
+<span class="sd">        :func:`muspy.write`: Write to other formats such as MIDI and MusicXML.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
@@ -511,10 +536,6 @@
 <span class="sd">        path : str or Path</span>
 <span class="sd">            Path to save the JSON file.</span>
 
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.save_json`: equivalent function</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
@@ -527,10 +548,6 @@
 <span class="sd">        ----------</span>
 <span class="sd">        path : str or Path</span>
 <span class="sd">            Path to save the YAML file.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.save_yaml`: equivalent function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">save_yaml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
@@ -548,13 +565,12 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.write`: equivalent function</span>
-<span class="sd">        :func:`muspy.save`: losslessly save to a JSON and a YAML file</span>
+<span class="sd">        :func:`muspy.save`: Losslessly save to a JSON and a YAML file.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.write_midi"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.write_midi">[docs]</a>    <span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="Music.write_midi"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.write_midi">[docs]</a>    <span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">backend</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write to a MIDI file.</span>
 
 <span class="sd">        Refer to :func:`muspy.write_midi`: for full documentation.</span>
@@ -564,12 +580,8 @@
 <span class="sd">        path : str or Path</span>
 <span class="sd">            Path to write the MIDI file.</span>
 
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.write_midi`: equivalent function</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+        <span class="n">write_midi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">backend</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Music.write_musicxml"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music.write_musicxml">[docs]</a>    <span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
         <span class="sd">&quot;&quot;&quot;Write to a MusicXML file.</span>
@@ -580,10 +592,6 @@
 <span class="sd">        ----------</span>
 <span class="sd">        path : str or Path</span>
 <span class="sd">            Path to write the MusicXML file.</span>
-
-<span class="sd">        See Also</span>
-<span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.write_musicxml`: equivalent function</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">write_musicxml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>

@@ -182,12 +182,12 @@
 datasets.</p>
 <dl class="py class">
 <dt id="muspy.Annotation">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Annotation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">annotation</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Annotation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Annotation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">annotation</span></em>, <em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Annotation" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for annotation.</p>
 <dl class="py attribute">
 <dt id="muspy.Annotation.time">
 <code class="sig-name descname">time</code><a class="headerlink" href="#muspy.Annotation.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the annotation, in time steps or seconds (see Note).</p>
+<dd><p>Start time of the annotation, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -206,63 +206,15 @@ datasets.</p>
 </dl>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The timing unit is determined by higher-level objects.</p>
-</div>
-<dl class="py method">
-<dt id="muspy.Annotation.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Annotation.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Annotation.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="muspy.Base">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Base</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Base"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Base" title="Permalink to this definition">¶</a></dt>
-<dd><p>Base class for MusPy objects.</p>
-<p>It implements the following three handy methods.</p>
-<ul class="simple">
-<li><p>Intuitive and meaningful <cite>__repr__</cite> in the form of
-<cite>class_name(attr_1=value_1, attr_2=value_2,…)</cite>.</p></li>
-<li><p>Method <cite>from_dict</cite> that sets the attributes by the corresponding values
-in a dictionary.</p></li>
-<li><p>Method <cite>to_ordered_dict</cite> that returns the object as an OrderedDict.</p></li>
-</ul>
-<p class="rubric">Notes</p>
-<p>This is the base class for MusPy objects. To add a new class, please
-inherit from this class and set the class variables <cite>_attributes</cite>
-properly. The list <cite>_attributes</cite> contains all the attribute keys of the
-class so that the above methods can be implemented.</p>
-<dl class="py method">
-<dt id="muspy.Base.from_dict">
-<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Base.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Base.from_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an instance constructed from a dictionary.</p>
+<dl class="py attribute">
+<dt id="muspy.Annotation.group">
+<code class="sig-name descname">group</code><a class="headerlink" href="#muspy.Annotation.group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Group name for better organizing the annotations.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dict_</strong> (<em>dict</em>) – A dictionary that stores the attributes and their values as
-key-value pairs.</p>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str, optional</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Base.is_valid">
-<code class="sig-name descname">is_valid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Base.is_valid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Base.is_valid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if all attributes are valid.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Base.to_ordered_dict">
-<code class="sig-name descname">to_ordered_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Base.to_ordered_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Base.to_ordered_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the object as an OrderedDict.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Base.validate">
-<em class="property">abstract </em><code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Base.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Base.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -274,7 +226,7 @@ key-value pairs.</p>
 <dl class="py attribute">
 <dt id="muspy.KeySignature.time">
 <code class="sig-name descname">time</code><a class="headerlink" href="#muspy.KeySignature.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the key signature, in time steps or seconds (see Note).</p>
+<dd><p>Start time of the key signature, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -304,16 +256,6 @@ key-value pairs.</p>
 </dl>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The timing unit is determined by higher-level objects.</p>
-</div>
-<dl class="py method">
-<dt id="muspy.KeySignature.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#KeySignature.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.KeySignature.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -323,7 +265,7 @@ key-value pairs.</p>
 <dl class="py attribute">
 <dt id="muspy.Lyric.time">
 <code class="sig-name descname">time</code><a class="headerlink" href="#muspy.Lyric.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the lyric, in time steps or seconds (see Note).</p>
+<dd><p>Start time of the lyric, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -340,16 +282,6 @@ key-value pairs.</p>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The timing unit is determined by higher-level objects.</p>
-</div>
-<dl class="py method">
-<dt id="muspy.Lyric.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Lyric.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Lyric.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -392,21 +324,10 @@ key-value pairs.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.MetaData.from_dict">
-<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#MetaData.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MetaData.from_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an instance constructed from a dictionary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dict_</strong> (<em>dict</em>) – A dictionary that stores the attributes and their values as
-key-value pairs.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="muspy.MetaData.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#MetaData.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MetaData.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#MetaData.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MetaData.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise proper errors if a certain attribute is invalid.</p>
+<p>When <cite>attr</cite> is not given, check all attributes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -418,7 +339,7 @@ key-value pairs.</p>
 <dl class="py attribute">
 <dt id="muspy.Note.start">
 <code class="sig-name descname">start</code><a class="headerlink" href="#muspy.Note.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the note, in time steps or seconds (see Note).</p>
+<dd><p>Start time of the note, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -429,7 +350,7 @@ key-value pairs.</p>
 <dl class="py attribute">
 <dt id="muspy.Note.end">
 <code class="sig-name descname">end</code><a class="headerlink" href="#muspy.Note.end" title="Permalink to this definition">¶</a></dt>
-<dd><p>End time of the note, in time steps or seconds (see Note).</p>
+<dd><p>End time of the note, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -443,7 +364,7 @@ key-value pairs.</p>
 <dd><p>Note pitch, as a MIDI note number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -454,15 +375,11 @@ key-value pairs.</p>
 <dd><p>Note velocity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The timing unit is determined by higher-level objects.</p>
-</div>
 <dl class="py method">
 <dt id="muspy.Note.clip">
 <code class="sig-name descname">clip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">upper</span><span class="o">=</span><span class="default_value">127</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Note.clip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Note.clip" title="Permalink to this definition">¶</a></dt>
@@ -498,7 +415,7 @@ raises the pitch, while a negative value lowers the pitch.</p>
 <dl class="py method">
 <dt id="muspy.Note.validate">
 <code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Note.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Note.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
+<dd><p>Raise proper errors if any attribute is invalid.</p>
 </dd></dl>
 
 </dd></dl>
@@ -540,17 +457,11 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="muspy.SongInfo.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#SongInfo.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.SongInfo.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.SourceInfo">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">SourceInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format_</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">id_</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#SourceInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.SourceInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">SourceInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#SourceInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.SourceInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for source information.</p>
 <dl class="py attribute">
 <dt id="muspy.SourceInfo.collection">
@@ -596,12 +507,6 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="muspy.SourceInfo.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#SourceInfo.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.SourceInfo.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
@@ -611,7 +516,7 @@ raises the pitch, while a negative value lowers the pitch.</p>
 <dl class="py attribute">
 <dt id="muspy.Tempo.time">
 <code class="sig-name descname">time</code><a class="headerlink" href="#muspy.Tempo.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the key signature, in time steps or seconds (see Note).</p>
+<dd><p>Start time of the key signature, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -622,22 +527,12 @@ raises the pitch, while a negative value lowers the pitch.</p>
 <dl class="py attribute">
 <dt id="muspy.Tempo.tempo">
 <code class="sig-name descname">tempo</code><a class="headerlink" href="#muspy.Tempo.tempo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tempo in bpm (beats per minute)</p>
+<dd><p>Tempo in bpm (beats per minute).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The timing unit is determined by higher-level objects.</p>
-</div>
-<dl class="py method">
-<dt id="muspy.Tempo.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Tempo.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Tempo.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
 </dd></dl>
 
 </dd></dl>
@@ -649,7 +544,7 @@ raises the pitch, while a negative value lowers the pitch.</p>
 <dl class="py attribute">
 <dt id="muspy.TimeSignature.time">
 <code class="sig-name descname">time</code><a class="headerlink" href="#muspy.TimeSignature.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the time signature, in time steps or seconds (see Note).</p>
+<dd><p>Start time of the time signature, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int or float</p>
@@ -679,26 +574,22 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dl>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The timing unit is determined by higher-level objects.</p>
-</div>
 <dl class="py method">
 <dt id="muspy.TimeSignature.validate">
 <code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#TimeSignature.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.TimeSignature.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
+<dd><p>Raise proper errors if any attribute is invalid.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="muspy.TimingInfo">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">TimingInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_symbolic_timing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">beat_resolution</span><span class="o">=</span><span class="default_value">24</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#TimingInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.TimingInfo" title="Permalink to this definition">¶</a></dt>
+<dt id="muspy.Timing">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Timing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_symbolic</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Timing" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for song information.</p>
 <dl class="py attribute">
-<dt id="muspy.TimingInfo.is_symbolic_timing">
-<code class="sig-name descname">is_symbolic_timing</code><a class="headerlink" href="#muspy.TimingInfo.is_symbolic_timing" title="Permalink to this definition">¶</a></dt>
-<dd><p>If true, the timing is in time steps. Otherwise, it’s in seconds.</p>
+<dt id="muspy.Timing.is_symbolic">
+<code class="sig-name descname">is_symbolic</code><a class="headerlink" href="#muspy.Timing.is_symbolic" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, the timing is in time steps, otherwise in seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>bool</p>
@@ -707,39 +598,57 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.TimingInfo.beat_resolution">
-<code class="sig-name descname">beat_resolution</code><a class="headerlink" href="#muspy.TimingInfo.beat_resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time steps per beat (only effective when <cite>is_symbolic_timing</cite> is true).</p>
+<dt id="muspy.Timing.resolution">
+<code class="sig-name descname">resolution</code><a class="headerlink" href="#muspy.Timing.resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time steps per beat (only effective when <cite>is_symbolic</cite> is true).
+If <cite>is_symbolic</cite> is True, defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
+<dd class="field-odd"><p>int, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.Timing.tempos">
+<code class="sig-name descname">tempos</code><a class="headerlink" href="#muspy.Timing.tempos" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of tempos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <code class="xref py py-class docutils literal notranslate"><span class="pre">Muspy.Tempo</span></code></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.TimingInfo.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#TimingInfo.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.TimingInfo.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
+<dt id="muspy.Timing.get_end_time">
+<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Timing.get_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time of the last tempo event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether the tempos are sorted. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.Timing.remove_duplicate_changes">
+<code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing.remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Timing.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicate tempo changes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.Timing.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Timing.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise proper errors if any attribute is invalid.</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.Track">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'unknown'</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for music track.</p>
-<dl class="py attribute">
-<dt id="muspy.Track.name">
-<code class="sig-name descname">name</code><a class="headerlink" href="#muspy.Track.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of the track. Defaults to ‘unknown’.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="muspy.Track.program">
 <code class="sig-name descname">program</code><a class="headerlink" href="#muspy.Track.program" title="Permalink to this definition">¶</a></dt>
@@ -759,6 +668,17 @@ Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.Track.name">
+<code class="sig-name descname">name</code><a class="headerlink" href="#muspy.Track.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the track. Defaults to ‘unknown’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -797,19 +717,6 @@ Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Track.append">
-<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.append" title="Permalink to this definition">¶</a></dt>
-<dd><p>Append an object to the correseponding list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>Muspy objects</em><em> (</em><em>see below</em><em>)</em>) – Object to be appended. Supported object types are
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Muspy.Note</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Muspy.Annotation</span></code> and
-<code class="xref py py-class docutils literal notranslate"><span class="pre">Muspy.Lyric</span></code> objects.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="muspy.Track.clip">
 <code class="sig-name descname">clip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">upper</span><span class="o">=</span><span class="default_value">127</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.clip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.clip" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clip the velocity of each note.</p>
@@ -824,41 +731,15 @@ Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Track.from_dict">
-<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.from_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an instance constructed from a dictionary.</p>
+<dt id="muspy.Track.get_end_time">
+<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.get_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time of the last event.</p>
+<p>This includes notes note offsets, lyrics and annotations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dict_</strong> (<em>dict</em>) – A dictionary that stores the attributes and their values as
-key-value pairs.</p>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Track.get_active_length">
-<code class="sig-name descname">get_active_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.get_active_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.get_active_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the end time of the last note.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Track.get_length">
-<code class="sig-name descname">get_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.get_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.get_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the time of the last event.</p>
-<p>This includes notes onsets, note offsets, lyrics and annotations.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Track.remove_invalid">
-<code class="sig-name descname">remove_invalid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.remove_invalid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.remove_invalid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove invalid objects, including notes, lyrics and annotations.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Track.sort">
-<code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.sort" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort the time-stamped objects with respect to event time.</p>
-<p>This will sort notes, lyrics and annotations.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -876,24 +757,77 @@ raises the pitches, while a negative value lowers the pitches.</p>
 <dl class="py method">
 <dt id="muspy.Track.validate">
 <code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
+<dd><p>Raise proper errors if any attribute is invalid.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.adjust_resolution">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">adjust_resolution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#adjust_resolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.adjust_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust resolution and update the timing of time-stamped objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy music object to be adjusted.</p></li>
+<li><p><strong>target</strong> (<em>int</em><em>, </em><em>optional</em>) – Target resolution.</p></li>
+<li><p><strong>factor</strong> (<em>int</em><em> or </em><em>float</em><em>, </em><em>optional</em>) – Factor used to adjust the resolution based on the formula:
+<cite>new_resolution = old_resolution * factor</cite>. For example, a factor of
+2 double the resolution, and a factor of 0.5 halve the resolution.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.adjust_time">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">adjust_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">func</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#adjust_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.adjust_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust the timing of time-stamped objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> or <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> object) – Object to be adjusted.</p></li>
+<li><p><strong>func</strong> (<em>callable</em>) – The function used to compute the new timing from the old timing,
+i.e., <cite>new_time = func(old_time)</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#muspy.adjust_resolution" title="muspy.adjust_resolution"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.adjust_resolution()</span></code></a></dt><dd><p>Adjust the resolution and the timing of</p>
+</dd>
+</dl>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">time-stamped()</span></code></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The resolution are left unchanged.</p>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.append">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj1</span></em>, <em class="sig-param"><span class="n">obj2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.append" title="Permalink to this definition">¶</a></dt>
 <dd><p>Append an object to the correseponding list.</p>
-<p>If <cite>obj1</cite> is of type <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>, <cite>obj2</cite> can be
-<a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a>, <a class="reference internal" href="#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a>,
-<a class="reference internal" href="#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a>, <a class="reference internal" href="#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a>, <a class="reference internal" href="#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a>
-or <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a>. If <cite>obj1</cite> is of type <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a>,
-<cite>obj2</cite> can be <a class="reference internal" href="#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a>, <a class="reference internal" href="#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a> or
-<a class="reference internal" href="#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a>.</p>
+<ul class="simple">
+<li><p>If <cite>obj1</cite> is of type <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>, <cite>obj2</cite> can be
+<a class="reference internal" href="#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a>, <a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a>,
+<a class="reference internal" href="#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a>, <a class="reference internal" href="#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a> or
+<a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a>.</p></li>
+<li><p>If <cite>obj1</cite> is of type <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a>, <cite>obj2</cite> can be
+<a class="reference internal" href="#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a>, <a class="reference internal" href="#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a> or
+<a class="reference internal" href="#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a>.</p></li>
+<li><p>If <cite>obj1</cite> is of type <a class="reference internal" href="#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a>, <cite>obj2</cite> can be
+<a class="reference internal" href="#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a>.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<em>MusPy objects</em><em> (</em><em>see above</em><em>)</em>) – Object to be appended.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj1</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>, <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> or) – <a class="reference internal" href="#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a> object
+Object to which <cite>obj2</cite> to be append.</p></li>
+<li><p><strong>obj2</strong> (<em>MusPy objects</em><em> (</em><em>see below</em><em>)</em>) – Object to be appended to <cite>obj1</cite>.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -916,35 +850,29 @@ or <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code c
 
 <dl class="py function">
 <dt id="muspy.quantize">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">quantize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">beat_resolution</span><span class="o">=</span><span class="default_value">24</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#quantize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.quantize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quantize all the time-stamped objects.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.quantize_absolute_timing">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">quantize_absolute_timing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">step</span></em>, <em class="sig-param"><span class="n">beat_resolution</span><span class="o">=</span><span class="default_value">24</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#quantize_absolute_timing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.quantize_absolute_timing" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quantize all the time-stamped objects, assuming absolute timing.</p>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">quantize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">beats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bpm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#quantize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.quantize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quantize the timing of time-stamped objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Object to be quantized.</p></li>
-<li><p><strong>step</strong> (<em>int</em><em> or </em><em>float</em>) – Length of quantization step, in seconds.</p></li>
-<li><p><strong>beat_resolution</strong> (<em>int</em>) – Time steps per beat.</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy music object to be quantized.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per beat.</p></li>
+<li><p><strong>beats</strong> (<em>list of float</em>) – Sorted list of beat positions in ascending order, assuming no
+duplicate values.</p></li>
+<li><p><strong>bpm</strong> (<em>int</em><em> or </em><em>float</em>) – Length of quantization step, in seconds.</p></li>
+<li><p><strong>offset</strong> (<em>float</em>) – Offset of the beat pulse train, e.g., start time of the first beat.</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt id="muspy.quantize_by_beats">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">quantize_by_beats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">beats</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#quantize_by_beats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.quantize_by_beats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quantize all the symbolic-time-stamped objects.</p>
+<dt id="muspy.remove_duplicate_changes">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicate change events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Object to be quantized.</p></li>
-<li><p><strong>step</strong> (<em>np.ndarray</em><em> or </em><em>list of int</em><em> or </em><em>float</em>) – Length of quantization step, in seconds.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> or <a class="reference internal" href="#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> object) – Object to be processed.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -953,13 +881,18 @@ or <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code c
 <dt id="muspy.sort">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort all the time-stamped objects with respect to event time.</p>
-<p>If a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> is given, this will sort time signatures, key
-signatures, tempos, lyrics and annotations, along with notes, lyrics and
-annotations for each track. If a <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> is given, this will
-sort notes, lyrics and annotations.</p>
+<ul class="simple">
+<li><p>If a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> is given, this will sort key signatures,
+time signatures, lyrics and annotations, along with notes, lyrics and
+annotations for each track.</p></li>
+<li><p>If a <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> is given, this will sort notes, lyrics and
+annotations.</p></li>
+<li><p>If a <a class="reference internal" href="#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> is given, this will sort tempos.</p></li>
+</ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> or <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> object) – Object to be sorted.</p>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>, <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> or) – <a class="reference internal" href="#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> object
+Object to be sorted.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1070,7 +1003,7 @@ extension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a></dt><dd><p>read from other formats such as MIDI and MusicXML</p>
+<dt><a class="reference internal" href="#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a></dt><dd><p>Read from other formats such as MIDI and MusicXML.</p>
 </dd>
 </dl>
 </div>
@@ -1137,7 +1070,7 @@ extension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a></dt><dd><p>load from a JSON or a YAML file</p>
+<dt><a class="reference internal" href="#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a></dt><dd><p>Load from a JSON or a YAML file.</p>
 </dd>
 </dl>
 </div>
@@ -1145,11 +1078,25 @@ extension.</p>
 
 <dl class="py function">
 <dt id="muspy.read_midi">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">read_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/midi.html#read_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.read_midi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">read_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">backend</span><span class="o">=</span><span class="default_value">'mido'</span></em>, <em class="sig-param"><span class="n">duplicate_note_mode</span><span class="o">=</span><span class="default_value">'fifo'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/midi.html#read_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.read_midi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a MIDI file into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MIDI file to be read.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MIDI file to be read.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em>) – Backend to use.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off message is
+presetned while there are multiple correspoding note on messages
+that have not yet been closed, we need a policy to decide which note
+on messages to close. Defaults to ‘fifo’. Only used when
+<cite>backend=’mido’</cite>.</p>
+<ul>
+<li><p>’fifo’ (first in first out): close the earliest note on</p></li>
+<li><p>’lifo’ (first in first out):close the latest note on</p></li>
+<li><p>’close_all’: close all note on messages</p></li>
+</ul>
+</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Converted MusPy Music object.</p>
@@ -1173,13 +1120,13 @@ extension.</p>
 
 <dl class="py class">
 <dt id="muspy.Music">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Music</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">meta_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">timing_info</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">downbeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tracks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Music</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">meta</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">timing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">downbeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tracks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music" title="Permalink to this definition">¶</a></dt>
 <dd><p>A simple yet universal container for symbolic music.</p>
 <p>This is the core class of MusPy, which provides I/O interfaces for common
 formats. A Music object can be constructed in the following ways.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music()</span></code></a>: Construct by setting values for attributes.</p></li>
-<li><p><a class="reference internal" href="#muspy.Music.from_dict" title="muspy.Music.from_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music.from_dict()</span></code></a>: Construct from a dictionary that stores
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music.from_dict()</span></code>: Construct from a dictionary that stores
 the attributes and their values as key-value pairs.</p></li>
 <li><p><a class="reference internal" href="#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a>: Read from a MIDI or a MusicXML file.</p></li>
 <li><p><a class="reference internal" href="#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a>: Load from a JSON or a YAML file saved by
@@ -1188,23 +1135,23 @@ the attributes and their values as key-value pairs.</p></li>
 or <a class="reference external" href="https://salu133445.github.io/pypianoroll/multitrack.html#pypianoroll.Multitrack" title="(in pypianoroll v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> object.</p></li>
 </ul>
 <dl class="py attribute">
-<dt id="muspy.Music.timing">
-<code class="sig-name descname">timing</code><a class="headerlink" href="#muspy.Music.timing" title="Permalink to this definition">¶</a></dt>
-<dd><p>A timing info object. See <a class="reference internal" href="#muspy.TimingInfo" title="muspy.TimingInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimingInfo</span></code></a> for details.</p>
+<dt id="muspy.Music.meta">
+<code class="sig-name descname">meta</code><a class="headerlink" href="#muspy.Music.meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Meta data. See <a class="reference internal" href="#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#muspy.TimingInfo" title="muspy.TimingInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimingInfo</span></code></a> object</p>
+<dd class="field-odd"><p><a class="reference internal" href="#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData</span></code></a> object</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.Music.time_signatures">
-<code class="sig-name descname">time_signatures</code><a class="headerlink" href="#muspy.Music.time_signatures" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time signatures. See <a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a> for details.</p>
+<dt id="muspy.Music.timing">
+<code class="sig-name descname">timing</code><a class="headerlink" href="#muspy.Music.timing" title="Permalink to this definition">¶</a></dt>
+<dd><p>A timing info object. See <a class="reference internal" href="#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a> object</p>
+<dd class="field-odd"><p><a class="reference internal" href="#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1221,12 +1168,12 @@ or <a class="reference external" href="https://salu133445.github.io/pypianoroll/
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.Music.tempos">
-<code class="sig-name descname">tempos</code><a class="headerlink" href="#muspy.Music.tempos" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tempos. See <a class="reference internal" href="#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a> for details.</p>
+<dt id="muspy.Music.time_signatures">
+<code class="sig-name descname">time_signatures</code><a class="headerlink" href="#muspy.Music.time_signatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time signatures. See <a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a> for details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a> object</p>
+<dd class="field-odd"><p>list of <a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a> object</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1275,13 +1222,18 @@ or <a class="reference external" href="https://salu133445.github.io/pypianoroll/
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt id="muspy.Music.meta_data">
-<code class="sig-name descname">meta_data</code><a class="headerlink" href="#muspy.Music.meta_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Meta data. See <a class="reference internal" href="#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData</span></code></a> for details.</p>
+<dl class="py method">
+<dt id="muspy.Music.adjust_resolution">
+<code class="sig-name descname">adjust_resolution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.adjust_resolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.adjust_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust resolution and update the timing of time-stamped objects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData</span></code></a> object</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<em>int</em><em>, </em><em>optional</em>) – Target resolution.</p></li>
+<li><p><strong>factor</strong> (<em>int</em><em> or </em><em>float</em><em>, </em><em>optional</em>) – Factor used to adjust the resolution based on the formula:
+<cite>new_resolution = old_resolution * factor</cite>. For example, a factor of
+2 double the resolution, and a factor of 0.5 halve the resolution.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1293,7 +1245,7 @@ or <a class="reference external" href="https://salu133445.github.io/pypianoroll/
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>obj</strong> (<em>Muspy objects</em><em> (</em><em>see below</em><em>)</em>) – Object to be appended. Supported object types are
-<a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a>, <a class="reference internal" href="#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a>,
+<a class="reference internal" href="#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a>, <a class="reference internal" href="#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a>,
 <a class="reference internal" href="#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a>, <a class="reference internal" href="#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a>,
 <a class="reference internal" href="#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a> and <a class="reference internal" href="#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> objects.</p>
 </dd>
@@ -1315,43 +1267,43 @@ or <a class="reference external" href="https://salu133445.github.io/pypianoroll/
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Music.from_dict">
-<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.from_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return an instance constructed from a dictionary.</p>
+<dt id="muspy.Music.get_end_time">
+<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.get_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time of the last event in all tracks.</p>
+<p>This includes tempos, key signatures, time signatures, notes offsets,
+lyrics and annotations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>dict_</strong> (<em>dict</em>) – A dictionary that stores the attributes and their values as
-key-value pairs.</p>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Music.get_active_length">
-<code class="sig-name descname">get_active_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_active_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.get_active_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the end time of the last note in all tracks.</p>
+<dt id="muspy.Music.quantize">
+<code class="sig-name descname">quantize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">beats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bpm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">update_tempos</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.quantize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.quantize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quantize the timing of time-stamped objects.</p>
+<p>If <cite>beats</cite> is given, use it as the beat locations and quantize the
+timing accordingly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per beat.</p></li>
+<li><p><strong>beats</strong> (<em>list of float</em><em>, </em><em>optional</em>) – Sorted list of beat positions in ascending order, assuming no
+duplicate values.</p></li>
+<li><p><strong>bpm</strong> (<em>int</em><em> or </em><em>float</em><em>, </em><em>optional</em>) – Length of quantization step, in seconds.</p></li>
+<li><p><strong>offset</strong> (<em>float</em><em>, </em><em>optional</em>) – Offset of the beat pulse train. This can be useful to set the start
+time of the first beat. Defaults to 0.</p></li>
+<li><p><strong>update_tempos</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to update the tempos. Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Music.get_length">
-<code class="sig-name descname">get_length</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_length"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.get_length" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the time of the last event in all tracks.</p>
-<p>This includes time signatures, key signatures, tempos notes onsets,
-note offsets, lyrics and annotations.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Music.remove_invalid">
-<code class="sig-name descname">remove_invalid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.remove_invalid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.remove_invalid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove invalid objects.</p>
-<p>This includes time signatures, key signatures, tempos, lyrics and
-annotations, along with notes, lyrics and annotations for each track.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Music.reset">
-<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.reset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reset the object.</p>
+<dt id="muspy.Music.remove_duplicate_changes">
+<code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove duplicate key signature, time signature and tempo changes.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1368,9 +1320,7 @@ extension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a></dt><dd><p>equivalent function</p>
-</dd>
-<dt><a class="reference internal" href="#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a></dt><dd><p>write to other formats such as MIDI and MusicXML</p>
+<dt><a class="reference internal" href="#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a></dt><dd><p>Write to other formats such as MIDI and MusicXML.</p>
 </dd>
 </dl>
 </div>
@@ -1386,13 +1336,6 @@ extension.</p>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the JSON file.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a></dt><dd><p>equivalent function</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1405,20 +1348,13 @@ extension.</p>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the YAML file.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></dt><dd><p>equivalent function</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt id="muspy.Music.sort">
 <code class="sig-name descname">sort</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.sort"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.sort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sort the time-stamped objects with respect to event time.</p>
-<p>This will sort time signatures, key signatures, tempos, lyrics and
+<p>This will sort tempos, key signatures, time signatures, lyrics and
 annotations, along with notes, lyrics and annotations for each track.</p>
 </dd></dl>
 
@@ -1488,12 +1424,6 @@ the pitches, while a negative value lowers the pitches.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Music.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Validate the object, and raise errors for invalid attributes.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="muspy.Music.write">
 <code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write to a MIDI or a MusicXML file.</p>
@@ -1507,9 +1437,7 @@ extension.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a></dt><dd><p>equivalent function</p>
-</dd>
-<dt><a class="reference internal" href="#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a></dt><dd><p>losslessly save to a JSON and a YAML file</p>
+<dt><a class="reference internal" href="#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a></dt><dd><p>Losslessly save to a JSON and a YAML file.</p>
 </dd>
 </dl>
 </div>
@@ -1517,7 +1445,7 @@ extension.</p>
 
 <dl class="py method">
 <dt id="muspy.Music.write_midi">
-<code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.write_midi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">backend</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.write_midi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write to a MIDI file.</p>
 <p>Refer to <a class="reference internal" href="#muspy.write_midi" title="muspy.write_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_midi()</span></code></a>: for full documentation.</p>
 <dl class="field-list simple">
@@ -1525,13 +1453,6 @@ extension.</p>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the MIDI file.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#muspy.write_midi" title="muspy.write_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_midi()</span></code></a></dt><dd><p>equivalent function</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1544,13 +1465,6 @@ extension.</p>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the MusicXML file.</p>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="#muspy.write_musicxml" title="muspy.write_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_musicxml()</span></code></a></dt><dd><p>equivalent function</p>
-</dd>
-</dl>
-</div>
 </dd></dl>
 
 </dd></dl>
@@ -1571,7 +1485,7 @@ extension.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a></dt><dd><p>write to other formats such as MIDI and MusicXML</p>
+<dt><a class="reference internal" href="#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a></dt><dd><p>Write to other formats such as MIDI and MusicXML.</p>
 </dd>
 </dl>
 </div>
@@ -1679,7 +1593,7 @@ extension.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a></dt><dd><p>losslessly save to a JSON or a YAML file</p>
+<dt><a class="reference internal" href="#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a></dt><dd><p>Losslessly save to a JSON or a YAML file.</p>
 </dd>
 </dl>
 </div>
@@ -1687,13 +1601,14 @@ extension.</p></li>
 
 <dl class="py function">
 <dt id="muspy.write_midi">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/midi.html#write_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.write_midi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">backend</span><span class="o">=</span><span class="default_value">'mido'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/midi.html#write_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.write_midi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a Music object to a MIDI file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p></li>
 <li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the MIDI file.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em>) – Backend to use.</p></li>
 </ul>
 </dd>
 </dl>
