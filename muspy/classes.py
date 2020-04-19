@@ -374,6 +374,11 @@ class Note(Base):
         """Duration of the note."""
         return self.end - self.start
 
+    @duration.setter
+    def duration(self, duration):
+        """Setter for duration."""
+        self.end = self.start + duration
+
     def validate(self):
         """Raise proper errors if any attribute is invalid."""
         self._validate()
