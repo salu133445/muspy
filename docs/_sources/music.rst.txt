@@ -1,7 +1,178 @@
-============
-Music Object
+=============
+MusPy Classes
+=============
+
+These are the core classes in MusPy.
+
+
+Music Class
 ============
 
-The core object of MusPy is the :class:`muspy.Music` object.
+The :class:`muspy.Music` class is the core element of MusPy. It is a universal container for symbolic music.
 
-TBA
+=============== ====================== ==================================== =========================
+Attributes      Description            Type                                 Default
+=============== ====================== ==================================== =========================
+meta            Meta data              :class:`muspy.MetaData`              :class:`muspy.MetaData()`
+timing          Timing information     :class:`muspy.Timing`                :class:`muspy.Timing()`
+key_signatures  Key signature changes  list of :class:`muspy.KeySignature`  []
+time_signatures Time signature changes list of :class:`muspy.TimeSignature` []
+downbeats       Downbeat positions     list of float                        []
+lyrics          Lyrics                 list of :class:`muspy.Lyric`         []
+annotations     Annotations            list of :class:`muspy.Annotation`    []
+tracks          Music tracks           list of :class:`muspy.Track`         []
+=============== ====================== ==================================== =========================
+
+.. Hint:: An example of a MusPy Music object as a YAML file is available `here <../examples.html>`__.
+
+
+MetaData Class
+==============
+
+The :class:`muspy.MetaData` class is a container for meta data of a song.
+
+============== ================== ========================= ===========================
+Attributes     Description        Type                      Default
+============== ================== ========================= ===========================
+schema_version Schema version     str                       ``'0.0'``
+song           Song information   :class:`muspy.SongInfo`   :class:`muspy.SongInfo()`
+source         Source information :class:`muspy.SourceInfo` :class:`muspy.SourceInfo()`
+============== ================== ========================= ===========================
+
+SongInfo Class
+--------------
+
+The :class:`muspy.SongInfo` class is a container for song-related meta data.
+
+========== ======================= =========== =======
+Attributes Description             Type        Default
+========== ======================= =========== =======
+title      Song title              str
+artist     Main artist of the song str
+creators   Creators(s) of the song list of str []
+========== ======================= =========== =======
+
+SourceInfo  Class
+-----------------
+
+The :class:`muspy.SongInfo` class is a container for source-related meta data. This can be useful for dataset management.
+
+========== =================================================== ==== =======
+Attributes Description                                         Type Default
+========== =================================================== ==== =======
+collection Name of the collection                              str
+filename   Relative path to the file w.r.t the collection root str
+format     Format of the source file (e.g., MIDI and MusicXML) str
+id         Unique ID of the file                               str
+========== =================================================== ==== =======
+
+
+Timing  Class
+=============
+
+The :class:`muspy.Timing` class is a container for timing system of a song. MusPy supports two timing systems: *symbolic timing* and *absolute timing*. When ``is_symbolic=True``, the symbolic timing system is used, and the timing is in time steps. To render the song, the temporal resolution (``resolution``, in time steps per beat) and the tempos (``tempos``, in beats per minute, or bpm) are required.
+
+.. math:: absolute\_time = 60 \times tempo \times symbolic\_time / resolution
+
+When ``is_symbolic=False``, the absolute timing system is used, and the timing is in seconds. Moreover, ``resolution`` is not effective and ``tempos`` serve as annotations only.
+
+=========== ========================== ============================ ============================
+Attributes  Description                Type                         Default
+=========== ========================== ============================ ============================
+is_symbolic If symbolic timing is used bool                         True
+resolution  Time steps per beat        int                          ``muspy.DEFAULT_RESOLUTION``
+tempos      Tempo changes              list of :class:`muspy.Tempo` []
+=========== ========================== ============================ ============================
+
+Tempo Class
+-----------
+
+The :class:`muspy.Tempo` class is a container for tempo changes.
+
+========== =============================== ===== =======
+Attributes Description                     Type  Default
+========== =============================== ===== =======
+time       Start time of the tempo         float
+tempos     Tempo in bpm (beats per minute) float
+========== =============================== ===== =======
+
+
+KeySignature and TimeSignature Classes
+======================================
+
+The :class:`muspy.KeySignature` class is a container for key signature changes.
+
+========== ==================== ===== =======
+Attributes Description          Type  Default
+========== ==================== ===== =======
+time       Start time           float
+root       Root (e.g., "C")     str
+mode       Mode (e.g., "major") str
+========== ==================== ===== =======
+
+The :class:`muspy.TimeSignature` class is a container for time signature changes.
+
+=========== =============================== ===== =======
+Attributes  Description                     Type  Default
+=========== =============================== ===== =======
+time        Start time                      float
+numerator   Numerator (e.g., "3" for 3/4)   int
+denominator Denominator (e.g., "4" for 3/4) int
+=========== =============================== ===== =======
+
+
+Lyric and Annotation Classes
+============================
+
+The :class:`muspy.Lyric` class is a container for lyrics.
+
+========== ====================================== ===== =======
+Attributes Description                            Type  Default
+========== ====================================== ===== =======
+time       Start time                             float
+lyric      Lyric (sentence, word, syllable, etc.) str
+========== ====================================== ===== =======
+
+The :class:`muspy.Annotation` class is a container for annotations. In fact, `annotation` can hold any type of data.
+
+========== ====================== ===== =======
+Attributes Description            Type  Default
+========== ====================== ===== =======
+time       Start time             float
+annotation Annotation of any type
+========== ====================== ===== =======
+
+
+Track Class
+===========
+
+The :class:`muspy.Note` class is a container for musical tracks.
+
+=========== ======================== ================================= =======
+Attributes  Description              Type                              Default
+=========== ======================== ================================= =======
+program     MIDI program number [#]_ int (0-127)                       0
+is_drum     If it is a drum track    bool                              False
+name        Track name               str
+notes       Musical notes            list of :class:`muspy.Note`       []
+lyrics      Lyrics                   list of :class:`muspy.Lyric`      []
+annotations Annotations              list of :class:`muspy.Annotation` []
+=========== ======================== ================================= =======
+
+.. [#] MIDI program number is based on General MIDI specification (see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__).
+
+Note Class
+----------
+
+The :class:`muspy.Note` class is a container for notes.
+
+========== ================================ =========== =======
+Attributes Description                      Type        Default
+========== ================================ =========== =======
+start      Start time                       float
+end        End time                         float
+pitch      Note pitch as a MIDI note number int (0-127)
+velocity   Note velocity                    int (0-127)
+========== ================================ =========== =======
+
+Note that :class:`muspy.Note` has a property `duration` with setter and getter implemented, which can be handy sometimes.

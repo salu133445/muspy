@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Music Object &mdash; MusPy  documentation</title>
+  <title>MusPy Classes &mdash; MusPy  documentation</title>
   
 
   
@@ -25,6 +25,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Input Interface" href="inputs.html" />
+    <link rel="next" title="Example Music Object" href="examples.html" />
     <link rel="prev" title="MusPy documentation" href="index.html" /> 
 </head>
 
@@ -55,7 +56,7 @@
 
           
             
-            <img src="_static/muspy.svg" class="logo" alt="Logo"/>
+            <img src="_static/logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -84,16 +85,31 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="inputs.html">Input Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="outputs.html">Output Interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">MusPy Classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#music-class">Music Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metadata-class">MetaData Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#songinfo-class">SongInfo Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#sourceinfo-class">SourceInfo  Class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#timing-class">Timing  Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tempo-class">Tempo Class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#keysignature-and-timesignature-classes">KeySignature and TimeSignature Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lyric-and-annotation-classes">Lyric and Annotation Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#track-class">Track Class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#note-class">Note Class</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -140,7 +156,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Music Object</li>
+      <li>MusPy Classes</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -159,10 +175,483 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="music-object">
-<h1>Music Object<a class="headerlink" href="#music-object" title="Permalink to this headline">¶</a></h1>
-<p>The core object of MusPy is the <a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object.</p>
-<p>TBA</p>
+  <div class="section" id="muspy-classes">
+<h1>MusPy Classes<a class="headerlink" href="#muspy-classes" title="Permalink to this headline">¶</a></h1>
+<p>These are the core classes in MusPy.</p>
+<div class="section" id="music-class">
+<h2>Music Class<a class="headerlink" href="#music-class" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> class is the core element of MusPy. It is a universal container for symbolic music.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 22%" />
+<col style="width: 37%" />
+<col style="width: 26%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>meta</p></td>
+<td><p>Meta data</p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData</span></code></a></p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData()</span></code></a></p></td>
+</tr>
+<tr class="row-odd"><td><p>timing</p></td>
+<td><p>Timing information</p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a></p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>key_signatures</p></td>
+<td><p>Key signature changes</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>time_signatures</p></td>
+<td><p>Time signature changes</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-even"><td><p>downbeats</p></td>
+<td><p>Downbeat positions</p></td>
+<td><p>list of float</p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>lyrics</p></td>
+<td><p>Lyrics</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-even"><td><p>annotations</p></td>
+<td><p>Annotations</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>tracks</p></td>
+<td><p>Music tracks</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>An example of a MusPy Music object as a YAML file is available <a class="reference external" href="../examples.html">here</a>.</p>
+</div>
+</div>
+<div class="section" id="metadata-class">
+<h2>MetaData Class<a class="headerlink" href="#metadata-class" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.MetaData" title="muspy.MetaData"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.MetaData</span></code></a> class is a container for meta data of a song.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 21%" />
+<col style="width: 30%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>schema_version</p></td>
+<td><p>Schema version</p></td>
+<td><p>str</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">'0.0'</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>song</p></td>
+<td><p>Song information</p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.SongInfo" title="muspy.SongInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.SongInfo</span></code></a></p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.SongInfo" title="muspy.SongInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.SongInfo()</span></code></a></p></td>
+</tr>
+<tr class="row-even"><td><p>source</p></td>
+<td><p>Source information</p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.SourceInfo" title="muspy.SourceInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.SourceInfo</span></code></a></p></td>
+<td><p><a class="reference internal" href="doc/muspy.html#muspy.SourceInfo" title="muspy.SourceInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.SourceInfo()</span></code></a></p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="songinfo-class">
+<h3>SongInfo Class<a class="headerlink" href="#songinfo-class" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.SongInfo" title="muspy.SongInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.SongInfo</span></code></a> class is a container for song-related meta data.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 45%" />
+<col style="width: 22%" />
+<col style="width: 14%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>title</p></td>
+<td><p>Song title</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>artist</p></td>
+<td><p>Main artist of the song</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>creators</p></td>
+<td><p>Creators(s) of the song</p></td>
+<td><p>list of str</p></td>
+<td><p>[]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="sourceinfo-class">
+<h3>SourceInfo  Class<a class="headerlink" href="#sourceinfo-class" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.SongInfo" title="muspy.SongInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.SongInfo</span></code></a> class is a container for source-related meta data. This can be useful for dataset management.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 71%" />
+<col style="width: 6%" />
+<col style="width: 10%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>collection</p></td>
+<td><p>Name of the collection</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>filename</p></td>
+<td><p>Relative path to the file w.r.t the collection root</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>format</p></td>
+<td><p>Format of the source file (e.g., MIDI and MusicXML)</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>id</p></td>
+<td><p>Unique ID of the file</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="timing-class">
+<h2>Timing  Class<a class="headerlink" href="#timing-class" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> class is a container for timing system of a song. MusPy supports two timing systems: <em>symbolic timing</em> and <em>absolute timing</em>. When <code class="docutils literal notranslate"><span class="pre">is_symbolic=True</span></code>, the symbolic timing system is used, and the timing is in time steps. To render the song, the temporal resolution (<code class="docutils literal notranslate"><span class="pre">resolution</span></code>, in time steps per beat) and the tempos (<code class="docutils literal notranslate"><span class="pre">tempos</span></code>, in beats per minute, or bpm) are required.</p>
+<div class="math notranslate nohighlight">
+\[absolute\_time = 60 \times tempo \times symbolic\_time / resolution\]</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">is_symbolic=False</span></code>, the absolute timing system is used, and the timing is in seconds. Moreover, <code class="docutils literal notranslate"><span class="pre">resolution</span></code> is not effective and <code class="docutils literal notranslate"><span class="pre">tempos</span></code> serve as annotations only.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 12%" />
+<col style="width: 28%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>is_symbolic</p></td>
+<td><p>If symbolic timing is used</p></td>
+<td><p>bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>resolution</p></td>
+<td><p>Time steps per beat</p></td>
+<td><p>int</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">muspy.DEFAULT_RESOLUTION</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>tempos</p></td>
+<td><p>Tempo changes</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="tempo-class">
+<h3>Tempo Class<a class="headerlink" href="#tempo-class" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a> class is a container for tempo changes.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 58%" />
+<col style="width: 9%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>Start time of the tempo</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>tempos</p></td>
+<td><p>Tempo in bpm (beats per minute)</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="keysignature-and-timesignature-classes">
+<h2>KeySignature and TimeSignature Classes<a class="headerlink" href="#keysignature-and-timesignature-classes" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a> class is a container for key signature changes.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 48%" />
+<col style="width: 12%" />
+<col style="width: 17%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>Start time</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>root</p></td>
+<td><p>Root (e.g., “C”)</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>mode</p></td>
+<td><p>Mode (e.g., “major”)</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a> class is a container for time signature changes.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20%" />
+<col style="width: 57%" />
+<col style="width: 9%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>Start time</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>numerator</p></td>
+<td><p>Numerator (e.g., “3” for 3/4)</p></td>
+<td><p>int</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>denominator</p></td>
+<td><p>Denominator (e.g., “4” for 3/4)</p></td>
+<td><p>int</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="lyric-and-annotation-classes">
+<h2>Lyric and Annotation Classes<a class="headerlink" href="#lyric-and-annotation-classes" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a> class is a container for lyrics.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 63%" />
+<col style="width: 8%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>Start time</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>lyric</p></td>
+<td><p>Lyric (sentence, word, syllable, etc.)</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a> class is a container for annotations. In fact, <cite>annotation</cite> can hold any type of data.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 50%" />
+<col style="width: 11%" />
+<col style="width: 16%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>time</p></td>
+<td><p>Start time</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>annotation</p></td>
+<td><p>Annotation of any type</p></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="track-class">
+<h2>Track Class<a class="headerlink" href="#track-class" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a> class is a container for musical tracks.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 32%" />
+<col style="width: 44%" />
+<col style="width: 9%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>program</p></td>
+<td><p>MIDI program number <a class="footnote-reference brackets" href="#id2" id="id1">1</a></p></td>
+<td><p>int (0-127)</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>is_drum</p></td>
+<td><p>If it is a drum track</p></td>
+<td><p>bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>name</p></td>
+<td><p>Track name</p></td>
+<td><p>str</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>notes</p></td>
+<td><p>Musical notes</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-even"><td><p>lyrics</p></td>
+<td><p>Lyrics</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+<tr class="row-odd"><td><p>annotations</p></td>
+<td><p>Annotations</p></td>
+<td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a></p></td>
+<td><p>[]</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>MIDI program number is based on General MIDI specification (see <a class="reference external" href="https://www.midi.org/specifications/item/gm-level-1-sound-set">here</a>).</p>
+</dd>
+</dl>
+<div class="section" id="note-class">
+<h3>Note Class<a class="headerlink" href="#note-class" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a> class is a container for notes.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 53%" />
+<col style="width: 18%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attributes</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>start</p></td>
+<td><p>Start time</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>end</p></td>
+<td><p>End time</p></td>
+<td><p>float</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>pitch</p></td>
+<td><p>Note pitch as a MIDI note number</p></td>
+<td><p>int (0-127)</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>velocity</p></td>
+<td><p>Note velocity</p></td>
+<td><p>int (0-127)</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Note that <a class="reference internal" href="doc/muspy.html#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a> has a property <cite>duration</cite> with setter and getter implemented, which can be handy sometimes.</p>
+</div>
+</div>
 </div>
 
 
@@ -173,7 +662,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="inputs.html" class="btn btn-neutral float-right" title="Input Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Example Music Object" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="MusPy documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

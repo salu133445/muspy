@@ -25,6 +25,7 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -53,7 +54,7 @@
 
           
             
-            <img src="../../_static/muspy.svg" class="logo" alt="Logo"/>
+            <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -82,16 +83,13 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../inputs.html">Input Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../outputs.html">Output Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../music.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../schemas.html">Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -198,13 +196,13 @@
 <span class="sd">        Song title.</span>
 <span class="sd">    artist : str, optional</span>
 <span class="sd">        Main artist of the song.</span>
-<span class="sd">    composers : list of str, optional</span>
-<span class="sd">        Composers of the song.</span>
+<span class="sd">    creators : list of str, optional</span>
+<span class="sd">        Creator(s) of the song. Defaults to an empty list.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;composers&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+        <span class="p">[(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;creators&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
     <span class="p">)</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;artist&quot;</span><span class="p">]</span>
 
@@ -212,11 +210,11 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">artist</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">composers</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">creators</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">artist</span> <span class="o">=</span> <span class="n">artist</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">composers</span> <span class="o">=</span> <span class="n">composers</span> <span class="k">if</span> <span class="n">composers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="o">=</span> <span class="n">creators</span> <span class="k">if</span> <span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span></div>
 
 
 <div class="viewcode-block" id="SourceInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SourceInfo">[docs]</a><span class="k">class</span> <span class="nc">SourceInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -225,13 +223,14 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    collection : str, optional</span>
-<span class="sd">        Name of the collection name.</span>
+<span class="sd">        Name of the collection.</span>
 <span class="sd">    filename : str, optional</span>
-<span class="sd">        Path to the file in the collection.</span>
+<span class="sd">        Relative path to the source file with respect to the collection</span>
+<span class="sd">        root.</span>
 <span class="sd">    format : {&#39;midi&#39;, &#39;musicxml&#39;}, optional</span>
-<span class="sd">        Format of the source file</span>
+<span class="sd">        Format of the source file.</span>
 <span class="sd">    id : str, optional</span>
-<span class="sd">        Unique ID of the file</span>
+<span class="sd">        Unique ID of the file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -247,6 +246,7 @@
         <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
@@ -260,9 +260,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    schema_version : str</span>
 <span class="sd">        Schema version.</span>
-<span class="sd">    song : :class:&#39;muspy.SongInfo` object, optional</span>
-<span class="sd">        Soong infomation.</span>
-<span class="sd">    source : :class:&#39;muspy.SourceInfo` object, optional</span>
+<span class="sd">    song : :class:`muspy.SongInfo` object, optional</span>
+<span class="sd">        Song infomation.</span>
+<span class="sd">    source : :class:`muspy.SourceInfo` object, optional</span>
 <span class="sd">        Source infomation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -299,7 +299,7 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the key signature, in time steps or seconds.</span>
+<span class="sd">        Start time of the tempo, in time steps or seconds.</span>
 <span class="sd">    tempo : float</span>
 <span class="sd">        Tempo in bpm (beats per minute).</span>
 
@@ -320,13 +320,14 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    is_symbolic : bool</span>
+<span class="sd">    is_symbolic : bool, optional</span>
 <span class="sd">        If true, the timing is in time steps, otherwise in seconds.</span>
+<span class="sd">        Defaults to True</span>
 <span class="sd">    resolution : int, optional</span>
 <span class="sd">        Time steps per beat (only effective when `is_symbolic` is true).</span>
-<span class="sd">        If `is_symbolic` is True, defaults to `muspy.DEFAULT_RESOLUTION`.</span>
-<span class="sd">    tempos : list of :class:`Muspy.Tempo`</span>
-<span class="sd">        A list of tempos.</span>
+<span class="sd">        Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">    tempos : list of :class:`muspy.Tempo`</span>
+<span class="sd">        Tempo changes. Defaults to an empty list.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -454,7 +455,7 @@
 <span class="sd">    time : int or float</span>
 <span class="sd">        Start time of the lyric, in time steps or seconds.</span>
 <span class="sd">    lyric : str</span>
-<span class="sd">        The lyric.</span>
+<span class="sd">        Lyric (sentence, word, syllable, etc.).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -532,6 +533,11 @@
         <span class="sd">&quot;&quot;&quot;Duration of the note.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
 
+    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for duration.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">duration</span>
+
 <div class="viewcode-block" id="Note.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
@@ -579,19 +585,23 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    program : int</span>
-<span class="sd">        A program number according to General MIDI specification [1].</span>
-<span class="sd">        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).</span>
-<span class="sd">    is_drum : bool</span>
-<span class="sd">        A boolean indicating if it is a percussion track. Defaults to False.</span>
-<span class="sd">    name : str</span>
-<span class="sd">        Name of the track. Defaults to &#39;unknown&#39;.</span>
-<span class="sd">    notes : list of :class:`muspy.Note` objects</span>
-<span class="sd">        A list of notes.</span>
-<span class="sd">    annotations : list of :class:`muspy.Annotation` objects</span>
-<span class="sd">        A list of annotations.</span>
-<span class="sd">    lyrics : list of :class:`muspy.Lyric` objects</span>
-<span class="sd">        A list of lyrics.</span>
+<span class="sd">    program : int, optional</span>
+<span class="sd">        Program number according to General MIDI specification [1].</span>
+<span class="sd">        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand</span>
+<span class="sd">        Piano).</span>
+<span class="sd">    is_drum : bool, optional</span>
+<span class="sd">        A boolean indicating if it is a percussion track. Defaults to</span>
+<span class="sd">        False.</span>
+<span class="sd">    name : str, optional</span>
+<span class="sd">        Track name.</span>
+<span class="sd">    notes : list of :class:`muspy.Note` objects, optional</span>
+<span class="sd">        Musical notes. Defaults to an empty list.</span>
+<span class="sd">    annotations : list of :class:`muspy.Annotation` objects, optional</span>
+<span class="sd">        Annotations. Defaults to an empty list.</span>
+<span class="sd">    lyrics : list of :class:`muspy.Lyric` objects, optional</span>
+<span class="sd">        Lyrics. Defaults to an empty list.</span>
+
+<span class="sd">    [1] https://www.midi.org/specifications/item/gm-level-1-sound-set</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -617,8 +627,8 @@
         <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">=</span> <span class="n">program</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span> <span class="o">=</span> <span class="n">is_drum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">=</span> <span class="n">program</span> <span class="k">if</span> <span class="n">program</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span> <span class="o">=</span> <span class="n">is_drum</span> <span class="k">if</span> <span class="n">program</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">notes</span> <span class="k">if</span> <span class="n">notes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>

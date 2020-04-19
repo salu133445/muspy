@@ -25,6 +25,7 @@
         <script src="../../../_static/underscore.js"></script>
         <script src="../../../_static/doctools.js"></script>
         <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
@@ -53,7 +54,7 @@
 
           
             
-            <img src="../../../_static/muspy.svg" class="logo" alt="Logo"/>
+            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -82,16 +83,13 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../inputs.html">Input Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../outputs.html">Output Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../schemas.html">Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -167,7 +165,7 @@
 
 
 <div class="viewcode-block" id="load_json"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load_json">[docs]</a><span class="k">def</span> <span class="nf">load_json</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object loaded from a JSON file.</span>
 
@@ -191,7 +189,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">schema_path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
         <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Music</span><span class="p">(</span><span class="o">**</span><span class="n">data</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Music</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
