@@ -1,20 +1,40 @@
 # MusPy YAML schema v0.0
 
-meta: include("meta_")
-timing: include("timing")
-time_signatures: list(include("time_signature"))
-key_signatures: list(include("key_signature"))
-tempos: list(include("tempo"))
-downbeats: list(num())
-lyrics: list(include("lyric"))
-annotations: list(include("annotation"))
-tracks: any(list(include("track")), null())
+meta: include("meta_", required=False)
+timing: include("timing_", required=False)
+time_signatures: list(include("time_signature"), required=False)
+key_signatures: list(include("key_signature"), required=False)
+downbeats: list(num(), required=False)
+lyrics: list(include("lyric"), required=False)
+annotations: list(include("annotation"), required=False)
+tracks: any(list(include("track")), required=False)
 
 ---
 
-timing:
+meta_:
+  schema_version: regex("[0-9].[0-9]", required=False)
+  song: include("song_", required=False)
+  source: include("source_", required=False)
+
+song_:
+  title: str(required=False)
+  artist: str(required=False)
+  creators: list(str(), required=False)
+
+source_:
+  collection: str(required=False)
+  filename: str(required=False)
+  format: str(required=False)
+  id: str(required=False)
+
+timing_:
   is_symbolic: bool()
   resolution: int(required=False)
+  tempos: list(include("tempo"), required=False)
+
+tempo:
+  time: num()
+  tempo: num()
 
 key_signature:
   time: num()
@@ -25,20 +45,6 @@ time_signature:
   time: num()
   numerator: int()
   denominator: int()
-
-tempo:
-  time: num()
-  tempo: num()
-
----
-
-track:
-  program: int()
-  is_drum: bool()
-  name: str()
-  notes: list(include("note"))
-  lyrics: list(include("lyric"))
-  annotations: list(include("annotation"))
 
 note:
   start: num()
@@ -52,21 +58,13 @@ lyric:
 
 annotation:
   time: num()
-  annotation: any(bool(), num(), str(), list(), map())
+  # annotation: any()
   group: str(required=False)
 
-meta_:
-  schema_version: regex("[0-9].[0-9]")
-  song: include("song_info")
-  source: include("source_info")
-
-source_info:
-  collection: str(required=False)
-  filename: str(required=False)
-  format: str(required=False)
-  id: str(required=False)
-
-song_info:
-  title: str(required=False)
-  artist: str(required=False)
-  composers: list(str(), required=False)
+track:
+  program: int()
+  is_drum: bool()
+  name: str(required=False)
+  notes: list(include("note"), required=False)
+  lyrics: list(include("lyric"), required=False)
+  annotations: list(include("annotation"), required=False)

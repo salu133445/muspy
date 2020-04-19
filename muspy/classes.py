@@ -40,13 +40,13 @@ class SongInfo(Base):
         Song title.
     artist : str, optional
         Main artist of the song.
-    composers : list of str, optional
-        Composers of the song.
+    creators : list of str, optional
+        Creator(s) of the song. Defaults to an empty list.
 
     """
 
     _attributes = OrderedDict(
-        [("title", str), ("artist", str), ("composers", str)]
+        [("title", str), ("artist", str), ("creators", str)]
     )
     _optional_attributes = ["title", "artist"]
 
@@ -54,11 +54,11 @@ class SongInfo(Base):
         self,
         title: Optional[str] = None,
         artist: Optional[str] = None,
-        composers: Optional[List[str]] = None,
+        creators: Optional[List[str]] = None,
     ):
         self.title = title
         self.artist = artist
-        self.composers = composers if composers is not None else []
+        self.creators = creators if creators is not None else []
 
 
 class SourceInfo(Base):

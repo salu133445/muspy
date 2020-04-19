@@ -7,13 +7,11 @@ import tempfile
 import muspy
 
 DIR = os.path.dirname(__file__)
-TEST_JSON_PATH = os.path.join(DIR, "data", "test.json")
-TEST_YAML_PATH = os.path.join(DIR, "data", "test.yaml")
+TEST_JSON_PATH = os.path.join(DIR, "examples", "test.json")
+TEST_YAML_PATH = os.path.join(DIR, "examples", "test.yaml")
 TEST_MIDI_PATH = os.path.join(DIR, "data", "fur_elise.mid")
 TEST_XML_PATH = os.path.join(DIR, "data", "fur_elise.xml")
 TEST_MXL_PATH = os.path.join(DIR, "data", "fur_elise.mxl")
-
-# flake8: noqa: D102
 
 
 class IOTestCase(TestCase):
