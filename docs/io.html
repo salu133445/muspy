@@ -25,6 +25,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -36,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Representations" href="representations.html" />
-    <link rel="prev" title="Music Object" href="music.html" /> 
+    <link rel="prev" title="Example Music Object" href="examples.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -55,7 +56,7 @@
 
           
             
-            <img src="_static/muspy.svg" class="logo" alt="Logo"/>
+            <img src="_static/logo.svg" class="logo" alt="Logo"/>
           
           </a>
 
@@ -84,15 +85,21 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="music.html">Music Object</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Data I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="music.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Example Music Object</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Data I/O</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reading-and-writing">Reading and Writing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#saving-and-loading">Saving and Loading</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#json-yaml-schemas">JSON/YAML Schemas</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#interface-with-other-packages">Interface with other packages</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="schemas.html">Schemas</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
-</ul>
-<ul>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -162,33 +169,41 @@
 <h1>Data I/O<a class="headerlink" href="#data-i-o" title="Permalink to this headline">¶</a></h1>
 <p>MusPy provides three type of data I/O interface.</p>
 <ul class="simple">
-<li><p>Read to and write from MIDI or MusicXML formats</p></li>
-<li><p>Save to and load from native JSON and YAML formats</p></li>
-<li><p>Convert to and from objects in friend packages</p></li>
+<li><p>Reading and writing with MIDI and MusicXML</p></li>
+<li><p>Saving and loading with JSON and YAML</p></li>
+<li><p>Conversion between objects in other packages</p></li>
 </ul>
-<div class="section" id="read-write-for-common-formats">
-<h2>Read/Write for common formats<a class="headerlink" href="#read-write-for-common-formats" title="Permalink to this headline">¶</a></h2>
-<p>MusPy supports read/write functions for MIDI nad MusicXML formats.</p>
+<div class="section" id="reading-and-writing">
+<h2>Reading and Writing<a class="headerlink" href="#reading-and-writing" title="Permalink to this headline">¶</a></h2>
+<p>MusPy supports reading and writing with MIDI nad MusicXML formats.</p>
 <ul class="simple">
-<li><p>MIDI: <a class="reference internal" href="doc/muspy.html#muspy.read_midi" title="muspy.read_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read_midi()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.write_midi" title="muspy.write_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_midi()</span></code></a></p></li>
-<li><p>MusicXML: and <a class="reference internal" href="doc/muspy.html#muspy.write_musicxml" title="muspy.write_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_musicxml()</span></code></a></p></li>
+<li><p><strong>MIDI</strong>: <a class="reference internal" href="doc/muspy.html#muspy.read_midi" title="muspy.read_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read_midi()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.write_midi" title="muspy.write_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_midi()</span></code></a></p></li>
+<li><p><strong>MusicXML</strong>: <a class="reference internal" href="doc/muspy.html#muspy.read_musicxml" title="muspy.read_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read_musicxml()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.write_musicxml" title="muspy.write_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_musicxml()</span></code></a></p></li>
 </ul>
 </div>
-<div class="section" id="saving-and-loading-music-objects">
-<h2>Saving and Loading Music objects<a class="headerlink" href="#saving-and-loading-music-objects" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="saving-and-loading">
+<h2>Saving and Loading<a class="headerlink" href="#saving-and-loading" title="Permalink to this headline">¶</a></h2>
 <p>MusPy supports save/load functions for losslessly storing Music object.</p>
 <ul class="simple">
-<li><p>JSON: <a class="reference internal" href="doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.load_json" title="muspy.load_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_json()</span></code></a></p></li>
-<li><p>YAML: <a class="reference internal" href="doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.load_yaml" title="muspy.load_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_yaml()</span></code></a></p></li>
+<li><p><strong>JSON</strong>: <a class="reference internal" href="doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.load_json" title="muspy.load_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_json()</span></code></a></p></li>
+<li><p><strong>YAML</strong>: <a class="reference internal" href="doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.load_yaml" title="muspy.load_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_yaml()</span></code></a></p></li>
 </ul>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>An example of a MusPy Music object saved as a YAML file is available <a class="reference external" href="examples.html">here</a>.</p>
 </div>
-<div class="section" id="cconvert-to-and-from-objects-of-friend-packages">
-<h2>CConvert to and from objects of friend packages<a class="headerlink" href="#cconvert-to-and-from-objects-of-friend-packages" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="json-yaml-schemas">
+<h3>JSON/YAML Schemas<a class="headerlink" href="#json-yaml-schemas" title="Permalink to this headline">¶</a></h3>
+<p>MusPy provides schemas in <a class="reference external" href="https://github.com/icebergnlp/muspy/blob/master/muspy/schemas/music.schema.json">JSON</a> and <a class="reference external" href="https://github.com/icebergnlp/muspy/blob/master/muspy/schemas/music.schema.yaml">YAML</a> formats. These can be used to validate a JSON or YAML file for the Music object.</p>
+</div>
+</div>
+<div class="section" id="interface-with-other-packages">
+<h2>Interface with other packages<a class="headerlink" href="#interface-with-other-packages" title="Permalink to this headline">¶</a></h2>
 <p>MusPy supports conversion between <a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> objects and objects from
-friend packages, such as pretty_midi and pypianoorll.</p>
+other packages, such as <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> and <a class="reference external" href="https://salu133445.github.io/pypianoroll/multitrack.html#pypianoroll.Multitrack" title="(in pypianoroll v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> objects.</p>
 <ul class="simple">
-<li><p>pretty_midi: <a class="reference internal" href="doc/muspy.html#muspy.from_pretty_midi" title="muspy.from_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pretty_midi()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.to_pretty_midi" title="muspy.to_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pretty_midi()</span></code></a></p></li>
-<li><p>pypianoroll: <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pypianorll()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pypianorll()</span></code></p></li>
+<li><p><strong>pretty_midi</strong>: <a class="reference internal" href="doc/muspy.html#muspy.from_pretty_midi" title="muspy.from_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pretty_midi()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.to_pretty_midi" title="muspy.to_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pretty_midi()</span></code></a></p></li>
+<li><p><strong>Pypianoroll</strong>: <a class="reference internal" href="doc/muspy.html#muspy.from_pypianoroll" title="muspy.from_pypianoroll"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pypianoroll()</span></code></a> and <a class="reference internal" href="doc/muspy.html#muspy.to_pypianoroll" title="muspy.to_pypianoroll"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pypianoroll()</span></code></a></p></li>
 </ul>
 </div>
 </div>
@@ -204,7 +219,7 @@ friend packages, such as pretty_midi and pypianoorll.</p>
         <a href="representations.html" class="btn btn-neutral float-right" title="Representations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="music.html" class="btn btn-neutral float-left" title="Music Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-left" title="Example Music Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
