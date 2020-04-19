@@ -7,6 +7,7 @@ This is the core class of MusPy.
 """
 from bisect import bisect_left
 from collections import OrderedDict
+from operator import attrgetter
 from pathlib import Path
 from typing import List, Optional, Union
 
@@ -60,21 +61,21 @@ class Music(ComplexBase):
     Attributes
     ----------
     meta : :class:`muspy.MetaData` object
-        Meta data. See :class:`muspy.MetaData` for details.
+        Meta data.
     timing : :class:`muspy.Timing` object
-        A timing info object. See :class:`muspy.Timing` for details.
+        Timing infomation.
     key_signatures : list of :class:`muspy.KeySignature` object
-        Time signatures. See :class:`muspy.KeySignature` for details.
+        Time signatures.
     time_signatures : list of :class:`muspy.TimeSignature` object
-        Time signatures. See :class:`muspy.TimeSignature` for details.
+        Time signature changes.
     downbeats : list of int or float
         Downbeat positions.
     lyrics : list of :class:`muspy.Lyric`
-        Lyrics. See :class:`muspy.Lyric` for details.
+        Lyrics.
     annotations : list of :class:`muspy.Annotation`
-        Annotations. See :class:`muspy.Annotation` for details.
+        Annotations.
     tracks : list of :class:`muspy.Track`
-        Music tracks. See :class:`muspy.Track` for details.
+        Music tracks.
 
     """
 
@@ -112,7 +113,7 @@ class Music(ComplexBase):
         annotations: Optional[List[Annotation]] = None,
         tracks: Optional[List[Track]] = None,
     ):
-        self.meta = meta
+        self.meta = meta if meta is not None else MetaData()
         self.timing = timing if timing is not None else Timing()
         self.key_signatures = (
             key_signatures if key_signatures is not None else []
@@ -195,8 +196,9 @@ class Music(ComplexBase):
             Target resolution.
         factor : int or float, optional
             Factor used to adjust the resolution based on the formula:
-            `new_resolution = old_resolution * factor`. For example, a factor of
-            2 double the resolution, and a factor of 0.5 halve the resolution.
+            `new_resolution = old_resolution * factor`. For example, a factor
+            of 2 double the resolution, and a factor of 0.5 halve the
+            resolution.
 
         """
         if not self.timing.is_symbolic:
@@ -322,20 +324,17 @@ class Music(ComplexBase):
                 raise NotImplementedError
                 # self.timing.tempos = ...
 
-    def sort(self):
-        """Sort the time-stamped objects with respect to event time.
-
-        This will sort tempos, key signatures, time signatures, lyrics and
-        annotations, along with notes, lyrics and annotations for each track.
-
-        """
-        self.timing.sort(key=lambda x: x.time)
-        self.key_signatures.sort(key=lambda x: x.time)
-        self.time_signatures.sort(key=lambda x: x.time)
-        self.lyrics.sort(key=lambda x: x.time)
-        self.annotations.sort(key=lambda x: x.time)
-        for track in self.tracks:
-            track.sort()
+    def _sort(self, attr):
+        if not getattr(self, attr):
+            return
+        if attr == "tracks":
+            for track in self.tracks:
+                track.sort()
+            return
+        if attr == "timing":
+            self.timing.sort()
+            return
+        getattr(self, attr).sort(attrgetter("time"))
 
     def transpose(self, semitone: int):
         """Transpose all the notes for all tracks by a number of semitones.
