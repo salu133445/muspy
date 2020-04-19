@@ -75,7 +75,7 @@ class Base:
     _list_attributes: List[str] = []
 
     def _init(self, **kwargs):
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
     def __init__(self, **kwargs):
@@ -154,18 +154,20 @@ class Base:
                 if not isinstance(v, attr_cls):
                     raise TypeError(
                         "`{}` must be a list of type {}.".format(
-                            attr, _get_type_string()
+                            attr, _get_type_string(attr_cls)
                         )
                     )
         elif not isinstance(value, attr_cls):
             raise TypeError(
-                "`{}` must be of type {}.".format(attr, _get_type_string())
+                "`{}` must be of type {}.".format(
+                    attr, _get_type_string(attr_cls)
+                )
             )
 
     def _validate_type(self, attr: Optional[str] = None):
         if attr is None:
-            for attr in self._attributes:
-                self._validate_attr_type(attr)
+            for attribute in self._attributes:
+                self._validate_attr_type(attribute)
         else:
             self._validate_attr_type(attr)
 
@@ -303,7 +305,7 @@ class ComplexBase(Base):
 
     def append(self, obj):
         """Append an object to the correseponding list."""
-        self._append(self, obj)
+        self._append(obj)
 
     def _remove_invalid(self, attr):
         if not getattr(self, attr):
@@ -340,6 +342,7 @@ class ComplexBase(Base):
             return
         attr_cls = self._attributes[attr]
         if isclass(attr_cls) and issubclass(attr_cls, Base):
+            # pylint: disable=protected-access
             if attr_cls._temporal_attributes:
                 ref_attr = attr_cls._temporal_attributes[0]
                 getattr(self, attr).sort(attrgetter(ref_attr))
