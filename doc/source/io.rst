@@ -4,34 +4,44 @@ Data I/O
 
 MusPy provides three type of data I/O interface.
 
-- Read to and write from MIDI or MusicXML formats
-- Save to and load from native JSON and YAML formats
-- Convert to and from objects in friend packages
+- Reading and writing with MIDI and MusicXML
+- Saving and loading with JSON and YAML
+- Conversion between objects in other packages
 
 
-Read/Write for common formats
-=============================
+Reading and Writing
+===================
 
-MusPy supports read/write functions for MIDI nad MusicXML formats.
+MusPy supports reading and writing with MIDI nad MusicXML formats.
 
-- MIDI: :func:`muspy.read_midi()` and :func:`muspy.write_midi()`
-- MusicXML: and :func:`muspy.write_musicxml()`
+- **MIDI**: :func:`muspy.read_midi()` and :func:`muspy.write_midi()`
+- **MusicXML**: :func:`muspy.read_musicxml()` and :func:`muspy.write_musicxml()`
 
 
-Saving and Loading Music objects
-================================
+Saving and Loading
+==================
 
 MusPy supports save/load functions for losslessly storing Music object.
 
-- JSON: :func:`muspy.save_json()` and :func:`muspy.load_json()`
-- YAML: :func:`muspy.save_yaml()` and :func:`muspy.load_yaml()`
+- **JSON**: :func:`muspy.save_json()` and :func:`muspy.load_json()`
+- **YAML**: :func:`muspy.save_yaml()` and :func:`muspy.load_yaml()`
+
+.. Hint:: An example of a MusPy Music object saved as a YAML file is available `here <examples.html>`_.
+
+JSON/YAML Schemas
+-----------------
+
+MusPy provides schemas in JSON_ and YAML_ formats. These can be used to validate a JSON or YAML file for the Music object.
+
+.. _JSON: https://github.com/icebergnlp/muspy/blob/master/muspy/schemas/music.schema.json
+.. _YAML: https://github.com/icebergnlp/muspy/blob/master/muspy/schemas/music.schema.yaml
 
 
-CConvert to and from objects of friend packages
-===============================================
+Interface with other packages
+=============================
 
 MusPy supports conversion between :class:`muspy.Music` objects and objects from
-friend packages, such as pretty_midi and pypianoorll.
+other packages, such as :class:`pretty_midi.PrettyMIDI` and :class:`pypianoroll.Multitrack` objects.
 
-- pretty_midi: :func:`muspy.from_pretty_midi()` and :func:`muspy.to_pretty_midi()`
-- pypianoroll: :func:`muspy.from_pypianorll()` and :func:`muspy.to_pypianorll()`
+- **pretty_midi**: :func:`muspy.from_pretty_midi()` and :func:`muspy.to_pretty_midi()`
+- **Pypianoroll**: :func:`muspy.from_pypianoroll()` and :func:`muspy.to_pypianoroll()`

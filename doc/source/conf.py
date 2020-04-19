@@ -31,10 +31,11 @@ author = "ISMIR Anonymous Submission"
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.viewcode",
     "sphinx.ext.githubpages",
+    "sphinx.ext.intersphinx",
+    "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -54,11 +55,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 import sphinx_rtd_theme
 
 html_theme = "sphinx_rtd_theme"  # "alabaster"
-html_theme_options = {
-    "logo_only": True,
-    "titles_only": True,
-}
-html_logo = os.path.join("figs", "muspy.svg")
+html_theme_options = {"logo_only": True}
+html_logo = os.path.join("images", "logo.svg")
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
