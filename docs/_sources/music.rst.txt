@@ -40,7 +40,7 @@ source         Source information :class:`muspy.SourceInfo` :class:`muspy.Source
 ============== ================== ========================= ===========================
 
 SongInfo Class
---------------
+==============
 
 The :class:`muspy.SongInfo` class is a container for song-related meta data.
 
@@ -53,7 +53,7 @@ creators   Creators(s) of the song list of str []
 ========== ======================= =========== =======
 
 SourceInfo  Class
------------------
+=================
 
 The :class:`muspy.SongInfo` class is a container for source-related meta data. This can be useful for dataset management.
 
@@ -70,9 +70,9 @@ id         Unique ID of the file                               str
 Timing  Class
 =============
 
-The :class:`muspy.Timing` class is a container for timing system of a song. MusPy supports two timing systems: *symbolic timing* and *absolute timing*. When ``is_symbolic=True``, the symbolic timing system is used, and the timing is in time steps. To render the song, the temporal resolution (``resolution``, in time steps per beat) and the tempos (``tempos``, in beats per minute, or bpm) are required.
+The :class:`muspy.Timing` class is a container for timing system of a song. MusPy supports two timing systems: *symbolic timing* and *absolute timing*. When ``is_symbolic=True``, the symbolic timing system is used, and the timing is in time steps. To render the song, the temporal resolution (``resolution``, in time steps per beat) and the tempos (``tempos``, in beats per minute, or bpm) are required. Here is the formula used to convert the symbolic time to absolute time.
 
-.. math:: absolute\_time = 60 \times tempo \times symbolic\_time / resolution
+.. math:: absolute\_time = \frac{60 \times tempo}{resolution} \times symbolic\_time
 
 When ``is_symbolic=False``, the absolute timing system is used, and the timing is in seconds. Moreover, ``resolution`` is not effective and ``tempos`` serve as annotations only.
 
@@ -85,7 +85,7 @@ tempos      Tempo changes              list of :class:`muspy.Tempo` []
 =========== ========================== ============================ ============================
 
 Tempo Class
------------
+===========
 
 The :class:`muspy.Tempo` class is a container for tempo changes.
 
@@ -97,8 +97,8 @@ tempos     Tempo in bpm (beats per minute) float
 ========== =============================== ===== =======
 
 
-KeySignature and TimeSignature Classes
-======================================
+KeySignature Class
+==================
 
 The :class:`muspy.KeySignature` class is a container for key signature changes.
 
@@ -109,6 +109,10 @@ time       Start time           float
 root       Root (e.g., "C")     str
 mode       Mode (e.g., "major") str
 ========== ==================== ===== =======
+
+
+TimeSignature Class
+===================
 
 The :class:`muspy.TimeSignature` class is a container for time signature changes.
 
@@ -121,8 +125,8 @@ denominator Denominator (e.g., "4" for 3/4) int
 =========== =============================== ===== =======
 
 
-Lyric and Annotation Classes
-============================
+Lyric Class
+===========
 
 The :class:`muspy.Lyric` class is a container for lyrics.
 
@@ -132,6 +136,10 @@ Attributes Description                            Type  Default
 time       Start time                             float
 lyric      Lyric (sentence, word, syllable, etc.) str
 ========== ====================================== ===== =======
+
+
+Annotation Class
+================
 
 The :class:`muspy.Annotation` class is a container for annotations. In fact, `annotation` can hold any type of data.
 
@@ -162,7 +170,7 @@ annotations Annotations              list of :class:`muspy.Annotation` []
 .. [#] MIDI program number is based on General MIDI specification (see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__).
 
 Note Class
-----------
+==========
 
 The :class:`muspy.Note` class is a container for notes.
 
