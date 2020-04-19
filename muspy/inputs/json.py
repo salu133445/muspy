@@ -9,7 +9,7 @@ from ..music import Music
 
 
 def load_json(
-    path: Union[str, Path], schema_path: Optional[Union[str, Path]] = None,
+    path: Union[str, Path], schema_path: Optional[Union[str, Path]] = None
 ) -> Music:
     """Return a Music object loaded from a JSON file.
 

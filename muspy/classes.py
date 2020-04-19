@@ -67,13 +67,14 @@ class SourceInfo(Base):
     Attributes
     ----------
     collection : str, optional
-        Name of the collection name.
+        Name of the collection.
     filename : str, optional
-        Path to the file in the collection.
+        Relative path to the source file with respect to the collection
+        root.
     format : {'midi', 'musicxml'}, optional
-        Format of the source file
+        Format of the source file.
     id : str, optional
-        Unique ID of the file
+        Unique ID of the file.
 
     """
 
@@ -89,6 +90,7 @@ class SourceInfo(Base):
         format: Optional[str] = None,
         id: Optional[str] = None,
     ):
+        # pylint: disable=redefined-builtin
         self.collection = collection
         self.filename = filename
         self.format = format
@@ -103,7 +105,7 @@ class MetaData(Base):
     schema_version : str
         Schema version.
     song : :class:`muspy.SongInfo` object, optional
-        Soong infomation.
+        Song infomation.
     source : :class:`muspy.SourceInfo` object, optional
         Source infomation.
 
@@ -141,7 +143,7 @@ class Tempo(Base):
     Attributes
     ----------
     time : int or float
-        Start time of the key signature, in time steps or seconds.
+        Start time of the tempo, in time steps or seconds.
     tempo : float
         Tempo in bpm (beats per minute).
 
@@ -162,13 +164,14 @@ class Timing(ComplexBase):
 
     Attributes
     ----------
-    is_symbolic : bool
+    is_symbolic : bool, optional
         If true, the timing is in time steps, otherwise in seconds.
+        Defaults to True
     resolution : int, optional
         Time steps per beat (only effective when `is_symbolic` is true).
-        If `is_symbolic` is True, defaults to `muspy.DEFAULT_RESOLUTION`.
+        Defaults to `muspy.DEFAULT_RESOLUTION`.
     tempos : list of :class:`muspy.Tempo`
-        A list of tempos.
+        Tempo changes. Defaults to an empty list.
 
     """
 
@@ -296,7 +299,7 @@ class Lyric(Base):
     time : int or float
         Start time of the lyric, in time steps or seconds.
     lyric : str
-        The lyric.
+        Lyric (sentence, word, syllable, etc.).
 
     """
 
@@ -426,19 +429,23 @@ class Track(ComplexBase):
 
     Attributes
     ----------
-    program : int
-        A program number according to General MIDI specification [1].
-        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand Piano).
-    is_drum : bool
-        A boolean indicating if it is a percussion track. Defaults to False.
-    name : str
-        Name of the track. Defaults to 'unknown'.
-    notes : list of :class:`muspy.Note` objects
-        A list of notes.
-    annotations : list of :class:`muspy.Annotation` objects
-        A list of annotations.
-    lyrics : list of :class:`muspy.Lyric` objects
-        A list of lyrics.
+    program : int, optional
+        Program number according to General MIDI specification [1].
+        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
+        Piano).
+    is_drum : bool, optional
+        A boolean indicating if it is a percussion track. Defaults to
+        False.
+    name : str, optional
+        Track name.
+    notes : list of :class:`muspy.Note` objects, optional
+        Musical notes. Defaults to an empty list.
+    annotations : list of :class:`muspy.Annotation` objects, optional
+        Annotations. Defaults to an empty list.
+    lyrics : list of :class:`muspy.Lyric` objects, optional
+        Lyrics. Defaults to an empty list.
+
+    [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
 
     """
 

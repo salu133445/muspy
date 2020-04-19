@@ -115,25 +115,13 @@ class MusicDataset:
     def to_pytorch_dataset(self, representation, transforms=None):
         """Return a PyTorch dataset (`torch.utils.data.dataset`)."""
         # import torch
-        pass
 
     def to_tensorflow_dataset(self, representation, transforms=None):
         """Return a PyTorch dataset (`torch.utils.data.dataset`)."""
         # import tensorflow
-        pass
 
     def pitch2idx(self):
-        """
-            convert pitch to index
-        :return:
-        """
-        pass
+        """Convert pitch to index."""
 
     def idx2pitch(self, inputs, requires_midi=False):
-        """
-            convert index to pitch
-
-        :return:
-        """
-        pass
-
+        """Convert index to pitch."""
