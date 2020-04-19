@@ -1,6 +1,6 @@
 """Wrappers for input interface."""
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
@@ -63,7 +63,9 @@ def read(path: Union[str, Path]) -> Music:
     raise TypeError("Got unsupported file format (expect MIDI or MusicXML).")
 
 
-def load(path: Union[str, Path]) -> Music:
+def load(
+    path: Union[str, Path], schema_path: Optional[Union[str, Path]] = None
+) -> Music:
     """Return a Music object loaded from a JSON or a YAML file.
 
     Parameters
@@ -83,7 +85,7 @@ def load(path: Union[str, Path]) -> Music:
 
     """
     if str(path).lower().endswith(".json"):
-        return load_json(path)
+        return load_json(path, schema_path)
     if str(path).lower().endswith((".yaml", ".yml")):
-        return load_yaml(path)
+        return load_yaml(path, schema_path)
     raise TypeError("Got unsupported file format (expect JSON or YAML).")
