@@ -268,6 +268,7 @@ class Base:
                 self._adjust_time(func, attribute)
         else:
             self._adjust_time(func, attr)
+        return self
 
 
 class ComplexBase(Base):
@@ -306,6 +307,7 @@ class ComplexBase(Base):
     def append(self, obj):
         """Append an object to the correseponding list."""
         self._append(obj)
+        return self
 
     def _remove_invalid(self, attr):
         if not getattr(self, attr):
@@ -336,6 +338,7 @@ class ComplexBase(Base):
             if attr not in self._list_attributes:
                 raise TypeError("`{}` is not a list attribute.")
             self._remove_invalid(attr)
+        return self
 
     def _sort(self, attr):
         if not getattr(self, attr):
@@ -356,3 +359,4 @@ class ComplexBase(Base):
             if attr not in self._list_attributes:
                 raise TypeError("`{}` is not a list attribute.")
             self._sort(attr)
+        return self

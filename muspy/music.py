@@ -126,7 +126,7 @@ class Music(ComplexBase):
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
 
-    def remove_duplicate_changes(self):
+    def remove_duplicate_changes(self) -> "Music":
         """Remove duplicate key signature, time signature and tempo changes."""
         self.timing.remove_duplicate_changes()
 
@@ -149,6 +149,7 @@ class Music(ComplexBase):
             or time_sign.denominator != next_time_sign.denominator
         ]
         self.time_signatures.insert(0, time_signs[0])
+        return self
 
     def get_end_time(self, is_sorted: bool = False) -> float:
         """Return the time of the last event in all tracks.
@@ -187,7 +188,7 @@ class Music(ComplexBase):
 
     def adjust_resolution(
         self, target: Optional[int] = None, factor: Optional[float] = None
-    ):
+    ) -> "Music":
         """Adjust resolution and update the timing of time-stamped objects.
 
         Parameters
@@ -230,8 +231,9 @@ class Music(ComplexBase):
 
         self.timing.resolution = int(target_)
         self.adjust_time(lambda time: round(time / factor_))
+        return self
 
-    def append(self, obj):
+    def append(self, obj) -> "Music":
         """Append an object to the correseponding list.
 
         Parameters
@@ -246,8 +248,9 @@ class Music(ComplexBase):
         if isinstance(obj, Tempo):
             self.timing.tempos.append(obj)
         self._append(obj)
+        return self
 
-    def clip(self, lower: float = 0, upper: float = 127):
+    def clip(self, lower: float = 0, upper: float = 127) -> "Music":
         """Clip the velocity of each note for each track.
 
         Parameters
@@ -260,6 +263,7 @@ class Music(ComplexBase):
         """
         for track in self.tracks:
             track.clip(lower, upper)
+        return self
 
     def quantize(
         self,
@@ -268,7 +272,7 @@ class Music(ComplexBase):
         bpm: Optional[float] = None,
         offset: float = 0,
         update_tempos: bool = True,
-    ):
+    ) -> "Music":
         """Quantize the timing of time-stamped objects.
 
         If `beats` is given, use it as the beat locations and quantize the
@@ -324,6 +328,8 @@ class Music(ComplexBase):
                 raise NotImplementedError
                 # self.timing.tempos = ...
 
+        return self
+
     def _sort(self, attr):
         if not getattr(self, attr):
             return
@@ -336,7 +342,7 @@ class Music(ComplexBase):
             return
         getattr(self, attr).sort(attrgetter("time"))
 
-    def transpose(self, semitone: int):
+    def transpose(self, semitone: int) -> "Music":
         """Transpose all the notes for all tracks by a number of semitones.
 
         Parameters
@@ -348,6 +354,7 @@ class Music(ComplexBase):
         """
         for track in self.tracks:
             track.transpose(semitone)
+        return self
 
     def save(self, path: Union[str, Path]):
         """Save loselessly to a JSON or a YAML file.
