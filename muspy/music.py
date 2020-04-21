@@ -456,7 +456,7 @@ class Music(ComplexBase):
         """Return as a Multitrack object."""
         return to_pypianoroll(self)
 
-    def to_representation(self, target: str):
+    def to_representation(self, target: str, **kwargs):
         """Convert to a target class.
 
         Parameters
@@ -466,16 +466,20 @@ class Music(ComplexBase):
             'pianoroll'.
 
         """
-        return to_representation(self, target)
+        return to_representation(self, target, **kwargs)
 
-    def to_event_representation(self):
+    def to_event_representation(self, **kwargs):
         """Return the event-based representation."""
-        to_representation(self, "event")
+        return to_representation(self, "event", **kwargs)
 
-    def to_note_representation(self):
+    def to_note_representation(self, min_step: int = 1):
         """Return the note-based representation."""
-        to_representation(self, "note")
+        return to_representation(self, "note", min_step=min_step)
 
-    def to_pianoroll_representation(self):
+    def to_pianoroll_representation(self, min_step: int = 1):
         """Return the pianoroll representation."""
-        to_representation(self, "pianoroll")
+        return to_representation(self, "pianoroll", min_step=min_step)
+
+    def to_mono_token_representation(self, min_step: int = 1):
+        """Return the mono token representation."""
+        return to_representation(self, "monotoken", min_step=min_step)

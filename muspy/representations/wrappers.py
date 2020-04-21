@@ -4,12 +4,13 @@ from typing import TYPE_CHECKING
 from .event import to_event_representation
 from .note import to_note_representation
 from .pianoroll import to_pianoroll_representation
+from .mono_token import to_mono_token_representation
 
 if TYPE_CHECKING:
     from ..music import Music
 
 
-def to_representation(music: "Music", target: str):
+def to_representation(music: "Music", target: str, **kwargs):
     """Convert to a target representation.
 
     Parameters
@@ -23,9 +24,11 @@ def to_representation(music: "Music", target: str):
 
     """
     if target.lower() in ("event", "event-based"):
-        return to_event_representation(music)
+        return to_event_representation(music, **kwargs)
     if target.lower() in ("note", "note-based"):
-        return to_note_representation(music)
+        return to_note_representation(music, **kwargs)
     if target.lower() in ("pianoroll", "piano-roll"):
-        return to_pianoroll_representation(music)
+        return to_pianoroll_representation(music, **kwargs)
+    if target.lower() in ("mono-token", "monotoken"):
+        return to_mono_token_representation(music, **kwargs)
     raise ValueError("Unsupported target representation : {}.".format(target))
