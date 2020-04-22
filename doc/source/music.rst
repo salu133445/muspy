@@ -84,6 +84,7 @@ resolution  Time steps per beat        int                          ``muspy.DEFA
 tempos      Tempo changes              list of :class:`muspy.Tempo` []
 =========== ========================== ============================ ============================
 
+
 Tempo Class
 ===========
 
