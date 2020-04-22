@@ -22,10 +22,13 @@ The following are some illustrations of the relationships between time steps and
 
 .. image:: images/timing_double_tempo.svg
     :align: center
+    :width: 500px
 .. image:: images/timing_half_tempo.svg
     :align: center
+    :width: 500px
 .. image:: images/timing_rubato.svg
     :align: center
+    :width: 500px
 
 When reading a MIDI file, ``music.timing.resolution`` is set to the pulses per quarter note (a.k.a., PPQ, PPQN, ticks per beat). When reading a MusicXML file, ``music.timing.resolution`` is set to the *division* attribute, which determines the number of divisions per quarter note.
 
