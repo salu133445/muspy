@@ -2,16 +2,23 @@
 MusPy documentation
 ===================
 
-MusPy is a Python package for processing symbolic music and working with common music datasets.
+MusPy is an open source Python package for machine learning on symbolic music.
+
 
 Features
+========
 
-The core element of MusPy is the :class:`muspy.Music` class (see `Music Object <music.html>`_). Here is a system diagram of the package.
+- Data I/O supports for MIDI and MusicXML
+- Loseless saving and loading with JSON/YAML
+- Symbolic music representation conversions
+- Data manipulation, evaluation and visualization
+- Dataset management with interface to PyTorch
+
+Here is a system diagram of the package.
 
 .. image:: images/system.svg
     :alt: System diagram
 
-GitHub repository: https://github.com/icebergnlp/muspy
 
 Contents
 ========

@@ -10,7 +10,7 @@ MusPy provides three type of data I/O interface.
 
 .. image:: images/io.svg
     :align: center
-    :width: 300px
+    :width: 400px
 
 
 Reading and Writing

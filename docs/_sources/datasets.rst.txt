@@ -2,6 +2,6 @@
 Datasets
 ========
 
-.. image:: images/io.svg
+.. image:: images/datasets.svg
     :align: center
-    :width: 400px
+    :width: 500px
