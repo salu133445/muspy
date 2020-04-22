@@ -87,6 +87,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../music.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
@@ -1368,13 +1369,19 @@ extension.</p>
 
 <dl class="py method">
 <dt id="muspy.Music.to_event_representation">
-<code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the event-based representation.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="muspy.Music.to_mono_token_representation">
+<code class="sig-name descname">to_mono_token_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_mono_token_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_mono_token_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the mono token representation.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="muspy.Music.to_note_representation">
-<code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_note_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_note_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the note-based representation.</p>
 </dd></dl>
 
@@ -1391,7 +1398,7 @@ extension.</p>
 
 <dl class="py method">
 <dt id="muspy.Music.to_pianoroll_representation">
-<code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the pianoroll representation.</p>
 </dd></dl>
 
@@ -1409,7 +1416,7 @@ extension.</p>
 
 <dl class="py method">
 <dt id="muspy.Music.to_representation">
-<code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert to a target class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1638,40 +1645,129 @@ extension.</p></li>
 
 <dl class="py function">
 <dt id="muspy.to_event_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object to an event-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
+the maximum number of tick-shift (default = 100)</p></li>
+<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
+the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><em>repr_seq</em> – the note representation tokens
+Size: L * D:
+- L for the sequence (event) length
+- D = 1 {</p>
+<blockquote>
+<div><p>0-127: note-on event,
+128-255: note-off event,
+256-355(default):</p>
+<blockquote>
+<div><p>tick-shift event
+256 for one tick, 355 for 100 ticks
+the maximum number of tick-shift can be specified</p>
+</div></blockquote>
+<dl class="simple">
+<dt>356-388 (default):</dt><dd><p>velocity event
+the maximum number of quantized velocity can be specified</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p><em>e.g.</em></p></li>
+<li><p><em>[C5 - - - E5 - - / G5 - - / /]</em></p></li>
+<li><p><em>-&gt;</em></p></li>
+<li><p><em>[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]</em></p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.to_note_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_note_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_note_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object to a note-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>the note representation tokens
+Size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
+start: start ticks,
+end: end ticks,
+velocity: 0 - 100</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.  [C5 - - - E5 - - / G5 - - / /]
+-&gt; [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
+(assume velocity to be 100)</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>repr_seq</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.to_pianoroll_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object to a pianoroll representation.</p>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object to pianoroll representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>the note representation tokens
+Size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>repr_seq</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.to_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/wrappers.html#to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/wrappers.html#to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert to a target representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1681,6 +1777,46 @@ the extension.</p></li>
 <li><p><strong>target</strong> (<em>str</em>) – Target representation. Supported values are ‘event’, ‘note’,
 ‘pianoroll’ and “piano-roll”.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.to_mono_token_representation">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_mono_token_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/representations/mono_token.html#to_mono_token_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_mono_token_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object to a mono token representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>the note representation tokens
+Size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence length</p></li>
+<li><dl class="simple">
+<dt>D = 1 {</dt><dd><p>0-127: pitch onset
+128: hold state
+129: rest state</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.</p>
+<p>[C5 - - - E5 - - / G5 - - / /]
+-&gt;
+[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>repr_seq</p>
 </dd>
 </dl>
 </dd></dl>

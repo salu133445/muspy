@@ -85,6 +85,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
@@ -160,12 +161,13 @@
 <span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">to_event_representation</span>
 <span class="kn">from</span> <span class="nn">.note</span> <span class="kn">import</span> <span class="n">to_note_representation</span>
 <span class="kn">from</span> <span class="nn">.pianoroll</span> <span class="kn">import</span> <span class="n">to_pianoroll_representation</span>
+<span class="kn">from</span> <span class="nn">.mono_token</span> <span class="kn">import</span> <span class="n">to_mono_token_representation</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="to_representation"><a class="viewcode-back" href="../../../doc/representations.html#muspy.to_representation">[docs]</a><span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="to_representation"><a class="viewcode-back" href="../../../doc/representations.html#muspy.to_representation">[docs]</a><span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert to a target representation.</span>
 
 <span class="sd">    Parameters</span>
@@ -179,11 +181,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event-based&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">,</span> <span class="s2">&quot;note-based&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_note_representation</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_note_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano-roll&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mono-token&quot;</span><span class="p">,</span> <span class="s2">&quot;monotoken&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">to_mono_token_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unsupported target representation : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">target</span><span class="p">))</span></div>
 </pre></div>
 

@@ -21,6 +21,7 @@ Contents
 
     music
     examples
+    timing
     io
     representations
     datasets

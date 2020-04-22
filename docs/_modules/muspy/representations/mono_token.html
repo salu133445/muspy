@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.outputs.musicxml &mdash; MusPy  documentation</title>
+  <title>muspy.representations.mono_token &mdash; MusPy  documentation</title>
   
 
   
@@ -139,7 +139,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.outputs.musicxml</li>
+      <li>muspy.representations.mono_token</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,33 +154,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.outputs.musicxml</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;MusicXML output interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">.music21</span> <span class="kn">import</span> <span class="n">to_music21</span>
-<span class="kn">import</span> <span class="nn">music21</span>
+  <h1>Source code for muspy.representations.mono_token</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities for mono token representations.&quot;&quot;&quot;</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.processor</span> <span class="kn">import</span> <span class="n">MonoTokenProcessor</span>
 
 
-<div class="viewcode-block" id="write_musicxml"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write_musicxml">[docs]</a><span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot;Write a Music object to a MusicXML file.</span>
+<div class="viewcode-block" id="to_mono_token_representation"><a class="viewcode-back" href="../../../doc/representations.html#muspy.to_mono_token_representation">[docs]</a><span class="k">def</span> <span class="nf">to_mono_token_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert a :class:`muspy.Music` object to a mono token representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy Music object to be converted.</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to write the MusicXML file.</span>
+<span class="sd">        Music object to convert.</span>
+<span class="sd">    min_step(optional):</span>
+<span class="sd">        minimum quantification step</span>
+<span class="sd">        decide how many ticks to be the basic unit (default = 1)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    repr_seq:</span>
+<span class="sd">        the note representation tokens</span>
+<span class="sd">        Size: L * D:</span>
+<span class="sd">            - L for the sequence length</span>
+<span class="sd">            - D = 1 {</span>
+<span class="sd">                0-127: pitch onset</span>
+<span class="sd">                128: hold state</span>
+<span class="sd">                129: rest state</span>
+<span class="sd">            }</span>
+<span class="sd">        e.g.</span>
+
+<span class="sd">        [C5 - - - E5 - - / G5 - - / /]</span>
+<span class="sd">        -&gt;</span>
+<span class="sd">        [60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">stream</span> <span class="o">=</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="n">musicxml_bytes</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">musicxml</span><span class="o">.</span><span class="n">m21ToXml</span><span class="o">.</span><span class="n">GeneralObjectExporter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">musicxml_bytes</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;object is not symbolic&quot;</span><span class="p">,</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s2">&quot;mono token representation can&#39;t accept more than one track!&quot;</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="n">min_step</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="s2">&quot;min_step&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">min_step</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_step&quot;</span><span class="p">]</span>
+    <span class="n">note_seq</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">notes</span>
+    <span class="n">note_seq</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">MonoTokenProcessor</span><span class="p">(</span><span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">)</span>
+    <span class="n">repr_seq</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">note_seq</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">repr_seq</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
