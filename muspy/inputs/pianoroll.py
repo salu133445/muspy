@@ -20,3 +20,21 @@ def from_pypianoroll(m: Multitrack) -> Music:
     """
     # TODO: Not implemented yet
     return Music()
+
+
+def from_pianoroll_representation(data) -> Music:
+    """Return a Music object converted from a pianoroll representation.
+
+    Parameters
+    ----------
+    data : :class:`numpy.ndarray`
+        Data in pianoroll representation to be converted.
+
+    Returns
+    -------
+    music : :class:`muspy.Music` object
+        Converted MusPy Music object.
+
+    """
+    # TODO: Not implemented yet
+    return Music()

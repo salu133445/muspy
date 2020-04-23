@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="muspy.representations" href="representations.html" />
+    <link rel="next" title="muspy.schemas" href="schemas.html" />
     <link rel="prev" title="muspy.music" href="music.html" /> 
 </head>
 
@@ -105,7 +105,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#output-interfaces">Output Interfaces</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="representations.html">muspy.representations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="schemas.html">muspy.schemas</a></li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">muspy.visualization</a></li>
 </ul>
@@ -192,14 +191,15 @@
 </ul>
 <dl class="py function">
 <dt id="muspy.outputs.save">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.save" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save a Music object loselessly to a JSON or a YAML file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be saved.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the file. The file format is inferred from the
-extension.</p></li>
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to save the file.</p></li>
+<li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – Format to save. If None, infer the format from the extension of
+<cite>path</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -244,9 +244,60 @@ example, in an Annotation object, which can store data of any type).</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.outputs.to_event_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_event_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object in event-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted event-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.to_monotoken_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/token.html#to_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_monotoken_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object in monotoken-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted monotoken-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.to_note_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_note_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object in note-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted note-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.outputs.to_object">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#to_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_object" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a PrettyMIDI or a Multitrack object converted from a Music object.</p>
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#to_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object as a PrettyMIDI or a Multitrack object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -255,10 +306,44 @@ example, in an Annotation object, which can store data of any type).</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>pm</strong> – Converted PrettyMIDI object.</p>
+<dd class="field-even"><p><strong>obj</strong> – Converted object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> or <a class="reference external" href="https://salu133445.github.io/pypianoroll/multitrack.html#pypianoroll.Multitrack" title="(in pypianoroll v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.to_pianoroll_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object in pianoroll representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted pianoroll representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.to_polytoken_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/token.html#to_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_polytoken_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object in polytoken-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted polytoken-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -266,7 +351,7 @@ example, in an Annotation object, which can store data of any type).</p>
 <dl class="py function">
 <dt id="muspy.outputs.to_pretty_midi">
 <code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pretty_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/midi.html#to_pretty_midi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pretty_midi" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a PrettyMIDI object converted from a Music object.</p>
+<dd><p>Return a Music object as a PrettyMIDI object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p>
@@ -283,7 +368,7 @@ example, in an Annotation object, which can store data of any type).</p>
 <dl class="py function">
 <dt id="muspy.outputs.to_pypianoroll">
 <code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pypianoroll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pypianoroll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pypianoroll" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a Multitrack object converted from a Music object.</p>
+<dd><p>Return a Music object as a Multitrack object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
@@ -298,16 +383,38 @@ example, in an Annotation object, which can store data of any type).</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.outputs.to_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object in a specific representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted.</p></li>
+<li><p><strong>kind</strong> (<em>str</em>) – Target representation. Supported values are ‘event’, ‘note’,
+‘pianoroll’, ‘monotoken’ and ‘polytoken’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.outputs.write">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.write" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a MusPy Music object to a MIDI or a MusicXML file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy Music object to be converted. The file format is inferred from
 the extension.</p></li>
-<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the file. The file format is inferred from the
-extension.</p></li>
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the file.</p></li>
+<li><p><strong>kind</strong> (<em>{'midi'</em><em>, </em><em>'musicxml'}</em><em>, </em><em>optional</em>) – Format to save. If None, infer the format from the extension of
+<cite>path</cite>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -360,7 +467,7 @@ extension.</p></li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="representations.html" class="btn btn-neutral float-right" title="muspy.representations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="schemas.html" class="btn btn-neutral float-right" title="muspy.schemas" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="music.html" class="btn btn-neutral float-left" title="muspy.music" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -9,8 +9,9 @@ from bisect import bisect_left
 from collections import OrderedDict
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Union
 
+from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
@@ -25,18 +26,7 @@ from .classes import (
     Timing,
     Track,
 )
-from .outputs import (
-    save,
-    save_json,
-    save_yaml,
-    to_object,
-    to_pretty_midi,
-    to_pypianoroll,
-    write,
-    write_midi,
-    write_musicxml,
-)
-from .representations import to_representation
+from .outputs import save, to_object, to_representation, write
 
 __all__ = ["Music"]
 
@@ -134,8 +124,8 @@ class Music(ComplexBase):
         self.key_signatures = [
             next_key_sign
             for key_sign, next_key_sign in zip(key_signs[:-1], key_signs[1:])
-            if key_sign.numerator != next_key_sign.numerator
-            or key_sign.denominator != next_key_sign.denominator
+            if key_sign.root != next_key_sign.root
+            or key_sign.mode != next_key_sign.mode
         ]
         self.key_signatures.insert(0, key_signs[0])
 
@@ -356,137 +346,127 @@ class Music(ComplexBase):
             track.transpose(semitone)
         return self
 
-    def save(self, path: Union[str, Path]):
+    def save(self, path: Union[str, Path], kind: Optional[str], **kwargs: Any):
         """Save loselessly to a JSON or a YAML file.
 
-        Refer to :func:`muspy.save`: for full documentation.
-
-        Parameters
-        ----------
-        path : str or Path
-            Path to save the file. The file format is inferred from the
-            extension.
-
-        See Also
-        --------
-        :func:`muspy.write`: Write to other formats such as MIDI and MusicXML.
+        Refer to :func:`muspy.save` for full documentation.
 
         """
-        save(self, path)
+        return save(self, path, kind, **kwargs)
 
-    def save_json(self, path: Union[str, Path]):
+    def save_json(self, path: Union[str, Path], **kwargs: Any):
         """Save loselessly to a JSON file.
 
-        Refer to :func:`muspy.save_json`: for full documentation.
-
-        Parameters
-        ----------
-        path : str or Path
-            Path to save the JSON file.
+        Refer to :func:`muspy.save_json` for full documentation.
 
         """
-        save_json(self, path)
+        return save(self, path, "json", **kwargs)
 
     def save_yaml(self, path: Union[str, Path]):
         """Save loselessly to a YAML file.
 
-        Refer to :func:`muspy.save_yaml`: for full documentation.
-
-        Parameters
-        ----------
-        path : str or Path
-            Path to save the YAML file.
+        Refer to :func:`muspy.save_yaml` for full documentation.
 
         """
-        save_yaml(self, path)
+        return save(self, path, "yaml")
 
-    def write(self, path: Union[str, Path]):
+    def write(
+        self, path: Union[str, Path], kind: Optional[str], **kwargs: Any
+    ):
         """Write to a MIDI or a MusicXML file.
 
-        Refer to :func:`muspy.write`: for full documentation.
-
-        Parameters
-        ----------
-        path : str or Path
-            Path to write the file. The file format is inferred from the
-            extension.
-
-        See Also
-        --------
-        :func:`muspy.save`: Losslessly save to a JSON and a YAML file.
+        Refer to :func:`muspy.write` for full documentation.
 
         """
-        write(self, path)
+        return write(self, path, kind, **kwargs)
 
-    def write_midi(self, path: Union[str, Path], backend=None):
+    def write_midi(self, path: Union[str, Path], **kwargs: Any):
         """Write to a MIDI file.
 
-        Refer to :func:`muspy.write_midi`: for full documentation.
-
-        Parameters
-        ----------
-        path : str or Path
-            Path to write the MIDI file.
+        Refer to :func:`muspy.write_midi` for full documentation.
 
         """
-        write_midi(self, path, backend)
+        return write(self, path, kind="midi", **kwargs)
 
-    def write_musicxml(self, path: Union[str, Path]):
+    def write_musicxml(self, path: Union[str, Path], **kwargs: Any):
         """Write to a MusicXML file.
 
-        Refer to :func:`muspy.write_musicxml`: for full documentation.
-
-        Parameters
-        ----------
-        path : str or Path
-            Path to write the MusicXML file.
+        Refer to :func:`muspy.write_musicxml` for full documentation.
 
         """
-        write_musicxml(self, path)
+        return write(self, path, "musicxml", **kwargs)
 
-    def to_object(self, target: str):
+    def to_object(self, target: str, **kwargs: Any):
         """Convert to a target class.
 
-        Parameters
-        ----------
-        target : str
-            Target class. Supported values are 'pretty_midi' and 'pypianoroll'.
+        Refer to :func:`muspy.to_object` for full documentation.
 
         """
-        return to_object(self, target)
+        return to_object(self, target, **kwargs)
 
-    def to_pretty_midi(self) -> PrettyMIDI:
-        """Return as a PrettyMIDI object."""
-        return to_pretty_midi(self)
+    def to_pretty_midi(self, **kwargs: Any) -> PrettyMIDI:
+        """Return as a PrettyMIDI object.
 
-    def to_pypianoroll(self) -> Multitrack:
-        """Return as a Multitrack object."""
-        return to_pypianoroll(self)
-
-    def to_representation(self, target: str, **kwargs):
-        """Convert to a target class.
-
-        Parameters
-        ----------
-        target : str
-            Target representation. Supported values are 'event', 'note' and
-            'pianoroll'.
+        Refer to :func:`muspy.to_pretty_midi` for full documentation.
 
         """
-        return to_representation(self, target, **kwargs)
+        return to_object(self, "pretty_midi", **kwargs)
 
-    def to_event_representation(self, **kwargs):
-        """Return the event-based representation."""
+    def to_pypianoroll(self, **kwargs: Any) -> Multitrack:
+        """Return as a Multitrack object.
+
+        Refer to :func:`muspy.to_pypianoroll` for full documentation.
+
+        """
+        return to_object(self, "pypianoroll", **kwargs)
+
+    def to_representation(self, kind: str, **kwargs: Any) -> ndarray:
+        """Return in a specific representation.
+
+        Refer to :func:`muspy.to_representation` for full documentation.
+
+        """
+        return to_representation(self, kind, **kwargs)
+
+    def to_event_representation(self, **kwargs: Any) -> ndarray:
+        """Return in event-based representation.
+
+        Refer to :func:`muspy.to_event_representation` for full documentation.
+
+        """
         return to_representation(self, "event", **kwargs)
 
-    def to_note_representation(self, min_step: int = 1):
-        """Return the note-based representation."""
-        return to_representation(self, "note", min_step=min_step)
+    def to_note_representation(self, **kwargs: Any) -> ndarray:
+        """Return in note-based representation.
 
-    def to_pianoroll_representation(self, min_step: int = 1):
-        """Return the pianoroll representation."""
-        return to_representation(self, "pianoroll", min_step=min_step)
+        Refer to :func:`muspy.to_note_representation` for full documentation.
 
-    def to_mono_token_representation(self, min_step: int = 1):
-        """Return the mono token representation."""
-        return to_representation(self, "monotoken", min_step=min_step)
+        """
+        return to_representation(self, "note", **kwargs)
+
+    def to_pianoroll_representation(self, **kwargs: Any) -> ndarray:
+        """Return in pianoroll representation.
+
+        Refer to :func:`muspy.to_pianoroll_representation` for full
+        documentation.
+
+        """
+        return to_representation(self, "pianoroll", **kwargs)
+
+    def to_monotoken_representation(self, **kwargs: Any) -> ndarray:
+        """Return in monotoken-based representation.
+
+        Refer to :func:`muspy.to_monotoken_representation` for full
+        documentation.
+
+        """
+        return to_representation(self, "monotoken", **kwargs)
+
+    def to_polytoken_representation(self, **kwargs: Any) -> ndarray:
+        """Return in polytoken-based representation.
+
+        Refer to :func:`muspy.to_polytoken_representation` for full
+        documentation.
+
+        """
+        return to_representation(self, "polytoken", **kwargs)

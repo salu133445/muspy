@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.representations.note &mdash; MusPy  documentation</title>
+  <title>muspy.outputs.event &mdash; MusPy  documentation</title>
   
 
   
@@ -139,7 +139,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.representations.note</li>
+      <li>muspy.outputs.event</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,55 +154,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.representations.note</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Utilities for note-based representations.&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">.processor</span> <span class="kn">import</span> <span class="n">NoteProcessor</span>
+  <h1>Source code for muspy.outputs.event</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Event-based representation output interface.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
 
-<div class="viewcode-block" id="to_note_representation"><a class="viewcode-back" href="../../../doc/representations.html#muspy.to_note_representation">[docs]</a><span class="k">def</span> <span class="nf">to_note_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert a :class:`muspy.Music` object to a note-based representation.</span>
+<div class="viewcode-block" id="to_event_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_event_representation">[docs]</a><span class="k">def</span> <span class="nf">to_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object in event-based representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        Music object to convert.</span>
-<span class="sd">    min_step(optional):</span>
-<span class="sd">        minimum quantification step</span>
-<span class="sd">        decide how many ticks to be the basic unit (default = 1)</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
+<span class="sd">        MusPy Music object to be converted.</span>
 
 <span class="sd">    Returns</span>
-<span class="sd">    ----------</span>
-<span class="sd">    repr_seq:</span>
-<span class="sd">        the note representation tokens</span>
-<span class="sd">        Size: L * D:</span>
-<span class="sd">            - L for the sequence (note) length</span>
-<span class="sd">            - D = 4 {</span>
-<span class="sd">                pitch: 0 - 127,</span>
-<span class="sd">                start: start ticks,</span>
-<span class="sd">                end: end ticks,</span>
-<span class="sd">                velocity: 0 - 100</span>
-<span class="sd">            }</span>
-<span class="sd">        e.g.  [C5 - - - E5 - - / G5 - - / /]</span>
-<span class="sd">        -&gt; [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]</span>
-<span class="sd">        (assume velocity to be 100)</span>
+<span class="sd">    -------</span>
+<span class="sd">    array : :class:`numpy.ndarray`</span>
+<span class="sd">        Converted event-based representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;object is not symbolic&quot;</span><span class="p">,</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="p">)</span>
-    <span class="n">note_seq</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-        <span class="n">note_seq</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
-
-    <span class="n">min_step</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="s2">&quot;min_step&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-        <span class="n">min_step</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;min_step&quot;</span><span class="p">]</span>
-    <span class="n">note_seq</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
-    <span class="n">processor</span> <span class="o">=</span> <span class="n">NoteProcessor</span><span class="p">(</span><span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">)</span>
-    <span class="n">repr_seq</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">note_seq</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">repr_seq</span><span class="p">)</span></div>
+    <span class="c1"># TODO: Not implemented yet</span>
+    <span class="k">return</span> <span class="n">ndarray</span><span class="p">()</span></div>
 </pre></div>
 
            </div>

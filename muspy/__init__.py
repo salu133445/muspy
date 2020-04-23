@@ -23,7 +23,6 @@ from .core import *  # noqa: F401,F403
 from .inputs import *  # noqa: F401,F403
 from .music import *  # noqa: F401,F403
 from .outputs import *  # noqa: F401,F403
-from .representations import *  # noqa: F401,F403
 from .schemas import *  # noqa: F401,F403
 from .version import __version__
 
@@ -36,7 +35,6 @@ __all__ = [
     "metrics",
     "music",
     "outputs",
-    "representations",
     "schemas",
     "visualization",
 ]
@@ -45,5 +43,4 @@ __all__.extend(core.__all__)
 __all__.extend(inputs.__all__)
 __all__.extend(music.__all__)
 __all__.extend(outputs.__all__)
-__all__.extend(representations.__all__)
 __all__.extend(schemas.__all__)

@@ -157,20 +157,112 @@
   <h1>Source code for muspy.inputs.wrappers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Wrappers for input interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">from_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="kn">import</span> <span class="n">load_json</span>
 <span class="kn">from</span> <span class="nn">.midi</span> <span class="kn">import</span> <span class="n">from_pretty_midi</span><span class="p">,</span> <span class="n">read_midi</span>
 <span class="kn">from</span> <span class="nn">.musicxml</span> <span class="kn">import</span> <span class="n">read_musicxml</span>
-<span class="kn">from</span> <span class="nn">.pianoroll</span> <span class="kn">import</span> <span class="n">from_pypianoroll</span>
+<span class="kn">from</span> <span class="nn">.note</span> <span class="kn">import</span> <span class="n">from_note_representation</span>
+<span class="kn">from</span> <span class="nn">.pianoroll</span> <span class="kn">import</span> <span class="n">from_pianoroll_representation</span><span class="p">,</span> <span class="n">from_pypianoroll</span>
+<span class="kn">from</span> <span class="nn">.token</span> <span class="kn">import</span> <span class="n">from_monotoken_representation</span><span class="p">,</span> <span class="n">from_polytoken_representation</span>
 <span class="kn">from</span> <span class="nn">.yaml</span> <span class="kn">import</span> <span class="n">load_yaml</span>
 
 
-<div class="viewcode-block" id="from_object"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_object">[docs]</a><span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object loaded from a JSON or a YAML file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to the file to be loaded.</span>
+<span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
+<span class="sd">        Format to save. If None, infer the format from the extension of</span>
+<span class="sd">        `path`.</span>
+<span class="sd">    schema_path : str or Path, optional</span>
+<span class="sd">        Path to the schema file. If given, validate the loaded data by the</span>
+<span class="sd">        schema.</span>
+<span class="sd">    **kwargs : dict</span>
+<span class="sd">        Keyword arguments to be passed to the target function. See</span>
+<span class="sd">        :func:`muspy.load_json` or :func:`muspy.load_yaml` for available</span>
+<span class="sd">        arguments.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">        Loaded MusPy Music object.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.read`: Read from other formats such as MIDI and MusicXML.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yml&quot;</span><span class="p">)):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Got unsupported file format (expect JSON or YAML).&quot;</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_json</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;json&#39; or &#39;yaml&#39;.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read a MIDI or a MusicXML file into a Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to the file to be read.</span>
+<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;}, optional</span>
+<span class="sd">        Format to save. If None, infer the format from the extension of</span>
+<span class="sd">        `path`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">        Converted MusPy Music object.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.load`: Load from a JSON or a YAML file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mid&quot;</span><span class="p">,</span> <span class="s2">&quot;.midi&quot;</span><span class="p">)):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musicxml&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Got unsupported file format (expect MIDI or MusicXML).&quot;</span>
+            <span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;midi&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;midi&#39; or &#39;musicxml&#39;.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="from_object"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_object">[docs]</a><span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object converted from a Multitrack or PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
@@ -186,66 +278,46 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">from_pypianoroll</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">from_pypianoroll</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-        <span class="s2">&quot;Got unsupported object type (expect PrettyMIDI or Multitrack).&quot;</span>
+        <span class="s2">&quot;`obj` must be of type pretty_midi.PrettyMIDI or &quot;</span>
+        <span class="s2">&quot;pypianoroll.Multitrack.&quot;</span>
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI or a MusicXML file into a Music object.</span>
+<div class="viewcode-block" id="from_representation"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_representation">[docs]</a><span class="k">def</span> <span class="nf">from_representation</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Update with the given representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the file to be read. The file format is inferred from the</span>
-<span class="sd">        extension.</span>
+<span class="sd">    data : :class:`numpy.ndarray`</span>
+<span class="sd">        Data in a supported representation.</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        Data representation type. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
+<span class="sd">        &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Converted MusPy Music object.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.load`: Load from a JSON or a YAML file.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mid&quot;</span><span class="p">,</span> <span class="s2">&quot;.midi&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Got unsupported file format (expect MIDI or MusicXML).&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object loaded from a JSON or a YAML file.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the file to be loaded. The file format is inferred from the</span>
-<span class="sd">        extension.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
-<span class="sd">        Loaded MusPy Music object.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.read`: Read from other formats such as MIDI and MusicXML.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">load_json</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yml&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">schema_path</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Got unsupported file format (expect JSON or YAML).&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event-based&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">from_event_representation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">,</span> <span class="s2">&quot;note-based&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">from_note_representation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano-roll&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">from_pianoroll_representation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;monotoken&quot;</span><span class="p">,</span> <span class="s2">&quot;mono-token&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">from_monotoken_representation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;polytoken&quot;</span><span class="p">,</span> <span class="s2">&quot;poly-token&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">from_polytoken_representation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="s2">&quot;`kind` must be one of &#39;event&#39;, &#39;note&#39;, &#39;pianoroll&#39;, &#39;monotoken&#39; and &quot;</span>
+        <span class="s2">&quot;&#39;polytoken&#39;.&quot;</span>
+    <span class="p">)</span></div>
 </pre></div>
 
            </div>
