@@ -1,8 +1,8 @@
 """JSB Chorales Dataset."""
-from .base import MusicDataset
+from .base import Dataset
 
 
-class JSBChoralesDataset(MusicDataset):
+class JSBChoralesDataset(Dataset):
     """Johann Sebastian Bach Chorales Dataset."""
 
     _sources = {

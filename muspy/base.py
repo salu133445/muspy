@@ -131,7 +131,7 @@ class Base:
             value = getattr(self, attr)
             if value is None:
                 ordered_dict[attr] = None
-            if isclass(attr_cls) and issubclass(attr_cls, Base):
+            elif isclass(attr_cls) and issubclass(attr_cls, Base):
                 if attr in self._list_attributes:
                     ordered_dict[attr] = [v.to_ordered_dict() for v in value]
                 else:
