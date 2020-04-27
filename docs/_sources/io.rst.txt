@@ -8,6 +8,10 @@ MusPy provides three type of data I/O interface.
 - Saving and loading with JSON and YAML
 - Conversion between objects in other packages
 
+.. image:: images/io.svg
+    :align: center
+    :width: 400px
+
 
 Reading and Writing
 ===================

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 def to_pretty_midi(music: "Music") -> PrettyMIDI:
-    """Return a PrettyMIDI object converted from a Music object.
+    """Return a Music object as a PrettyMIDI object.
 
     Parameters
     ----------

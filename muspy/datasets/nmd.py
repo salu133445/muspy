@@ -1,8 +1,8 @@
 """Nottingham Music Database."""
-from .base import MusicDataset
+from .base import Dataset
 
 
-class NottinghamMusicDatabase(MusicDataset):
+class NottinghamMusicDatabase(Dataset):
     """Nottingham Music Database."""
 
     _sources = {
@@ -13,6 +13,6 @@ class NottinghamMusicDatabase(MusicDataset):
             "archive": True,
             "md5": None,
         }
+        # https://github.com/jukedeck/nottingham-dataset
     }
-
     _default_subsets = ["nmd"]

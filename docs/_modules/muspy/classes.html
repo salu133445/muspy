@@ -85,6 +85,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../music.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
@@ -371,7 +372,8 @@
             <span class="k">for</span> <span class="n">tempo</span><span class="p">,</span> <span class="n">next_tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempos</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">tempos</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
             <span class="k">if</span> <span class="n">tempo</span><span class="o">.</span><span class="n">tempo</span> <span class="o">!=</span> <span class="n">next_tempo</span><span class="o">.</span><span class="n">tempo</span>
         <span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tempos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tempos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Timing.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last tempo event.</span>
@@ -560,7 +562,8 @@
 <span class="sd">            raises the pitch, while a negative value lowers the pitch.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">+=</span> <span class="n">semitone</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">+=</span> <span class="n">semitone</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Note.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Clip the velocity of the note.</span>
@@ -577,7 +580,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">upper</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">lower</span></div></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">lower</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
 <div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
@@ -681,7 +685,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">note</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span></div>
+            <span class="n">note</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Track.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
@@ -694,7 +699,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">note</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">semitone</span><span class="p">)</span></div></div>
+            <span class="n">note</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">semitone</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
 
            </div>

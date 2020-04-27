@@ -216,6 +216,7 @@ class Timing(ComplexBase):
             if tempo.tempo != next_tempo.tempo
         ]
         self.tempos.insert(0, tempos[0])
+        return self
 
     def get_end_time(self, is_sorted: bool = False) -> float:
         """Return the time of the last tempo event.
@@ -405,6 +406,7 @@ class Note(Base):
 
         """
         self.pitch += semitone
+        return self
 
     def clip(self, lower: float = 0, upper: float = 127):
         """Clip the velocity of the note.
@@ -422,6 +424,7 @@ class Note(Base):
             self.velocity = upper
         elif self.velocity < lower:
             self.velocity = lower
+        return self
 
 
 class Track(ComplexBase):
@@ -526,6 +529,7 @@ class Track(ComplexBase):
         """
         for note in self.notes:
             note.clip(lower, upper)
+        return self
 
     def transpose(self, semitone: int):
         """Transpose the notes by a number of semitones.
@@ -539,3 +543,4 @@ class Track(ComplexBase):
         """
         for note in self.notes:
             note.transpose(semitone)
+        return self

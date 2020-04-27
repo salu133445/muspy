@@ -3,6 +3,9 @@ from pathlib import Path
 from typing import Union
 
 from ..music import Music
+from .music21 import from_music21
+import music21
+
 
 
 def read_musicxml(path: Union[str, Path]) -> Music:
@@ -14,5 +17,6 @@ def read_musicxml(path: Union[str, Path]) -> Music:
         Path to the MusicXML file to be read.
 
     """
-    # TODO: Not implemented yet
-    return Music()
+    importer = music21.musicxml.xmlToM21.MusicXMLImporter()
+    importer.readFile(path)
+    return from_music21(importer.stream)

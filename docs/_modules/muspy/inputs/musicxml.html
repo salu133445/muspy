@@ -85,6 +85,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
@@ -159,6 +160,9 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">.music21</span> <span class="kn">import</span> <span class="n">from_music21</span>
+<span class="kn">import</span> <span class="nn">music21</span>
+
 
 
 <div class="viewcode-block" id="read_musicxml"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_musicxml">[docs]</a><span class="k">def</span> <span class="nf">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
@@ -170,8 +174,9 @@
 <span class="sd">        Path to the MusicXML file to be read.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Not implemented yet</span>
-    <span class="k">return</span> <span class="n">Music</span><span class="p">()</span></div>
+    <span class="n">importer</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">musicxml</span><span class="o">.</span><span class="n">xmlToM21</span><span class="o">.</span><span class="n">MusicXMLImporter</span><span class="p">()</span>
+    <span class="n">importer</span><span class="o">.</span><span class="n">readFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">from_music21</span><span class="p">(</span><span class="n">importer</span><span class="o">.</span><span class="n">stream</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

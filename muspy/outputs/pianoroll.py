@@ -1,6 +1,7 @@
 """Pianoroll output interface."""
 from typing import TYPE_CHECKING
 
+from numpy import ndarray
 from pypianoroll import Multitrack, Track
 
 if TYPE_CHECKING:
@@ -8,7 +9,7 @@ if TYPE_CHECKING:
 
 
 def to_pypianoroll(music: "Music") -> Multitrack:
-    """Return a Multitrack object converted from a Music object.
+    """Return a Music object as a Multitrack object.
 
     Parameters
     ----------
@@ -19,6 +20,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     -------
     multitrack : :class:`pypianoroll.Multitrack` object
         Converted Multitrack object.
+
     """
     if music.timing.is_symbolic:
         raise NotImplementedError
@@ -27,8 +29,27 @@ def to_pypianoroll(music: "Music") -> Multitrack:
 
     tracks = []
     for track in music.tracks:
+        # TODO: Not implemented yet
         pianoroll = None
         tracks.append(
             Track(pianoroll, track.program, track.is_drum, track.name)
         )
     return multitrack
+
+
+def to_pianoroll_representation(music: "Music") -> ndarray:
+    """Return a Music object in pianoroll representation.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music`
+        MusPy Music object to be converted.
+
+    Returns
+    -------
+    array : :class:`numpy.ndarray`
+        Converted pianoroll representation.
+
+    """
+    # TODO: Not implemented yet
+    return ndarray()

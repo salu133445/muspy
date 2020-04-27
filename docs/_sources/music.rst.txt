@@ -34,7 +34,7 @@ The :class:`muspy.MetaData` class is a container for meta data of a song.
 ============== ================== ========================= ===========================
 Attributes     Description        Type                      Default
 ============== ================== ========================= ===========================
-schema_version Schema version     str                       ``'0.0'``
+schema_version Schema version     str                       '0.0'
 song           Song information   :class:`muspy.SongInfo`   :class:`muspy.SongInfo()`
 source         Source information :class:`muspy.SourceInfo` :class:`muspy.SourceInfo()`
 ============== ================== ========================= ===========================
@@ -83,6 +83,7 @@ is_symbolic If symbolic timing is used bool                         True
 resolution  Time steps per beat        int                          ``muspy.DEFAULT_RESOLUTION``
 tempos      Tempo changes              list of :class:`muspy.Tempo` []
 =========== ========================== ============================ ============================
+
 
 Tempo Class
 ===========

@@ -17,9 +17,8 @@ from tqdm import tqdm
 class _ProgressBar:
     """A callable progress bar object.
 
-    Note
-    ----
     Code is adapted from https://stackoverflow.com/a/53643011.
+
     """
 
     def __init__(self):
@@ -58,10 +57,10 @@ def check_md5(path: Union[str, Path], md5: str, chunk_size: int = 1024 * 1024):
     ----------
     path : str or Path
         Path to the file to be check.
-    md5 : str, optional
+    md5 : str
         Expected MD5 checksum of the file.
-    chunk_size : int
-        Chunk size used to calculate the MD5 checksum.
+    chunk_size : int, optional
+        Chunk size used to calculate the MD5 checksum. Defaults to 2^20.
 
     """
     return md5 == compute_md5(path, chunk_size)
@@ -142,12 +141,10 @@ def download_google_drive_file(
 def extract_archive(
     path: Union[str, Path],
     root: Optional[Union[str, Path]] = None,
+    kind: Optional[str] = None,
     cleanup: bool = False,
 ):
-    """Extract an archive, with format inferred from the extension.
-
-    Supported extensions are '.tar', '.tar.gz', '.tgz', '.tar.xz', '.txz',
-    '.gz' and '.zip'.
+    """Extract an archive in TAR, TGZ, TXZ, GZ or ZIP format.
 
     Parameters
     ----------
@@ -155,35 +152,56 @@ def extract_archive(
         Path to the archive to be extracted.
     root : str or Path, optional
         Root directory to save the extracted file. If None, use the dirname
-        of `path`.
-    cleanup : bool
+        of ``path``.
+    kind : {'tar', 'tgz', 'txz', 'gz', 'zip'}, optional
+        Fromat of the archive to be extracted. If None, infer the format
+        from the extension of ``path``.
+    cleanup : bool, optional
         Whether to remove the original archive. Defaults to False.
 
     """
     path = str(path)
     if root is None:
         root = os.path.dirname(str(path))
+    if kind is None:
+        if path.lower().endswith(".tar"):
+            kind = "tar"
+        elif path.lower().endswith((".tar.gz", ".tgz")):
+            kind = "tgz"
+        elif path.lower().endswith((".tar.xz", ".txz")):
+            kind = "txz"
+        elif path.lower().endswith(".gz"):
+            kind = "gz"
+        elif path.lower().endswith(".zip"):
+            kind = "zip"
+        else:
+            raise ValueError(
+                "Got unsupported file format (expect TAR, TGZ, TXZ, GZ or "
+                "ZIP)."
+            )
 
-    if path.lower().endswith(".tar"):
+    if kind == "tar":
         with tarfile.open(str(path), "r") as f:
             f.extractall(path=root)
-    elif path.lower().endswith((".tar.gz", ".tgz")):
+    elif kind == "tgz":
         with tarfile.open(str(path), "r:gz") as f:
             f.extractall(path=root)
-    elif path.lower().endswith((".tar.xz", ".txz")):
+    elif kind == "txz":
         with tarfile.open(str(path), "r:xz") as f:
             f.extractall(path=root)
-    elif path.lower().endswith(".gz"):
+    elif kind == "gz":
         filename = os.path.join(
             root, os.path.splitext(os.path.basename(path))[0]
         )
         with gzip.open(str(path), "rb") as f_in, open(filename, "wb") as f_out:
             shutil.copyfileobj(f_in, f_out)
-    elif path.lower().endswith(".zip"):
+    elif kind == "zip":
         with zipfile.ZipFile(str(path), "r") as zip_file:
             zip_file.extractall(root)
     else:
-        raise ValueError("Extraction of {} not supported".format(path))
+        raise ValueError(
+            "`kind` must be one of 'tar', 'tgz', 'txz', 'gz' and 'zip'."
+        )
 
     if cleanup:
         os.remove(path)
