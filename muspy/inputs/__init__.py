@@ -17,7 +17,7 @@ from .json import load_json
 from .midi import from_pretty_midi, read_midi
 from .musicxml import read_musicxml
 from .note import from_note_representation
-from .pianoroll import from_pypianoroll
+from .pianoroll import from_pypianoroll, from_pianoroll_representation
 from .token import from_monotoken_representation, from_polytoken_representation
 from .wrappers import from_object, from_representation, load, read
 from .yaml import load_yaml
@@ -30,6 +30,7 @@ __all__ = [
     "from_polytoken_representation",
     "from_pretty_midi",
     "from_pypianoroll",
+    "from_pianoroll_representation",
     "from_representation",
     "load",
     "load_json",

@@ -13,7 +13,7 @@ Repr Processor: the basic representation processor
 """
 import numpy as np
 from abc import ABC, abstractmethod
-from ..classes import Note
+from .classes import Note
 
 
 class ReprProcessor(ABC):
@@ -557,7 +557,7 @@ class PianoRollProcessor(ReprProcessor):
         max_length = max([d.end for d in note_seq])
         repr_seq = np.zeros((max_length, 128))
         for note in note_seq:
-            repr_seq[note.start : note.end, note.pitch] = note.velocity
+            repr_seq[note.start : note.end - 1, note.pitch] = note.velocity
         return repr_seq
 
     def decode(self, repr_seq=None):
@@ -586,7 +586,7 @@ class PianoRollProcessor(ReprProcessor):
                     notes.append(
                         Note(
                             start=cst,
-                            end=cur_time,
+                            end=cur_time + 1,
                             pitch=cur_pitch,
                             velocity=int(cvel),
                         )

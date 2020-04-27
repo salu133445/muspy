@@ -50,7 +50,7 @@ def save(
     if kind is None:
         if str(path).lower().endswith(".json"):
             kind = "json"
-        if str(path).lower().endswith((".yaml", ".yml")):
+        elif str(path).lower().endswith((".yaml", ".yml")):
             kind = "yaml"
         else:
             raise ValueError(
@@ -90,7 +90,7 @@ def write(
     if kind is None:
         if str(path).lower().endswith((".mid", ".midi")):
             kind = "midi"
-        if str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
+        elif str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
             kind = "musicxml"
         else:
             raise ValueError(

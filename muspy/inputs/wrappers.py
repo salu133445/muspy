@@ -53,7 +53,7 @@ def load(
     if kind is None:
         if str(path).lower().endswith(".json"):
             kind = "json"
-        if str(path).lower().endswith((".yaml", ".yml")):
+        elif str(path).lower().endswith((".yaml", ".yml")):
             kind = "yaml"
         else:
             raise ValueError(
@@ -92,7 +92,7 @@ def read(
     if kind is None:
         if str(path).lower().endswith((".mid", ".midi")):
             kind = "midi"
-        if str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
+        elif str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
             kind = "musicxml"
         else:
             raise ValueError(
@@ -122,7 +122,7 @@ def from_object(obj: Union[PrettyMIDI, Multitrack], **kwargs: Any) -> Music:
     """
     if isinstance(obj, PrettyMIDI):
         return from_pretty_midi(obj, **kwargs)  # type: ignore
-    if isinstance(obj, Multitrack):
+    elif isinstance(obj, Multitrack):
         return from_pypianoroll(obj, **kwargs)  # type: ignore
     raise TypeError(
         "`obj` must be of type pretty_midi.PrettyMIDI or "

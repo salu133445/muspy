@@ -1,7 +1,7 @@
 """Utilities for mono token representations."""
 
 import numpy as np
-from .processor import MonoTokenProcessor
+from ..processor import MonoTokenProcessor
 
 
 def to_mono_token_representation(music, **kwargs):

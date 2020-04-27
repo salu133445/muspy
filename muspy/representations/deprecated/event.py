@@ -1,6 +1,6 @@
 """Utilities for event-based representations."""
 import numpy as np
-from .processor import MidiEventProcessor
+from ..processor import MidiEventProcessor
 
 
 def to_event_representation(music, **kwargs):

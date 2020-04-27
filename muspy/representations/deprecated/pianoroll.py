@@ -1,6 +1,6 @@
 """Utilities for pianoroll representations."""
 import numpy as np
-from .processor import PianoRollProcessor
+from ..processor import PianoRollProcessor
 
 
 def to_pianoroll_representation(music, **kwargs):
