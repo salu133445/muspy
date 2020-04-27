@@ -4,7 +4,7 @@ import os.path
 import muspy as msp
 
 DIR = os.path.dirname(__file__)
-TEST_MIDI_PATH = os.path.join(DIR, "data", "mono.mid")
+TEST_MIDI_PATH = "tests/data/mono.mid"  # os.path.join(DIR, "data", "mono.mid")
 
 temp_object = msp.read(TEST_MIDI_PATH)
 # note
