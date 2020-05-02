@@ -427,6 +427,66 @@ class Note(Base):
         return self
 
 
+class Chord(ComplexBase):
+    """A container for chord.
+
+    Attributes
+    ----------
+    start : int or float
+        Start time of the note, in time steps or seconds.
+    end : int or float
+        End time of the note, in time steps or seconds.
+    pitches : list of int
+        Note pitches, as MIDI note numbers.
+
+    """
+
+    _attributes = OrderedDict(
+        [("start", (int, float)), ("end", (int, float)), ("pitches", int)]
+    )
+    _temporal_attributes = ["start", "end"]
+    _list_attributes = ["pitches"]
+
+    def __init__(self, start: float, end: float, pitches: List[int]):
+        self.start = start
+        self.end = end
+        self.pitches = pitches
+
+    @property
+    def duration(self):
+        """Duration of the note."""
+        return self.end - self.start
+
+    @duration.setter
+    def duration(self, duration):
+        """Setter for duration."""
+        self.end = self.start + duration
+
+    def validate(self):
+        """Raise proper errors if any attribute is invalid."""
+        self._validate()
+        if self.start < 0:
+            raise ValueError("`start` must be nonnegative.")
+        if self.end < self.start:
+            raise ValueError("`end` must be greater than `start`.")
+        for pitch in self.pitches:
+            if 0 <= pitch < 128:
+                raise ValueError("`pitch` must be in between 0 to 127.")
+
+    def transpose(self, semitone: int):
+        """Transpose the notes by a number of semitones.
+
+        Parameters
+        ----------
+        semitone : int
+            The number of semitones to transpose the note. A positive value
+            raises the pitch, while a negative value lowers the pitch.
+
+        """
+        self.pitches += [pitch + semitone for pitch in self.pitches]
+        return self
+
+
 class Track(ComplexBase):
     """A container for music track.
 
@@ -443,6 +503,8 @@ class Track(ComplexBase):
         Track name.
     notes : list of :class:`muspy.Note` objects, optional
         Musical notes. Defaults to an empty list.
+    chords : list of :class:`muspy.Chord` objects, optional
+        Chords. Defaults to an empty list.
     annotations : list of :class:`muspy.Annotation` objects, optional
         Annotations. Defaults to an empty list.
     lyrics : list of :class:`muspy.Lyric` objects, optional
@@ -458,12 +520,13 @@ class Track(ComplexBase):
             ("is_drum", bool),
             ("name", str),
             ("notes", Note),
+            ("chords", Chord),
             ("lyrics", Lyric),
             ("annotations", Annotation),
         ]
     )
     _optional_attributes = ["name"]
-    _list_attributes = ["notes", "lyrics", "annotations"]
+    _list_attributes = ["notes", "chords", "lyrics", "annotations"]
 
     def __init__(
         self,
@@ -471,6 +534,7 @@ class Track(ComplexBase):
         is_drum: bool = False,
         name: Optional[str] = None,
         notes: Optional[List[Note]] = None,
+        chords: Optional[List[Note]] = None,
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
     ):
@@ -478,6 +542,7 @@ class Track(ComplexBase):
         self.is_drum = is_drum if program is None else False
         self.name = name
         self.notes = notes if notes is not None else []
+        self.chords = chords if chords is not None else []
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
 
@@ -494,7 +559,7 @@ class Track(ComplexBase):
     def get_end_time(self, is_sorted: bool = False) -> float:
         """Return the time of the last event.
 
-        This includes notes note offsets, lyrics and annotations.
+        This includes notes, chords, lyrics and annotations.
 
         Parameters
         ----------
@@ -512,6 +577,7 @@ class Track(ComplexBase):
 
         return max(
             _get_end_time(self.notes, "end"),
+            _get_end_time(self.chords, "end"),
             _get_end_time(self.lyrics),
             _get_end_time(self.annotations),
         )
