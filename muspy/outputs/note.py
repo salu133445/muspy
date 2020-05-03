@@ -32,8 +32,8 @@ def to_note_representation(music: "Music", **kwargs) -> np.ndarray:
 
     """
     # TODO: Not implemented yet
-    if not music.timing.is_symbolic:
-        raise Exception("object is not symbolic", music.timing)
+    if not music.timing.is_metrical:
+        raise Exception("object is not metrical", music.timing)
     note_seq = []
     for track in music.tracks:
         note_seq.extend(track.notes)

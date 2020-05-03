@@ -23,7 +23,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         Converted Multitrack object.
 
     """
-    if music.timing.is_symbolic:
+    if music.timing.is_metrical:
         raise NotImplementedError
 
     multitrack = Multitrack()
@@ -59,8 +59,8 @@ def to_pianoroll_representation(music: "Music", **kwargs) -> np.ndarray:
                 the value in each dimension indicates the velocity
 
     """
-    if not music.timing.is_symbolic:
-        raise Exception("object is not symbolic", music.timing)
+    if not music.timing.is_metrical:
+        raise Exception("object is not metrical", music.timing)
     note_seq = []
     for track in music.tracks:
         note_seq.extend(track.notes)

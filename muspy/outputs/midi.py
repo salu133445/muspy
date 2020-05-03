@@ -24,7 +24,7 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
         Converted PrettyMIDI object.
 
     """
-    if music.timing.is_symbolic:
+    if music.timing.is_metrical:
         raise NotImplementedError
 
     pm = PrettyMIDI()

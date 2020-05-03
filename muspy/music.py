@@ -192,8 +192,8 @@ class Music(ComplexBase):
             resolution.
 
         """
-        if not self.timing.is_symbolic:
-            raise ValueError("Only works for music object in symbolic timing.")
+        if not self.timing.is_metrical:
+            raise ValueError("Only works for music object in metrical timing.")
         if self.timing.resolution is None:
             raise TypeError("`resolution` must not be None.")
         if self.timing.resolution < 0:
@@ -289,7 +289,7 @@ class Music(ComplexBase):
 
         # Validate the timing
         self.timing.validate()
-        if self.timing.is_symbolic:
+        if self.timing.is_metrical:
             raise ValueError("Only works for music object in absolute timing.")
 
         if beats is None:
@@ -297,7 +297,7 @@ class Music(ComplexBase):
                 raise TypeError("`bpm` must not be None when `beats` is None.")
             factor = 60 * resolution / bpm
             self.adjust_time(lambda time: round((time - offset) * factor))
-            self.timing.is_symbolic = True
+            self.timing.is_metrical = True
             self.timing.resolution = resolution
             if update_tempos:
                 self.timing.tempos = [Tempo(0.0, bpm)]
@@ -312,7 +312,7 @@ class Music(ComplexBase):
             anchors.insert(0, beats[0])
 
             self.adjust_time(lambda time: bisect_left(anchors, time))
-            self.timing.is_symbolic = True
+            self.timing.is_metrical = True
             self.timing.resolution = resolution
             if update_tempos:
                 raise NotImplementedError

@@ -44,8 +44,8 @@ def to_event_representation(music: "Music", **kwargs) -> np.ndarray:
     [380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]
 
     """
-    if not music.timing.is_symbolic:
-        raise Exception("object is not symbolic", music.timing)
+    if not music.timing.is_metrical:
+        raise Exception("object is not metrical", music.timing)
     note_seq = []
     for track in music.tracks:
         note_seq.extend(track.notes)

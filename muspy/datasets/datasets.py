@@ -1,5 +1,4 @@
 """Some simple dataset."""
-import warnings
 from pathlib import Path
 from typing import Optional, Union
 

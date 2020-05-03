@@ -70,16 +70,16 @@ id         Unique ID of the file                               str
 Timing  Class
 =============
 
-The :class:`muspy.Timing` class is a container for timing system of a song. MusPy supports two timing systems: *symbolic timing* and *absolute timing*. When ``is_symbolic=True``, the symbolic timing system is used, and the timing is in time steps. To render the song, the temporal resolution (``resolution``, in time steps per beat) and the tempos (``tempos``, in beats per minute, or bpm) are required. Here is the formula used to convert the symbolic time to absolute time.
+The :class:`muspy.Timing` class is a container for timing system of a song. MusPy supports two timing systems: *metrical timing* and *absolute timing*. When ``is_metrical=True``, the metrical timing system is used, and the timing is in time steps. To render the song, the temporal resolution (``resolution``, in time steps per beat) and the tempos (``tempos``, in beats per minute, or bpm) are required. Here is the formula used to convert the metrical time to absolute time.
 
-.. math:: absolute\_time = \frac{60 \times tempo}{resolution} \times symbolic\_time
+.. math:: absolute\_time = \frac{60 \times tempo}{resolution} \times metrical\_time
 
-When ``is_symbolic=False``, the absolute timing system is used, and the timing is in seconds. Moreover, ``resolution`` is not effective and ``tempos`` serve as annotations only.
+When ``is_metrical=False``, the absolute timing system is used, and the timing is in seconds. Moreover, ``resolution`` is not effective and ``tempos`` serve as annotations only.
 
 =========== ========================== ============================ ============================
 Attributes  Description                Type                         Default
 =========== ========================== ============================ ============================
-is_symbolic If symbolic timing is used bool                         True
+is_metrical If metrical timing is used bool                         True
 resolution  Time steps per beat        int                          ``muspy.DEFAULT_RESOLUTION``
 tempos      Tempo changes              list of :class:`muspy.Tempo` []
 =========== ========================== ============================ ============================

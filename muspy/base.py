@@ -66,7 +66,6 @@ class Base:
       the order of objects when being sorted.
     - _list_attributes: A list containing attributes that are lists.
 
-
     """
 
     _attributes: Mapping[str, Any] = {}

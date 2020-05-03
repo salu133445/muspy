@@ -164,11 +164,11 @@ class Timing(ComplexBase):
 
     Attributes
     ----------
-    is_symbolic : bool, optional
+    is_metrical : bool, optional
         If true, the timing is in time steps, otherwise in seconds.
         Defaults to True
     resolution : int, optional
-        Time steps per beat (only effective when `is_symbolic` is true).
+        Time steps per beat (only effective when `is_metrical` is true).
         Defaults to `muspy.DEFAULT_RESOLUTION`.
     tempos : list of :class:`muspy.Tempo`
         Tempo changes. Defaults to an empty list.
@@ -176,30 +176,30 @@ class Timing(ComplexBase):
     """
 
     _attributes = OrderedDict(
-        [("is_symbolic", bool), ("resolution", int), ("tempos", Tempo)]
+        [("is_metrical", bool), ("resolution", int), ("tempos", Tempo)]
     )
     _optional_attributes = ["resolution"]
     _list_attributes = ["tempos"]
 
     def __init__(
         self,
-        is_symbolic: bool = True,
+        is_metrical: bool = True,
         resolution: Optional[int] = None,
         tempos: Optional[List[Tempo]] = None,
     ):
-        self.is_symbolic = is_symbolic
+        self.is_metrical = is_metrical
         self.resolution = (
             DEFAULT_RESOLUTION
-            if is_symbolic and resolution is None
+            if is_metrical and resolution is None
             else resolution
         )
         self.tempos = tempos if tempos is not None else []
 
     def validate(self, attr=None):
         """Raise proper errors if any attribute is invalid."""
-        if attr in ("is_symbolic", None):
-            self._validate_type("is_symbolic")
-        if self.is_symbolic:
+        if attr in ("is_metrical", None):
+            self._validate_type("is_metrical")
+        if self.is_metrical:
             if attr in ("resolution", None):
                 self._validate_type("resolution")
                 if self.resolution < 1:

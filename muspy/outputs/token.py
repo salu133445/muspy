@@ -32,8 +32,8 @@ def to_monotoken_representation(music: "Music", **kwargs) -> np.ndarray:
         [60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]
 
     """
-    if not music.timing.is_symbolic:
-        raise Exception("object is not symbolic", music.timing)
+    if not music.timing.is_metrical:
+        raise Exception("object is not metrical", music.timing)
     if len(music.tracks) != 1:
         raise Exception(
             "mono token representation can't accept more than one track!",

@@ -321,7 +321,7 @@ def read_midi_mido(
     return Music(
         meta=MetaData(source=SourceInfo(format="midi")),
         timing=Timing(
-            is_symbolic=True, resolution=midi.ticks_per_beat, tempos=tempos
+            is_metrical=True, resolution=midi.ticks_per_beat, tempos=tempos
         ),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
