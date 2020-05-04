@@ -252,6 +252,7 @@ class FolderDataset(Dataset):
             Defaults to False.
 
         """
+        self.converted_dir.mkdir(exist_ok=True)
         self.save(self.converted_dir, kind, n_jobs, ignore_exceptions)
         self.converted_filenames = sorted(
             self.converted_dir.rglob("*." + kind)
