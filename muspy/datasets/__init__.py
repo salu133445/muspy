@@ -7,17 +7,20 @@ inherit from the base class :class:`muspy.Dataset`.
 
 """
 
-from .base import Dataset
+from .base import Dataset, DatasetInfo
 from .datasets import FolderDataset, MusicDataset
 from .jsb import JSBChoralesDataset
 from .lmd import LakhMIDIDataset
 from .nmd import NottinghamMusicDatabase
+from .wikifornia import WikiforniaDataset
 
 __all__ = [
     "Dataset",
+    "DatasetInfo",
     "FolderDataset",
     "JSBChoralesDataset",
     "LakhMIDIDataset",
     "MusicDataset",
     "NottinghamMusicDatabase",
+    "WikiforniaDataset",
 ]
