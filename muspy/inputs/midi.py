@@ -177,6 +177,7 @@ def read_midi_mido(
     time = 0
     tempos, key_signatures, time_signatures = [], [], []
     lyrics, annotations = [], []
+    copyright_ = None
 
     # Create a list to store converted tracks
     tracks: List[OrderedDict] = [
@@ -243,7 +244,7 @@ def read_midi_mido(
 
             # Copyright messages
             elif msg.type == "copyright":
-                annotations.append(Annotation(time, msg.text, "copyright"))
+                copyright_ = msg.text
 
             # === Track specific Data ===
 
@@ -319,12 +320,12 @@ def read_midi_mido(
         music_tracks.extend(track.values())
 
     return Music(
-        meta=MetaData(source=SourceInfo(format="midi")),
+        meta=MetaData(source=SourceInfo(format="midi", copyright=copyright_)),
         timing=Timing(
             is_metrical=True, resolution=midi.ticks_per_beat, tempos=tempos
         ),
-        time_signatures=time_signatures,
         key_signatures=key_signatures,
+        time_signatures=time_signatures,
         lyrics=lyrics,
         tracks=music_tracks,
     )

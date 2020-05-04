@@ -41,7 +41,7 @@ class SongInfo(Base):
     artist : str, optional
         Main artist of the song.
     creators : list of str, optional
-        Creator(s) of the song. Defaults to an empty list.
+        Creator(s) of the song.
 
     """
 
@@ -66,35 +66,44 @@ class SourceInfo(Base):
 
     Attributes
     ----------
+    filename : str, optional
+        Name of the source file.
     collection : str, optional
         Name of the collection.
-    filename : str, optional
-        Relative path to the source file with respect to the collection
-        root.
-    format : {'midi', 'musicxml'}, optional
+    format : str, optional
         Format of the source file.
-    id : str, optional
-        Unique ID of the file.
+    copyright : str, optional
+        Copyright notice of the source file.
 
     """
 
     _attributes = OrderedDict(
-        [("collection", str), ("filename", str), ("format", str), ("id", str)]
+        [
+            ("filename", str),
+            ("collection", str),
+            ("format", str),
+            ("copyright", str),
+        ]
     )
-    _optional_attributes = ["collection", "filename", "format", "id"]
+    _optional_attributes = [
+        "filename",
+        "collection",
+        "format",
+        "copyright",
+    ]
 
     def __init__(
         self,
-        collection: Optional[str] = None,
         filename: Optional[str] = None,
+        collection: Optional[str] = None,
         format: Optional[str] = None,
-        id: Optional[str] = None,
+        copyright: Optional[str] = None,
     ):
         # pylint: disable=redefined-builtin
         self.collection = collection
         self.filename = filename
         self.format = format
-        self.id = id
+        self.copyright = copyright
 
 
 class MetaData(Base):
@@ -103,7 +112,7 @@ class MetaData(Base):
     Attributes
     ----------
     schema_version : str
-        Schema version.
+        Schema version. Defaults to the latest version.
     song : :class:`muspy.SongInfo` object, optional
         Song infomation.
     source : :class:`muspy.SourceInfo` object, optional
