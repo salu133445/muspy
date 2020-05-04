@@ -319,11 +319,19 @@ def read_midi_mido(
             sub_track.name = track_name
         music_tracks.extend(track.values())
 
+    # Meta data
+    source_info = SourceInfo(
+        filename=Path(path).name, format="midi", copyright=copyright_,
+    )
+
+    # Timing
+    timing = Timing(
+        is_metrical=True, resolution=midi.ticks_per_beat, tempos=tempos
+    )
+
     return Music(
-        meta=MetaData(source=SourceInfo(format="midi", copyright=copyright_)),
-        timing=Timing(
-            is_metrical=True, resolution=midi.ticks_per_beat, tempos=tempos
-        ),
+        meta=MetaData(source=source_info),
+        timing=timing,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,

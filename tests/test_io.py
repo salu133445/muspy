@@ -38,3 +38,11 @@ class MIDIIOTestCase(IOTestCase):
     def test_read_write_midi(self):
         music = muspy.read_midi(TEST_MIDI_PATH)
         music.write(os.path.join(self.test_dir, "test.mid"))
+
+
+class MusicXMLIOTestCase(IOTestCase):
+    def test_read_musicxml(self):
+        music = muspy.read(TEST_XML_PATH)
+
+    def test_read_compressed_musicxml(self):
+        music = muspy.read(TEST_MXL_PATH)
