@@ -4,14 +4,47 @@ from typing import Optional, Union
 
 from ..inputs import load
 from ..music import Music
-from .base import Dataset
+from .base import Dataset, RemoteDataset
 
 
 class MusicDataset(Dataset):
-    """A dataset containing MusPy JSON/YAML files organized as directory.
+    """A local dataset containing MusPy JSON/YAML files in a folder.
 
-    The raw data downloaded will be placed in the folder ``{root}/raw``, and
-    the converted data will be placed in the folder ``{root}/converted``.
+    Attributes
+    ----------
+    root : str or Path
+        Root directory of the dataset.
+    kind : {'json', 'yaml'}, optional
+        File format of the data. Defaults to 'json'.
+
+    """
+
+    def __init__(self, root: Union[str, Path], kind: str = "json"):
+        self.root = Path(root).expanduser()
+        if not self.root.exists():
+            raise ValueError("`root` must be an existing path.")
+        if not self.root.is_dir():
+            raise ValueError("`root` must be a directory.")
+
+        self.kind = kind
+        self.filenames = sorted(self.root.rglob("*." + self.kind))
+
+    def __repr__(self) -> str:
+        return "{}(root={})".format(type(self).__name__, self.root)
+
+    def __getitem__(self, index) -> Music:
+        return load(self.root / self.filenames[index], self.kind)
+
+    def __len__(self) -> int:
+        return len(self.filenames)
+
+
+class RemoteMusicDataset(MusicDataset, RemoteDataset):
+    """A dataset containing MusPy JSON/YAML files in a folder.
+
+    This class extended :class:`muspy.RemoteDataset` and
+    :class:`muspy.FolderDataset`. Please refer to their documentation for
+    details.
 
     Attributes
     ----------
@@ -23,8 +56,9 @@ class MusicDataset(Dataset):
     Parameters
     ----------
     download_and_extract : bool, optional
-        Whether to download and extract the dataset. Defaults to
-        False.
+        Whether to download and extract the dataset. Defaults to False.
+    cleanup : bool, optional
+        Whether to remove the original archive(s). Defaults to False.
 
     """
 
@@ -32,41 +66,20 @@ class MusicDataset(Dataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
+        cleanup: bool = False,
         kind: str = "json",
     ):
-        super().__init__(root, download_and_extract)
-        self.kind = kind
-
-        self.filenames = sorted(self.raw_dir.rglob("*." + self.kind))
-        (self.raw_dir / ".muspy.success").touch()
-
-    def __getitem__(self, index) -> Music:
-        return load(self.root / self.filenames[index], self.kind)
-
-    def __len__(self) -> int:
-        return len(self.filenames)
+        RemoteDataset.__init__(self, root, download_and_extract, cleanup)
+        MusicDataset.__init__(self, root, kind)
 
 
 class FolderDataset(Dataset):
-    """A dataset containing files organized as directory.
+    """A class of datasets containing files in a folder.
 
     Two modes are available for this dataset. When the on-the-fly mode is
     enabled, a data sample is converted to a music object on the fly when
     being indexed. When the on-the-fly mode is disabled, a data sample is
     loaded from the precomputed converted data.
-
-    The raw data downloaded will be placed in the folder ``{root}/raw``, and
-    the converted data will be placed in the folder ``{root}/converted``.
-
-    To build a custom dataset, it should inherit this class and overide the
-    methods ``__getitem__`` and ``__len__`` as well as the class variables
-    ``_info``, ``_source`` and ``_extension``, and also the class method
-    ``_converter``. Please refer to :class:`muspy.Dataset` for the
-    documentation of ``__getitem__``, ``__len__``, ``_info`` and
-    ``_source``. ``_extension`` is the extension to look for when building
-    the dataset. All the files with the given extension will be included as
-    source files. ``_converter`` is a class method that takes as inputs a
-    filename of a source file and return the converted Music object.
 
     Attributes
     ----------
@@ -75,12 +88,6 @@ class FolderDataset(Dataset):
 
     Parameters
     ----------
-    download : bool, optional
-        Whether to download the raw dataset. Defaults to False.
-    extract : bool, optional
-        Whether to extract the raw dataset. Defaults to False.
-    cleanup : bool, optional
-        Whether to remove the original archive. Defaults to False.
     convert : bool, optional
         Whether to convert the dataset to MusPy JSON/YAML files. If False,
         will check if converted data exists. If so, disable on-the-fly mode.
@@ -108,6 +115,20 @@ class FolderDataset(Dataset):
     manually, make sure to create the ``.muspy.success`` file in the folder
     ``{root}/converted/`` to prevent errors.
 
+    Notes
+    -----
+    This class is extended from :class:`muspy.Dataset`. To build a custom
+    dataset based on this class, please refer to :class:`muspy.Dataset` for
+    the docmentation of the methods ``__getitem__`` and ``__len__``, and the
+    class attribute ``_info``.
+
+    In addition, the class attributes ``_extension`` and ``_converter``
+    should be properly set. ``_extension`` is the extension to look for when
+    building the dataset. All files with the given extension will be
+    included as source files. ``_converter`` is a class method that takes as
+    inputs a filename of a source file and return the converted Music
+    object.
+
     See Also
     --------
     :class:`muspy.Dataset` : The base class for all MusPy datasets.
@@ -123,51 +144,61 @@ class FolderDataset(Dataset):
     def __init__(
         self,
         root: Union[str, Path],
-        download: bool = False,
-        extract: bool = False,
-        cleanup: bool = False,
         convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = False,
         use_converted: Optional[bool] = None,
     ):
-        super().__init__(root, download, extract, cleanup)
+        self.root = Path(root)
         self.kind = kind
         self._use_converted = use_converted
 
-        self.raw_filenames = sorted(self.raw_dir.rglob("*." + self._extension))
-        (self.raw_dir / ".muspy.success").touch()
+        self.filenames = sorted(
+            (
+                filename
+                for filename in self.root.rglob("*." + self._extension)
+                if not str(filename.relative_to(self.root)).startswith(
+                    "_converted/"
+                )
+            )
+        )
+        (self.root / ".muspy.success").touch()
 
         if convert:
             self.convert(kind, n_jobs, ignore_exceptions)
 
         if self._use_converted is None:
             self._use_converted = self.converted_exists()
-        elif self._use_converted:
-            self.use_converted()
 
         if self._use_converted:
             self.use_converted()
         else:
             self.converted_filenames: list = []
 
+    def __repr__(self) -> str:
+        return "{}(root={})".format(type(self).__name__, self.root)
+
     def __getitem__(self, index) -> Music:
         if self._use_converted:
             return load(self.root / self.converted_filenames[index], self.kind)
-        return self._converter(  # type: ignore
-            str(self.root / self.raw_filenames[index])
-        )
+        return self._converter(str(self.root / self.filenames[index]))
 
     def __len__(self) -> int:
         if self._use_converted:
             return len(self.converted_filenames)
-        return len(self.raw_filenames)
+        return len(self.filenames)
+
+    def exists(self) -> bool:
+        """Return True if the dataset exists, otherwise False."""
+        if not (self.root / ".muspy.success").is_file():
+            return False
+        return True
 
     @property
     def converted_dir(self):
         """Return the path to the root directory of the converted dataset."""
-        return self.root / "converted"
+        return self.root / "_converted"
 
     def converted_exists(self) -> bool:
         """Return True if the saved dataset exists, otherwise False."""
@@ -199,9 +230,12 @@ class FolderDataset(Dataset):
         n_jobs: int = 1,
         ignore_exceptions: bool = False,
     ) -> "FolderDataset":
-        """Convert all the files into Music object and save them to disk.
+        """Convert and save the Music objects.
 
-        The converted files will be named by its index and saved to ``root``.
+        The converted files will be named by its index and saved to
+        ``root/_converted``. The original filenames can be found in the
+        ``filenames`` attribute. For example, the file at ``filenames[i]``
+        will be converted and saved to ``{i}.json``.
 
         Parameters
         ----------
@@ -217,12 +251,6 @@ class FolderDataset(Dataset):
             helpful if some of the source files is known to be corrupted.
             Defaults to False.
 
-        Notes
-        -----
-        The original filenames can be found in the ``filenames`` attribute.
-        For example, the file at ``filenames[i]`` will be converted and
-        saved to ``{i}.json``.
-
         """
         self.save(self.converted_dir, kind, n_jobs, ignore_exceptions)
         self.converted_filenames = sorted(
@@ -231,3 +259,66 @@ class FolderDataset(Dataset):
         self._use_converted = True
         self.kind = kind
         return self
+
+
+class RemoteFolderDataset(FolderDataset, RemoteDataset):
+    """A class of remote datasets containing files in a folder.
+
+    This class extended :class:`muspy.RemoteDataset` and
+    :class:`muspy.FolderDataset`. Please refer to their documentation for
+    details.
+
+    Attributes
+    ----------
+    root : str or Path
+        Root directory of the dataset.
+
+    Parameters
+    ----------
+    download_and_extract : bool, optional
+        Whether to download and extract the dataset. Defaults to False.
+    cleanup : bool, optional
+        Whether to remove the original archive(s). Defaults to False.
+    convert : bool, optional
+        Whether to convert the dataset to MusPy JSON/YAML files. If False,
+        will check if converted data exists. If so, disable on-the-fly mode.
+        If not, enable on-the-fly mode and warns. Defaults to False.
+    kind : {'json', 'yaml'}, optional
+        File format to save the data. Defaults to 'json'.
+    n_jobs : int, optional
+        Maximum number of concurrently running jobs in multiprocessing. If
+        equal to 1, disable multiprocessing. Defaults to 1.
+    ignore_exceptions : bool, optional
+        Whether to ignore errors and skip failed conversions. This can be
+        helpful if some of the source files is known to be corrupted.
+        Defaults to False.
+    use_converted : bool, optional
+        Force to disable on-the-fly mode and use stored converted data
+
+    See Also
+    --------
+    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.
+    :class:`muspy.FolderDataset` : A class of datasets containing files in a
+    folder.
+
+    """
+
+    @classmethod
+    def _converter(cls, filename: str) -> Music:
+        raise NotImplementedError
+
+    def __init__(
+        self,
+        root: Union[str, Path],
+        download_and_extract: bool = False,
+        cleanup: bool = False,
+        convert: bool = False,
+        kind: str = "json",
+        n_jobs: int = 1,
+        ignore_exceptions: bool = False,
+        use_converted: Optional[bool] = None,
+    ):
+        RemoteDataset.__init__(self, root, download_and_extract, cleanup)
+        FolderDataset.__init__(
+            self, root, convert, kind, n_jobs, ignore_exceptions, use_converted
+        )

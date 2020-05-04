@@ -1,7 +1,7 @@
 """Lakh MIDI Dataset."""
 from ..inputs import read_midi
 from .base import DatasetInfo
-from .datasets import FolderDataset
+from .datasets import RemoteFolderDataset
 
 _NAME = "Lakh MIDI Dataset"
 _DESCRIPTION = """\
@@ -17,13 +17,13 @@ _CITATION = """\
 @phdthesis{raffel2016learning
   title={Learning-Based Methods for Comparing Sequences, with Applications\
 to Audio-to-MIDI Alignment and Matching},
-  author={Colin Raffel},
+  author={Raffel, Colin},
   year={2016}
 }
 """
 
 
-class LakhMIDIDataset(FolderDataset):
+class LakhMIDIDataset(RemoteFolderDataset):
     """Lakh MIDI Dataset."""
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
@@ -42,7 +42,7 @@ class LakhMIDIDataset(FolderDataset):
         return read_midi(filename)
 
 
-class LakhMIDIMatchedDataset(FolderDataset):
+class LakhMIDIMatchedDataset(RemoteFolderDataset):
     """Lakh MIDI Dataset - matched subset."""
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
@@ -61,7 +61,7 @@ class LakhMIDIMatchedDataset(FolderDataset):
         return read_midi(filename)
 
 
-class LakhMIDIAlignedDataset(FolderDataset):
+class LakhMIDIAlignedDataset(RemoteFolderDataset):
     """Lakh MIDI Dataset - aligned subset."""
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)

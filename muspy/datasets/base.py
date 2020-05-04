@@ -49,103 +49,24 @@ class DatasetInfo:
 
 
 class Dataset:
-    """The base class for all MusPy datasets.
-
-    The raw data downloaded will be placed in folder ``{root}/raw``.
+    """Base class for all MusPy datasets.
 
     To build a custom dataset, it should inherit this class and overide the
-    methods ``__getitem__`` and ``__len__`` as well as the class variables
-    ``_info`` and ``_source``. ``__getitem__`` should return the
-    ``i``-th data sample as a :class:`muspy.Music` object.
-    ``__len__`` should return the size of the dataset.
-
-
-    Attributes
-    ----------
-    root : str or Path
-        Root directory of the dataset.
-
-    Parameters
-    ----------
-    download : bool, optional
-        Whether to download the raw dataset. Defaults to False.
-    extract : bool, optional
-        Whether to extract the raw dataset. Defaults to False.
-    cleanup : bool, optional
-        Whether to remove the original archive. Defaults to False.
-
-    Raises
-    ------
-    RuntimeError:
-        If ``download_and_extract`` is False but file
-        ``{root}/raw/.muspy.success`` does not exist (see below).
-
-    Important
-    ---------
-    :meth:`muspy.Dataset.raw_exists` depends solely on a special file named
-    ``.muspy.success`` in the folder ``{root}/raw/``, which serves as an
-    indicator for the existence and integrity of the raw dataset. If the raw
-    dataset is downloaded and extracted by
-    :meth:`muspy.Dataset.download_and_extract`, the ``.muspy.success``
-    file will be created as well. If the raw dataset is downloaded manually,
-    make sure to create the ``.muspy.success`` file in the folder
-    ``{root}/raw/`` to prevent errors.
-
-    Notes
-    -----
-    Set the class variables ``_sources`` properly. The dictionary ``_sources``
-    keeps the information for each source file.
-
-    - filename (str): Name to save the file.
-    - url (str): URL to the file.
-    - archive (bool): Whether the file is an archive.
-    - md5 (str, optional): Expected MD5 checksum of the file.
-
-    Here is an example.::
-
-        _sources = {
-            "example": {
-                "filename": "example.tar.gz",
-                "url": "https://www.example.com/example.tar.gz",
-                "archive": True,
-                "md5": None,
-            }
-        }
+    methods ``__getitem__`` and ``__len__`` as well as the class attribute
+    ``_info``. ``__getitem__`` should return the ``i``-th data sample as a
+    :class:`muspy.Music` object. ``__len__`` should return the size of the
+    dataset. ``_info`` should be a :class:`muspy.DatasetInfo` instance
+    containing the dataset information.
 
     """
 
     _info: DatasetInfo = DatasetInfo()
-    _sources: Dict[str, dict] = {}
-
-    def __init__(
-        self,
-        root: Union[str, Path],
-        download: bool = False,
-        extract: bool = False,
-        cleanup: bool = False,
-    ):
-        self.root = Path(root).expanduser()
-        if not self.root.exists():
-            raise ValueError("`root` must an existing path.")
-        if not self.root.is_dir():
-            raise ValueError("`root` must be a directory.")
-
-        if download:
-            self.download()
-        if extract:
-            self.extract(cleanup)
-
-        if not self.raw_exists():
-            raise RuntimeError("Raw dataset not found or corrupted.")
 
     def __getitem__(self, index) -> Music:
         raise NotImplementedError
 
     def __len__(self) -> int:
         raise NotImplementedError
-
-    def __repr__(self) -> str:
-        return "{}(root={})".format(type(self).__name__, self.root)
 
     @classmethod
     def info(cls):
@@ -157,16 +78,20 @@ class Dataset:
         """Return the citation infomation."""
         return cls._info.citation
 
-    @property
-    def raw_dir(self):
-        """Return the path to root directory of the raw dataset."""
-        return self.root / "raw"
+    def to_pytorch_dataset(self, representation: str) -> "TorchMusicDataset":
+        """Return a PyTorch dataset (`torch.utils.data.dataset`).
 
-    def raw_exists(self) -> bool:
-        """Return True if the raw dataset exists, otherwise False."""
-        if not (self.raw_dir / ".muspy.success").is_file():
-            return False
-        return True
+        Parameters
+        ----------
+        representation : str
+            Target representation. Supported values are 'event', 'note',
+            'pianoroll', 'monotoken' and 'polytoken'.
+
+        """
+        # TODO: Support slicing and other operations
+        if not HAS_TORCH:
+            raise ImportError("Optional package torch is required.")
+        return TorchMusicDataset(self, representation)
 
     def save(
         self,
@@ -177,7 +102,7 @@ class Dataset:
     ):
         """Save all the music objects to a directory.
 
-        The converted files will be named by its index and saved to ``root``.
+        The converted files will be named by its index and saved to``root/``.
 
         Parameters
         ----------
@@ -208,7 +133,8 @@ class Dataset:
             raise ValueError("`n_jobs` must be positive.")
 
         root = Path(root)
-        root.mkdir(exist_ok=True)
+        if not root.exists():
+            raise ValueError("`root` must be an existing path.")
 
         def _saver(idx):
             if ignore_exceptions:
@@ -240,17 +166,127 @@ class Dataset:
             )
             count = results.count(True)
         print(
-            "{} out of {} files successfully converted.".format(
-                count, len(self)
-            )
+            "{} out of {} files successfully saved.".format(count, len(self))
         )
         (root / ".muspy.success").touch(exist_ok=True)
 
-    def download(self) -> "Dataset":
-        """Download the source datasets."""
-        self.raw_dir.mkdir(exist_ok=True)
+
+class RemoteDataset(Dataset):
+    """Base class for remote MusPy datasets.
+
+    This class is extended from :class:`muspy.Dataset` to support remote
+    datasets. To build a custom dataset based on this class, please refer to
+    :class:`muspy.Dataset` for the docmentation of the methods
+    ``__getitem__`` and ``__len__``, and the class attribute ``_info``. In
+    addition, the class attribute ``_sources`` containing the URLs to the
+    source files should be properly set (see Notes).
+
+    Attributes
+    ----------
+    root : str or Path
+        Root directory of the dataset.
+
+    Parameters
+    ----------
+    download_and_extract : bool, optional
+        Whether to download and extract the dataset. Defaults to False.
+    cleanup : bool, optional
+        Whether to remove the original archive(s). Defaults to False.
+
+    Raises
+    ------
+    RuntimeError:
+        If ``download_and_extract`` is False but file
+        ``{root}/.muspy.success`` does not exist (see below).
+
+    Important
+    ---------
+    :meth:`muspy.Dataset.exists` depends solely on a special file named
+    ``.muspy.success`` in the folder ``{root}/``, which serves as an
+    indicator for the existence and integrity of the dataset. This file will
+    automatically be created if the dataset is successfully downloaded and
+    extracted by :meth:`muspy.Dataset.download_and_extract`.
+
+    If the dataset is downloaded manually, make sure to create the
+    ``.muspy.success`` file in the folder ``{root}/`` to prevent errors.
+
+    Notes
+    -----
+    The class attribute ``_sources`` is a dictionary containing the
+    following information of each source file.
+
+    - filename (str): Name to save the file.
+    - url (str): URL to the file.
+    - archive (bool): Whether the file is an archive.
+    - md5 (str, optional): Expected MD5 checksum of the file.
+
+    Here is an example.::
+
+        _sources = {
+            "example": {
+                "filename": "example.tar.gz",
+                "url": "https://www.example.com/example.tar.gz",
+                "archive": True,
+                "md5": None,
+            }
+        }
+
+    See Also
+    --------
+    :class:`muspy.Dataset` : The base class for all MusPy datasets.
+
+    """
+
+    _sources: Dict[str, dict] = {}
+
+    def __init__(
+        self,
+        root: Union[str, Path],
+        download_and_extract: bool = False,
+        cleanup: bool = False,
+    ):
+        self.root = Path(root).expanduser()
+        if not self.root.exists():
+            raise ValueError("`root` must be an existing path.")
+        if not self.root.is_dir():
+            raise ValueError("`root` must be a directory.")
+
+        if download_and_extract:
+            self.download_and_extract(cleanup)
+
+        if not self.exists():
+            raise RuntimeError(
+                "Dataset not found. You can download it by passing "
+                "`download_and_extract=True`."
+            )
+
+    def __repr__(self) -> str:
+        return "{}(root={})".format(type(self).__name__, self.root)
+
+    def __getitem__(self, index) -> Music:
+        raise NotImplementedError
+
+    def __len__(self) -> int:
+        raise NotImplementedError
+
+    def exists(self) -> bool:
+        """Return True if the dataset exists, otherwise False."""
+        if not (self.root / ".muspy.success").is_file():
+            return False
+        return True
+
+    def source_exists(self) -> bool:
+        """Return True if all the sources exist, otherwise False."""
         for source in self._sources.values():
-            filename = self.raw_dir / source["filename"]
+            filename = self.root / source["filename"]
+            if not filename.is_file():
+                return False
+        return True
+
+    def download(self) -> "RemoteDataset":
+        """Download the source datasets."""
+        for source in self._sources.values():
+            filename = self.root / source["filename"]
             md5 = source.get("md5")
             if filename.is_file():
                 print(
@@ -266,8 +302,8 @@ class Dataset:
                     download_url(source["url"], filename, md5)
         return self
 
-    def extract(self, cleanup: bool = False) -> "Dataset":
-        """Extract the downloaded archives.
+    def extract(self, cleanup: bool = False) -> "RemoteDataset":
+        """Extract the downloaded archive(s).
 
         Parameters
         ----------
@@ -276,17 +312,17 @@ class Dataset:
 
         """
         for source in self._sources.values():
-            filename = self.raw_dir / source["filename"]
+            filename = self.root / source["filename"]
             if source["archive"]:
                 print("Extracting archive : {}".format(source["filename"]))
-                extract_archive(filename, self.raw_dir, cleanup=cleanup)
-        (self.raw_dir / ".muspy.success").touch(exist_ok=True)
+                extract_archive(filename, self.root, cleanup=cleanup)
+        (self.root / ".muspy.success").touch(exist_ok=True)
         return self
 
-    def download_and_extract(self, cleanup: bool = False) -> "Dataset":
+    def download_and_extract(self, cleanup: bool = False) -> "RemoteDataset":
         """Extract the downloaded archives.
 
-        This is equivalent to ``Dataset.download().extract(cleanup)``.
+        This is equivalent to ``RemoteDataset.download().extract(cleanup)``.
 
         Parameters
         ----------
@@ -296,18 +332,21 @@ class Dataset:
         """
         return self.download().extract(cleanup)
 
-    def to_pytorch_dataset(self, representation: str) -> "TorchMusicDataset":
-        """Return a PyTorch dataset (`torch.utils.data.dataset`)."""
-        # TODO: Support slicing and other operations
-        if not HAS_TORCH:
-            raise ImportError("Optional package torch is required.")
-        return TorchMusicDataset(self, representation)
-
 
 if HAS_TORCH:
 
     class TorchMusicDataset(TorchDataset):
-        """A PyTorch music dataset."""
+        """A PyTorch music dataset.
+
+        Parameters
+        ----------
+        dataset : :class:`muspy.Dataset`
+            Dataset object to base on.
+        representation : str
+            Target representation. Supported values are 'event', 'note',
+            'pianoroll', 'monotoken' and 'polytoken'.
+
+        """
 
         def __init__(self, dataset: Dataset, representation: str):
             self.dataset = dataset
