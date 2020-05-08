@@ -2,7 +2,9 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from numpy import ndarray
 from pypianoroll import Multitrack, Track
+
 from ..processor import PianoRollProcessor
 
 if TYPE_CHECKING:
@@ -23,19 +25,54 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         Converted Multitrack object.
 
     """
-    if music.timing.is_metrical:
-        raise NotImplementedError
+    if music.timing.resolution is None:
+        resolution = 1
+        length = music.get_end_time()
+    else:
+        resolution = music.timing.resolution
+        length = (music.get_end_time() // resolution + 1) * resolution
 
-    multitrack = Multitrack()
-
+    # Tracks
     tracks = []
     for track in music.tracks:
-        # TODO: Not implemented yet
-        pianoroll = None
+        pianoroll = np.zeros((length, 128))
+        for note in track.notes:
+            pianoroll[
+                note.start : note.end + 1, note.pitch  # type:ignore
+            ] = note.velocity
         tracks.append(
-            Track(pianoroll, track.program, track.is_drum, track.name)
+            Track(
+                pianoroll,
+                track.program,
+                track.is_drum,
+                track.name if track.name is not None else "",
+            )
         )
-    return multitrack
+
+    # Tempos
+    tempo_arr = 120.0 * np.ones(music.timing.get_end_time() + 1)
+    qpm = 120.0
+    position = 0
+    for tempo in music.timing.tempos:
+        tempo_arr[position : tempo.time] = qpm  # type:ignore
+        tempo_arr[tempo.time] = tempo.tempo  # type:ignore
+        position = tempo.time + 1  # type:ignore
+        qpm = tempo.tempo
+
+    try:
+        name = music.meta.song.title  # type: ignore
+        if name is None:
+            name = ""
+    except AttributeError:
+        name = ""
+
+    return Multitrack(
+        tracks=tracks,
+        tempo=tempo_arr,
+        downbeat=music.downbeats if music.downbeats else None,
+        beat_resolution=resolution,
+        name=name,
+    )
 
 
 def to_pianoroll_representation(music: "Music", **kwargs) -> np.ndarray:
