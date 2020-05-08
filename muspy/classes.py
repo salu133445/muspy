@@ -7,7 +7,7 @@ the base class :class:`muspy.Base`.
 
 """
 from collections import OrderedDict
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
@@ -151,21 +151,19 @@ class Tempo(Base):
 
     Attributes
     ----------
-    time : int or float
-        Start time of the tempo, in time steps or seconds.
+    time : int
+        Start time of the tempo, in time steps.
     tempo : float
-        Tempo in bpm (beats per minute).
+        Tempo in qpm (quarters per minute).
 
     """
 
-    _attributes = OrderedDict(
-        [("time", (int, float)), ("tempo", (int, float))]
-    )
+    _attributes = OrderedDict([("time", int), ("tempo", (int, float))])
     _temporal_attributes = ["time"]
 
-    def __init__(self, time: float, tempo: float):
+    def __init__(self, time: int, tempo: float):
         self.time = time
-        self.tempo = tempo
+        self.tempo = float(tempo)
 
 
 class Timing(ComplexBase):
@@ -173,48 +171,32 @@ class Timing(ComplexBase):
 
     Attributes
     ----------
-    is_metrical : bool, optional
-        If true, the timing is in time steps, otherwise in seconds.
-        Defaults to True
     resolution : int, optional
-        Time steps per beat (only effective when `is_metrical` is true).
-        Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
     tempos : list of :class:`muspy.Tempo`
         Tempo changes. Defaults to an empty list.
 
     """
 
-    _attributes = OrderedDict(
-        [("is_metrical", bool), ("resolution", int), ("tempos", Tempo)]
-    )
+    _attributes = OrderedDict([("resolution", int), ("tempos", Tempo)])
     _optional_attributes = ["resolution"]
     _list_attributes = ["tempos"]
 
     def __init__(
         self,
-        is_metrical: bool = True,
         resolution: Optional[int] = None,
         tempos: Optional[List[Tempo]] = None,
     ):
-        self.is_metrical = is_metrical
         self.resolution = (
-            DEFAULT_RESOLUTION
-            if is_metrical and resolution is None
-            else resolution
+            DEFAULT_RESOLUTION if resolution is None else resolution
         )
         self.tempos = tempos if tempos is not None else []
 
     def validate(self, attr=None):
         """Raise proper errors if any attribute is invalid."""
-        if attr in ("is_metrical", None):
-            self._validate_type("is_metrical")
-        if self.is_metrical:
-            if attr in ("resolution", None):
-                self._validate_type("resolution")
-                if self.resolution < 1:
-                    raise ValueError("`resolution` must be positive.")
-            if attr in ("tempos", None):
-                self._validate("tempos")
+        self._validate()
+        if self.resolution < 1:
+            raise ValueError("`resolution` must be positive.")
 
     def remove_duplicate_changes(self):
         """Remove duplicate tempo changes."""
@@ -227,7 +209,7 @@ class Timing(ComplexBase):
         self.tempos.insert(0, tempos[0])
         return self
 
-    def get_end_time(self, is_sorted: bool = False) -> float:
+    def get_end_time(self, is_sorted: bool = False) -> int:
         """Return the time of the last tempo event.
 
         Parameters
@@ -248,7 +230,7 @@ class KeySignature(Base):
 
     Attributes
     ----------
-    time : int or float
+    time : int
         Start time of the key signature, in time steps or seconds.
     root : str
         Root of the key signature.
@@ -257,12 +239,10 @@ class KeySignature(Base):
 
     """
 
-    _attributes = OrderedDict(
-        [("time", (int, float)), ("root", str), ("mode", str)]
-    )
+    _attributes = OrderedDict([("time", int), ("root", str), ("mode", str)])
     _temporal_attributes = ["time"]
 
-    def __init__(self, time: float, root: str, mode: str):
+    def __init__(self, time: int, root: str, mode: str):
         self.time = time
         self.root = root
         self.mode = mode
@@ -273,7 +253,7 @@ class TimeSignature(Base):
 
     Attributes
     ----------
-    time : int or float
+    time : int
         Start time of the time signature, in time steps or seconds.
     numerator : int
         Numerator of the time signature.
@@ -283,11 +263,11 @@ class TimeSignature(Base):
     """
 
     _attributes = OrderedDict(
-        [("time", (int, float)), ("numerator", str), ("denominator", str)]
+        [("time", int), ("numerator", str), ("denominator", str)]
     )
     _temporal_attributes = ["time"]
 
-    def __init__(self, time: float, numerator: int, denominator: int):
+    def __init__(self, time: int, numerator: int, denominator: int):
         self.time = time
         self.numerator = numerator
         self.denominator = denominator
@@ -306,17 +286,17 @@ class Lyric(Base):
 
     Attributes
     ----------
-    time : int or float
+    time : int
         Start time of the lyric, in time steps or seconds.
     lyric : str
         Lyric (sentence, word, syllable, etc.).
 
     """
 
-    _attributes = OrderedDict([("time", (int, float)), ("lyric", str)])
+    _attributes = OrderedDict([("time", int), ("lyric", str)])
     _temporal_attributes = ["time"]
 
-    def __init__(self, time: float, lyric: str):
+    def __init__(self, time: int, lyric: str):
         self.time = time
         self.lyric = lyric
 
@@ -326,7 +306,7 @@ class Annotation(Base):
 
     Attributes
     ----------
-    time : int or float
+    time : int
         Start time of the annotation, in time steps or seconds.
     annotation : any object
         Annotation of any type.
@@ -336,12 +316,12 @@ class Annotation(Base):
     """
 
     _attributes = _attributes = OrderedDict(
-        [("time", (int, float)), ("annotation", str)]
+        [("time", int), ("annotation", str)]
     )
     _temporal_attributes = ["time"]
 
     def __init__(
-        self, time: float, annotation: Any, group: Optional[str] = None
+        self, time: int, annotation: Any, group: Optional[str] = None
     ):
         self.time = time
         self.annotation = annotation
@@ -353,21 +333,21 @@ class Note(Base):
 
     Attributes
     ----------
-    start : int or float
+    start : int
         Start time of the note, in time steps or seconds.
-    end : int or float
+    end : int
         End time of the note, in time steps or seconds.
     pitch : int
         Note pitch, as a MIDI note number.
-    velocity : int
+    velocity : float
         Note velocity.
 
     """
 
     _attributes = OrderedDict(
         [
-            ("start", (int, float)),
-            ("end", (int, float)),
+            ("start", int),
+            ("end", int),
             ("pitch", int),
             ("velocity", (int, float)),
         ]
@@ -375,12 +355,12 @@ class Note(Base):
     _temporal_attributes = ["start", "end"]
 
     def __init__(
-        self, start: float, end: float, pitch: int, velocity: float,
+        self, start: int, end: int, pitch: int, velocity: float,
     ):
         self.start = start
         self.end = end
         self.pitch = pitch
-        self.velocity = velocity
+        self.velocity = float(velocity)
 
     @property
     def duration(self):
@@ -441,9 +421,9 @@ class Chord(ComplexBase):
 
     Attributes
     ----------
-    start : int or float
+    start : int
         Start time of the note, in time steps or seconds.
-    end : int or float
+    end : int
         End time of the note, in time steps or seconds.
     pitches : list of int
         Note pitches, as MIDI note numbers.
@@ -451,15 +431,23 @@ class Chord(ComplexBase):
     """
 
     _attributes = OrderedDict(
-        [("start", (int, float)), ("end", (int, float)), ("pitches", int)]
+        [
+            ("start", int),
+            ("end", int),
+            ("pitches", int),
+            ("velocity", (int, float)),
+        ]
     )
     _temporal_attributes = ["start", "end"]
     _list_attributes = ["pitches"]
 
-    def __init__(self, start: float, end: float, pitches: List[int]):
+    def __init__(
+        self, start: int, end: int, pitches: List[int], velocity: float,
+    ):
         self.start = start
         self.end = end
         self.pitches = pitches
+        self.velocity = float(velocity)
 
     @property
     def duration(self):
@@ -493,6 +481,24 @@ class Chord(ComplexBase):
 
         """
         self.pitches += [pitch + semitone for pitch in self.pitches]
+        return self
+
+    def clip(self, lower: float = 0, upper: float = 127):
+        """Clip the velocity of the note.
+
+        Parameters
+        ----------
+        lower : int or float, optional
+            Lower bound. Defaults to 0.
+        upper : int or float, optional
+            Upper bound. Defaults to 127.
+
+        """
+        assert upper >= lower, "`upper` must be greater than `lower`."
+        if self.velocity > upper:
+            self.velocity = upper
+        elif self.velocity < lower:
+            self.velocity = lower
         return self
 
 
@@ -565,7 +571,7 @@ class Track(ComplexBase):
         if self.program < 0 or self.program > 127:
             raise ValueError("`program` must be in between 0 to 127.")
 
-    def get_end_time(self, is_sorted: bool = False) -> float:
+    def get_end_time(self, is_sorted: bool = False) -> int:
         """Return the time of the last event.
 
         This includes notes, chords, lyrics and annotations.
@@ -581,7 +587,7 @@ class Track(ComplexBase):
             if not list_:
                 return 0
             if is_sorted:
-                return getattr(list_[-1])
+                return getattr(list_[-1], ref_attr)
             return max(getattr(item, ref_attr) for item in list_)
 
         return max(
