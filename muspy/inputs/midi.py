@@ -70,7 +70,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
 
     return Music(
         meta=MetaData(source=SourceInfo(format="midi")),
-        timing=Timing(False),
+        timing=Timing(),
         time_signatures=time_signatures,
         key_signatures=key_signatures,
         lyrics=lyrics,
@@ -324,14 +324,9 @@ def read_midi_mido(
         filename=Path(path).name, format="midi", copyright=copyright_,
     )
 
-    # Timing
-    timing = Timing(
-        is_metrical=True, resolution=midi.ticks_per_beat, tempos=tempos
-    )
-
     return Music(
         meta=MetaData(source=source_info),
-        timing=timing,
+        timing=Timing(resolution=midi.ticks_per_beat, tempos=tempos),
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,

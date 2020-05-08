@@ -62,13 +62,26 @@
             "description": "Timing system",
             "type": "object",
             "properties": {
-                "is_metrical": {
-                    "description": "If true, the timing is in time steps, otherwise in seconds",
-                    "type": "boolean"
-                },
                 "resolution": {
-                    "description": "Time steps per beat (only meaningful when `is_metrical` is true)",
+                    "description": "Time steps per beat",
                     "type": ["integer", "null"]
+                },
+                "tempos": {
+                    "description": "Tempos",
+                    "type": ["array", "null"],
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "time": {
+                                "description": "Event time",
+                                "type": "number"
+                            },
+                            "tempo": {
+                                "description": "Tempo in qpm (quarters per minute)",
+                                "type": "number"
+                            }
+                        }
+                    }
                 }
             }
         },
@@ -110,23 +123,6 @@
                     "denominator": {
                         "description": "Denominator of time signature",
                         "type": "integer"
-                    }
-                }
-            }
-        },
-        "tempos": {
-            "description": "Tempos",
-            "type": ["array", "null"],
-            "items": {
-                "type": "object",
-                "properties": {
-                    "time": {
-                        "description": "Event time",
-                        "type": "number"
-                    },
-                    "tempo": {
-                        "description": "Tempo in bpm (beats per minute)",
-                        "type": "number"
                     }
                 }
             }

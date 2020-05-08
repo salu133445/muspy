@@ -192,8 +192,6 @@ class Music(ComplexBase):
             resolution.
 
         """
-        if not self.timing.is_metrical:
-            raise ValueError("Only works for music object in metrical timing.")
         if self.timing.resolution is None:
             raise TypeError("`resolution` must not be None.")
         if self.timing.resolution < 0:

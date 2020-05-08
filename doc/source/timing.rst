@@ -2,9 +2,7 @@
 Timing in MusPy
 ===============
 
-In MusPy, there are two supported timing systems: *metrical timing* and *absolute timing*. In a metrical timing system, time is stored in musically-meaningful unit (e.g., beats, quarter notes). For playback ability, additional resolution and tempo information is needed. In an absolute timing system, time is stored in seconds.
-
-The timing system used in a :class:`muspy.Music` object is determined by the value of ``music.timing.is_metrical``. If ``music.timing.is_metrical=True``, the metrical timing system is used. If ``music.timing.is_metrical=False``, the absolute timing system is used.
+In MusPy, the *metrical timing* is used. That is, time is stored in musically-meaningful unit (e.g., beats, quarter notes). For playback ability, additional resolution and tempo information is needed.
 
 
 Metrical Timing
@@ -31,9 +29,3 @@ The following are some illustrations of the relationships between time steps and
     :width: 500px
 
 When reading a MIDI file, ``music.timing.resolution`` is set to the pulses per quarter note (a.k.a., PPQ, PPQN, ticks per beat). When reading a MusicXML file, ``music.timing.resolution`` is set to the *division* attribute, which determines the number of divisions per quarter note.
-
-
-Absolute Timing
-===============
-
-In an absolute timing system, the timing is in seconds. In this case, ``music.timing.resolution`` is simply ignored and ``music.timing.tempos`` serve as annotations only.

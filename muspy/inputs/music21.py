@@ -1,12 +1,10 @@
 """Music21 input interface."""
-from pathlib import Path
-from typing import Union
+from music21.stream import Stream
 
 from ..music import Music
-from music21 import stream
 
 
-def from_music21(stream: stream.Stream) -> Music:
+def from_music21(stream: Stream) -> Music:
     """Convert a music21 object into a Music object.
 
     Parameters
@@ -15,5 +13,4 @@ def from_music21(stream: stream.Stream) -> Music:
         a music21 object to be converted.
 
     """
-    # TODO: Not implemented yet
-    return Music()
+    raise NotImplementedError
