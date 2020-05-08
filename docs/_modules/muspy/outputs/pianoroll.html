@@ -158,8 +158,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;Pianoroll output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span><span class="p">,</span> <span class="n">Track</span>
+
+<span class="kn">from</span> <span class="nn">..processor</span> <span class="kn">import</span> <span class="n">PianoRollProcessor</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
@@ -179,37 +182,104 @@
 <span class="sd">        Converted Multitrack object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">resolution</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="o">//</span> <span class="n">resolution</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">resolution</span>
 
-    <span class="n">multitrack</span> <span class="o">=</span> <span class="n">Multitrack</span><span class="p">()</span>
-
+    <span class="c1"># Tracks</span>
     <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-        <span class="c1"># TODO: Not implemented yet</span>
-        <span class="n">pianoroll</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">pianoroll</span><span class="p">[</span>
+                <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span>  <span class="c1"># type:ignore</span>
+            <span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
         <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">Track</span><span class="p">(</span><span class="n">pianoroll</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">Track</span><span class="p">(</span>
+                <span class="n">pianoroll</span><span class="p">,</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="n">multitrack</span></div>
+
+    <span class="c1"># Tempos</span>
+    <span class="n">tempo_arr</span> <span class="o">=</span> <span class="mf">120.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">qpm</span> <span class="o">=</span> <span class="mf">120.0</span>
+    <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">timing</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+        <span class="n">tempo_arr</span><span class="p">[</span><span class="n">position</span> <span class="p">:</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">qpm</span>  <span class="c1"># type:ignore</span>
+        <span class="n">tempo_arr</span><span class="p">[</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">tempo</span>  <span class="c1"># type:ignore</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># type:ignore</span>
+        <span class="n">qpm</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">tempo</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">song</span><span class="o">.</span><span class="n">title</span>  <span class="c1"># type: ignore</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">Multitrack</span><span class="p">(</span>
+        <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
+        <span class="n">tempo</span><span class="o">=</span><span class="n">tempo_arr</span><span class="p">,</span>
+        <span class="n">downbeat</span><span class="o">=</span><span class="n">music</span><span class="o">.</span><span class="n">downbeats</span> <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">downbeats</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beat_resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_pianoroll_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_pianoroll_representation">[docs]</a><span class="k">def</span> <span class="nf">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="to_pianoroll_representation"><a class="viewcode-back" href="../../../representations.html#muspy.to_pianoroll_representation">[docs]</a><span class="k">def</span> <span class="nf">to_pianoroll_representation</span><span class="p">(</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">min_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">binarized</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">compact</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object in pianoroll representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">    min_step(optional):</span>
+<span class="sd">        minimum quantification step</span>
+<span class="sd">        decide how many ticks to be the basic unit (default = 1)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array : :class:`numpy.ndarray`</span>
 <span class="sd">        Converted pianoroll representation.</span>
+<span class="sd">        size: L * D:</span>
+<span class="sd">            - L for the sequence (note) length</span>
+<span class="sd">            - D = 128</span>
+<span class="sd">                the value in each dimension indicates the velocity</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Not implemented yet</span>
-    <span class="k">return</span> <span class="n">ndarray</span><span class="p">()</span></div>
+    <span class="k">if</span> <span class="n">compact</span> <span class="ow">and</span> <span class="n">binarized</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`compact` and `binarized` must not be both True.&quot;</span><span class="p">)</span>
+
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
+    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">compact</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">min_step</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">notes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">129</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">))</span>
+        <span class="n">compacted_pianoroll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">compacted_pianoroll</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">129</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
+            <span class="n">compacted_pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span>
+        <span class="k">return</span> <span class="n">compacted_pianoroll</span>
+
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">PianoRollProcessor</span><span class="p">(</span><span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">,</span> <span class="n">binarized</span><span class="o">=</span><span class="n">binarized</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">processor</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

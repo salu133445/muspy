@@ -156,22 +156,125 @@
             
   <h1>Source code for muspy.datasets.jsb</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;JSB Chorales Dataset.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_midi</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
+<span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteFolderDataset</span>
+
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;JSB Chorales Dataset&quot;</span>
+<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">The JSB Chorales Dataset is a collection of 382 four-part chorales by Johann </span><span class="se">\</span>
+<span class="s2">Sebastian Bach. This dataset is used in the paper &quot;Modeling Temporal </span><span class="se">\</span>
+<span class="s2">Dependencies in High-Dimensional Sequences: Application to Polyphonic Music </span><span class="se">\</span>
+<span class="s2">Generation and Transcription&quot; in ICML 2012. It comes with train, test and </span><span class="se">\</span>
+<span class="s2">validation split used in the paper &quot;Harmonising Chorales by Probabilistic </span><span class="se">\</span>
+<span class="s2">Inference&quot; in NIPS 2005.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;http://www-etud.iro.umontreal.ca/~boulanni/icml2012&quot;</span>
+<span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">@inproceedings{boulangerlewandowski2012modeling,</span>
+<span class="s2">  author={Nicolas Boulanger-Lewandowski and Yoshua Bengio and Pascal </span><span class="se">\</span>
+<span class="s2">Vincent},</span>
+<span class="s2">  title={Modeling Temporal Dependencies in High-Dimensional Sequences: </span><span class="se">\</span>
+<span class="s2">Application to Polyphonic Music Generation and Transcription},</span>
+<span class="s2">  booktitle={Proceedings of the 29th International Conference on Machine </span><span class="se">\</span>
+<span class="s2">Learning (ICML)},</span>
+<span class="s2">  year=</span><span class="si">{2012}</span><span class="s2"></span>
+<span class="s2">}</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="JSBChoralesDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.JSBChoralesDataset">[docs]</a><span class="k">class</span> <span class="nc">JSBChoralesDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+<div class="viewcode-block" id="JSBChoralesDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.JSBChoralesDataset">[docs]</a><span class="k">class</span> <span class="nc">JSBChoralesDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Johann Sebastian Bach Chorales Dataset.&quot;&quot;&quot;</span>
 
+    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;jsb&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;JSB Chorales.zip&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www-etud.iro.umontreal.ca/~boulanni/JSB%20Chorales.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;http://www-etud.iro.umontreal.ca/~boulanni/JSB%20Chorales.zip&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="p">}</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
 
-    <span class="n">_default_subsets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;jsb&quot;</span><span class="p">]</span></div>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">download_and_extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;full&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">root</span><span class="p">,</span>
+            <span class="n">download_and_extract</span><span class="p">,</span>
+            <span class="n">cleanup</span><span class="p">,</span>
+            <span class="n">convert</span><span class="p">,</span>
+            <span class="n">kind</span><span class="p">,</span>
+            <span class="n">n_jobs</span><span class="p">,</span>
+            <span class="n">ignore_exceptions</span><span class="p">,</span>
+            <span class="n">use_converted</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">full_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_subset_root</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_subset_root</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_subset_root</span><span class="p">(</span><span class="s2">&quot;valid&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_subset</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">, subset=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subset</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="JSBChoralesDataset.get_subset_root"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.JSBChoralesDataset.get_subset_root">[docs]</a>    <span class="k">def</span> <span class="nf">get_subset_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the root path to the subset.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">subset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;full&quot;</span><span class="p">,</span> <span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;valid&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`subset` must be one of &#39;full&#39;, &#39;train&#39;, &#39;test&#39; and &#39;valid&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;JSB Chorales&quot;</span> <span class="o">/</span> <span class="n">subset</span></div>
+
+<div class="viewcode-block" id="JSBChoralesDataset.use_subset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.JSBChoralesDataset.use_subset">[docs]</a>    <span class="k">def</span> <span class="nf">use_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Use a specific subset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        subset : {&#39;full&#39;, &#39;train&#39;, &#39;test&#39;, &#39;valid&#39;}</span>
+<span class="sd">            Subset to use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">subset</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_filenames</span>
+        <span class="k">elif</span> <span class="n">subset</span> <span class="o">==</span> <span class="s2">&quot;train&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_filenames</span>
+        <span class="k">elif</span> <span class="n">subset</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_filenames</span>
+        <span class="k">elif</span> <span class="n">subset</span> <span class="o">==</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_filenames</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`subset` must be one of &#39;full&#39;, &#39;train&#39;, &#39;test&#39; and &#39;valid&#39;.&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span>
+        <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
 
            </div>

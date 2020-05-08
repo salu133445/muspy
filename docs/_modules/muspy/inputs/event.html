@@ -156,25 +156,56 @@
             
   <h1>Source code for muspy.inputs.event</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Event-based representation input interface.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">..processor</span> <span class="kn">import</span> <span class="n">MidiEventProcessor</span>
 
 
-<div class="viewcode-block" id="from_event_representation"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_event_representation">[docs]</a><span class="k">def</span> <span class="nf">from_event_representation</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_event_representation"><a class="viewcode-back" href="../../../representations.html#muspy.inputs.from_event_representation">[docs]</a><span class="k">def</span> <span class="nf">from_event_representation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object converted from an event-based representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    data : :class:`numpy.ndarray`</span>
 <span class="sd">        Data in event-based representation to be converted.</span>
+<span class="sd">        size: L * D:</span>
+<span class="sd">        - L for the sequence (event) length</span>
+<span class="sd">        - D = 1 {</span>
+<span class="sd">            0-127: note-on event,</span>
+<span class="sd">            128-255: note-off event,</span>
+<span class="sd">            256-355(default):</span>
+<span class="sd">                tick-shift event</span>
+<span class="sd">                256 for one tick, 355 for 100 ticks</span>
+<span class="sd">                the maximum number of tick-shift can be specified</span>
+<span class="sd">            356-388 (default):</span>
+<span class="sd">                velocity event</span>
+<span class="sd">                the maximum number of quantized velocity can be specified</span>
+<span class="sd">            }</span>
+<span class="sd">        e.g.</span>
+<span class="sd">        [380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]</span>
+<span class="sd">        -&gt;</span>
+<span class="sd">        [C5 - - - E5 - - / G5 - - / /]</span>
+<span class="sd">    min_step(optional):</span>
+<span class="sd">        minimum quantification step</span>
+<span class="sd">        decide how many ticks to be the basic unit (default = 1)</span>
+<span class="sd">    tick_dim(optional):</span>
+<span class="sd">        tick-shift event dimensions</span>
+<span class="sd">        the maximum number of tick-shift (default = 100)</span>
+<span class="sd">    velocity_dim(optional):</span>
+<span class="sd">        velocity event dimensions</span>
+<span class="sd">        the maximum number of quantized velocity (default = 32, max = 128)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
+<span class="sd">        Converted MusPy Music object. (Only Track - Note has the information)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Not implemented yet</span>
-    <span class="k">return</span> <span class="n">Music</span><span class="p">()</span></div>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">MidiEventProcessor</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="n">processor</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Music</span><span class="p">(</span><span class="n">tracks</span><span class="o">=</span><span class="p">[</span><span class="n">Track</span><span class="p">(</span><span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">)],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

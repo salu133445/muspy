@@ -191,7 +191,7 @@ datasets.</p>
 <dd><p>Start time of the annotation, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -230,7 +230,7 @@ datasets.</p>
 <dd><p>Start time of the key signature, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -269,7 +269,7 @@ datasets.</p>
 <dd><p>Start time of the lyric, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -294,7 +294,7 @@ datasets.</p>
 <dl class="py attribute">
 <dt id="muspy.MetaData.schema_version">
 <code class="sig-name descname">schema_version</code><a class="headerlink" href="#muspy.MetaData.schema_version" title="Permalink to this definition">¶</a></dt>
-<dd><p>Schema version.</p>
+<dd><p>Schema version. Defaults to the latest version.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
@@ -343,7 +343,7 @@ datasets.</p>
 <dd><p>Start time of the note, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -354,7 +354,7 @@ datasets.</p>
 <dd><p>End time of the note, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -376,7 +376,7 @@ datasets.</p>
 <dd><p>Note velocity.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int</p>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -450,7 +450,7 @@ raises the pitch, while a negative value lowers the pitch.</p>
 <dl class="py attribute">
 <dt id="muspy.SongInfo.creators">
 <code class="sig-name descname">creators</code><a class="headerlink" href="#muspy.SongInfo.creators" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creator(s) of the song. Defaults to an empty list.</p>
+<dd><p>Creator(s) of the song.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>list of str, optional</p>
@@ -462,12 +462,12 @@ raises the pitch, while a negative value lowers the pitch.</p>
 
 <dl class="py class">
 <dt id="muspy.SourceInfo">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">SourceInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">id</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#SourceInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.SourceInfo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">SourceInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">collection</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">copyright</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#SourceInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.SourceInfo" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for source information.</p>
 <dl class="py attribute">
-<dt id="muspy.SourceInfo.collection">
-<code class="sig-name descname">collection</code><a class="headerlink" href="#muspy.SourceInfo.collection" title="Permalink to this definition">¶</a></dt>
-<dd><p>Name of the collection.</p>
+<dt id="muspy.SourceInfo.filename">
+<code class="sig-name descname">filename</code><a class="headerlink" href="#muspy.SourceInfo.filename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the source file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str, optional</p>
@@ -476,10 +476,9 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.SourceInfo.filename">
-<code class="sig-name descname">filename</code><a class="headerlink" href="#muspy.SourceInfo.filename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Relative path to the source file with respect to the collection
-root.</p>
+<dt id="muspy.SourceInfo.collection">
+<code class="sig-name descname">collection</code><a class="headerlink" href="#muspy.SourceInfo.collection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the collection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str, optional</p>
@@ -493,15 +492,15 @@ root.</p>
 <dd><p>Format of the source file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>{‘midi’, ‘musicxml’}, optional</p>
+<dd class="field-odd"><p>str, optional</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.SourceInfo.id">
-<code class="sig-name descname">id</code><a class="headerlink" href="#muspy.SourceInfo.id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Unique ID of the file.</p>
+<dt id="muspy.SourceInfo.copyright">
+<code class="sig-name descname">copyright</code><a class="headerlink" href="#muspy.SourceInfo.copyright" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copyright notice of the source file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str, optional</p>
@@ -518,10 +517,10 @@ root.</p>
 <dl class="py attribute">
 <dt id="muspy.Tempo.time">
 <code class="sig-name descname">time</code><a class="headerlink" href="#muspy.Tempo.time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start time of the tempo, in time steps or seconds.</p>
+<dd><p>Start time of the tempo, in time steps.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -529,7 +528,7 @@ root.</p>
 <dl class="py attribute">
 <dt id="muspy.Tempo.tempo">
 <code class="sig-name descname">tempo</code><a class="headerlink" href="#muspy.Tempo.tempo" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tempo in bpm (beats per minute).</p>
+<dd><p>Tempo in qpm (quarters per minute).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -549,7 +548,7 @@ root.</p>
 <dd><p>Start time of the time signature, in time steps or seconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int or float</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -586,25 +585,12 @@ root.</p>
 
 <dl class="py class">
 <dt id="muspy.Timing">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Timing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_symbolic</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Timing" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Timing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Timing" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for song information.</p>
-<dl class="py attribute">
-<dt id="muspy.Timing.is_symbolic">
-<code class="sig-name descname">is_symbolic</code><a class="headerlink" href="#muspy.Timing.is_symbolic" title="Permalink to this definition">¶</a></dt>
-<dd><p>If true, the timing is in time steps, otherwise in seconds.
-Defaults to True</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>bool, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py attribute">
 <dt id="muspy.Timing.resolution">
 <code class="sig-name descname">resolution</code><a class="headerlink" href="#muspy.Timing.resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time steps per beat (only effective when <cite>is_symbolic</cite> is true).
-Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p>
+<dd><p>Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int, optional</p>
@@ -650,7 +636,7 @@ Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p>
 
 <dl class="py class">
 <dt id="muspy.Track">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chords</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for music track.</p>
 <dl class="py attribute">
 <dt id="muspy.Track.program">
@@ -695,6 +681,17 @@ False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>list of <a class="reference internal" href="#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a> objects, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.Track.chords">
+<code class="sig-name descname">chords</code><a class="headerlink" href="#muspy.Track.chords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chords. Defaults to an empty list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Chord</span></code> objects, optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -749,7 +746,7 @@ False.</p>
 <dt id="muspy.Track.get_end_time">
 <code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Track.get_end_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the time of the last event.</p>
-<p>This includes notes note offsets, lyrics and annotations.</p>
+<p>This includes notes, chords, lyrics and annotations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p>
@@ -864,24 +861,6 @@ Object to be clipped.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="muspy.quantize">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">quantize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">beats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bpm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#quantize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.quantize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quantize the timing of time-stamped objects.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy music object to be quantized.</p></li>
-<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per beat.</p></li>
-<li><p><strong>beats</strong> (<em>list of float</em>) – Sorted list of beat positions in ascending order, assuming no
-duplicate values.</p></li>
-<li><p><strong>bpm</strong> (<em>int</em><em> or </em><em>float</em>) – Length of quantization step, in seconds.</p></li>
-<li><p><strong>offset</strong> (<em>float</em>) – Offset of the beat pulse train, e.g., start time of the first beat.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="muspy.remove_duplicate_changes">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove duplicate change events.</p>
@@ -947,102 +926,18 @@ raises the pitches, while a negative value lowers the pitches.</p></li>
 
 <dl class="py class">
 <dt id="muspy.Dataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>The base class for all MusPy datasets.</p>
-<p>The raw data downloaded will be placed in folder <code class="docutils literal notranslate"><span class="pre">{root}/raw</span></code>.</p>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Dataset</code><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for all MusPy datasets.</p>
 <p>To build a custom dataset, it should inherit this class and overide the
-methods <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__len__</span></code> as well as the class variables
-<code class="docutils literal notranslate"><span class="pre">_info</span></code> and <code class="docutils literal notranslate"><span class="pre">_source</span></code>. <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> should return the
-<code class="docutils literal notranslate"><span class="pre">i</span></code>-th data sample as a <a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object.
-<code class="docutils literal notranslate"><span class="pre">__len__</span></code> should return the size of the dataset.</p>
-<dl class="py attribute">
-<dt id="muspy.Dataset.root">
-<code class="sig-name descname">root</code><a class="headerlink" href="#muspy.Dataset.root" title="Permalink to this definition">¶</a></dt>
-<dd><p>Root directory of the dataset.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str or Path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to download the raw dataset. Defaults to False.</p></li>
-<li><p><strong>extract</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to extract the raw dataset. Defaults to False.</p></li>
-<li><p><strong>cleanup</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError:</strong> – If <code class="docutils literal notranslate"><span class="pre">download_and_extract</span></code> is False but file
-    <code class="docutils literal notranslate"><span class="pre">{root}/raw/.muspy.success</span></code> does not exist (see below).</p>
-</dd>
-</dl>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p><a class="reference internal" href="#muspy.Dataset.raw_exists" title="muspy.Dataset.raw_exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Dataset.raw_exists()</span></code></a> depends solely on a special file named
-<code class="docutils literal notranslate"><span class="pre">.muspy.success</span></code> in the folder <code class="docutils literal notranslate"><span class="pre">{root}/raw/</span></code>, which serves as an
-indicator for the existence and integrity of the raw dataset. If the raw
-dataset is downloaded and extracted by
-<a class="reference internal" href="#muspy.Dataset.download_and_extract" title="muspy.Dataset.download_and_extract"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Dataset.download_and_extract()</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">.muspy.success</span></code>
-file will be created as well. If the raw dataset is downloaded manually,
-make sure to create the <code class="docutils literal notranslate"><span class="pre">.muspy.success</span></code> file in the folder
-<code class="docutils literal notranslate"><span class="pre">{root}/raw/</span></code> to prevent errors.</p>
-</div>
-<p class="rubric">Notes</p>
-<p>Set the class variables <code class="docutils literal notranslate"><span class="pre">_sources</span></code> properly. The dictionary <code class="docutils literal notranslate"><span class="pre">_sources</span></code>
-keeps the information for each source file.</p>
-<ul class="simple">
-<li><p>filename (str): Name to save the file.</p></li>
-<li><p>url (str): URL to the file.</p></li>
-<li><p>archive (bool): Whether the file is an archive.</p></li>
-<li><p>md5 (str, optional): Expected MD5 checksum of the file.</p></li>
-</ul>
-<p>Here is an example.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;example.tar.gz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.example.com/example.tar.gz&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
+methods <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__len__</span></code> as well as the class attribute
+<code class="docutils literal notranslate"><span class="pre">_info</span></code>. <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> should return the <code class="docutils literal notranslate"><span class="pre">i</span></code>-th data sample as a
+<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object. <code class="docutils literal notranslate"><span class="pre">__len__</span></code> should return the size of the
+dataset. <code class="docutils literal notranslate"><span class="pre">_info</span></code> should be a <a class="reference internal" href="#muspy.DatasetInfo" title="muspy.DatasetInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.DatasetInfo</span></code></a> instance
+containing the dataset information.</p>
 <dl class="py method">
 <dt id="muspy.Dataset.cite">
 <em class="property">classmethod </em><code class="sig-name descname">cite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.cite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.cite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the citation infomation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Dataset.download">
-<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.download" title="Permalink to this definition">¶</a></dt>
-<dd><p>Download the source datasets.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Dataset.download_and_extract">
-<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.download_and_extract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.download_and_extract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the downloaded archives.</p>
-<p>This is equivalent to <code class="docutils literal notranslate"><span class="pre">Dataset.download().extract(cleanup)</span></code>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Dataset.extract">
-<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.extract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.extract" title="Permalink to this definition">¶</a></dt>
-<dd><p>Extract the downloaded archives.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1052,22 +947,10 @@ keeps the information for each source file.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.Dataset.raw_dir">
-<em class="property">property </em><code class="sig-name descname">raw_dir</code><a class="headerlink" href="#muspy.Dataset.raw_dir" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the path to root directory of the raw dataset.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Dataset.raw_exists">
-<code class="sig-name descname">raw_exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.raw_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.raw_exists" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return True if the raw dataset exists, otherwise False.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="muspy.Dataset.save">
 <code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save all the music objects to a directory.</p>
-<p>The converted files will be named by its index and saved to <code class="docutils literal notranslate"><span class="pre">root</span></code>.</p>
+<p>The converted files will be named by its index and saved to``root/<a href="#id2"><span class="problematic" id="id3">``</span></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1089,31 +972,36 @@ saved to <code class="docutils literal notranslate"><span class="pre">{i}.json</
 
 <dl class="py method">
 <dt id="muspy.Dataset.to_pytorch_dataset">
-<code class="sig-name descname">to_pytorch_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">representation</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.to_pytorch_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.to_pytorch_dataset" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">to_pytorch_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">factory</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">representation</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.to_pytorch_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Dataset.to_pytorch_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a PyTorch dataset (<cite>torch.utils.data.dataset</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>factory</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to be applied to the Music objects. The input is a Music
+object, and the output is an array or a tensor.</p></li>
+<li><p><strong>representation</strong> (<em>str</em><em>, </em><em>optional</em>) – Target representation. Supported values are ‘event’, ‘note’,
+‘pianoroll’, ‘monotoken’ and ‘polytoken’.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
+<dt id="muspy.DatasetInfo">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">DatasetInfo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">homepage</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">citation</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#DatasetInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.DatasetInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>A container for dataset information.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt id="muspy.FolderDataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#FolderDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.FolderDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dataset containing files organized as directory.</p>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#FolderDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.FolderDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class of datasets containing files in a folder.</p>
 <p>Two modes are available for this dataset. When the on-the-fly mode is
 enabled, a data sample is converted to a music object on the fly when
 being indexed. When the on-the-fly mode is disabled, a data sample is
 loaded from the precomputed converted data.</p>
-<p>The raw data downloaded will be placed in the folder <code class="docutils literal notranslate"><span class="pre">{root}/raw</span></code>, and
-the converted data will be placed in the folder <code class="docutils literal notranslate"><span class="pre">{root}/converted</span></code>.</p>
-<p>To build a custom dataset, it should inherit this class and overide the
-methods <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__len__</span></code> as well as the class variables
-<code class="docutils literal notranslate"><span class="pre">_info</span></code>, <code class="docutils literal notranslate"><span class="pre">_source</span></code> and <code class="docutils literal notranslate"><span class="pre">_extension</span></code>, and also the class method
-<code class="docutils literal notranslate"><span class="pre">_converter</span></code>. Please refer to <a class="reference internal" href="#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a> for the
-documentation of <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code>, <code class="docutils literal notranslate"><span class="pre">__len__</span></code>, <code class="docutils literal notranslate"><span class="pre">_info</span></code> and
-<code class="docutils literal notranslate"><span class="pre">_source</span></code>. <code class="docutils literal notranslate"><span class="pre">_extension</span></code> is the extension to look for when building
-the dataset. All the files with the given extension will be included as
-source files. <code class="docutils literal notranslate"><span class="pre">_converter</span></code> is a class method that takes as inputs a
-filename of a source file and return the converted Music object.</p>
 <dl class="py attribute">
 <dt id="muspy.FolderDataset.root">
 <code class="sig-name descname">root</code><a class="headerlink" href="#muspy.FolderDataset.root" title="Permalink to this definition">¶</a></dt>
@@ -1128,9 +1016,6 @@ filename of a source file and return the converted Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>download</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to download the raw dataset. Defaults to False.</p></li>
-<li><p><strong>extract</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to extract the raw dataset. Defaults to False.</p></li>
-<li><p><strong>cleanup</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p></li>
 <li><p><strong>convert</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to convert the dataset to MusPy JSON/YAML files. If False,
 will check if converted data exists. If so, disable on-the-fly mode.
 If not, enable on-the-fly mode and warns. Defaults to False.</p></li>
@@ -1155,6 +1040,17 @@ file will be created as well. If the converted dataset is created
 manually, make sure to create the <code class="docutils literal notranslate"><span class="pre">.muspy.success</span></code> file in the folder
 <code class="docutils literal notranslate"><span class="pre">{root}/converted/</span></code> to prevent errors.</p>
 </div>
+<p class="rubric">Notes</p>
+<p>This class is extended from <a class="reference internal" href="#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a>. To build a custom
+dataset based on this class, please refer to <a class="reference internal" href="#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a> for
+the docmentation of the methods <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__len__</span></code>, and the
+class attribute <code class="docutils literal notranslate"><span class="pre">_info</span></code>.</p>
+<p>In addition, the class attributes <code class="docutils literal notranslate"><span class="pre">_extension</span></code> and <code class="docutils literal notranslate"><span class="pre">_converter</span></code>
+should be properly set. <code class="docutils literal notranslate"><span class="pre">_extension</span></code> is the extension to look for when
+building the dataset. All files with the given extension will be
+included as source files. <code class="docutils literal notranslate"><span class="pre">_converter</span></code> is a class method that takes as
+inputs a filename of a source file and return the converted Music
+object.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -1165,8 +1061,11 @@ manually, make sure to create the <code class="docutils literal notranslate"><sp
 <dl class="py method">
 <dt id="muspy.FolderDataset.convert">
 <code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#FolderDataset.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.FolderDataset.convert" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert all the files into Music object and save them to disk.</p>
-<p>The converted files will be named by its index and saved to <code class="docutils literal notranslate"><span class="pre">root</span></code>.</p>
+<dd><p>Convert and save the Music objects.</p>
+<p>The converted files will be named by its index and saved to
+<code class="docutils literal notranslate"><span class="pre">root/_converted</span></code>. The original filenames can be found in the
+<code class="docutils literal notranslate"><span class="pre">filenames</span></code> attribute. For example, the file at <code class="docutils literal notranslate"><span class="pre">filenames[i]</span></code>
+will be converted and saved to <code class="docutils literal notranslate"><span class="pre">{i}.json</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1180,10 +1079,6 @@ Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>The original filenames can be found in the <code class="docutils literal notranslate"><span class="pre">filenames</span></code> attribute.
-For example, the file at <code class="docutils literal notranslate"><span class="pre">filenames[i]</span></code> will be converted and
-saved to <code class="docutils literal notranslate"><span class="pre">{i}.json</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1196,6 +1091,12 @@ saved to <code class="docutils literal notranslate"><span class="pre">{i}.json</
 <dt id="muspy.FolderDataset.converted_exists">
 <code class="sig-name descname">converted_exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#FolderDataset.converted_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.FolderDataset.converted_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return True if the saved dataset exists, otherwise False.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.FolderDataset.exists">
+<code class="sig-name descname">exists</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#FolderDataset.exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.FolderDataset.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if the dataset exists, otherwise False.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1213,23 +1114,110 @@ saved to <code class="docutils literal notranslate"><span class="pre">{i}.json</
 </dd></dl>
 
 <dl class="py class">
+<dt id="muspy.HymnalDataset">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">HymnalDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/hymnal.html#HymnalDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.HymnalDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hymnal Dataset.</p>
+<dl class="py method">
+<dt id="muspy.HymnalDataset.download">
+<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/hymnal.html#HymnalDataset.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.HymnalDataset.download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the source datasets.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="muspy.HymnalTuneDataset">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">HymnalTuneDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/hymnal.html#HymnalTuneDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.HymnalTuneDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hymnal Dataset (tune only).</p>
+<dl class="py method">
+<dt id="muspy.HymnalTuneDataset.download">
+<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/hymnal.html#HymnalTuneDataset.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.HymnalTuneDataset.download" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download the source datasets.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="muspy.JSBChoralesDataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">JSBChoralesDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/jsb.html#JSBChoralesDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.JSBChoralesDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">JSBChoralesDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">subset</span><span class="o">=</span><span class="default_value">'full'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/jsb.html#JSBChoralesDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.JSBChoralesDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Johann Sebastian Bach Chorales Dataset.</p>
+<dl class="py method">
+<dt id="muspy.JSBChoralesDataset.get_subset_root">
+<code class="sig-name descname">get_subset_root</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/jsb.html#JSBChoralesDataset.get_subset_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.JSBChoralesDataset.get_subset_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the root path to the subset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.JSBChoralesDataset.use_subset">
+<code class="sig-name descname">use_subset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subset</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/jsb.html#JSBChoralesDataset.use_subset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.JSBChoralesDataset.use_subset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use a specific subset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>subset</strong> (<em>{'full'</em><em>, </em><em>'train'</em><em>, </em><em>'test'</em><em>, </em><em>'valid'}</em>) – Subset to use.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.LakhMIDIDataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">LakhMIDIDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/lmd.html#LakhMIDIDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.LakhMIDIDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">LakhMIDIDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/lmd.html#LakhMIDIDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.LakhMIDIDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Lakh MIDI Dataset.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="muspy.MAESTRODatasetV1">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MAESTRODatasetV1</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/maestro.html#MAESTRODatasetV1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MAESTRODatasetV1" title="Permalink to this definition">¶</a></dt>
+<dd><p>MAESTRO Dataset (MIDI only).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="muspy.MAESTRODatasetV2">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MAESTRODatasetV2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/maestro.html#MAESTRODatasetV2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MAESTRODatasetV2" title="Permalink to this definition">¶</a></dt>
+<dd><p>MAESTRO Dataset (MIDI only).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="muspy.Music21Dataset">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Music21Dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">composer</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/music21.html#Music21Dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music21Dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class of datasets containing files in music21 corpus.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>composer</strong> (<em>str</em>) – Name of a composer or a collection.</p></li>
+<li><p><strong>extensions</strong> (<em>list of str</em>) – File extensions of desired files.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Please refer to the music21 corpus reference page for a full list [1].</p>
+<p>[1] <a class="reference external" href="https://web.mit.edu/music21/doc/about/referenceCorpus.html">https://web.mit.edu/music21/doc/about/referenceCorpus.html</a></p>
+<dl class="py method">
+<dt id="muspy.Music21Dataset.convert">
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/music21.html#Music21Dataset.convert"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music21Dataset.convert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert and save the Music objects; return a MusicDataset instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>str</em><em> or </em><em>Path</em>) – Root directory to save the data.</p></li>
+<li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – File format to save the data. Defaults to ‘json’.</p></li>
+<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of concurrently running jobs in multiprocessing. If
+equal to 1, disable multiprocessing. Defaults to 1.</p></li>
+<li><p><strong>ignore_exceptions</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This can be
+helpful if some of the source files is known to be corrupted.
+Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="muspy.MusicDataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#MusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MusicDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>A dataset containing MusPy JSON/YAML files organized as directory.</p>
-<p>The raw data downloaded will be placed in the folder <code class="docutils literal notranslate"><span class="pre">{root}/raw</span></code>, and
-the converted data will be placed in the folder <code class="docutils literal notranslate"><span class="pre">{root}/converted</span></code>.</p>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/datasets.html#MusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MusicDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>A local dataset containing MusPy JSON/YAML files in a folder.</p>
 <dl class="py attribute">
 <dt id="muspy.MusicDataset.root">
 <code class="sig-name descname">root</code><a class="headerlink" href="#muspy.MusicDataset.root" title="Permalink to this definition">¶</a></dt>
@@ -1252,30 +1240,68 @@ the converted data will be placed in the folder <code class="docutils literal no
 </dl>
 </dd></dl>
 
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>download_and_extract</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to download and extract the dataset. Defaults to
-False.</p>
-</dd>
-</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt id="muspy.NESMusicDataset">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">NESMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/nes.html#NESMusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.NESMusicDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>NES Music Database.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.NottinghamMusicDatabase">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">NottinghamMusicDatabase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/nmd.html#NottinghamMusicDatabase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.NottinghamMusicDatabase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">NottinghamMusicDatabase</code><a class="reference internal" href="../_modules/muspy/datasets/nmd.html#NottinghamMusicDatabase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.NottinghamMusicDatabase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nottingham Music Database.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="muspy.WikiforniaDataset">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">WikiforniaDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/wikifornia.html#WikiforniaDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.WikiforniaDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wikifornia dataset.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.from_event_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from an event-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in event-based representation to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in event-based representation to be converted.
+size: L * D:
+- L for the sequence (event) length
+- D = 1 {</p>
+<blockquote>
+<div><p>0-127: note-on event,
+128-255: note-off event,
+256-355(default):</p>
+<blockquote>
+<div><p>tick-shift event
+256 for one tick, 355 for 100 ticks
+the maximum number of tick-shift can be specified</p>
+</div></blockquote>
+<dl class="simple">
+<dt>356-388 (default):</dt><dd><p>velocity event
+the maximum number of quantized velocity can be specified</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>e.g.
+[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]
+-&gt;
+[C5 - - - E5 - - / G5 - - / /]</p>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
+the maximum number of tick-shift (default = 100)</p></li>
+<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
+the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -1285,14 +1311,37 @@ False.</p>
 
 <dl class="py function">
 <dt id="muspy.from_monotoken_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_monotoken_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_monotoken_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from a monotoken-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in monotoken-based representation to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in monotoken-based representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><ul>
+<li><p>L for the sequence length</p></li>
+<li><dl class="simple">
+<dt>D = 1 {</dt><dd><p>0-127: pitch onset
+128: hold state
+129: rest state</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.
+[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]
+-&gt;
+[C5 - - - E5 - - / G5 - - / /]</p>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -1302,14 +1351,40 @@ False.</p>
 
 <dl class="py function">
 <dt id="muspy.from_note_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_note_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_note_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from a note-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in note-based representation to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in note-based representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><blockquote>
+<div><ul>
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
+start: start ticks,
+end: end ticks,
+velocity: 0 - 100</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g. [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
+-&gt; [C5 - - - E5 - - / G5 - - / /]
+(assume velocity to be 100)</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks (in notes) to be the basic unit (in data)
+(default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -1339,7 +1414,7 @@ False.</p>
 
 <dl class="py function">
 <dt id="muspy.from_polytoken_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_polytoken_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_polytoken_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from a polytoken-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1381,6 +1456,39 @@ False.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.from_pianoroll_representation">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/pianoroll.html#from_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.from_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object converted from a pianoroll representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in pianoroll representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><ul>
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -1545,11 +1653,125 @@ on messages to close. Defaults to ‘fifo’. Only used when
 
 <dl class="py function">
 <dt id="muspy.read_musicxml">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">read_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/musicxml.html#read_musicxml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.read_musicxml" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">read_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/musicxml.html#read_musicxml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.read_musicxml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a MusicXML file into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MusicXML file to be read.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Unpitched instruments are not supported. Grace notes and unpitched notes
+are ignored.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.empty_beat_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">empty_beat_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#empty_beat_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.empty_beat_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the empty beat rate.</p>
+<p>The empty beat rate is defined as the ratio of the number of empty beats
+(where no pitch is played) to the number of beats.</p>
+<div class="math notranslate nohighlight">
+\[empty\_beat\_rate = \frac{\# of empty beats}{\# of beats}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Empty beat rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.in_scale_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">in_scale_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#in_scale_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.in_scale_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the rate of notes in a musical scale.</p>
+<p>In scale rate is defined as the ratio of the number of notes in a scale
+to the total number of time steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p></li>
+<li><p><strong>root</strong> (<em>int</em>) – Root of the scale.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – Mode of the scale.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>In scale rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.n_pitch_classes_used">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">n_pitch_classes_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#n_pitch_classes_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.n_pitch_classes_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of unique pitch classes used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>int</em> – Number of unique pitch classes used.</p></li>
+<li><p><em>list of bool</em> – A boolean list of length 12 indicating the pitch classes used. The
+first element corresponds to pitch A, and the last one corresponds
+to pitch G# (G sharp).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.n_pitches_used">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">n_pitches_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#n_pitches_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.n_pitches_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of unique pitches used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>int</em> – Number of unique pitch classes used.</p></li>
+<li><p><em>list of bool</em> – A boolean list of length 128 indicating the pitches used. If the
+i-th element is True, the MIDI note pitch i is used.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.pitch_range">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">pitch_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.pitch_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the pitch range.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.polyphony">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">polyphony</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#polyphony"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.polyphony" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the polyphony measure.</p>
+<p>The polyphony is defined as the ratio of the number of time steps where
+multiple pitches are on to the total number of time steps.</p>
+<div class="math notranslate nohighlight">
+\[polyphony = \frac{
+    \# of time steps where multiple pitches are on}{\# of time steps}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Polyphony.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1705,33 +1927,16 @@ resolution.</p></li>
 
 <dl class="py method">
 <dt id="muspy.Music.get_end_time">
-<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.get_end_time" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">realtime</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.get_end_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the time of the last event in all tracks.</p>
 <p>This includes tempos, key signatures, time signatures, notes offsets,
 lyrics and annotations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.Music.quantize">
-<code class="sig-name descname">quantize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">beats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bpm</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">offset</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">update_tempos</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.quantize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.quantize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Quantize the timing of time-stamped objects.</p>
-<p>If <cite>beats</cite> is given, use it as the beat locations and quantize the
-timing accordingly.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per beat.</p></li>
-<li><p><strong>beats</strong> (<em>list of float</em><em>, </em><em>optional</em>) – Sorted list of beat positions in ascending order, assuming no
-duplicate values.</p></li>
-<li><p><strong>bpm</strong> (<em>int</em><em> or </em><em>float</em><em>, </em><em>optional</em>) – Length of quantization step, in seconds.</p></li>
-<li><p><strong>offset</strong> (<em>float</em><em>, </em><em>optional</em>) – Offset of the beat pulse train. This can be useful to set the start
-time of the first beat. Defaults to 0.</p></li>
-<li><p><strong>update_tempos</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to update the tempos. Defaults to True.</p></li>
+<li><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p></li>
+<li><p><strong>realtime</strong> (<em>bool</em>) – Whether to return the end time in real time. Assume 120 quarter per
+minute if no tempo information is available.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1765,6 +1970,27 @@ time of the first beat. Defaults to 0.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="muspy.Music.show">
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show visualization.</p>
+<p>Refer to <a class="reference internal" href="#muspy.show" title="muspy.show"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.show()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.Music.show_pianoroll">
+<code class="sig-name descname">show_pianoroll</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.show_pianoroll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.show_pianoroll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show pianoroll visualization.</p>
+<p>Refer to <a class="reference internal" href="#muspy.show_pianoroll" title="muspy.show_pianoroll"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.show_pianoroll()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.Music.show_score">
+<code class="sig-name descname">show_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.show_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.show_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show score visualization.</p>
+<p>Refer to <a class="reference internal" href="#muspy.show_score" title="muspy.show_score"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.show_score()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="muspy.Music.to_event_representation">
 <code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return in event-based representation.</p>
@@ -1777,6 +2003,13 @@ time of the first beat. Defaults to 0.</p></li>
 <dd><p>Return in monotoken-based representation.</p>
 <p>Refer to <a class="reference internal" href="#muspy.to_monotoken_representation" title="muspy.to_monotoken_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_monotoken_representation()</span></code></a> for full
 documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.Music.to_music21">
+<code class="sig-name descname">to_music21</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_music21"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Music.to_music21" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return as a Stream object.</p>
+<p>Refer to <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_music21()</span></code> for full documentation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1921,31 +2154,86 @@ example, in an Annotation object, which can store data of any type).</p>
 
 <dl class="py function">
 <dt id="muspy.to_event_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object in event-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
+the maximum number of tick-shift (default = 100)</p></li>
+<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
+the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>array</strong> – Converted event-based representation.</p>
+<dd class="field-even"><p><ul>
+<li><p><strong>array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Converted event-based representation.
+size: L * D:
+- L for the sequence (event) length
+- D = 1 {</p>
+<blockquote>
+<div><p>0-127: note-on event,
+128-255: note-off event,
+256-355(default):</p>
+<blockquote>
+<div><p>tick-shift event
+256 for one tick, 355 for 100 ticks
+the maximum number of tick-shift can be specified</p>
+</div></blockquote>
+<dl class="simple">
+<dt>356-388 (default):</dt><dd><p>velocity event
+the maximum number of quantized velocity can be specified</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p><em>e.g.</em></p></li>
+<li><p><em>[C5 - - - E5 - - / G5 - - / /]</em></p></li>
+<li><p><em>-&gt;</em></p></li>
+<li><p><em>[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]</em></p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.to_monotoken_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/token.html#to_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_monotoken_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/token.html#to_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_monotoken_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object in monotoken-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>array</strong> – Converted monotoken-based representation.</p>
+<dd class="field-even"><p><p><strong>array</strong> – Converted monotoken-based representation.
+size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence length</p></li>
+<li><dl class="simple">
+<dt>D = 1 {</dt><dd><p>0-127: pitch onset
+128: hold state
+129: rest state</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.</p>
+<p>[C5 - - - E5 - - / G5 - - / /]
+-&gt;
+[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]</p>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
@@ -1955,14 +2243,39 @@ example, in an Annotation object, which can store data of any type).</p>
 
 <dl class="py function">
 <dt id="muspy.to_note_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_note_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_note_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object in note-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>array</strong> – Converted note-based representation.</p>
+<dd class="field-even"><p><p><strong>array</strong> – Converted note-based representation.
+size: L * D:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
+start: start ticks,
+end: end ticks,
+velocity: 0 - 100</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.  [C5 - - - E5 - - / G5 - - / /]
+-&gt; [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
+(assume velocity to be 100)</p>
+</div></blockquote>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
@@ -1992,14 +2305,30 @@ example, in an Annotation object, which can store data of any type).</p>
 
 <dl class="py function">
 <dt id="muspy.to_pianoroll_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object in pianoroll representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>array</strong> – Converted pianoroll representation.</p>
+<dd class="field-even"><p><p><strong>array</strong> – Converted pianoroll representation.
+size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
@@ -2009,7 +2338,7 @@ example, in an Annotation object, which can store data of any type).</p>
 
 <dl class="py function">
 <dt id="muspy.to_polytoken_representation">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/token.html#to_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_polytoken_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/token.html#to_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.to_polytoken_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object in polytoken-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2139,9 +2468,33 @@ the extension.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.get_musicxml_schema_path">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">get_musicxml_schema_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/schemas/utils.html#get_musicxml_schema_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.get_musicxml_schema_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path to the MusicXML schema.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.get_yaml_schema_path">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">get_yaml_schema_path</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/schemas/utils.html#get_yaml_schema_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.get_yaml_schema_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the path to the YAML schema.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.show">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/visualization/wrappers.html#show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show visualization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.show_pianoroll">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">show_pianoroll</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/visualization/pianoroll.html#show_pianoroll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.show_pianoroll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show pianoroll visualization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.show_score">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">show_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/visualization/score.html#show_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.show_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show score visualization.</p>
 </dd></dl>
 
 </div>

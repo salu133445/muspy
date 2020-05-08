@@ -156,20 +156,52 @@
             
   <h1>Source code for muspy.datasets.datasets</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Some simple dataset.&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">load</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">RemoteDataset</span>
 
 
 <div class="viewcode-block" id="MusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.MusicDataset">[docs]</a><span class="k">class</span> <span class="nc">MusicDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A dataset containing MusPy JSON/YAML files organized as directory.</span>
+    <span class="sd">&quot;&quot;&quot;A local dataset containing MusPy JSON/YAML files in a folder.</span>
 
-<span class="sd">    The raw data downloaded will be placed in the folder ``{root}/raw``, and</span>
-<span class="sd">    the converted data will be placed in the folder ``{root}/converted``.</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str or Path</span>
+<span class="sd">        Root directory of the dataset.</span>
+<span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
+<span class="sd">        File format of the data. Defaults to &#39;json&#39;.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be an existing path.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be a directory.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">RemoteMusicDataset</span><span class="p">(</span><span class="n">MusicDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A dataset containing MusPy JSON/YAML files in a folder.</span>
+
+<span class="sd">    This class extended :class:`muspy.RemoteDataset` and</span>
+<span class="sd">    :class:`muspy.FolderDataset`. Please refer to their documentation for</span>
+<span class="sd">    details.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -181,8 +213,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    download_and_extract : bool, optional</span>
-<span class="sd">        Whether to download and extract the dataset. Defaults to</span>
-<span class="sd">        False.</span>
+<span class="sd">        Whether to download and extract the dataset. Defaults to False.</span>
+<span class="sd">    cleanup : bool, optional</span>
+<span class="sd">        Whether to remove the original archive(s). Defaults to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -190,41 +223,20 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">download_and_extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">))</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span></div>
+        <span class="n">RemoteDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
+        <span class="n">MusicDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="FolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset">[docs]</a><span class="k">class</span> <span class="nc">FolderDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A dataset containing files organized as directory.</span>
+    <span class="sd">&quot;&quot;&quot;A class of datasets containing files in a folder.</span>
 
 <span class="sd">    Two modes are available for this dataset. When the on-the-fly mode is</span>
 <span class="sd">    enabled, a data sample is converted to a music object on the fly when</span>
 <span class="sd">    being indexed. When the on-the-fly mode is disabled, a data sample is</span>
 <span class="sd">    loaded from the precomputed converted data.</span>
-
-<span class="sd">    The raw data downloaded will be placed in the folder ``{root}/raw``, and</span>
-<span class="sd">    the converted data will be placed in the folder ``{root}/converted``.</span>
-
-<span class="sd">    To build a custom dataset, it should inherit this class and overide the</span>
-<span class="sd">    methods ``__getitem__`` and ``__len__`` as well as the class variables</span>
-<span class="sd">    ``_info``, ``_source`` and ``_extension``, and also the class method</span>
-<span class="sd">    ``_converter``. Please refer to :class:`muspy.Dataset` for the</span>
-<span class="sd">    documentation of ``__getitem__``, ``__len__``, ``_info`` and</span>
-<span class="sd">    ``_source``. ``_extension`` is the extension to look for when building</span>
-<span class="sd">    the dataset. All the files with the given extension will be included as</span>
-<span class="sd">    source files. ``_converter`` is a class method that takes as inputs a</span>
-<span class="sd">    filename of a source file and return the converted Music object.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -233,12 +245,6 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    download : bool, optional</span>
-<span class="sd">        Whether to download the raw dataset. Defaults to False.</span>
-<span class="sd">    extract : bool, optional</span>
-<span class="sd">        Whether to extract the raw dataset. Defaults to False.</span>
-<span class="sd">    cleanup : bool, optional</span>
-<span class="sd">        Whether to remove the original archive. Defaults to False.</span>
 <span class="sd">    convert : bool, optional</span>
 <span class="sd">        Whether to convert the dataset to MusPy JSON/YAML files. If False,</span>
 <span class="sd">        will check if converted data exists. If so, disable on-the-fly mode.</span>
@@ -266,6 +272,20 @@
 <span class="sd">    manually, make sure to create the ``.muspy.success`` file in the folder</span>
 <span class="sd">    ``{root}/converted/`` to prevent errors.</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This class is extended from :class:`muspy.Dataset`. To build a custom</span>
+<span class="sd">    dataset based on this class, please refer to :class:`muspy.Dataset` for</span>
+<span class="sd">    the docmentation of the methods ``__getitem__`` and ``__len__``, and the</span>
+<span class="sd">    class attribute ``_info``.</span>
+
+<span class="sd">    In addition, the class attributes ``_extension`` and ``_converter``</span>
+<span class="sd">    should be properly set. ``_extension`` is the extension to look for when</span>
+<span class="sd">    building the dataset. All files with the given extension will be</span>
+<span class="sd">    included as source files. ``_converter`` is a class method that takes as</span>
+<span class="sd">    inputs a filename of a source file and return the converted Music</span>
+<span class="sd">    object.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :class:`muspy.Dataset` : The base class for all MusPy datasets.</span>
@@ -281,51 +301,61 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-        <span class="n">download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">download</span><span class="p">,</span> <span class="n">extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="n">use_converted</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">))</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">filename</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                    <span class="s2">&quot;_converted/&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">use_converted</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_converted</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
-            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
-        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FolderDataset.exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">converted_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the path to the root directory of the converted dataset.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;converted&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;_converted&quot;</span>
 
 <div class="viewcode-block" id="FolderDataset.converted_exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.converted_exists">[docs]</a>    <span class="k">def</span> <span class="nf">converted_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if the saved dataset exists, otherwise False.&quot;&quot;&quot;</span>
@@ -357,9 +387,12 @@
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FolderDataset&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Convert all the files into Music object and save them to disk.</span>
+        <span class="sd">&quot;&quot;&quot;Convert and save the Music objects.</span>
 
-<span class="sd">        The converted files will be named by its index and saved to ``root``.</span>
+<span class="sd">        The converted files will be named by its index and saved to</span>
+<span class="sd">        ``root/_converted``. The original filenames can be found in the</span>
+<span class="sd">        ``filenames`` attribute. For example, the file at ``filenames[i]``</span>
+<span class="sd">        will be converted and saved to ``{i}.json``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -375,13 +408,8 @@
 <span class="sd">            helpful if some of the source files is known to be corrupted.</span>
 <span class="sd">            Defaults to False.</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        The original filenames can be found in the ``filenames`` attribute.</span>
-<span class="sd">        For example, the file at ``filenames[i]`` will be converted and</span>
-<span class="sd">        saved to ``{i}.json``.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">)</span>
@@ -389,6 +417,69 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">RemoteFolderDataset</span><span class="p">(</span><span class="n">FolderDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class of remote datasets containing files in a folder.</span>
+
+<span class="sd">    This class extended :class:`muspy.RemoteDataset` and</span>
+<span class="sd">    :class:`muspy.FolderDataset`. Please refer to their documentation for</span>
+<span class="sd">    details.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str or Path</span>
+<span class="sd">        Root directory of the dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    download_and_extract : bool, optional</span>
+<span class="sd">        Whether to download and extract the dataset. Defaults to False.</span>
+<span class="sd">    cleanup : bool, optional</span>
+<span class="sd">        Whether to remove the original archive(s). Defaults to False.</span>
+<span class="sd">    convert : bool, optional</span>
+<span class="sd">        Whether to convert the dataset to MusPy JSON/YAML files. If False,</span>
+<span class="sd">        will check if converted data exists. If so, disable on-the-fly mode.</span>
+<span class="sd">        If not, enable on-the-fly mode and warns. Defaults to False.</span>
+<span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
+<span class="sd">        File format to save the data. Defaults to &#39;json&#39;.</span>
+<span class="sd">    n_jobs : int, optional</span>
+<span class="sd">        Maximum number of concurrently running jobs in multiprocessing. If</span>
+<span class="sd">        equal to 1, disable multiprocessing. Defaults to 1.</span>
+<span class="sd">    ignore_exceptions : bool, optional</span>
+<span class="sd">        Whether to ignore errors and skip failed conversions. This can be</span>
+<span class="sd">        helpful if some of the source files is known to be corrupted.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">    use_converted : bool, optional</span>
+<span class="sd">        Force to disable on-the-fly mode and use stored converted data</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.</span>
+<span class="sd">    :class:`muspy.FolderDataset` : A class of datasets containing files in a</span>
+<span class="sd">    folder.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">download_and_extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">RemoteDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
+        <span class="n">FolderDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">convert</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">,</span> <span class="n">use_converted</span>
+        <span class="p">)</span>
 </pre></div>
 
            </div>

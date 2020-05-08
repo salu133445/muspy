@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.datasets.lmd &mdash; MusPy  documentation</title>
+  <title>muspy.datasets.nes &mdash; MusPy  documentation</title>
   
 
   
@@ -139,7 +139,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.datasets.lmd</li>
+      <li>muspy.datasets.nes</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,42 +154,50 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.datasets.lmd</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.datasets.nes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;NES Music Database.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_midi</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
 <span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteFolderDataset</span>
 
-<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Lakh MIDI Dataset&quot;</span>
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;NES Music Database&quot;</span>
 <span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">The Lakh MIDI dataset is a collection of 176,581 unique MIDI files, 45,129 of </span><span class="se">\</span>
-<span class="s2">which have been matched and aligned to entries in the Million Song Dataset. </span><span class="se">\</span>
-<span class="s2">Its goal is to facilitate large-scale music information retrieval, both </span><span class="se">\</span>
-<span class="s2">symbolic (using the MIDI files alone) and audio content-based (using </span><span class="se">\</span>
-<span class="s2">information extracted from the MIDI files as annotations for the matched </span><span class="se">\</span>
-<span class="s2">audio files).</span>
+<span class="s2">The Nintendo Entertainment System Music Database (NES-MDB) is a dataset </span><span class="se">\</span>
+<span class="s2">intended for building automatic music composition systems for the NES audio </span><span class="se">\</span>
+<span class="s2">synthesizer. The NES synthesizer has highly constrained compositional </span><span class="se">\</span>
+<span class="s2">parameters which are well-suited to a wide variety of current machine </span><span class="se">\</span>
+<span class="s2">learning techniques. The synthesizer is typically programmed in assembly, but </span><span class="se">\</span>
+<span class="s2">we parse the assembly into straightforward formats that are more suitable for </span><span class="se">\</span>
+<span class="s2">machine learning.</span>
 <span class="s2">&quot;&quot;&quot;</span>
-<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://colinraffel.com/projects/lmd/&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/chrisdonahue/nesmdb&quot;</span>
 <span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">@phdthesis{raffel2016learning</span>
-<span class="s2">  title={Learning-Based Methods for Comparing Sequences, with Applications</span><span class="se">\</span>
-<span class="s2">to Audio-to-</span><span class="si">{MIDI}</span><span class="s2"> Alignment and Matching},</span>
-<span class="s2">  author={Colin Raffel},</span>
-<span class="s2">  year=</span><span class="si">{2016}</span><span class="s2"></span>
+<span class="s2">@inproceedings{donahue2018nesmdb,</span>
+<span class="s2">  title={The </span><span class="si">{NES}</span><span class="s2"> Music Database: A multi-instrumental dataset with </span><span class="se">\</span>
+<span class="s2">expressive performance attributes},</span>
+<span class="s2">  author={Chris Donahue and Huanru Henry Mao and Julian McAuley},</span>
+<span class="s2">  booktitle={Proceedings of the 19th International Society for Music </span><span class="se">\</span>
+<span class="s2">Information Retrieval Conference (ISMIR)},</span>
+<span class="s2">  year=</span><span class="si">{2018}</span><span class="s2"></span>
 <span class="s2">}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="LakhMIDIDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.LakhMIDIDataset">[docs]</a><span class="k">class</span> <span class="nc">LakhMIDIDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="NESMusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.NESMusicDataset">[docs]</a><span class="k">class</span> <span class="nc">NESMusicDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;NES Music Database.&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;lmd_full&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;lmd_full.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://hog.ee.columbia.edu/craffel/lmd/lmd_full.tar.gz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;nesmdb_midi.tar.gz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;http://deepyeti.ucsd.edu/cdonahue/nesmdb/nesmdb_midi.tar.gz&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;37610e2ca5fe70359c85170cf1f4982596783bb304c59d9c439f68c24ff4e&quot;</span>
+                <span class="s2">&quot;e93&quot;</span>
+            <span class="p">),</span>
         <span class="p">}</span>
     <span class="p">}</span>
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
@@ -197,44 +205,6 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
-
-
-<span class="k">class</span> <span class="nc">LakhMIDIMatchedDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset - matched subset.&quot;&quot;&quot;</span>
-
-    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
-    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_matched&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;lmd_matched.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://hog.ee.columbia.edu/craffel/lmd/lmd_matched.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">LakhMIDIAlignedDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset - aligned subset.&quot;&quot;&quot;</span>
-
-    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
-    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_aligned&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;lmd_aligned.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://hog.ee.columbia.edu/craffel/lmd/lmd_aligned.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 </pre></div>
 
            </div>

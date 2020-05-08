@@ -160,7 +160,370 @@
             
   <div class="section" id="representations">
 <h1>Representations<a class="headerlink" href="#representations" title="Permalink to this headline">¶</a></h1>
-<p>TBA</p>
+<p>MusPy supports several common representations for symbolic music.</p>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object converted from an event-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in event-based representation to be converted.
+size: L * D:
+- L for the sequence (event) length
+- D = 1 {</p>
+<blockquote>
+<div><p>0-127: note-on event,
+128-255: note-off event,
+256-355(default):</p>
+<blockquote>
+<div><p>tick-shift event
+256 for one tick, 355 for 100 ticks
+the maximum number of tick-shift can be specified</p>
+</div></blockquote>
+<dl class="simple">
+<dt>356-388 (default):</dt><dd><p>velocity event
+the maximum number of quantized velocity can be specified</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>e.g.
+[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]
+-&gt;
+[C5 - - - E5 - - / G5 - - / /]</p>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
+the maximum number of tick-shift (default = 100)</p></li>
+<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
+the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object in event-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
+the maximum number of tick-shift (default = 100)</p></li>
+<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
+the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul>
+<li><p><strong>array</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Converted event-based representation.
+size: L * D:
+- L for the sequence (event) length
+- D = 1 {</p>
+<blockquote>
+<div><p>0-127: note-on event,
+128-255: note-off event,
+256-355(default):</p>
+<blockquote>
+<div><p>tick-shift event
+256 for one tick, 355 for 100 ticks
+the maximum number of tick-shift can be specified</p>
+</div></blockquote>
+<dl class="simple">
+<dt>356-388 (default):</dt><dd><p>velocity event
+the maximum number of quantized velocity can be specified</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+</li>
+<li><p><em>e.g.</em></p></li>
+<li><p><em>[C5 - - - E5 - - / G5 - - / /]</em></p></li>
+<li><p><em>-&gt;</em></p></li>
+<li><p><em>[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object converted from a note-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in note-based representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><blockquote>
+<div><ul>
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
+start: start ticks,
+end: end ticks,
+velocity: 0 - 100</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g. [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
+-&gt; [C5 - - - E5 - - / G5 - - / /]
+(assume velocity to be 100)</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks (in notes) to be the basic unit (in data)
+(default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object in note-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>array</strong> – Converted note-based representation.
+size: L * D:</p>
+<blockquote>
+<div><blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
+start: start ticks,
+end: end ticks,
+velocity: 0 - 100</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.  [C5 - - - E5 - - / G5 - - / /]
+-&gt; [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
+(assume velocity to be 100)</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/token.html#from_monotoken_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object converted from a monotoken-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in monotoken-based representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><ul>
+<li><p>L for the sequence length</p></li>
+<li><dl class="simple">
+<dt>D = 1 {</dt><dd><p>0-127: pitch onset
+128: hold state
+129: rest state</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.
+[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]
+-&gt;
+[C5 - - - E5 - - / G5 - - / /]</p>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/token.html#to_monotoken_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object in monotoken-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>array</strong> – Converted monotoken-based representation.
+size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence length</p></li>
+<li><dl class="simple">
+<dt>D = 1 {</dt><dd><p>0-127: pitch onset
+128: hold state
+129: rest state</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.</p>
+<p>[C5 - - - E5 - - / G5 - - / /]
+-&gt;
+[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]</p>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/token.html#from_polytoken_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object converted from a polytoken-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in polytoken-based representation to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/token.html#to_polytoken_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object in polytoken-based representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>array</strong> – Converted polytoken-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/pianoroll.html#from_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object converted from a pianoroll representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in pianoroll representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><ul>
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return a Music object in pianoroll representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p><strong>array</strong> – Converted pianoroll representation.
+size: L * D:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

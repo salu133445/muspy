@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.schemas.utils &mdash; MusPy  documentation</title>
+  <title>muspy.datasets.wikifornia &mdash; MusPy  documentation</title>
   
 
   
@@ -139,7 +139,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.schemas.utils</li>
+      <li>muspy.datasets.wikifornia</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,24 +154,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.schemas.utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Schema path utilities.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+  <h1>Source code for muspy.datasets.wikifornia</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_musicxml</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
+<span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteFolderDataset</span>
+
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Wikifornia Dataset&quot;</span>
+<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">Wikifornia dataset is a collection of 6675 lead sheets in MusicMXL format. It</span>
+<span class="s2">was originally hosted at http://www.wikifonia.org/.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;http://www.wikifonia.org/&quot;</span>
 
 
-<div class="viewcode-block" id="get_json_schema_path"><a class="viewcode-back" href="../../../doc/schemas.html#muspy.get_json_schema_path">[docs]</a><span class="k">def</span> <span class="nf">get_json_schema_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the path to the JSON schema.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;music.schema.json&quot;</span><span class="p">)</span></div>
+<div class="viewcode-block" id="WikiforniaDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.WikiforniaDataset">[docs]</a><span class="k">class</span> <span class="nc">WikiforniaDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wikifornia dataset.&quot;&quot;&quot;</span>
 
+    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">)</span>
+    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;lmd_full&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Wikifonia.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.synthzone.com/files/Wikifonia/Wikifonia.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mxl&quot;</span>
 
-<div class="viewcode-block" id="get_yaml_schema_path"><a class="viewcode-back" href="../../../doc/schemas.html#muspy.get_yaml_schema_path">[docs]</a><span class="k">def</span> <span class="nf">get_yaml_schema_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the path to the YAML schema.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;music.schema.yaml&quot;</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="get_musicxml_schema_path"><a class="viewcode-back" href="../../../doc/schemas.html#muspy.get_musicxml_schema_path">[docs]</a><span class="k">def</span> <span class="nf">get_musicxml_schema_path</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the path to the MusicXML schema.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;musicxml.xsd&quot;</span><span class="p">)</span></div>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

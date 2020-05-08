@@ -355,10 +355,9 @@
 </div>
 <div class="section" id="timing-class">
 <h2>Timing  Class<a class="headerlink" href="#timing-class" title="Permalink to this headline">¶</a></h2>
-<p>The <a class="reference internal" href="doc/muspy.html#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> class is a container for timing system of a song. MusPy supports two timing systems: <em>symbolic timing</em> and <em>absolute timing</em>. When <code class="docutils literal notranslate"><span class="pre">is_symbolic=True</span></code>, the symbolic timing system is used, and the timing is in time steps. To render the song, the temporal resolution (<code class="docutils literal notranslate"><span class="pre">resolution</span></code>, in time steps per beat) and the tempos (<code class="docutils literal notranslate"><span class="pre">tempos</span></code>, in beats per minute, or bpm) are required. Here is the formula used to convert the symbolic time to absolute time.</p>
+<p>The <a class="reference internal" href="doc/muspy.html#muspy.Timing" title="muspy.Timing"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code></a> class is a container for timing system of a song. MusPy uses the <em>metrical timing</em> system. That is, time is stored in musically-meaningful unit (e.g., beats, quarter notes). To render the song, the temporal resolution (<code class="docutils literal notranslate"><span class="pre">resolution</span></code>, in time steps per quarter note) and the tempos (<code class="docutils literal notranslate"><span class="pre">tempos</span></code>, in quarter notes per minute, or qpm) are required. Here is the formula used to convert the metrical time to absolute time.</p>
 <div class="math notranslate nohighlight">
-\[absolute\_time = \frac{60 \times tempo}{resolution} \times symbolic\_time\]</div>
-<p>When <code class="docutils literal notranslate"><span class="pre">is_symbolic=False</span></code>, the absolute timing system is used, and the timing is in seconds. Moreover, <code class="docutils literal notranslate"><span class="pre">resolution</span></code> is not effective and <code class="docutils literal notranslate"><span class="pre">tempos</span></code> serve as annotations only.</p>
+\[absolute\_time = \frac{60 \times tempo}{resolution} \times metrical\_time\]</div>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 12%" />
@@ -374,17 +373,12 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>is_symbolic</p></td>
-<td><p>If symbolic timing is used</p></td>
-<td><p>bool</p></td>
-<td><p>True</p></td>
-</tr>
-<tr class="row-odd"><td><p>resolution</p></td>
+<tr class="row-even"><td><p>resolution</p></td>
 <td><p>Time steps per beat</p></td>
 <td><p>int</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">muspy.DEFAULT_RESOLUTION</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p>tempos</p></td>
+<tr class="row-odd"><td><p>tempos</p></td>
 <td><p>Tempo changes</p></td>
 <td><p>list of <a class="reference internal" href="doc/muspy.html#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a></p></td>
 <td><p>[]</p></td>
@@ -397,10 +391,10 @@
 <p>The <a class="reference internal" href="doc/muspy.html#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a> class is a container for tempo changes.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
-<col style="width: 58%" />
-<col style="width: 9%" />
-<col style="width: 13%" />
+<col style="width: 16%" />
+<col style="width: 64%" />
+<col style="width: 8%" />
+<col style="width: 11%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Attributes</p></th>
@@ -416,7 +410,7 @@
 <td></td>
 </tr>
 <tr class="row-odd"><td><p>tempos</p></td>
-<td><p>Tempo in bpm (beats per minute)</p></td>
+<td><p>Tempo in qpm (quarter notes per minute)</p></td>
 <td><p>float</p></td>
 <td></td>
 </tr>

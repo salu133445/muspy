@@ -227,7 +227,7 @@
 
     <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
         <span class="n">meta</span><span class="o">=</span><span class="n">MetaData</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">SourceInfo</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;midi&quot;</span><span class="p">)),</span>
-        <span class="n">timing</span><span class="o">=</span><span class="n">Timing</span><span class="p">(</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">timing</span><span class="o">=</span><span class="n">Timing</span><span class="p">(),</span>
         <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
         <span class="n">key_signatures</span><span class="o">=</span><span class="n">key_signatures</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="o">=</span><span class="n">lyrics</span><span class="p">,</span>
@@ -330,10 +330,13 @@
         <span class="k">return</span> <span class="n">tracks</span><span class="p">[</span><span class="n">t_idx</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
     <span class="n">midi</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">midi</span><span class="o">.</span><span class="n">ticks_per_beat</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`ticks_per_beat` must be positive.&quot;</span><span class="p">)</span>
 
     <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">tempos</span><span class="p">,</span> <span class="n">key_signatures</span><span class="p">,</span> <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
     <span class="n">lyrics</span><span class="p">,</span> <span class="n">annotations</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">copyright_</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># Create a list to store converted tracks</span>
     <span class="n">tracks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OrderedDict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -400,7 +403,7 @@
 
             <span class="c1"># Copyright messages</span>
             <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;copyright&quot;</span><span class="p">:</span>
-                <span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Annotation</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;copyright&quot;</span><span class="p">))</span>
+                <span class="n">copyright_</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">text</span>
 
             <span class="c1"># === Track specific Data ===</span>
 
@@ -475,13 +478,16 @@
             <span class="n">sub_track</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">track_name</span>
         <span class="n">music_tracks</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
+    <span class="c1"># Meta data</span>
+    <span class="n">source_info</span> <span class="o">=</span> <span class="n">SourceInfo</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;midi&quot;</span><span class="p">,</span> <span class="n">copyright</span><span class="o">=</span><span class="n">copyright_</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
-        <span class="n">meta</span><span class="o">=</span><span class="n">MetaData</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">SourceInfo</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;midi&quot;</span><span class="p">)),</span>
-        <span class="n">timing</span><span class="o">=</span><span class="n">Timing</span><span class="p">(</span>
-            <span class="n">is_symbolic</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">midi</span><span class="o">.</span><span class="n">ticks_per_beat</span><span class="p">,</span> <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span>
-        <span class="p">),</span>
-        <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
+        <span class="n">meta</span><span class="o">=</span><span class="n">MetaData</span><span class="p">(</span><span class="n">source</span><span class="o">=</span><span class="n">source_info</span><span class="p">),</span>
+        <span class="n">timing</span><span class="o">=</span><span class="n">Timing</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="n">midi</span><span class="o">.</span><span class="n">ticks_per_beat</span><span class="p">,</span> <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">),</span>
         <span class="n">key_signatures</span><span class="o">=</span><span class="n">key_signatures</span><span class="p">,</span>
+        <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="o">=</span><span class="n">lyrics</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">music_tracks</span><span class="p">,</span>
     <span class="p">)</span>

@@ -186,18 +186,51 @@
 <a class="reference internal" href="muspy.html#muspy.read_musicxml" title="muspy.read_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read_musicxml()</span></code></a></p></li>
 <li><p>Convert from other objects: <a class="reference internal" href="muspy.html#muspy.from_pretty_midi" title="muspy.from_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pretty_midi()</span></code></a> and
 <a class="reference internal" href="muspy.html#muspy.from_pypianoroll" title="muspy.from_pypianoroll"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_pypianoroll()</span></code></a></p></li>
-<li><p>Wrappers: <a class="reference internal" href="muspy.html#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a>, <a class="reference internal" href="muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a> and <a class="reference internal" href="muspy.html#muspy.from_object" title="muspy.from_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_object()</span></code></a></p></li>
+<li><p>Wrappers: <a class="reference internal" href="muspy.html#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a>, <a class="reference internal" href="muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a> and
+<a class="reference internal" href="muspy.html#muspy.from_object" title="muspy.from_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_object()</span></code></a></p></li>
 </ul>
 <dl class="py function">
 <dt id="muspy.inputs.from_event_representation">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from an event-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in event-based representation to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in event-based representation to be converted.
+size: L * D:
+- L for the sequence (event) length
+- D = 1 {</p>
+<blockquote>
+<div><p>0-127: note-on event,
+128-255: note-off event,
+256-355(default):</p>
+<blockquote>
+<div><p>tick-shift event
+256 for one tick, 355 for 100 ticks
+the maximum number of tick-shift can be specified</p>
+</div></blockquote>
+<dl class="simple">
+<dt>356-388 (default):</dt><dd><p>velocity event
+the maximum number of quantized velocity can be specified</p>
+</dd>
+</dl>
+<p>}</p>
+</div></blockquote>
+<p>e.g.
+[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]
+-&gt;
+[C5 - - - E5 - - / G5 - - / /]</p>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
+the maximum number of tick-shift (default = 100)</p></li>
+<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
+the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -207,14 +240,37 @@
 
 <dl class="py function">
 <dt id="muspy.inputs.from_monotoken_representation">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_monotoken_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_monotoken_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from a monotoken-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in monotoken-based representation to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in monotoken-based representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><ul>
+<li><p>L for the sequence length</p></li>
+<li><dl class="simple">
+<dt>D = 1 {</dt><dd><p>0-127: pitch onset
+128: hold state
+129: rest state</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g.
+[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]
+-&gt;
+[C5 - - - E5 - - / G5 - - / /]</p>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -224,14 +280,40 @@
 
 <dl class="py function">
 <dt id="muspy.inputs.from_note_representation">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_note_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_note_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from a note-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Data in note-based representation to be converted.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in note-based representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><blockquote>
+<div><ul>
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
+start: start ticks,
+end: end ticks,
+velocity: 0 - 100</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>}</p>
+</div></blockquote>
+<p>e.g. [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
+-&gt; [C5 - - - E5 - - / G5 - - / /]
+(assume velocity to be 100)</p>
+</div></blockquote>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks (in notes) to be the basic unit (in data)
+(default = 1)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -261,7 +343,7 @@
 
 <dl class="py function">
 <dt id="muspy.inputs.from_polytoken_representation">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_polytoken_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/token.html#from_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_polytoken_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object converted from a polytoken-based representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -303,6 +385,39 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.inputs.from_pianoroll_representation">
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/pianoroll.html#from_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Music object converted from a pianoroll representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.17)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in pianoroll representation to be converted.
+size: L * D:</p>
+<blockquote>
+<div><ul>
+<li><p>L for the sequence (note) length</p></li>
+<li><dl class="simple">
+<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+</p></li>
+<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
+decide how many ticks to be the basic unit (default = 1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -467,13 +582,16 @@ on messages to close. Defaults to ‘fifo’. Only used when
 
 <dl class="py function">
 <dt id="muspy.inputs.read_musicxml">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">read_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/musicxml.html#read_musicxml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.read_musicxml" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">read_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/musicxml.html#read_musicxml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.read_musicxml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a MusicXML file into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MusicXML file to be read.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Unpitched instruments are not supported. Grace notes and unpitched notes
+are ignored.</p>
 </dd></dl>
 
 </div>

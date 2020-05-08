@@ -163,7 +163,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.classes</span> <span class="kn">import</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Timing</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">.music</span> <span class="kn">import</span> <span class="n">Music</span>
@@ -173,7 +173,6 @@
     <span class="s2">&quot;adjust_time&quot;</span><span class="p">,</span>
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
     <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;quantize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;remove_duplicate_changes&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sort&quot;</span><span class="p">,</span>
     <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">,</span>
@@ -303,35 +302,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="quantize"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.quantize">[docs]</a><span class="k">def</span> <span class="nf">quantize</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span>
-    <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">beats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">bpm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Quantize the timing of time-stamped objects.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy music object to be quantized.</span>
-<span class="sd">    resolution : int</span>
-<span class="sd">        Time steps per beat.</span>
-<span class="sd">    beats : list of float</span>
-<span class="sd">        Sorted list of beat positions in ascending order, assuming no</span>
-<span class="sd">        duplicate values.</span>
-<span class="sd">    bpm : int or float</span>
-<span class="sd">        Length of quantization step, in seconds.</span>
-<span class="sd">    offset : float</span>
-<span class="sd">        Offset of the beat pulse train, e.g., start time of the first beat.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">quantize</span><span class="p">(</span>
-        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">beats</span><span class="o">=</span><span class="n">beats</span><span class="p">,</span> <span class="n">bpm</span><span class="o">=</span><span class="n">bpm</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">offset</span>
-    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="remove_duplicate_changes"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.remove_duplicate_changes">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicate_changes</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Timing</span><span class="p">]):</span>

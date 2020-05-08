@@ -19,7 +19,7 @@ Here is an example of a Music object stored in YAML format.
         format: null
         id: 0123456789
     timing:
-      is_symbolic: true
+      is_metrical: true
       resolution: 4
       tempos:
         - time: 0

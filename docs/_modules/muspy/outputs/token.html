@@ -156,28 +156,57 @@
             
   <h1>Source code for muspy.outputs.token</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Token-based representation output interface.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
+<span class="kn">from</span> <span class="nn">..processor</span> <span class="kn">import</span> <span class="n">MonoTokenProcessor</span>
 
-<div class="viewcode-block" id="to_monotoken_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_monotoken_representation">[docs]</a><span class="k">def</span> <span class="nf">to_monotoken_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+
+
+<div class="viewcode-block" id="to_monotoken_representation"><a class="viewcode-back" href="../../../representations.html#muspy.to_monotoken_representation">[docs]</a><span class="k">def</span> <span class="nf">to_monotoken_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">min_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object in monotoken-based representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">    min_step(optional):</span>
+<span class="sd">        minimum quantification step</span>
+<span class="sd">        decide how many ticks to be the basic unit (default = 1)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    array : :class:`numpy.ndarray`</span>
 <span class="sd">        Converted monotoken-based representation.</span>
+<span class="sd">        size: L * D:</span>
+<span class="sd">            - L for the sequence length</span>
+<span class="sd">            - D = 1 {</span>
+<span class="sd">                0-127: pitch onset</span>
+<span class="sd">                128: hold state</span>
+<span class="sd">                129: rest state</span>
+<span class="sd">            }</span>
+<span class="sd">        e.g.</span>
+
+<span class="sd">        [C5 - - - E5 - - / G5 - - / /]</span>
+<span class="sd">        -&gt;</span>
+<span class="sd">        [60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Not implemented yet</span>
-    <span class="k">return</span> <span class="n">ndarray</span><span class="p">()</span></div>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Mono token representation only works for single-track music.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">notes</span>
+    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+    <span class="n">processor</span> <span class="o">=</span> <span class="n">MonoTokenProcessor</span><span class="p">(</span><span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">processor</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">notes</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="to_polytoken_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_polytoken_representation">[docs]</a><span class="k">def</span> <span class="nf">to_polytoken_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="to_polytoken_representation"><a class="viewcode-back" href="../../../representations.html#muspy.to_polytoken_representation">[docs]</a><span class="k">def</span> <span class="nf">to_polytoken_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object in polytoken-based representation.</span>
 
 <span class="sd">    Parameters</span>
@@ -191,8 +220,7 @@
 <span class="sd">        Converted polytoken-based representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO: Not implemented yet</span>
-    <span class="k">return</span> <span class="n">ndarray</span><span class="p">()</span></div>
+    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 </pre></div>
 
            </div>

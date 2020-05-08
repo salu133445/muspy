@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.datasets.lmd &mdash; MusPy  documentation</title>
+  <title>muspy.datasets.maestro &mdash; MusPy  documentation</title>
   
 
   
@@ -139,7 +139,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.datasets.lmd</li>
+      <li>muspy.datasets.maestro</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -154,87 +154,82 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.datasets.lmd</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.datasets.maestro</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;MAESTRO Dataset.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_midi</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
 <span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteFolderDataset</span>
 
-<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Lakh MIDI Dataset&quot;</span>
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;MAESTRO Dataset&quot;</span>
 <span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">The Lakh MIDI dataset is a collection of 176,581 unique MIDI files, 45,129 of </span><span class="se">\</span>
-<span class="s2">which have been matched and aligned to entries in the Million Song Dataset. </span><span class="se">\</span>
-<span class="s2">Its goal is to facilitate large-scale music information retrieval, both </span><span class="se">\</span>
-<span class="s2">symbolic (using the MIDI files alone) and audio content-based (using </span><span class="se">\</span>
-<span class="s2">information extracted from the MIDI files as annotations for the matched </span><span class="se">\</span>
-<span class="s2">audio files).</span>
+<span class="s2">MAESTRO (MIDI and Audio Edited for Synchronous TRacks and Organization) is a </span><span class="se">\</span>
+<span class="s2">dataset composed of over 200 hours of virtuosic piano performances captured </span><span class="se">\</span>
+<span class="s2">with fine alignment (~3 ms) between note labels and audio waveforms.</span>
 <span class="s2">&quot;&quot;&quot;</span>
-<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://colinraffel.com/projects/lmd/&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://magenta.tensorflow.org/datasets/maestro&quot;</span>
 <span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">@phdthesis{raffel2016learning</span>
-<span class="s2">  title={Learning-Based Methods for Comparing Sequences, with Applications</span><span class="se">\</span>
-<span class="s2">to Audio-to-</span><span class="si">{MIDI}</span><span class="s2"> Alignment and Matching},</span>
-<span class="s2">  author={Colin Raffel},</span>
-<span class="s2">  year=</span><span class="si">{2016}</span><span class="s2"></span>
+<span class="s2">@inproceedings{hawthorne2018enabling,</span>
+<span class="s2">  title={Enabling Factorized Piano Music Modeling and Generation with the </span><span class="se">\</span>
+<span class="si">{MAESTRO}</span><span class="s2"> Dataset},</span>
+<span class="s2">  author={Curtis Hawthorne and Andriy Stasyuk and Adam Roberts and Ian Simon </span><span class="se">\</span>
+<span class="s2">and Cheng-Zhi Anna Huang and Sander Dieleman and Erich Elsen and Jesse Engel </span><span class="se">\</span>
+<span class="s2">and Douglas Eck},</span>
+<span class="s2">  booktitle={Proceedings of the 7th International Conference on Learning </span><span class="se">\</span>
+<span class="s2">Representations (ICLR)},</span>
+<span class="s2">  year=</span><span class="si">{2019}</span><span class="s2">,</span>
+<span class="s2">  url={https://openreview.net/forum?id=r1lYRjC9F7}</span>
 <span class="s2">}</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="LakhMIDIDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.LakhMIDIDataset">[docs]</a><span class="k">class</span> <span class="nc">LakhMIDIDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MAESTRODatasetV1"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV1">[docs]</a><span class="k">class</span> <span class="nc">MAESTRODatasetV1</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset (MIDI only).&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_full&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;lmd_full.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://hog.ee.columbia.edu/craffel/lmd/lmd_full.tar.gz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;maestro&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;maestro-v2.0.0-midi.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;https://storage.googleapis.com/magentadata/datasets/maestro/&quot;</span>
+                <span class="s2">&quot;v1.0.0/maestro-v1.0.0-midi.zip&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;f620f9e1eceaab8beea10617599add2e9c83234199b550382a2f603098ae7&quot;</span>
+                <span class="s2">&quot;135&quot;</span>
+            <span class="p">),</span>
         <span class="p">}</span>
     <span class="p">}</span>
-    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 
 
-<span class="k">class</span> <span class="nc">LakhMIDIMatchedDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset - matched subset.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="MAESTRODatasetV2"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV2">[docs]</a><span class="k">class</span> <span class="nc">MAESTRODatasetV2</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset (MIDI only).&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_matched&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;lmd_matched.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://hog.ee.columbia.edu/craffel/lmd/lmd_matched.tar.gz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;maestro&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;maestro-v2.0.0-midi.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;https://storage.googleapis.com/magentadata/datasets/maestro/&quot;</span>
+                <span class="s2">&quot;v2.0.0/maestro-v2.0.0-midi.zip&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;ec2cc9d94886c6b376db1eaa2b8ad1ce62ff9f0a28b3744782b13163295da&quot;</span>
+                <span class="s2">&quot;df3&quot;</span>
+            <span class="p">),</span>
         <span class="p">}</span>
     <span class="p">}</span>
-    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">LakhMIDIAlignedDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset - aligned subset.&quot;&quot;&quot;</span>
-
-    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
-    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_aligned&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;lmd_aligned.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://hog.ee.columbia.edu/craffel/lmd/lmd_aligned.tar.gz&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

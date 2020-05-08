@@ -164,7 +164,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.schemas</span> <span class="kn">import</span> <span class="n">DEFAULT_SCHEMA_VERSION</span>
@@ -198,7 +198,7 @@
 <span class="sd">    artist : str, optional</span>
 <span class="sd">        Main artist of the song.</span>
 <span class="sd">    creators : list of str, optional</span>
-<span class="sd">        Creator(s) of the song. Defaults to an empty list.</span>
+<span class="sd">        Creator(s) of the song.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -223,35 +223,44 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
+<span class="sd">    filename : str, optional</span>
+<span class="sd">        Name of the source file.</span>
 <span class="sd">    collection : str, optional</span>
 <span class="sd">        Name of the collection.</span>
-<span class="sd">    filename : str, optional</span>
-<span class="sd">        Relative path to the source file with respect to the collection</span>
-<span class="sd">        root.</span>
-<span class="sd">    format : {&#39;midi&#39;, &#39;musicxml&#39;}, optional</span>
+<span class="sd">    format : str, optional</span>
 <span class="sd">        Format of the source file.</span>
-<span class="sd">    id : str, optional</span>
-<span class="sd">        Unique ID of the file.</span>
+<span class="sd">    copyright : str, optional</span>
+<span class="sd">        Copyright notice of the source file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+        <span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">]</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;collection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;format&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;copyright&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">collection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">copyright</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copyright</span> <span class="o">=</span> <span class="n">copyright</span></div>
 
 
 <div class="viewcode-block" id="MetaData"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.MetaData">[docs]</a><span class="k">class</span> <span class="nc">MetaData</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
@@ -260,7 +269,7 @@
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    schema_version : str</span>
-<span class="sd">        Schema version.</span>
+<span class="sd">        Schema version. Defaults to the latest version.</span>
 <span class="sd">    song : :class:`muspy.SongInfo` object, optional</span>
 <span class="sd">        Song infomation.</span>
 <span class="sd">    source : :class:`muspy.SourceInfo` object, optional</span>
@@ -299,21 +308,19 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
-<span class="sd">        Start time of the tempo, in time steps or seconds.</span>
+<span class="sd">    time : int</span>
+<span class="sd">        Start time of the tempo, in time steps.</span>
 <span class="sd">    tempo : float</span>
-<span class="sd">        Tempo in bpm (beats per minute).</span>
+<span class="sd">        Tempo in qpm (quarters per minute).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;tempo&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))]</span>
-    <span class="p">)</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;tempo&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))])</span>
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">tempo</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tempo</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tempo</span> <span class="o">=</span> <span class="n">tempo</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Timing"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing">[docs]</a><span class="k">class</span> <span class="nc">Timing</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
@@ -321,48 +328,32 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    is_symbolic : bool, optional</span>
-<span class="sd">        If true, the timing is in time steps, otherwise in seconds.</span>
-<span class="sd">        Defaults to True</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per beat (only effective when `is_symbolic` is true).</span>
-<span class="sd">        Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
 <span class="sd">    tempos : list of :class:`muspy.Tempo`</span>
 <span class="sd">        Tempo changes. Defaults to an empty list.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;is_symbolic&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">)]</span>
-    <span class="p">)</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">)])</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;resolution&quot;</span><span class="p">]</span>
     <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">is_symbolic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tempos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic</span> <span class="o">=</span> <span class="n">is_symbolic</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">DEFAULT_RESOLUTION</span>
-            <span class="k">if</span> <span class="n">is_symbolic</span> <span class="ow">and</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">resolution</span>
+            <span class="n">DEFAULT_RESOLUTION</span> <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">resolution</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span> <span class="o">=</span> <span class="n">tempos</span> <span class="k">if</span> <span class="n">tempos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="Timing.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;is_symbolic&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="s2">&quot;is_symbolic&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_symbolic</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_validate_type</span><span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`resolution` must be positive.&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`resolution` must be positive.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Timing.remove_duplicate_changes"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.remove_duplicate_changes">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Remove duplicate tempo changes.&quot;&quot;&quot;</span>
@@ -375,7 +366,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tempos</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Timing.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Timing.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Timing.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last tempo event.</span>
 
 <span class="sd">        Parameters</span>
@@ -396,7 +387,7 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
+<span class="sd">    time : int</span>
 <span class="sd">        Start time of the key signature, in time steps or seconds.</span>
 <span class="sd">    root : str</span>
 <span class="sd">        Root of the key signature.</span>
@@ -405,12 +396,10 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
-    <span class="p">)</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span></div>
@@ -421,7 +410,7 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
+<span class="sd">    time : int</span>
 <span class="sd">        Start time of the time signature, in time steps or seconds.</span>
 <span class="sd">    numerator : int</span>
 <span class="sd">        Numerator of the time signature.</span>
@@ -431,11 +420,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;numerator&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;denominator&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;numerator&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;denominator&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
     <span class="p">)</span>
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">numerator</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">denominator</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">numerator</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">denominator</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">=</span> <span class="n">numerator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">=</span> <span class="n">denominator</span>
@@ -454,17 +443,17 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
+<span class="sd">    time : int</span>
 <span class="sd">        Start time of the lyric, in time steps or seconds.</span>
 <span class="sd">    lyric : str</span>
 <span class="sd">        Lyric (sentence, word, syllable, etc.).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;lyric&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;lyric&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lyric</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">lyric</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyric</span> <span class="o">=</span> <span class="n">lyric</span></div>
 
@@ -474,7 +463,7 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    time : int or float</span>
+<span class="sd">    time : int</span>
 <span class="sd">        Start time of the annotation, in time steps or seconds.</span>
 <span class="sd">    annotation : any object</span>
 <span class="sd">        Annotation of any type.</span>
@@ -484,12 +473,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;annotation&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;annotation&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)]</span>
     <span class="p">)</span>
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">annotation</span>
@@ -501,21 +490,21 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    start : int or float</span>
+<span class="sd">    start : int</span>
 <span class="sd">        Start time of the note, in time steps or seconds.</span>
-<span class="sd">    end : int or float</span>
+<span class="sd">    end : int</span>
 <span class="sd">        End time of the note, in time steps or seconds.</span>
 <span class="sd">    pitch : int</span>
 <span class="sd">        Note pitch, as a MIDI note number.</span>
-<span class="sd">    velocity : int</span>
+<span class="sd">    velocity : float</span>
 <span class="sd">        Note velocity.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
-            <span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
+            <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
         <span class="p">]</span>
@@ -523,12 +512,12 @@
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">pitch</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">velocity</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -584,6 +573,92 @@
         <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
+<span class="k">class</span> <span class="nc">Chord</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for chord.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : int</span>
+<span class="sd">        Start time of the note, in time steps or seconds.</span>
+<span class="sd">    end : int</span>
+<span class="sd">        End time of the note, in time steps or seconds.</span>
+<span class="sd">    pitches : list of int</span>
+<span class="sd">        Note pitches, as MIDI note numbers.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;pitches&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pitches&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pitches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">=</span> <span class="n">pitches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">velocity</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Duration of the note.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+
+    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for duration.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">duration</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`start` must be nonnegative.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`end` must be greater than `start`.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">:</span>
+            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">pitch</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`pitch` must be in between 0 to 127.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        semitone : int</span>
+<span class="sd">            The number of semitones to transpose the note. A positive value</span>
+<span class="sd">            raises the pitch, while a negative value lowers the pitch.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">+=</span> <span class="p">[</span><span class="n">pitch</span> <span class="o">+</span> <span class="n">semitone</span> <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clip the velocity of the note.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lower : int or float, optional</span>
+<span class="sd">            Lower bound. Defaults to 0.</span>
+<span class="sd">        upper : int or float, optional</span>
+<span class="sd">            Upper bound. Defaults to 127.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">upper</span> <span class="o">&gt;=</span> <span class="n">lower</span><span class="p">,</span> <span class="s2">&quot;`upper` must be greater than `lower`.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">upper</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">lower</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
 <div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for music track.</span>
 
@@ -600,6 +675,8 @@
 <span class="sd">        Track name.</span>
 <span class="sd">    notes : list of :class:`muspy.Note` objects, optional</span>
 <span class="sd">        Musical notes. Defaults to an empty list.</span>
+<span class="sd">    chords : list of :class:`muspy.Chord` objects, optional</span>
+<span class="sd">        Chords. Defaults to an empty list.</span>
 <span class="sd">    annotations : list of :class:`muspy.Annotation` objects, optional</span>
 <span class="sd">        Annotations. Defaults to an empty list.</span>
 <span class="sd">    lyrics : list of :class:`muspy.Lyric` objects, optional</span>
@@ -615,12 +692,13 @@
             <span class="p">(</span><span class="s2">&quot;is_drum&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="n">Note</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;chords&quot;</span><span class="p">,</span> <span class="n">Chord</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
-    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;chords&quot;</span><span class="p">,</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="s2">&quot;annotations&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -628,6 +706,7 @@
         <span class="n">is_drum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">notes</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">chords</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
@@ -635,6 +714,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span> <span class="o">=</span> <span class="n">is_drum</span> <span class="k">if</span> <span class="n">program</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">notes</span> <span class="k">if</span> <span class="n">notes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chords</span> <span class="o">=</span> <span class="n">chords</span> <span class="k">if</span> <span class="n">chords</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
 
@@ -648,10 +728,10 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`program` must be in between 0 to 127.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="Track.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Track.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
 
-<span class="sd">        This includes notes note offsets, lyrics and annotations.</span>
+<span class="sd">        This includes notes, chords, lyrics and annotations.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -664,11 +744,12 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">list_</span><span class="p">:</span>
                 <span class="k">return</span> <span class="mi">0</span>
             <span class="k">if</span> <span class="n">is_sorted</span><span class="p">:</span>
-                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">list_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">list_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ref_attr</span><span class="p">)</span>
             <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ref_attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">list_</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">),</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">),</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">),</span>
         <span class="p">)</span></div>

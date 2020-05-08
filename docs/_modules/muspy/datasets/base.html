@@ -158,7 +158,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Base MusPy dataset class.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
@@ -181,7 +181,7 @@
     <span class="n">HAS_JOBLIB</span> <span class="o">=</span> <span class="kc">False</span>
 
 
-<span class="k">class</span> <span class="nc">DatasetInfo</span><span class="p">:</span>
+<div class="viewcode-block" id="DatasetInfo"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.DatasetInfo">[docs]</a><span class="k">class</span> <span class="nc">DatasetInfo</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;A container for dataset information.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -202,107 +202,28 @@
             <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">homepage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">citation</span>
             <span class="p">)</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;The base class for all MusPy datasets.</span>
-
-<span class="sd">    The raw data downloaded will be placed in folder ``{root}/raw``.</span>
+    <span class="sd">&quot;&quot;&quot;Base class for all MusPy datasets.</span>
 
 <span class="sd">    To build a custom dataset, it should inherit this class and overide the</span>
-<span class="sd">    methods ``__getitem__`` and ``__len__`` as well as the class variables</span>
-<span class="sd">    ``_info`` and ``_source``. ``__getitem__`` should return the</span>
-<span class="sd">    ``i``-th data sample as a :class:`muspy.Music` object.</span>
-<span class="sd">    ``__len__`` should return the size of the dataset.</span>
-
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    root : str or Path</span>
-<span class="sd">        Root directory of the dataset.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    download : bool, optional</span>
-<span class="sd">        Whether to download the raw dataset. Defaults to False.</span>
-<span class="sd">    extract : bool, optional</span>
-<span class="sd">        Whether to extract the raw dataset. Defaults to False.</span>
-<span class="sd">    cleanup : bool, optional</span>
-<span class="sd">        Whether to remove the original archive. Defaults to False.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    RuntimeError:</span>
-<span class="sd">        If ``download_and_extract`` is False but file</span>
-<span class="sd">        ``{root}/raw/.muspy.success`` does not exist (see below).</span>
-
-<span class="sd">    Important</span>
-<span class="sd">    ---------</span>
-<span class="sd">    :meth:`muspy.Dataset.raw_exists` depends solely on a special file named</span>
-<span class="sd">    ``.muspy.success`` in the folder ``{root}/raw/``, which serves as an</span>
-<span class="sd">    indicator for the existence and integrity of the raw dataset. If the raw</span>
-<span class="sd">    dataset is downloaded and extracted by</span>
-<span class="sd">    :meth:`muspy.Dataset.download_and_extract`, the ``.muspy.success``</span>
-<span class="sd">    file will be created as well. If the raw dataset is downloaded manually,</span>
-<span class="sd">    make sure to create the ``.muspy.success`` file in the folder</span>
-<span class="sd">    ``{root}/raw/`` to prevent errors.</span>
-
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    Set the class variables ``_sources`` properly. The dictionary ``_sources``</span>
-<span class="sd">    keeps the information for each source file.</span>
-
-<span class="sd">    - filename (str): Name to save the file.</span>
-<span class="sd">    - url (str): URL to the file.</span>
-<span class="sd">    - archive (bool): Whether the file is an archive.</span>
-<span class="sd">    - md5 (str, optional): Expected MD5 checksum of the file.</span>
-
-<span class="sd">    Here is an example.::</span>
-
-<span class="sd">        _sources = {</span>
-<span class="sd">            &quot;example&quot;: {</span>
-<span class="sd">                &quot;filename&quot;: &quot;example.tar.gz&quot;,</span>
-<span class="sd">                &quot;url&quot;: &quot;https://www.example.com/example.tar.gz&quot;,</span>
-<span class="sd">                &quot;archive&quot;: True,</span>
-<span class="sd">                &quot;md5&quot;: None,</span>
-<span class="sd">            }</span>
-<span class="sd">        }</span>
+<span class="sd">    methods ``__getitem__`` and ``__len__`` as well as the class attribute</span>
+<span class="sd">    ``_info``. ``__getitem__`` should return the ``i``-th data sample as a</span>
+<span class="sd">    :class:`muspy.Music` object. ``__len__`` should return the size of the</span>
+<span class="sd">    dataset. ``_info`` should be a :class:`muspy.DatasetInfo` instance</span>
+<span class="sd">    containing the dataset information.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_info</span><span class="p">:</span> <span class="n">DatasetInfo</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">()</span>
-    <span class="n">_sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-        <span class="n">download</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must an existing path.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be a directory.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">extract</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">cleanup</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_exists</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Raw dataset not found or corrupted.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Dataset.info"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.info">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
@@ -314,16 +235,41 @@
         <span class="sd">&quot;&quot;&quot;Return the citation infomation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">citation</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">raw_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the path to root directory of the raw dataset.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;raw&quot;</span>
+<div class="viewcode-block" id="Dataset.to_pytorch_dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.to_pytorch_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">to_pytorch_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">representation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TorchDataset</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a PyTorch dataset (`torch.utils.data.dataset`).</span>
 
-<div class="viewcode-block" id="Dataset.raw_exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.raw_exists">[docs]</a>    <span class="k">def</span> <span class="nf">raw_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if the raw dataset exists, otherwise False.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="kc">True</span></div>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        factory : Callable, optional</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
+<span class="sd">            object, and the output is an array or a tensor.</span>
+<span class="sd">        representation : str, optional</span>
+<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
+<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Support slicing and other operations</span>
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;One of `representation` and `factory` must be given.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Only one of `representation` and `factory` can be given.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_TORCH</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional package torch is required.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">TorchRepresentationDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">TorchMusicFactoryDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 <div class="viewcode-block" id="Dataset.save"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -334,7 +280,7 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save all the music objects to a directory.</span>
 
-<span class="sd">        The converted files will be named by its index and saved to ``root``.</span>
+<span class="sd">        The converted files will be named by its index and saved to``root/``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -365,7 +311,8 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`n_jobs` must be positive.&quot;</span><span class="p">)</span>
 
         <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-        <span class="n">root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be an existing path.&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_saver</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">ignore_exceptions</span><span class="p">:</span>
@@ -397,17 +344,127 @@
             <span class="p">)</span>
             <span class="n">count</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> out of </span><span class="si">{}</span><span class="s2"> files successfully converted.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">count</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> out of </span><span class="si">{}</span><span class="s2"> files successfully saved.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="p">)</span>
-        <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
 
-<div class="viewcode-block" id="Dataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Download the source datasets.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">RemoteDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for remote MusPy datasets.</span>
+
+<span class="sd">    This class is extended from :class:`muspy.Dataset` to support remote</span>
+<span class="sd">    datasets. To build a custom dataset based on this class, please refer to</span>
+<span class="sd">    :class:`muspy.Dataset` for the docmentation of the methods</span>
+<span class="sd">    ``__getitem__`` and ``__len__``, and the class attribute ``_info``. In</span>
+<span class="sd">    addition, the class attribute ``_sources`` containing the URLs to the</span>
+<span class="sd">    source files should be properly set (see Notes).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str or Path</span>
+<span class="sd">        Root directory of the dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    download_and_extract : bool, optional</span>
+<span class="sd">        Whether to download and extract the dataset. Defaults to False.</span>
+<span class="sd">    cleanup : bool, optional</span>
+<span class="sd">        Whether to remove the original archive(s). Defaults to False.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError:</span>
+<span class="sd">        If ``download_and_extract`` is False but file</span>
+<span class="sd">        ``{root}/.muspy.success`` does not exist (see below).</span>
+
+<span class="sd">    Important</span>
+<span class="sd">    ---------</span>
+<span class="sd">    :meth:`muspy.Dataset.exists` depends solely on a special file named</span>
+<span class="sd">    ``.muspy.success`` in the folder ``{root}/``, which serves as an</span>
+<span class="sd">    indicator for the existence and integrity of the dataset. This file will</span>
+<span class="sd">    automatically be created if the dataset is successfully downloaded and</span>
+<span class="sd">    extracted by :meth:`muspy.Dataset.download_and_extract`.</span>
+
+<span class="sd">    If the dataset is downloaded manually, make sure to create the</span>
+<span class="sd">    ``.muspy.success`` file in the folder ``{root}/`` to prevent errors.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The class attribute ``_sources`` is a dictionary containing the</span>
+<span class="sd">    following information of each source file.</span>
+
+<span class="sd">    - filename (str): Name to save the file.</span>
+<span class="sd">    - url (str): URL to the file.</span>
+<span class="sd">    - archive (bool): Whether the file is an archive.</span>
+<span class="sd">    - md5 (str, optional): Expected MD5 checksum of the file.</span>
+
+<span class="sd">    Here is an example.::</span>
+
+<span class="sd">        _sources = {</span>
+<span class="sd">            &quot;example&quot;: {</span>
+<span class="sd">                &quot;filename&quot;: &quot;example.tar.gz&quot;,</span>
+<span class="sd">                &quot;url&quot;: &quot;https://www.example.com/example.tar.gz&quot;,</span>
+<span class="sd">                &quot;archive&quot;: True,</span>
+<span class="sd">                &quot;md5&quot;: None,</span>
+<span class="sd">            }</span>
+<span class="sd">        }</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.Dataset` : The base class for all MusPy datasets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_sources</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">download_and_extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be an existing path.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be a directory.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">download_and_extract</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">download_and_extract</span><span class="p">(</span><span class="n">cleanup</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Dataset not found. You can download it by passing &quot;</span>
+                <span class="s2">&quot;`download_and_extract=True`.&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">source_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return True if all the sources exist, otherwise False.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RemoteDataset&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Download the source datasets.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="n">md5</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
                 <span class="nb">print</span><span class="p">(</span>
@@ -421,10 +478,10 @@
                     <span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">download_url</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="p">,</span> <span class="n">md5</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+        <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="Dataset.extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Extract the downloaded archives.</span>
+    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RemoteDataset&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extract the downloaded archive(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -433,17 +490,17 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;archive&quot;</span><span class="p">]:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extracting archive : </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]))</span>
-                <span class="n">extract_archive</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="n">cleanup</span><span class="p">)</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">raw_dir</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
+                <span class="n">extract_archive</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="n">cleanup</span><span class="p">)</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="Dataset.download_and_extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.download_and_extract">[docs]</a>    <span class="k">def</span> <span class="nf">download_and_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dataset&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">download_and_extract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;RemoteDataset&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Extract the downloaded archives.</span>
 
-<span class="sd">        This is equivalent to ``Dataset.download().extract(cleanup)``.</span>
+<span class="sd">        This is equivalent to ``RemoteDataset.download().extract(cleanup)``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -451,30 +508,56 @@
 <span class="sd">            Whether to remove the original archive. Defaults to False.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">cleanup</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Dataset.to_pytorch_dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.to_pytorch_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">to_pytorch_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TorchMusicDataset&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a PyTorch dataset (`torch.utils.data.dataset`).&quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Support slicing and other operations</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_TORCH</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional package torch is required.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">TorchMusicDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">cleanup</span><span class="p">)</span>
 
 
 <span class="k">if</span> <span class="n">HAS_TORCH</span><span class="p">:</span>
 
-    <span class="k">class</span> <span class="nc">TorchMusicDataset</span><span class="p">(</span><span class="n">TorchDataset</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;A PyTorch music dataset.&quot;&quot;&quot;</span>
+    <span class="k">class</span> <span class="nc">TorchMusicFactoryDataset</span><span class="p">(</span><span class="n">TorchDataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A PyTorch dataset built from a Music dataset.</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">representation</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset : :class:`muspy.Dataset`</span>
+<span class="sd">            Dataset object to base on.</span>
+<span class="sd">        factory : Callable</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
+<span class="sd">            object, and the output is an array or a tensor.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="n">representation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
 
         <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">to_representation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">representation</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 
         <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+
+    <span class="k">class</span> <span class="nc">TorchRepresentationDataset</span><span class="p">(</span><span class="n">TorchMusicFactoryDataset</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A PyTorch music dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset : :class:`muspy.Dataset`</span>
+<span class="sd">            Dataset object to base on.</span>
+<span class="sd">        representation : str</span>
+<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
+<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">representation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+
+            <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="n">music</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">to_representation</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
 </pre></div>
 
            </div>
