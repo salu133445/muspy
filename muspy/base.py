@@ -118,7 +118,10 @@ class Base:
                         attr_cls.from_dict(value) for value in dict_[attr]
                     ]
                 else:
-                    kwargs[attr] = attr_cls.from_dict(dict_[attr])
+                    if dict_[attr] is not None:
+                        kwargs[attr] = attr_cls.from_dict(dict_[attr])
+                    else:
+                        kwargs[attr] = None
             else:
                 kwargs[attr] = dict_[attr]
         return cls(**kwargs)
@@ -182,9 +185,10 @@ class Base:
     def _validate_attr(self, attr: str):
         attr_cls = self._attributes[attr]
         if isclass(attr_cls) and issubclass(attr_cls, Base):
-            if attr in self._list_attributes and getattr(self, attr):
-                for item in getattr(self, attr):
-                    item.validate()
+            if attr in self._list_attributes:
+                if getattr(self, attr):
+                    for item in getattr(self, attr):
+                        item.validate()
             else:
                 getattr(self, attr).validate()
         else:
@@ -239,17 +243,17 @@ class Base:
     def _adjust_time(self, func, attr):
         attr_cls = self._attributes[attr]
         if attr in self._temporal_attributes:
-            if attr_cls in self._list_attributes:
+            if attr in self._list_attributes:
                 new_list = [func(item) for item in getattr(self, attr)]
                 setattr(self, attr, new_list)
             else:
                 setattr(self, attr, func(getattr(self, attr)))
         else:
             if isclass(attr_cls) and issubclass(attr_cls, Base):
-                if attr_cls in self._list_attributes:
+                if attr in self._list_attributes:
                     for item in getattr(self, attr):
                         item.adjust_time(func)
-                else:
+                elif getattr(self, attr) is not None:
                     getattr(self, attr).adjust_time(func)
 
     def adjust_time(self, func: Callable, attr: Optional[str] = None):

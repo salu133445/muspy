@@ -14,6 +14,7 @@ from typing import Any, List, Optional, Union
 from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
+from music21.stream import Stream
 
 from .base import ComplexBase
 from .classes import (
@@ -27,6 +28,7 @@ from .classes import (
     Track,
 )
 from .outputs import save, to_object, to_representation, write
+from .visualization import show
 
 __all__ = ["Music"]
 
@@ -141,7 +143,9 @@ class Music(ComplexBase):
         self.time_signatures.insert(0, time_signs[0])
         return self
 
-    def get_end_time(self, is_sorted: bool = False) -> float:
+    def get_end_time(
+        self, is_sorted: bool = False, realtime: bool = False
+    ) -> float:
         """Return the time of the last event in all tracks.
 
         This includes tempos, key signatures, time signatures, notes offsets,
@@ -151,8 +155,13 @@ class Music(ComplexBase):
         ----------
         is_sorted : bool
             Whether all the list attributes are sorted. Defaults to False.
+        realtime : bool
+            Whether to return the end time in real time. Assume 120 quarter per
+            minute if no tempo information is available.
 
         """
+        if realtime:
+            self.timing.validate()
 
         def _get_end_time(list_):
             if not list_:
@@ -167,7 +176,8 @@ class Music(ComplexBase):
             )
         else:
             track_end_time = 0
-        return max(
+
+        end_time = max(
             self.timing.get_end_time(is_sorted),
             _get_end_time(self.key_signatures),
             _get_end_time(self.time_signatures),
@@ -175,6 +185,28 @@ class Music(ComplexBase):
             _get_end_time(self.annotations),
             track_end_time,
         )
+
+        if not realtime:
+            return end_time
+
+        # If no tempo information is available, assume 120 quarter per minutes
+        if not self.timing.tempos:
+            return 0.5 * end_time / self.timing.resolution
+
+        # Compute the real time
+        position = 0.0
+        acc_time = 0.0
+        qpm = 120.0
+        factor = 60.0 / self.timing.resolution  # type: ignore
+        for tempo in self.timing.tempos:
+            if tempo.tempo <= 0:
+                continue
+            acc_time += (tempo.time - position) * factor / qpm
+            position = tempo.time
+            qpm = tempo.tempo
+        acc_time += (end_time - position) * factor / qpm
+
+        return acc_time
 
     def adjust_resolution(
         self, target: Optional[int] = None, factor: Optional[float] = None
@@ -337,6 +369,14 @@ class Music(ComplexBase):
         """
         return to_object(self, target, **kwargs)
 
+    def to_music21(self, **kwargs: Any) -> Stream:
+        """Return as a Stream object.
+
+        Refer to :func:`muspy.to_music21` for full documentation.
+
+        """
+        return to_object(self, "music21", **kwargs)
+
     def to_pretty_midi(self, **kwargs: Any) -> PrettyMIDI:
         """Return as a PrettyMIDI object.
 
@@ -403,3 +443,27 @@ class Music(ComplexBase):
 
         """
         return to_representation(self, "polytoken", **kwargs)
+
+    def show(self, kind: str, **kwargs: Any):
+        """Show visualization.
+
+        Refer to :func:`muspy.show` for full documentation.
+
+        """
+        return show(self, kind, **kwargs)
+
+    def show_score(self, **kwargs: Any):
+        """Show score visualization.
+
+        Refer to :func:`muspy.show_score` for full documentation.
+
+        """
+        return show(self, "score", **kwargs)
+
+    def show_pianoroll(self, **kwargs: Any):
+        """Show pianoroll visualization.
+
+        Refer to :func:`muspy.show_pianoroll` for full documentation.
+
+        """
+        return show(self, "pianoroll", **kwargs)

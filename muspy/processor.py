@@ -97,7 +97,6 @@ class ReprProcessor(ABC):
         repr_seq: the representation numpy sequence
 
         """
-        pass
 
     @abstractmethod
     def decode(self, repr_seq=None):
@@ -112,7 +111,6 @@ class ReprProcessor(ABC):
         note_seq= the input {Note} sequence
 
         """
-        pass
 
 
 class NoteProcessor(ReprProcessor):
@@ -178,9 +176,9 @@ class NoteProcessor(ReprProcessor):
         for token in repr_seq:
             notes.append(
                 Note(
-                    pitch=token[0],
-                    start=token[1],
-                    end=token[2],
+                    pitch=int(token[0]),
+                    start=int(token[1]),
+                    end=int(token[2]),
                     velocity=token[3],
                 )
             )
@@ -303,9 +301,9 @@ class MonoTokenProcessor(ReprProcessor):
                 if prev != self.rest_state:
                     i_note = Note(
                         velocity=100,
-                        pitch=prev,
-                        start=time_shift,
-                        end=time_shift + duration,
+                        pitch=int(prev),
+                        start=int(time_shift),
+                        end=int(time_shift + duration),
                     )
                     notes.append(i_note)
                 prev = token
@@ -314,9 +312,9 @@ class MonoTokenProcessor(ReprProcessor):
         if prev != self.rest_state:
             i_note = Note(
                 velocity=100,
-                pitch=prev,
-                start=time_shift,
-                end=time_shift + duration,
+                pitch=int(prev),
+                start=int(time_shift),
+                end=int(time_shift + duration),
             )
             notes.append(i_note)
         if self.min_step > 1:
@@ -508,9 +506,9 @@ class MidiEventProcessor(ReprProcessor):
                     notes.append(
                         Note(
                             velocity=token_on["vel"],
-                            pitch=token_on["pitch"],
-                            start=token_on["time"],
-                            end=token_off["time"],
+                            pitch=int(token_on["pitch"]),
+                            start=int(token_on["time"]),
+                            end=int(token_off["time"]),
                         )
                     )
                 except:
@@ -534,9 +532,10 @@ class PianoRollProcessor(ReprProcessor):
 
     """
 
-    def __init__(self, min_step: int = 1):
+    def __init__(self, min_step: int = 1, binarized: bool = False):
         super(PianoRollProcessor, self).__init__(min_step)
         self.name = "pianoroll"
+        self.binarized = binarized
 
     def encode(self, note_seq=None):
         """Return the note token
@@ -554,13 +553,18 @@ class PianoRollProcessor(ReprProcessor):
             return []
         if self.min_step > 1:
             note_seq = self._compress(note_seq)
-        max_length = max([d.end for d in note_seq])
+        if not note_seq:
+            return np.zeros((1, 128))
+        max_length = max((d.end for d in note_seq))
         repr_seq = np.zeros((max_length, 128))
+
         for note in note_seq:
-            repr_seq[note.start : note.end - 1, note.pitch] = note.velocity
+            repr_seq[note.start : note.end - 1, note.pitch] = (
+                note.velocity > 0 if self.binarized else note.velocity
+            )
         return repr_seq
 
-    def decode(self, repr_seq=None):
+    def decode(self, repr_seq=None, default_velocity: int = 64):
         """Return the note seq
 
         Parameters
@@ -577,18 +581,22 @@ class PianoRollProcessor(ReprProcessor):
         notes = []
         for cur_pitch in range(repr_seq.shape[1]):
             cst = -1
-            cvel = 0
+            if not self.binarized:
+                cvel = 0
             for cur_time in range(repr_seq.shape[0]):
                 if repr_seq[cur_time, cur_pitch] > 0 and cst == -1:
                     cst = cur_time
-                    cvel = repr_seq[cur_time, cur_pitch]
+                    if not self.binarized:
+                        cvel = repr_seq[cur_time, cur_pitch]
                 if repr_seq[cur_time, cur_pitch] == 0 and cst != -1:
                     notes.append(
                         Note(
-                            start=cst,
-                            end=cur_time + 1,
-                            pitch=cur_pitch,
-                            velocity=int(cvel),
+                            start=int(cst),
+                            end=int(cur_time) + 1,
+                            pitch=int(cur_pitch),
+                            velocity=default_velocity
+                            if self.binarized
+                            else int(cvel),
                         )
                     )
                     cst = -1
