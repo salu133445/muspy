@@ -45,6 +45,15 @@ KEY_MAP = (
 
 STEP_MAP = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
 
+NOTE_TYPE_MAP = {
+    "32nd": 0.125,
+    "16th": 0.25,
+    "eighth": 0.5,
+    "quarter": 1.0,
+    "half": 2.0,
+    "whole": 4.0,
+}
+
 
 class MusicXMLElementError(Exception):
     """An error class for missing element in MusicXML file."""
@@ -192,15 +201,49 @@ def parse_part(
                         )
                     )
 
-            elif elem.tag == "directions":
-                sound_elem = elem.find("sound")
-                if sound_elem is None:
-                    continue
-                if "tempo" in sound_elem.attrib:
-                    tempos.append(
-                        Tempo(time + position, int(sound_elem.attrib["tempo"]))
+            elif elem.tag == "sound":
+                if "tempo" in elem.attrib:
+                    tempo = Tempo(
+                        time + position, float(elem.attrib["tempo"]),
                     )
-                # TODO: dynamic -> velocity
+                    tempos.append(tempo)
+                if "dynamics" in elem.attrib:
+                    velocity = int(elem.attrib["dynamics"])
+
+            elif elem.tag == "direction":
+                # TODO: read symbolic dynamic
+                # TODO: read symbolic tempo
+
+                tempo_set = False
+
+                # Sound element
+                sound_elem = elem.find("sound")
+                if sound_elem is not None:
+                    if "tempo" in sound_elem.attrib:
+                        tempo = Tempo(
+                            time + position, float(sound_elem.attrib["tempo"]),
+                        )
+                        tempos.append(tempo)
+                        tempo_set = True
+                    if "dynamics" in sound_elem.attrib:
+                        velocity = int(float(sound_elem.attrib["dynamics"]))
+
+                # Metronome element
+                if not tempo_set:
+                    metronome_elem = elem.find("direction-type/metronome")
+                    if metronome_elem is not None:
+                        beat_unit_elem = metronome_elem.find("beat-unit")
+                        if beat_unit_elem is not None:
+                            per_minute_elem = metronome_elem.find("per-minute")
+                            if (
+                                per_minute_elem is not None
+                                and per_minute_elem.text is not None
+                            ):
+                                if "beat-unit" in NOTE_TYPE_MAP:
+                                    qpm = NOTE_TYPE_MAP["beat-unit"] * float(
+                                        per_minute_elem.text
+                                    )
+                                    tempos.append(Tempo(time + position, qpm))
 
             # TODO: lyrics
 
@@ -406,10 +449,10 @@ def read_musicxml(
                 value["is_drum"] = False
 
     # Initialize lists
+    tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
     time_signatures: List[TimeSignature] = []
     lyrics: List[Lyric] = []
-    tempos: List[Tempo] = []
     tracks: List[Track] = []
 
     default_part_id = next(iter(part_info))
@@ -418,8 +461,10 @@ def read_musicxml(
     for part_elem in root.findall("part"):
         part_id = part_elem.get("id", default_part_id)
         part = parse_part(part_elem, resolution, part_info[part_id])
+        tempos.extend(part["tempos"])
         key_signatures.extend(part["key_signatures"])
         time_signatures.extend(part["time_signatures"])
+        lyrics.extend(part["lyrics"])
         for instrument_id, notes in part["notes"].items():
             track = Track(
                 program=part_info[part_id][instrument_id]["program"],
@@ -429,17 +474,14 @@ def read_musicxml(
             )
             tracks.append(track)
 
-    meta = MetaData(
-        song=SongInfo(title=title, creators=creators),
-        source=SourceInfo(
-            filename=Path(path).name, format="musicxml", copyright=copyright_
-        ),
+    song_info = SongInfo(title=title, creators=creators)
+    source_info = SourceInfo(
+        filename=Path(path).name, format="musicxml", copyright=copyright_
     )
-    timing = Timing(is_metrical=True, resolution=resolution, tempos=tempos)
 
     return Music(
-        meta=meta,
-        timing=timing,
+        meta=MetaData(song=song_info, source=source_info),
+        timing=Timing(resolution=resolution, tempos=tempos),
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,

@@ -1,13 +1,13 @@
 """Music21 converter interface."""
-from pathlib import Path
-from typing import TYPE_CHECKING, Union
-from music21 import stream
+from typing import TYPE_CHECKING, Any
+
+from music21.stream import Stream
 
 if TYPE_CHECKING:
     from ..music import Music
 
 
-def to_music21(music: "Music"):
+def to_music21(music: "Music", **kwargs: Any) -> Stream:
     """Write a Music object to a music21 stream object.
 
     Parameters
@@ -21,5 +21,4 @@ def to_music21(music: "Music"):
         Converted music21 stream object.
 
     """
-    # TODO: Not implemented yet
-    return stream.Stream()
+    raise NotImplementedError

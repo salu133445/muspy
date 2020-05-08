@@ -1,5 +1,8 @@
 """Pianoroll input interface."""
+from typing import Any
+
 from pypianoroll import Multitrack
+
 from ..classes import Track
 from ..music import Music
 from ..processor import PianoRollProcessor
@@ -19,11 +22,12 @@ def from_pypianoroll(m: Multitrack) -> Music:
         Converted MusPy Music object.
 
     """
-    # TODO: Not implemented yet
-    return Music()
+    raise NotImplementedError
 
 
-def from_pianoroll_representation(data, **kwargs) -> Music:
+def from_pianoroll_representation(
+    data, min_step: int = 1, binarized: bool = False, **kwargs: Any
+) -> Music:
     """Return a Music object converted from a pianoroll representation.
 
     Parameters
@@ -44,10 +48,6 @@ def from_pianoroll_representation(data, **kwargs) -> Music:
         Converted MusPy Music object. (Only Track - Note has the information)
 
     """
-    repr_seq = data
-    min_step = 1
-    if "min_step" in kwargs:
-        min_step = kwargs["min_step"]
-    processor = PianoRollProcessor(min_step=min_step)
-    note_seq = processor.decode(repr_seq)
-    return Music(tracks = [Track(notes = note_seq)])
+    processor = PianoRollProcessor(min_step=min_step, binarized=binarized)
+    notes = processor.decode(data)
+    return Music(tracks=[Track(notes=notes)], **kwargs)

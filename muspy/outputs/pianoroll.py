@@ -75,7 +75,12 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     )
 
 
-def to_pianoroll_representation(music: "Music", **kwargs) -> np.ndarray:
+def to_pianoroll_representation(
+    music: "Music",
+    min_step: int = 1,
+    binarized: bool = False,
+    compact: bool = False,
+) -> ndarray:
     """Return a Music object in pianoroll representation.
 
     Parameters
@@ -96,16 +101,25 @@ def to_pianoroll_representation(music: "Music", **kwargs) -> np.ndarray:
                 the value in each dimension indicates the velocity
 
     """
-    if not music.timing.is_metrical:
-        raise Exception("object is not metrical", music.timing)
-    note_seq = []
-    for track in music.tracks:
-        note_seq.extend(track.notes)
+    if compact and binarized:
+        raise ValueError("`compact` and `binarized` must not be both True.")
 
-    min_step = 1
-    if "min_step" in kwargs:
-        min_step = kwargs["min_step"]
-    note_seq.sort(key=lambda x: x.start)
-    processor = PianoRollProcessor(min_step=min_step)
-    repr_seq = processor.encode(note_seq)
-    return np.array(repr_seq)
+    notes = []
+    for track in music.tracks:
+        notes.extend(track.notes)
+    notes.sort(key=lambda x: x.start)
+
+    if compact:
+        if min_step > 1:
+            raise NotImplementedError
+        if not notes:
+            return np.array([129], np.uint8)
+        length = max((note.end for note in notes))
+        compacted_pianoroll = np.empty(length, np.uint8)
+        compacted_pianoroll.fill(129)
+        for note in notes:
+            compacted_pianoroll[note.start : note.end - 1] = note.pitch
+        return compacted_pianoroll
+
+    processor = PianoRollProcessor(min_step=min_step, binarized=binarized)
+    return processor.encode(notes)

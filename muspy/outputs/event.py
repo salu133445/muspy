@@ -1,9 +1,18 @@
 """Event-based representation output interface."""
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
+from numpy import ndarray
+
 from ..processor import MidiEventProcessor
 
+if TYPE_CHECKING:
+    from ..music import Music
 
-def to_event_representation(music: "Music", **kwargs) -> np.ndarray:
+
+def to_event_representation(
+    music: "Music", min_step: int = 1, **kwargs: Any
+) -> ndarray:
     """Return a Music object in event-based representation.
 
     Parameters
@@ -44,12 +53,9 @@ def to_event_representation(music: "Music", **kwargs) -> np.ndarray:
     [380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]
 
     """
-    if not music.timing.is_metrical:
-        raise Exception("object is not metrical", music.timing)
-    note_seq = []
+    notes = []
     for track in music.tracks:
-        note_seq.extend(track.notes)
-    note_seq.sort(key=lambda x: x.start)
-    processor = MidiEventProcessor(**kwargs)
-    repr_seq = processor.encode(note_seq)
-    return np.array(repr_seq)
+        notes.extend(track.notes)
+    notes.sort(key=lambda x: x.start)
+    processor = MidiEventProcessor(min_step=min_step, **kwargs)
+    return np.array(processor.encode(notes))

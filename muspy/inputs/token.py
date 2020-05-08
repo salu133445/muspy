@@ -1,10 +1,12 @@
 """Token-based representation input interface."""
+from typing import Any
+
 from ..classes import Track
 from ..music import Music
 from ..processor import MonoTokenProcessor
 
 
-def from_monotoken_representation(data, **kwargs) -> Music:
+def from_monotoken_representation(data, **kwargs: Any) -> Music:
     """Return a Music object converted from a monotoken-based representation.
 
     Parameters
@@ -38,7 +40,7 @@ def from_monotoken_representation(data, **kwargs) -> Music:
         min_step = kwargs["min_step"]
     processor = MonoTokenProcessor(min_step=min_step)
     note_seq = processor.decode(repr_seq)
-    return Music(tracks = [Track(notes = note_seq)])
+    return Music(tracks=[Track(notes=note_seq)])
 
 
 def from_polytoken_representation(data, **kwargs) -> Music:

@@ -173,6 +173,8 @@ def read_midi_mido(
         return tracks[t_idx][key]
 
     midi = MidiFile(filename=str(path))
+    if midi.ticks_per_beat < 1:
+        raise ValueError("`ticks_per_beat` must be positive.")
 
     time = 0
     tempos, key_signatures, time_signatures = [], [], []

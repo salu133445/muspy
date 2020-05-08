@@ -1,9 +1,16 @@
 """Note-based representation output interface."""
+from typing import TYPE_CHECKING
+
 import numpy as np
+from numpy import ndarray
+
 from ..processor import NoteProcessor
 
+if TYPE_CHECKING:
+    from ..music import Music
 
-def to_note_representation(music: "Music", **kwargs) -> np.ndarray:
+
+def to_note_representation(music: "Music", min_step: int = 1) -> ndarray:
     """Return a Music object in note-based representation.
 
     Parameters
@@ -31,17 +38,9 @@ def to_note_representation(music: "Music", **kwargs) -> np.ndarray:
             (assume velocity to be 100)
 
     """
-    # TODO: Not implemented yet
-    if not music.timing.is_metrical:
-        raise Exception("object is not metrical", music.timing)
-    note_seq = []
+    notes = []
     for track in music.tracks:
-        note_seq.extend(track.notes)
-
-    min_step = 1
-    if "min_step" in kwargs:
-        min_step = kwargs["min_step"]
-    note_seq.sort(key=lambda x: x.start)
+        notes.extend(track.notes)
+    notes.sort(key=lambda x: x.start)
     processor = NoteProcessor(min_step=min_step)
-    repr_seq = processor.encode(note_seq)
-    return np.array(repr_seq)
+    return np.array(processor.encode(notes))

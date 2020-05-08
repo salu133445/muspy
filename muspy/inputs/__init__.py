@@ -9,7 +9,8 @@ MusPy provides the following input interfaces.
   :func:`muspy.read_musicxml`
 - Convert from other objects: :func:`muspy.from_pretty_midi` and
   :func:`muspy.from_pypianoroll`
-- Wrappers: :func:`muspy.load`, :func:`muspy.read` and :func:`muspy.from_object`
+- Wrappers: :func:`muspy.load`, :func:`muspy.read` and
+  :func:`muspy.from_object`
 
 """
 from .event import from_event_representation

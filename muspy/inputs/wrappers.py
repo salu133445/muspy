@@ -92,7 +92,9 @@ def read(
     if kind is None:
         if str(path).lower().endswith((".mid", ".midi")):
             kind = "midi"
-        elif str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
+        elif (
+            str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml"))
+        ):
             kind = "musicxml"
         else:
             raise ValueError(
@@ -122,7 +124,7 @@ def from_object(obj: Union[PrettyMIDI, Multitrack], **kwargs: Any) -> Music:
     """
     if isinstance(obj, PrettyMIDI):
         return from_pretty_midi(obj, **kwargs)  # type: ignore
-    elif isinstance(obj, Multitrack):
+    if isinstance(obj, Multitrack):
         return from_pypianoroll(obj, **kwargs)  # type: ignore
     raise TypeError(
         "`obj` must be of type pretty_midi.PrettyMIDI or "
@@ -148,15 +150,15 @@ def from_representation(data: ndarray, kind: str, **kwargs: Any) -> Music:
 
     """
     if kind.lower() in ("event", "event-based"):
-        return from_event_representation(data, **kwargs)  # type: ignore
+        return from_event_representation(data, **kwargs)
     if kind.lower() in ("note", "note-based"):
-        return from_note_representation(data, **kwargs)  # type: ignore
+        return from_note_representation(data, **kwargs)
     if kind.lower() in ("pianoroll", "piano-roll"):
-        return from_pianoroll_representation(data, **kwargs)  # type: ignore
+        return from_pianoroll_representation(data, **kwargs)
     if kind.lower() in ("monotoken", "mono-token"):
-        return from_monotoken_representation(data, **kwargs)  # type: ignore
+        return from_monotoken_representation(data, **kwargs)
     if kind.lower() in ("polytoken", "poly-token"):
-        return from_polytoken_representation(data, **kwargs)  # type: ignore
+        return from_polytoken_representation(data, **kwargs)
     raise ValueError(
         "`kind` must be one of 'event', 'note', 'pianoroll', 'monotoken' and "
         "'polytoken'."

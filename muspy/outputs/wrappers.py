@@ -90,7 +90,9 @@ def write(
     if kind is None:
         if str(path).lower().endswith((".mid", ".midi")):
             kind = "midi"
-        elif str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml")):
+        elif (
+            str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml"))
+        ):
             kind = "musicxml"
         else:
             raise ValueError(
@@ -146,15 +148,15 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
 
     """
     if kind.lower() in ("event", "event-based"):
-        return to_event_representation(music, **kwargs)  # type: ignore
+        return to_event_representation(music, **kwargs)
     if kind.lower() in ("note", "note-based"):
-        return to_note_representation(music, **kwargs)  # type: ignore
+        return to_note_representation(music, **kwargs)
     if kind.lower() in ("pianoroll", "piano-roll"):
-        return to_pianoroll_representation(music, **kwargs)  # type: ignore
+        return to_pianoroll_representation(music, **kwargs)
     if kind.lower() in ("monotoken", "mono-token", "monotoken-based"):
-        return to_monotoken_representation(music, **kwargs)  # type: ignore
+        return to_monotoken_representation(music, **kwargs)
     if kind.lower() in ("polytoken", "poly-token", "polytoken-based"):
-        return to_polytoken_representation(music, **kwargs)  # type: ignore
+        return to_polytoken_representation(music, **kwargs)
     raise ValueError(
         "`kind` must be one of 'event', 'note', 'pianoroll', 'monotoken' and "
         "'polytoken'."

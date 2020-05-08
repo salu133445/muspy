@@ -1,9 +1,12 @@
 """Event-based representation input interface."""
+from typing import Any
+
 from ..classes import Track
 from ..music import Music
 from ..processor import MidiEventProcessor
 
-def from_event_representation(data, **kwargs) -> Music:
+
+def from_event_representation(data, **kwargs: Any) -> Music:
     """Return a Music object converted from an event-based representation.
 
     Parameters
@@ -43,7 +46,6 @@ def from_event_representation(data, **kwargs) -> Music:
         Converted MusPy Music object. (Only Track - Note has the information)
 
     """
-    repr_seq = list(data)
     processor = MidiEventProcessor(**kwargs)
-    note_seq = processor.decode(repr_seq)
-    return Music(tracks = [Track(notes = note_seq)])
+    notes = processor.decode(data)
+    return Music(tracks=[Track(notes=notes)], **kwargs)

@@ -1,9 +1,16 @@
 """Token-based representation output interface."""
+from typing import TYPE_CHECKING
+
 import numpy as np
+from numpy import ndarray
+
 from ..processor import MonoTokenProcessor
 
+if TYPE_CHECKING:
+    from ..music import Music
 
-def to_monotoken_representation(music: "Music", **kwargs) -> np.ndarray:
+
+def to_monotoken_representation(music: "Music", min_step: int = 1) -> ndarray:
     """Return a Music object in monotoken-based representation.
 
     Parameters
@@ -32,24 +39,17 @@ def to_monotoken_representation(music: "Music", **kwargs) -> np.ndarray:
         [60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]
 
     """
-    if not music.timing.is_metrical:
-        raise Exception("object is not metrical", music.timing)
-    if len(music.tracks) != 1:
-        raise Exception(
-            "mono token representation can't accept more than one track!",
-            len(music.tracks),
+    if len(music.tracks) > 1:
+        raise ValueError(
+            "Mono token representation only works for single-track music."
         )
-    min_step = 1
-    if "min_step" in kwargs:
-        min_step = kwargs["min_step"]
-    note_seq = music.tracks[0].notes
-    note_seq.sort(key=lambda x: x.start)
+    notes = music.tracks[0].notes
+    notes.sort(key=lambda x: x.start)
     processor = MonoTokenProcessor(min_step=min_step)
-    repr_seq = processor.encode(note_seq)
-    return np.array(repr_seq)
+    return np.array(processor.encode(notes))
 
 
-def to_polytoken_representation(music: "Music", **kwargs) -> np.ndarray:
+def to_polytoken_representation(music: "Music", **kwargs) -> ndarray:
     """Return a Music object in polytoken-based representation.
 
     Parameters
@@ -63,5 +63,4 @@ def to_polytoken_representation(music: "Music", **kwargs) -> np.ndarray:
         Converted polytoken-based representation.
 
     """
-    # TODO: Not implemented yet
-    return np.array()
+    raise NotImplementedError
