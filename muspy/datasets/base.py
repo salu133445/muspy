@@ -1,7 +1,7 @@
 """Base MusPy dataset class."""
 import warnings
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Any, Callable, Dict, Optional, Union
 
 from numpy import ndarray
 from tqdm import tqdm
@@ -78,20 +78,41 @@ class Dataset:
         """Return the citation infomation."""
         return cls._info.citation
 
-    def to_pytorch_dataset(self, representation: str) -> "TorchMusicDataset":
+    def to_pytorch_dataset(
+        self,
+        factory: Optional[Callable] = None,
+        representation: Optional[str] = None,
+        **kwargs: Any
+    ) -> TorchDataset:
         """Return a PyTorch dataset (`torch.utils.data.dataset`).
 
         Parameters
         ----------
-        representation : str
+        factory : Callable, optional
+            Function to be applied to the Music objects. The input is a Music
+            object, and the output is an array or a tensor.
+        representation : str, optional
             Target representation. Supported values are 'event', 'note',
             'pianoroll', 'monotoken' and 'polytoken'.
 
         """
         # TODO: Support slicing and other operations
+        if representation is None and factory is None:
+            raise TypeError(
+                "One of `representation` and `factory` must be given."
+            )
+        if representation is not None and factory is not None:
+            raise TypeError(
+                "Only one of `representation` and `factory` can be given."
+            )
+
         if not HAS_TORCH:
             raise ImportError("Optional package torch is required.")
-        return TorchMusicDataset(self, representation)
+
+        if representation is not None:
+            return TorchRepresentationDataset(self, representation)
+
+        return TorchMusicFactoryDataset(self, factory)  # type: ignore
 
     def save(
         self,
@@ -335,7 +356,30 @@ class RemoteDataset(Dataset):
 
 if HAS_TORCH:
 
-    class TorchMusicDataset(TorchDataset):
+    class TorchMusicFactoryDataset(TorchDataset):
+        """A PyTorch dataset built from a Music dataset.
+
+        Parameters
+        ----------
+        dataset : :class:`muspy.Dataset`
+            Dataset object to base on.
+        factory : Callable
+            Function to be applied to the Music objects. The input is a Music
+            object, and the output is an array or a tensor.
+
+        """
+
+        def __init__(self, dataset: Dataset, factory: Callable):
+            self.dataset = dataset
+            self.factory = factory
+
+        def __getitem__(self, index) -> ndarray:
+            return self.factory(self.dataset[index])
+
+        def __len__(self) -> int:
+            return len(self.dataset)
+
+    class TorchRepresentationDataset(TorchMusicFactoryDataset):
         """A PyTorch music dataset.
 
         Parameters
@@ -348,12 +392,12 @@ if HAS_TORCH:
 
         """
 
-        def __init__(self, dataset: Dataset, representation: str):
+        def __init__(
+            self, dataset: Dataset, representation: str, **kwargs: Any
+        ):
             self.dataset = dataset
-            self.representation = representation
 
-        def __getitem__(self, index) -> ndarray:
-            return self.dataset[index].to_representation(self.representation)
+            def factory(music):
+                return music.to_representation(representation, **kwargs)
 
-        def __len__(self) -> int:
-            return len(self.dataset)
+            super().__init__(dataset, factory)

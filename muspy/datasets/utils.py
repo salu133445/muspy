@@ -13,6 +13,8 @@ from typing import Optional, Union
 import requests
 from tqdm import tqdm
 
+# TODO: Add SHA checksum supports
+
 
 class _ProgressBar:
     """A callable progress bar object.

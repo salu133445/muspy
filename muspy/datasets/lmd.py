@@ -16,8 +16,8 @@ _HOMEPAGE = "https://colinraffel.com/projects/lmd/"
 _CITATION = """\
 @phdthesis{raffel2016learning
   title={Learning-Based Methods for Comparing Sequences, with Applications\
-to Audio-to-MIDI Alignment and Matching},
-  author={Raffel, Colin},
+to Audio-to-{MIDI} Alignment and Matching},
+  author={Colin Raffel},
   year={2016}
 }
 """

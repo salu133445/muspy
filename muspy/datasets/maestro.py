@@ -1,0 +1,75 @@
+"""MAESTRO Dataset."""
+from ..inputs import read_midi
+from .base import DatasetInfo
+from .datasets import RemoteFolderDataset
+
+_NAME = "MAESTRO Dataset"
+_DESCRIPTION = """\
+MAESTRO (MIDI and Audio Edited for Synchronous TRacks and Organization) is a \
+dataset composed of over 200 hours of virtuosic piano performances captured \
+with fine alignment (~3 ms) between note labels and audio waveforms.
+"""
+_HOMEPAGE = "https://magenta.tensorflow.org/datasets/maestro"
+_CITATION = """\
+@inproceedings{hawthorne2018enabling,
+  title={Enabling Factorized Piano Music Modeling and Generation with the \
+{MAESTRO} Dataset},
+  author={Curtis Hawthorne and Andriy Stasyuk and Adam Roberts and Ian Simon \
+and Cheng-Zhi Anna Huang and Sander Dieleman and Erich Elsen and Jesse Engel \
+and Douglas Eck},
+  booktitle={Proceedings of the 7th International Conference on Learning \
+Representations (ICLR)},
+  year={2019},
+  url={https://openreview.net/forum?id=r1lYRjC9F7}
+}
+"""
+
+
+class MAESTRODatasetV1(RemoteFolderDataset):
+    """MAESTRO Dataset (MIDI only)."""
+
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _sources = {
+        "maestro": {
+            "filename": "maestro-v2.0.0-midi.zip",
+            "url": (
+                "https://storage.googleapis.com/magentadata/datasets/maestro/"
+                "v1.0.0/maestro-v1.0.0-midi.zip"
+            ),
+            "archive": True,
+            "sha256": (
+                "f620f9e1eceaab8beea10617599add2e9c83234199b550382a2f603098ae7"
+                "135"
+            ),
+        }
+    }
+    _extension = "midi"
+
+    @classmethod
+    def _converter(cls, filename):
+        return read_midi(filename)
+
+
+class MAESTRODatasetV2(RemoteFolderDataset):
+    """MAESTRO Dataset (MIDI only)."""
+
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _sources = {
+        "maestro": {
+            "filename": "maestro-v2.0.0-midi.zip",
+            "url": (
+                "https://storage.googleapis.com/magentadata/datasets/maestro/"
+                "v2.0.0/maestro-v2.0.0-midi.zip"
+            ),
+            "archive": True,
+            "sha256": (
+                "ec2cc9d94886c6b376db1eaa2b8ad1ce62ff9f0a28b3744782b13163295da"
+                "df3"
+            ),
+        }
+    }
+    _extension = "midi"
+
+    @classmethod
+    def _converter(cls, filename):
+        return read_midi(filename)

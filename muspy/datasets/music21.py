@@ -1,6 +1,6 @@
 """Datasets built from music21 corpus."""
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 from ..datasets import Dataset, MusicDataset
 from ..inputs import read
@@ -20,10 +20,10 @@ Dataset automatically created from a music21 corpus.
 _HOMEPAGE = "https://web.mit.edu/music21/doc/about/referenceCorpus.html"
 _CITATION = """\
 @inproceedings{cuthbert2010music21,
-  author={Cuthbert, Michael Scott and Ariza, Christopher},
+  author={Michael Scott Cuthbert and Christopher Ariza},
   title={Music21: A Toolkit for Computer-Aided Musicology and Symbolic Music \
 Data},
-  booktitle={Proceedings of the 18th International Society for Music \
+  booktitle={Proceedings of the 11th International Society for Music \
 Information Retrieval Conference (ISMIR)},
   year={2010}
 }
@@ -48,15 +48,26 @@ class Music21Dataset(Dataset):
 
     """
 
+    _extensions = (".mid", ".midi", ".mxl", ".xml", ".mxml", ".musicxml")
+
     @classmethod
     def _converter(cls, filename: str) -> Music:
         return read(filename)
 
-    def __init__(self, composer, extensions):
+    def __init__(self, composer: Optional[str] = None):
         if not HAS_MUSIC21:
             raise ImportError("Optional package music21 is required.")
-        self.composer = composer
-        self.filenames = corpus.getComposer(composer, extensions)
+
+        if composer is None:
+            self.composer = "ALL"
+            self.filenames = [
+                path
+                for path in corpus.corpora.CoreCorpus().getPaths()
+                if str(path).endswith(self._extensions)
+            ]
+        else:
+            self.composer = composer
+            self.filenames = corpus.getComposer(composer, self._extensions)
 
     def __repr__(self) -> str:
         return "{}(composer={})".format(type(self).__name__, self.composer)
