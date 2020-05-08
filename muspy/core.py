@@ -6,7 +6,7 @@ Core functions that can be applied to a :class:`muspy.Music` object.
 
 """
 from collections import OrderedDict
-from typing import Callable, List, Optional, Union
+from typing import Callable, Optional, Union
 
 from .classes import Note, Timing, Track
 from .music import Music
@@ -16,7 +16,6 @@ __all__ = [
     "adjust_time",
     "append",
     "clip",
-    "quantize",
     "remove_duplicate_changes",
     "sort",
     "to_ordered_dict",
@@ -146,35 +145,6 @@ def get_end_time(
 
     """
     return obj.get_end_time(is_sorted=is_sorted)
-
-
-def quantize(
-    music: Music,
-    resolution: int,
-    beats: Optional[List[float]] = None,
-    bpm: float = None,
-    offset: float = 0,
-):
-    """Quantize the timing of time-stamped objects.
-
-    Parameters
-    ----------
-    music : :class:`muspy.Music` object
-        MusPy music object to be quantized.
-    resolution : int
-        Time steps per beat.
-    beats : list of float
-        Sorted list of beat positions in ascending order, assuming no
-        duplicate values.
-    bpm : int or float
-        Length of quantization step, in seconds.
-    offset : float
-        Offset of the beat pulse train, e.g., start time of the first beat.
-
-    """
-    return music.quantize(
-        resolution=resolution, beats=beats, bpm=bpm, offset=offset
-    )
 
 
 def remove_duplicate_changes(obj: Union[Music, Timing]):
