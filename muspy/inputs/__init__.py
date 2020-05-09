@@ -22,6 +22,7 @@ from .pianoroll import from_pypianoroll, from_pianoroll_representation
 from .token import from_monotoken_representation, from_polytoken_representation
 from .wrappers import from_object, from_representation, load, read
 from .yaml import load_yaml
+from .abc import read_abc_music21
 
 __all__ = [
     "from_event_representation",
@@ -39,4 +40,5 @@ __all__ = [
     "read",
     "read_midi",
     "read_musicxml",
+    "read_abc_music21"
 ]

@@ -197,7 +197,7 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
                     "note_on",
                     time=note.start,
                     note=note.pitch,
-                    velocity=note.velocity,
+                    velocity=int(note.velocity),
                     channel=channel,
                 )
             )
@@ -206,7 +206,7 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
                     "note_off",
                     time=note.end,
                     note=note.pitch,
-                    velocity=note.velocity,
+                    velocity=int(note.velocity),
                     channel=channel,
                 )
             )
