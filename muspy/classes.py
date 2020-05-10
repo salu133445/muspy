@@ -7,12 +7,13 @@ the base class :class:`muspy.Base`.
 
 """
 from collections import OrderedDict
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional
 
 from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
 
 DEFAULT_RESOLUTION = 24
+DEFAULT_VELOCITY = 64
 
 __all__ = [
     "Annotation",
@@ -339,28 +340,27 @@ class Note(Base):
         End time of the note, in time steps or seconds.
     pitch : int
         Note pitch, as a MIDI note number.
-    velocity : float
-        Note velocity.
+    velocity : int, optional
+        Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
 
     """
 
     _attributes = OrderedDict(
-        [
-            ("start", int),
-            ("end", int),
-            ("pitch", int),
-            ("velocity", (int, float)),
-        ]
+        [("start", int), ("end", int), ("pitch", int), ("velocity", int)]
     )
     _temporal_attributes = ["start", "end"]
 
     def __init__(
-        self, start: int, end: int, pitch: int, velocity: float,
+        self,
+        start: int,
+        end: int,
+        pitch: int,
+        velocity: int = DEFAULT_VELOCITY,
     ):
         self.start = start
         self.end = end
         self.pitch = pitch
-        self.velocity = float(velocity)
+        self.velocity = velocity
 
     @property
     def duration(self):
@@ -397,14 +397,14 @@ class Note(Base):
         self.pitch += semitone
         return self
 
-    def clip(self, lower: float = 0, upper: float = 127):
+    def clip(self, lower: int = 0, upper: int = 127):
         """Clip the velocity of the note.
 
         Parameters
         ----------
-        lower : int or float, optional
+        lower : int, optional
             Lower bound. Defaults to 0.
-        upper : int or float, optional
+        upper : int, optional
             Upper bound. Defaults to 127.
 
         """
@@ -427,27 +427,37 @@ class Chord(ComplexBase):
         End time of the note, in time steps or seconds.
     pitches : list of int
         Note pitches, as MIDI note numbers.
+    velocity : int, optional
+        Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
 
     """
 
     _attributes = OrderedDict(
-        [
-            ("start", int),
-            ("end", int),
-            ("pitches", int),
-            ("velocity", (int, float)),
-        ]
+        [("start", int), ("end", int), ("pitches", int), ("velocity", int)]
     )
     _temporal_attributes = ["start", "end"]
     _list_attributes = ["pitches"]
 
     def __init__(
-        self, start: int, end: int, pitches: List[int], velocity: float,
+        self,
+        start: int,
+        end: int,
+        pitches: List[int],
+        velocity: int = DEFAULT_VELOCITY,
     ):
         self.start = start
         self.end = end
         self.pitches = pitches
-        self.velocity = float(velocity)
+        self.velocity = velocity
+
+    def __repr__(self):
+        return "{}(start={}, end={}, pitches={}, velocity={})".format(
+            type(self).__name__,
+            self.start,
+            self.end,
+            self.pitches,
+            self.velocity,
+        )
 
     @property
     def duration(self):
@@ -483,14 +493,14 @@ class Chord(ComplexBase):
         self.pitches += [pitch + semitone for pitch in self.pitches]
         return self
 
-    def clip(self, lower: float = 0, upper: float = 127):
+    def clip(self, lower: int = 0, upper: int = 127):
         """Clip the velocity of the note.
 
         Parameters
         ----------
-        lower : int or float, optional
+        lower : int, optional
             Lower bound. Defaults to 0.
-        upper : int or float, optional
+        upper : int, optional
             Upper bound. Defaults to 127.
 
         """
@@ -549,7 +559,7 @@ class Track(ComplexBase):
         is_drum: bool = False,
         name: Optional[str] = None,
         notes: Optional[List[Note]] = None,
-        chords: Optional[List[Note]] = None,
+        chords: Optional[List[Chord]] = None,
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
     ):
@@ -597,14 +607,14 @@ class Track(ComplexBase):
             _get_end_time(self.annotations),
         )
 
-    def clip(self, lower: float = 0, upper: float = 127):
+    def clip(self, lower: int = 0, upper: int = 127):
         """Clip the velocity of each note.
 
         Parameters
         ----------
-        lower : int or float, optional
+        lower : int, optional
             Lower bound. Defaults to 0.
-        upper : int or float, optional
+        upper : int, optional
             Upper bound. Defaults to 127.
 
         """

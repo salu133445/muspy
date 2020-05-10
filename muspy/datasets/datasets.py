@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Optional, Union
 
-from ..inputs import load
+from ..inputs import load, read_abc_string
 from ..music import Music
 from .base import Dataset, RemoteDataset
 
@@ -321,5 +321,84 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
     ):
         RemoteDataset.__init__(self, root, download_and_extract, cleanup)
         FolderDataset.__init__(
+            self, root, convert, kind, n_jobs, ignore_exceptions, use_converted
+        )
+
+
+class ABCFolderDataset(FolderDataset):
+    """A class of local datasets containing ABC files in a folder."""
+
+    _extension = "abc"
+
+    @classmethod
+    def _converter(cls, filename):
+        filename, (start, end) = filename
+        data = []
+        with open(filename) as f:
+            for idx, line in enumerate(f):
+                if start <= idx < end and not line.startswith("%"):
+                    data.append(line)
+        return read_abc_string("".join(data))[0]
+
+    def __init__(
+        self,
+        root: Union[str, Path],
+        convert: bool = False,
+        kind: str = "json",
+        n_jobs: int = 1,
+        ignore_exceptions: bool = False,
+        use_converted: Optional[bool] = None,
+    ):
+        super().__init__(
+            root, convert, kind, n_jobs, ignore_exceptions, use_converted,
+        )
+
+        self.fileparts = []
+
+        # Iterate over the files
+        for filename in self.filenames:
+            idx = 0
+            start = 0
+            with open(filename, errors="ignore") as f:
+
+                # Detect parts in a file
+                for idx, line in enumerate(f):
+                    if line.startswith("X:"):
+                        if start:
+                            self.fileparts.append((filename, (start, idx)))
+                        start = idx
+
+                # Append the last part
+                if start:
+                    self.fileparts.append((filename, (start, idx)))
+
+    def __len__(self) -> int:
+        if self._use_converted:
+            return len(self.converted_filenames)
+        return len(self.fileparts)
+
+    def __getitem__(self, index) -> Music:
+        if self._use_converted:
+            return load(self.root / self.converted_filenames[index], self.kind)
+        filename = str(self.root / self.fileparts[index][0])
+        return self._converter((filename, self.fileparts[index][1]))
+
+
+class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):
+    """A class of remote datasets containing ABC files in a folder."""
+
+    def __init__(
+        self,
+        root: Union[str, Path],
+        download_and_extract: bool = False,
+        cleanup: bool = False,
+        convert: bool = False,
+        kind: str = "json",
+        n_jobs: int = 1,
+        ignore_exceptions: bool = False,
+        use_converted: Optional[bool] = None,
+    ):
+        RemoteDataset.__init__(self, root, download_and_extract, cleanup)
+        ABCFolderDataset.__init__(
             self, root, convert, kind, n_jobs, ignore_exceptions, use_converted
         )

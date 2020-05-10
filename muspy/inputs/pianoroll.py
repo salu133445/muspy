@@ -9,7 +9,7 @@ from ..processor import PianoRollProcessor
 
 
 def from_pypianoroll(m: Multitrack) -> Music:
-    """Return a Music object converted from a Multitrack object.
+    """Return a Music object converted from a Pypianoroll Multitrack object.
 
     Parameters
     ----------

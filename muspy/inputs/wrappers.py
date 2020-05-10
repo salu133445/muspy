@@ -7,6 +7,7 @@ from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
 from ..music import Music
+from .abc import read_abc
 from .event import from_event_representation
 from .json import load_json
 from .midi import from_pretty_midi, read_midi
@@ -96,6 +97,8 @@ def read(
             str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml"))
         ):
             kind = "musicxml"
+        elif str(path).lower().endswith(".abc"):
+            kind = "abc"
         else:
             raise ValueError(
                 "Got unsupported file format (expect MIDI or MusicXML)."
@@ -104,7 +107,9 @@ def read(
         return read_midi(path, **kwargs)  # type: ignore
     if kind == "musicxml":
         return read_musicxml(path, **kwargs)  # type: ignore
-    raise ValueError("`kind` must be either 'midi' or 'musicxml'.")
+    if kind == "abc":
+        return read_abc(path, **kwargs)  # type: ignore
+    raise ValueError("`kind` must be one of 'midi', 'musicxml' and 'abc'.")
 
 
 def from_object(obj: Union[PrettyMIDI, Multitrack], **kwargs: Any) -> Music:

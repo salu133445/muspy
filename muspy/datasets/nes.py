@@ -31,7 +31,7 @@ class NESMusicDataset(RemoteFolderDataset):
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
     _sources = {
-        "lmd_full": {
+        "nes": {
             "filename": "nesmdb_midi.tar.gz",
             "url": (
                 "http://deepyeti.ucsd.edu/cdonahue/nesmdb/nesmdb_midi.tar.gz"

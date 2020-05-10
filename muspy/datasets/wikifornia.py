@@ -16,7 +16,7 @@ class WikiforniaDataset(RemoteFolderDataset):
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
     _sources = {
-        "lmd_full": {
+        "wikifonia": {
             "filename": "Wikifonia.zip",
             "url": "http://www.synthzone.com/files/Wikifonia/Wikifonia.zip",
             "archive": True,

@@ -27,7 +27,7 @@ def _is_drum(channel):
 
 
 def from_pretty_midi(pm: PrettyMIDI) -> Music:
-    """Return a Music object converted from a PrettyMIDI object.
+    """Return a Music object converted from a pretty_midi PrettyMIDI object.
 
     Parameters
     ----------
