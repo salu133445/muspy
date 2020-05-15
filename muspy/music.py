@@ -77,18 +77,17 @@ class Music(ComplexBase):
             ("timing", Timing),
             ("key_signatures", KeySignature),
             ("time_signatures", TimeSignature),
-            ("downbeats", float),
+            ("downbeats", list),
             ("lyrics", Lyric),
             ("annotations", Annotation),
             ("tracks", Track),
         ]
     )
     _optional_attributes = ["meta"]
-    _temporal_attributes = ["downbeats"]
+    # _temporal_attributes = ["downbeats"] # TODO
     _list_attributes = [
         "key_signatures",
         "time_signatures",
-        "downbeats",
         "lyrics",
         "annotations",
         "tracks",
@@ -250,7 +249,7 @@ class Music(ComplexBase):
             target_ = int(new_resolution)
 
         self.timing.resolution = int(target_)
-        self.adjust_time(lambda time: round(time / factor_))
+        self.adjust_time(lambda time: round(time * factor_))
         return self
 
     def append(self, obj) -> "Music":
@@ -270,14 +269,14 @@ class Music(ComplexBase):
         self._append(obj)
         return self
 
-    def clip(self, lower: float = 0, upper: float = 127) -> "Music":
+    def clip(self, lower: int = 0, upper: int = 127) -> "Music":
         """Clip the velocity of each note for each track.
 
         Parameters
         ----------
-        lower : int or float, optional
+        lower : int, optional
             Lower bound. Defaults to 0.
-        upper : int or float, optional
+        upper : int, optional
             Upper bound. Defaults to 127.
 
         """
@@ -311,7 +310,9 @@ class Music(ComplexBase):
             track.transpose(semitone)
         return self
 
-    def save(self, path: Union[str, Path], kind: Optional[str], **kwargs: Any):
+    def save(
+        self, path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
+    ):
         """Save loselessly to a JSON or a YAML file.
 
         Refer to :func:`muspy.save` for full documentation.

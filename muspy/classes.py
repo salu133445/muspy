@@ -47,7 +47,7 @@ class SongInfo(Base):
     """
 
     _attributes = OrderedDict(
-        [("title", str), ("artist", str), ("creators", str)]
+        [("title", str), ("artist", str), ("creators", list)]
     )
     _optional_attributes = ["title", "artist"]
 
@@ -264,7 +264,7 @@ class TimeSignature(Base):
     """
 
     _attributes = OrderedDict(
-        [("time", int), ("numerator", str), ("denominator", str)]
+        [("time", int), ("numerator", int), ("denominator", int)]
     )
     _temporal_attributes = ["time"]
 
@@ -451,12 +451,8 @@ class Chord(ComplexBase):
         self.velocity = velocity
 
     def __repr__(self):
-        return "{}(start={}, end={}, pitches={}, velocity={})".format(
-            type(self).__name__,
-            self.start,
-            self.end,
-            self.pitches,
-            self.velocity,
+        return "Chord(start={}, end={}, pitches={}, velocity={})".format(
+            self.start, self.end, self.pitches, self.velocity,
         )
 
     @property

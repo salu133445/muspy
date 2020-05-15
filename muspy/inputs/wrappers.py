@@ -76,7 +76,7 @@ def read(
     ----------
     path : str or Path
         Path to the file to be read.
-    kind : {'midi', 'musicxml'}, optional
+    kind : {'midi', 'musicxml', 'abc'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
 
