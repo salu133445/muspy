@@ -1,5 +1,9 @@
 """Lakh MIDI Dataset."""
+from pathlib import Path
+from typing import Union
+
 from ..inputs import read_midi
+from ..music import Music
 from .base import DatasetInfo
 from .datasets import RemoteFolderDataset
 
@@ -10,8 +14,7 @@ which have been matched and aligned to entries in the Million Song Dataset. \
 Its goal is to facilitate large-scale music information retrieval, both \
 symbolic (using the MIDI files alone) and audio content-based (using \
 information extracted from the MIDI files as annotations for the matched \
-audio files).
-"""
+audio files)."""
 _HOMEPAGE = "https://colinraffel.com/projects/lmd/"
 _CITATION = """\
 @phdthesis{raffel2016learning
@@ -19,8 +22,7 @@ _CITATION = """\
 to Audio-to-{MIDI} Alignment and Matching},
   author={Colin Raffel},
   year={2016}
-}
-"""
+}"""
 
 
 class LakhMIDIDataset(RemoteFolderDataset):
@@ -37,9 +39,9 @@ class LakhMIDIDataset(RemoteFolderDataset):
     }
     _extension = "mid"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)
 
 
 class LakhMIDIMatchedDataset(RemoteFolderDataset):
@@ -56,9 +58,9 @@ class LakhMIDIMatchedDataset(RemoteFolderDataset):
     }
     _extension = "mid"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)
 
 
 class LakhMIDIAlignedDataset(RemoteFolderDataset):
@@ -75,6 +77,6 @@ class LakhMIDIAlignedDataset(RemoteFolderDataset):
     }
     _extension = "mid"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)

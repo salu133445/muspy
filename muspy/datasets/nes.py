@@ -1,5 +1,9 @@
 """NES Music Database."""
+from pathlib import Path
+from typing import Union
+
 from ..inputs import read_midi
+from ..music import Music
 from .base import DatasetInfo
 from .datasets import RemoteFolderDataset
 
@@ -11,8 +15,7 @@ synthesizer. The NES synthesizer has highly constrained compositional \
 parameters which are well-suited to a wide variety of current machine \
 learning techniques. The synthesizer is typically programmed in assembly, but \
 we parse the assembly into straightforward formats that are more suitable for \
-machine learning.
-"""
+machine learning."""
 _HOMEPAGE = "https://github.com/chrisdonahue/nesmdb"
 _CITATION = """\
 @inproceedings{donahue2018nesmdb,
@@ -22,11 +25,10 @@ expressive performance attributes},
   booktitle={Proceedings of the 19th International Society for Music \
 Information Retrieval Conference (ISMIR)},
   year={2018}
-}
-"""
+}"""
 
 
-class NESMusicDataset(RemoteFolderDataset):
+class NESMusicDatabase(RemoteFolderDataset):
     """NES Music Database."""
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
@@ -45,6 +47,6 @@ class NESMusicDataset(RemoteFolderDataset):
     }
     _extension = "mid"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)

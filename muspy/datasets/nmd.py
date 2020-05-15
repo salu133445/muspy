@@ -7,8 +7,7 @@ This is a collection of 1200 British and American folk tunes, (hornpipe, \
 jigs, and etc.) that was created by Eric Foxley. The database was converted \
 to ABC music notation format and was posted on http://abc.sourceforge.net/. \
 The collection was edited by Seymour Shlien correcting missing beats during \
-repeats and transitions.
-"""
+repeats and transitions."""
 _HOMEPAGE = "https://ifdo.ca/~seymour/nottingham/nottingham.html"
 
 

@@ -14,9 +14,7 @@ except ImportError:
     HAS_MUSIC21 = False
 
 _NAME = "Music21 Corpus Dataset"
-_DESCRIPTION = """\
-Dataset automatically created from a music21 corpus.
-"""
+_DESCRIPTION = """Dataset automatically created from a music21 corpus."""
 _HOMEPAGE = "https://web.mit.edu/music21/doc/about/referenceCorpus.html"
 _CITATION = """\
 @inproceedings{cuthbert2010music21,
@@ -26,8 +24,7 @@ Data},
   booktitle={Proceedings of the 11th International Society for Music \
 Information Retrieval Conference (ISMIR)},
   year={2010}
-}
-"""
+}"""
 
 
 class Music21Dataset(Dataset):
@@ -48,11 +45,15 @@ class Music21Dataset(Dataset):
 
     """
 
-    _extensions = (".mid", ".midi", ".mxl", ".xml", ".mxml", ".musicxml")
-
-    @classmethod
-    def _converter(cls, filename: str) -> Music:
-        return read(filename)
+    _extensions = (
+        ".mid",
+        ".midi",
+        ".mxl",
+        ".xml",
+        ".mxml",
+        ".musicxml",
+        ".abc",
+    )
 
     def __init__(self, composer: Optional[str] = None):
         if not HAS_MUSIC21:
@@ -73,7 +74,7 @@ class Music21Dataset(Dataset):
         return "{}(composer={})".format(type(self).__name__, self.composer)
 
     def __getitem__(self, index) -> Music:
-        return self._converter(str(self.filenames[index]))
+        return read(str(self.filenames[index]))
 
     def __len__(self) -> int:
         return len(self.filenames)

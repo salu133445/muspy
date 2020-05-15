@@ -15,9 +15,9 @@ from .jsb import JSBChoralesDataset
 from .lmd import LakhMIDIDataset
 from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
 from .music21 import Music21Dataset
-from .nes import NESMusicDataset
+from .nes import NESMusicDatabase
 from .nmd import NottinghamDatabase
-from .wikifornia import WikiforniaDataset
+from .wikifornia import WikifoniaDataset
 
 __all__ = [
     "Dataset",
@@ -32,7 +32,7 @@ __all__ = [
     "MAESTRODatasetV2",
     "Music21Dataset",
     "MusicDataset",
-    "NESMusicDataset",
+    "NESMusicDatabase",
     "NottinghamDatabase",
-    "WikiforniaDataset",
+    "WikifoniaDataset",
 ]

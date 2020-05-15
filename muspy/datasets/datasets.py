@@ -1,6 +1,6 @@
 """Some simple dataset."""
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Callable, Optional, Tuple, Union
 
 from ..inputs import load, read_abc_string
 from ..music import Music
@@ -108,12 +108,12 @@ class FolderDataset(Dataset):
     ---------
     :meth:`muspy.FolderDataset.converted_exists` depends solely on a
     special file named ``.muspy.success`` in the folder
-    ``{root}/converted/``, which serves as an indicator for the existence
+    ``{root}/_converted/``, which serves as an indicator for the existence
     and integrity of the converted dataset. If the converted dataset is
     built by :meth:`muspy.FolderDataset.convert`, the ``.muspy.success``
     file will be created as well. If the converted dataset is created
     manually, make sure to create the ``.muspy.success`` file in the folder
-    ``{root}/converted/`` to prevent errors.
+    ``{root}/_converted/`` to prevent errors.
 
     Notes
     -----
@@ -122,12 +122,11 @@ class FolderDataset(Dataset):
     the docmentation of the methods ``__getitem__`` and ``__len__``, and the
     class attribute ``_info``.
 
-    In addition, the class attributes ``_extension`` and ``_converter``
-    should be properly set. ``_extension`` is the extension to look for when
-    building the dataset. All files with the given extension will be
-    included as source files. ``_converter`` is a class method that takes as
-    inputs a filename of a source file and return the converted Music
-    object.
+    In addition, the attribute ``_extension`` and method ``read`` should be
+    properly set. ``_extension`` is the extension to look for when building
+    the dataset. All files with the given extension will be included as
+    source files. ``read`` is a callable that takes as inputs a filename of
+    a source file and return the converted Music object.
 
     See Also
     --------
@@ -136,10 +135,6 @@ class FolderDataset(Dataset):
     """
 
     _extension: str = ""
-
-    @classmethod
-    def _converter(cls, filename: str) -> Music:
-        raise NotImplementedError
 
     def __init__(
         self,
@@ -152,42 +147,48 @@ class FolderDataset(Dataset):
     ):
         self.root = Path(root)
         self.kind = kind
-        self._use_converted = use_converted
 
-        self.filenames = sorted(
-            (
-                filename
-                for filename in self.root.rglob("*." + self._extension)
-                if not str(filename.relative_to(self.root)).startswith(
-                    "_converted/"
-                )
-            )
-        )
-        (self.root / ".muspy.success").touch()
+        # An internal pointer to the callable used to produce the Music object
+        self._factory: Callable = lambda: None
+
+        # An internal pointer to the list of filenames used when indexing
+        self._filenames: list = []
+
+        self.raw_filenames: list = []
+        self.converted_filenames: list = []
 
         if convert:
             self.convert(kind, n_jobs, ignore_exceptions)
 
-        if self._use_converted is None:
-            self._use_converted = self.converted_exists()
+        if use_converted is None:
+            use_converted = self.converted_exists()
 
-        if self._use_converted:
+        if use_converted:
             self.use_converted()
         else:
-            self.converted_filenames: list = []
+            self.on_the_fly()
+
+        if not self._filenames:
+            raise ValueError("Nothing found in the directory.")
+
+        (self.root / ".muspy.success").touch()
 
     def __repr__(self) -> str:
         return "{}(root={})".format(type(self).__name__, self.root)
 
     def __getitem__(self, index) -> Music:
-        if self._use_converted:
-            return load(self.root / self.converted_filenames[index], self.kind)
-        return self._converter(str(self.root / self.filenames[index]))
+        return self._factory(self._filenames[index])
 
     def __len__(self) -> int:
-        if self._use_converted:
-            return len(self.converted_filenames)
-        return len(self.filenames)
+        return len(self._filenames)
+
+    def read(self, filename: Any) -> Music:
+        """Read a file into a Music object."""
+        raise NotImplementedError
+
+    def load(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return load(self.root / filename)
 
     def exists(self) -> bool:
         """Return True if the dataset exists, otherwise False."""
@@ -213,15 +214,30 @@ class FolderDataset(Dataset):
                 "Converted data not found. Run `convert()` to convert "
                 "the dataset."
             )
-        self.converted_filenames = sorted(
-            self.converted_dir.rglob("*." + self.kind)
-        )
+        if not self.converted_filenames:
+            self.converted_filenames = sorted(
+                self.converted_dir.rglob("*." + self.kind)
+            )
+        self._filenames = self.converted_filenames
         self._use_converted = True
+        self._factory = self.load
         return self
 
     def on_the_fly(self) -> "FolderDataset":
         """Enable on-the-fly mode and convert the data on the fly."""
+        if not self.raw_filenames:
+            self.raw_filenames = sorted(
+                (
+                    filename
+                    for filename in self.root.rglob("*." + self._extension)
+                    if not str(filename.relative_to(self.root)).startswith(
+                        "_converted/"
+                    )
+                )
+            )
+        self._filenames = self.raw_filenames
         self._use_converted = False
+        self._factory = self.read
         return self
 
     def convert(
@@ -252,12 +268,13 @@ class FolderDataset(Dataset):
             Defaults to False.
 
         """
+        if self.converted_exists():
+            print("Skipped conversion as the target folder exists.")
+            return self
+        self.on_the_fly()
         self.converted_dir.mkdir(exist_ok=True)
         self.save(self.converted_dir, kind, n_jobs, ignore_exceptions)
-        self.converted_filenames = sorted(
-            self.converted_dir.rglob("*." + kind)
-        )
-        self._use_converted = True
+        self.use_converted()
         self.kind = kind
         return self
 
@@ -304,10 +321,6 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
 
     """
 
-    @classmethod
-    def _converter(cls, filename: str) -> Music:
-        raise NotImplementedError
-
     def __init__(
         self,
         root: Union[str, Path],
@@ -324,64 +337,61 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
             self, root, convert, kind, n_jobs, ignore_exceptions, use_converted
         )
 
+    def read(self, filename: str) -> Music:
+        """Read a file into a Music object."""
+        raise NotImplementedError
+
 
 class ABCFolderDataset(FolderDataset):
     """A class of local datasets containing ABC files in a folder."""
 
     _extension = "abc"
 
-    @classmethod
-    def _converter(cls, filename):
-        filename, (start, end) = filename
+    def read(self, filename: Tuple[str, Tuple[int, int]]) -> Music:
+        """Read a file into a Music object."""
+        filename_, (start, end) = filename
         data = []
-        with open(filename) as f:
+        with open(filename_) as f:
             for idx, line in enumerate(f):
                 if start <= idx < end and not line.startswith("%"):
                     data.append(line)
         return read_abc_string("".join(data))[0]
 
-    def __init__(
-        self,
-        root: Union[str, Path],
-        convert: bool = False,
-        kind: str = "json",
-        n_jobs: int = 1,
-        ignore_exceptions: bool = False,
-        use_converted: Optional[bool] = None,
-    ):
-        super().__init__(
-            root, convert, kind, n_jobs, ignore_exceptions, use_converted,
-        )
+    def on_the_fly(self) -> "FolderDataset":
+        """Enable on-the-fly mode and convert the data on the fly."""
+        if not self.raw_filenames:
+            filenames = sorted(
+                (
+                    filename
+                    for filename in self.root.rglob("*." + self._extension)
+                    if not str(filename.relative_to(self.root)).startswith(
+                        "_converted/"
+                    )
+                )
+            )
+            self.raw_filenames = []
+            for filename in filenames:
+                idx = 0
+                start = 0
+                with open(filename, errors="ignore") as f:
 
-        self.fileparts = []
+                    # Detect parts in a file
+                    for idx, line in enumerate(f):
+                        if line.startswith("X:"):
+                            if start:
+                                self.raw_filenames.append(
+                                    (filename, (start, idx))
+                                )
+                            start = idx
 
-        # Iterate over the files
-        for filename in self.filenames:
-            idx = 0
-            start = 0
-            with open(filename, errors="ignore") as f:
+                    # Append the last part
+                    if start:
+                        self.raw_filenames.append((filename, (start, idx)))
 
-                # Detect parts in a file
-                for idx, line in enumerate(f):
-                    if line.startswith("X:"):
-                        if start:
-                            self.fileparts.append((filename, (start, idx)))
-                        start = idx
-
-                # Append the last part
-                if start:
-                    self.fileparts.append((filename, (start, idx)))
-
-    def __len__(self) -> int:
-        if self._use_converted:
-            return len(self.converted_filenames)
-        return len(self.fileparts)
-
-    def __getitem__(self, index) -> Music:
-        if self._use_converted:
-            return load(self.root / self.converted_filenames[index], self.kind)
-        filename = str(self.root / self.fileparts[index][0])
-        return self._converter((filename, self.fileparts[index][1]))
+        self._filenames = self.raw_filenames
+        self._use_converted = False
+        self._factory = self.read
+        return self
 
 
 class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):

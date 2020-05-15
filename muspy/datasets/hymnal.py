@@ -1,18 +1,18 @@
 """Hymnal Dataset."""
 from pathlib import Path
-from typing import Union, Optional
+from typing import Optional, Union
 
 import requests
 
 from ..inputs import read_midi
+from ..music import Music
 from .base import DatasetInfo
 from .datasets import FolderDataset
 
 _NAME = "Hymnal Dataset"
 _DESCRIPTION = """\
 The Hymnal Dataset is a collection of hymns in MIDI format available at
-hymnal.net.
-"""
+hymnal.net."""
 _HOMEPAGE = "https://www.hymnal.net/"
 
 
@@ -22,10 +22,6 @@ class HymnalDataset(FolderDataset):
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
     _extension = "mid"
     _type = "mid"
-
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
 
     def __init__(
         self,
@@ -50,6 +46,10 @@ class HymnalDataset(FolderDataset):
         super().__init__(
             root, convert, kind, n_jobs, ignore_exceptions, use_converted
         )
+
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)
 
     def download(self) -> "FolderDataset":
         """Download the source datasets."""
@@ -113,10 +113,6 @@ class HymnalTuneDataset(FolderDataset):
     _extension = "mid"
     _type = "tune"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
-
     def __init__(
         self,
         root: Union[str, Path],
@@ -140,6 +136,10 @@ class HymnalTuneDataset(FolderDataset):
         super().__init__(
             root, convert, kind, n_jobs, ignore_exceptions, use_converted
         )
+
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)
 
     def download(self) -> "FolderDataset":
         """Download the source datasets."""

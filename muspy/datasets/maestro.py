@@ -1,5 +1,9 @@
 """MAESTRO Dataset."""
+from pathlib import Path
+from typing import Union
+
 from ..inputs import read_midi
+from ..music import Music
 from .base import DatasetInfo
 from .datasets import RemoteFolderDataset
 
@@ -7,8 +11,7 @@ _NAME = "MAESTRO Dataset"
 _DESCRIPTION = """\
 MAESTRO (MIDI and Audio Edited for Synchronous TRacks and Organization) is a \
 dataset composed of over 200 hours of virtuosic piano performances captured \
-with fine alignment (~3 ms) between note labels and audio waveforms.
-"""
+with fine alignment (~3 ms) between note labels and audio waveforms."""
 _HOMEPAGE = "https://magenta.tensorflow.org/datasets/maestro"
 _CITATION = """\
 @inproceedings{hawthorne2018enabling,
@@ -21,8 +24,7 @@ and Douglas Eck},
 Representations (ICLR)},
   year={2019},
   url={https://openreview.net/forum?id=r1lYRjC9F7}
-}
-"""
+}"""
 
 
 class MAESTRODatasetV1(RemoteFolderDataset):
@@ -45,9 +47,9 @@ class MAESTRODatasetV1(RemoteFolderDataset):
     }
     _extension = "midi"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)
 
 
 class MAESTRODatasetV2(RemoteFolderDataset):
@@ -70,6 +72,6 @@ class MAESTRODatasetV2(RemoteFolderDataset):
     }
     _extension = "midi"
 
-    @classmethod
-    def _converter(cls, filename):
-        return read_midi(filename)
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)

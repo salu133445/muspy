@@ -9,8 +9,7 @@ of the late Helmut Scaffrath who invented the EsAC code. Seymour Shlien \
 converted the database into abc music notation using a tcl/tk script that \
 Seymour Shlien wrote. Damien Sagrillo and Ewa Dahlig-Turek made available \
 several other collections (HAYDN.SM, IRL.SM, LUX.SM, LOT.SM, HAN1.SM and \
-HAN2.SM which were not publicly available.)
-"""
+HAN2.SM which were not publicly available.)"""
 _HOMEPAGE = "https://ifdo.ca/~seymour/runabc/esac/esacdatabase.html"
 
 
