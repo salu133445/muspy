@@ -159,7 +159,7 @@ The :class:`muspy.Note` class is a container for musical tracks.
 =========== ======================== ================================= =======
 Attributes  Description              Type                              Default
 =========== ======================== ================================= =======
-program     MIDI program number [#]_ int (0-127)                       0
+program     MIDI program number* int (0-127)                       0
 is_drum     If it is a drum track    bool                              False
 name        Track name               str
 notes       Musical notes            list of :class:`muspy.Note`       []
@@ -168,7 +168,7 @@ lyrics      Lyrics                   list of :class:`muspy.Lyric`      []
 annotations Annotations              list of :class:`muspy.Annotation` []
 =========== ======================== ================================= =======
 
-.. [#] MIDI program number is based on General MIDI specification (see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__).
+(MIDI program number is based on General MIDI specification; see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__.)
 
 Note Class
 ==========

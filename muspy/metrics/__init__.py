@@ -13,7 +13,7 @@ from .metrics import (
     n_pitch_classes_used,
     n_pitches_used,
     pitch_range,
-    polyphony,
+    polyphony_rate,
 )
 
 __all__ = [
@@ -22,5 +22,5 @@ __all__ = [
     "n_pitch_classes_used",
     "n_pitches_used",
     "pitch_range",
-    "polyphony",
+    "polyphony_rate",
 ]

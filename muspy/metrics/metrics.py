@@ -101,7 +101,7 @@ def empty_beat_rate(music: Music) -> float:
     return count / total_beats
 
 
-def polyphony(music: Music, threshold: int = 2) -> float:
+def polyphony_rate(music: Music, threshold: int = 2) -> float:
     r"""Return the polyphony measure.
 
     The polyphony is defined as the ratio of the number of time steps where
@@ -119,7 +119,7 @@ def polyphony(music: Music, threshold: int = 2) -> float:
     Returns
     -------
     float
-        Polyphony.
+        Polyphony rate.
 
     """
     length = max(track.get_end_time() for track in music.tracks)

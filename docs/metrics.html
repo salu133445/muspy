@@ -92,10 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Metrics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#id1">Metrics</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
 </ul>
@@ -165,12 +162,117 @@
   <div class="section" id="metrics">
 <h1>Metrics<a class="headerlink" href="#metrics" title="Permalink to this headline">¶</a></h1>
 <p>We implement several commonly used evaluation metrics.</p>
-<div class="section" id="id1">
-<h2>Metrics<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>This module provides functions for computing common metrics on a Music
-object. This can be useful for analyzing datasets and evaluating
-generative models.</p>
-</div>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">n_pitches_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/metrics/metrics.html#n_pitches_used"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the number of unique pitches used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>int</em> – Number of unique pitch classes used.</p></li>
+<li><p><em>list of bool</em> – A boolean list of length 128 indicating the pitches used. If the
+i-th element is True, the MIDI note pitch i is used.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">n_pitch_classes_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/metrics/metrics.html#n_pitch_classes_used"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the number of unique pitch classes used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>int</em> – Number of unique pitch classes used.</p></li>
+<li><p><em>list of bool</em> – A boolean list of length 12 indicating the pitch classes used. The
+first element corresponds to pitch A, and the last one corresponds
+to pitch G# (G sharp).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">pitch_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/metrics/metrics.html#pitch_range"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the pitch range.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">empty_beat_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/metrics/metrics.html#empty_beat_rate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the empty beat rate.</p>
+<p>The empty beat rate is defined as the ratio of the number of empty beats
+(where no pitch is played) to the number of beats.</p>
+<div class="math notranslate nohighlight">
+\[empty\_beat\_rate = \frac{\# of empty beats}{\# of beats}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Empty beat rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">polyphony_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/metrics/metrics.html#polyphony_rate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the polyphony measure.</p>
+<p>The polyphony is defined as the ratio of the number of time steps where
+multiple pitches are on to the total number of time steps.</p>
+<div class="math notranslate nohighlight">
+\[polyphony = \frac{
+    \# of time steps where multiple pitches are on}{\# of time steps}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Polyphony rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">in_scale_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/metrics/metrics.html#in_scale_rate"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the rate of notes in a musical scale.</p>
+<p>In scale rate is defined as the ratio of the number of notes in a scale
+to the total number of time steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to be evaluate.</p></li>
+<li><p><strong>root</strong> (<em>int</em>) – Root of the scale.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – Mode of the scale.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>In scale rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
