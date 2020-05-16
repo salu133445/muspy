@@ -2,16 +2,11 @@
 from pathlib import Path
 from typing import Optional, Union
 
+from music21 import corpus
+
 from ..datasets import Dataset, MusicDataset
 from ..inputs import read
 from ..music import Music
-
-try:
-    from music21 import corpus
-
-    HAS_MUSIC21 = True
-except ImportError:
-    HAS_MUSIC21 = False
 
 _NAME = "Music21 Corpus Dataset"
 _DESCRIPTION = """Dataset automatically created from a music21 corpus."""

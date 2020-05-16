@@ -262,7 +262,7 @@ class Dataset:
         splits: Optional[Union[float, List[float]]] = None,
         random_state: Any = None,
         **kwargs: Any
-    ) -> Union[TorchDataset, Dict[str, TorchDataset]]:
+    ) -> Union["TorchDataset", Dict[str, "TorchDataset"]]:
         """Return the dataset as a PyTorch dataset.
 
         Parameters
@@ -336,7 +336,7 @@ class Dataset:
         splits: Optional[Union[float, List[float]]] = None,
         random_state: Any = None,
         **kwargs: Any
-    ) -> Union[TFDataset, Dict[str, TFDataset]]:
+    ) -> Union["TFDataset", Dict[str, "TFDataset"]]:
         """Return the dataset as a TensorFlow dataset.
 
         Parameters
