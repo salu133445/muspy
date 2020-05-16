@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -155,24 +156,32 @@
            <div itemprop="articleBody">
             
   <h1>Source code for muspy.datasets.nmd</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Nottingham Music Database.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span>
+<span></span><span class="sd">&quot;&quot;&quot;Nottingham Database.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteABCFolderDataset</span>
+
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Nottingham Database&quot;</span>
+<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">This is a collection of 1200 British and American folk tunes, (hornpipe, </span><span class="se">\</span>
+<span class="s2">jigs, and etc.) that was created by Eric Foxley. The database was converted </span><span class="se">\</span>
+<span class="s2">to ABC music notation format and was posted on http://abc.sourceforge.net/. </span><span class="se">\</span>
+<span class="s2">The collection was edited by Seymour Shlien correcting missing beats during </span><span class="se">\</span>
+<span class="s2">repeats and transitions.&quot;&quot;&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://ifdo.ca/~seymour/nottingham/nottingham.html&quot;</span>
 
 
-<div class="viewcode-block" id="NottinghamMusicDatabase"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.NottinghamMusicDatabase">[docs]</a><span class="k">class</span> <span class="nc">NottinghamMusicDatabase</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Nottingham Music Database.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="NottinghamDatabase"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.NottinghamDatabase">[docs]</a><span class="k">class</span> <span class="nc">NottinghamDatabase</span><span class="p">(</span><span class="n">RemoteABCFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Nottingham Database.&quot;&quot;&quot;</span>
 
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;nmd&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;NMD.zip&quot;</span><span class="p">,</span>
-            <span class="c1"># TODO: this link seems no longer available?</span>
-            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://abc.sourceforge.net/NMD/nmd/NMD.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;nottingham_database.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">&quot;http://ifdo.ca/~seymour/nottingham/nottingham_database.zip&quot;</span>
+            <span class="p">),</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="c1"># https://github.com/jukedeck/nottingham-dataset</span>
-    <span class="p">}</span>
-    <span class="n">_default_subsets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;nmd&quot;</span><span class="p">]</span></div>
+    <span class="p">}</span></div>
 </pre></div>
 
            </div>

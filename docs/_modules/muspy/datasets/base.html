@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -158,9 +159,10 @@
 <span></span><span class="sd">&quot;&quot;&quot;Base MusPy dataset class.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">permutation</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
@@ -174,11 +176,31 @@
     <span class="n">HAS_TORCH</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+    <span class="kn">from</span> <span class="nn">tensorflow.data</span> <span class="kn">import</span> <span class="n">Dataset</span> <span class="k">as</span> <span class="n">TFDataset</span>
+
+    <span class="n">HAS_TENSORFLOW</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">HAS_TENSORFLOW</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 
     <span class="n">HAS_JOBLIB</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">HAS_JOBLIB</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">read_split</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Read a train-test-validation split from file.&quot;&quot;&quot;</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+            <span class="n">indices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">indices</span>
 
 
 <div class="viewcode-block" id="DatasetInfo"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.DatasetInfo">[docs]</a><span class="k">class</span> <span class="nc">DatasetInfo</span><span class="p">:</span>
@@ -198,8 +220,8 @@
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="s2">&quot;DatasetInfo(name=</span><span class="si">{}</span><span class="s2">, description=</span><span class="si">{}</span><span class="s2">, homepage=</span><span class="si">{}</span><span class="s2">, citation=</span><span class="si">{}</span><span class="s2">)&quot;</span>
-            <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s2">&quot;DatasetInfo(</span><span class="se">\n</span><span class="s2">  name=</span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">  description=</span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">  homepage=</span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">  &quot;</span>
+            <span class="s2">&quot;citation=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">homepage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">citation</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
@@ -228,48 +250,12 @@
 <div class="viewcode-block" id="Dataset.info"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.info">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the dataset infomation.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_info</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_info</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Dataset.cite"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.cite">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">cite</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the citation infomation.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">citation</span></div>
-
-<div class="viewcode-block" id="Dataset.to_pytorch_dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.to_pytorch_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">to_pytorch_dataset</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">representation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TorchDataset</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a PyTorch dataset (`torch.utils.data.dataset`).</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        factory : Callable, optional</span>
-<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
-<span class="sd">            object, and the output is an array or a tensor.</span>
-<span class="sd">        representation : str, optional</span>
-<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
-<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: Support slicing and other operations</span>
-        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;One of `representation` and `factory` must be given.&quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;Only one of `representation` and `factory` can be given.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_TORCH</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional package torch is required.&quot;</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TorchRepresentationDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">TorchMusicFactoryDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
+        <span class="sd">&quot;&quot;&quot;Print the citation infomation.&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">citation</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Dataset.save"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -280,7 +266,7 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save all the music objects to a directory.</span>
 
-<span class="sd">        The converted files will be named by its index and saved to``root/``.</span>
+<span class="sd">        The converted files will be named by its index and saved to ``root/``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -315,18 +301,23 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be an existing path.&quot;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">_saver</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_digits</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)))</span>
             <span class="k">if</span> <span class="n">ignore_exceptions</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
                         <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">),</span> <span class="n">kind</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+                            <span class="n">root</span> <span class="o">/</span> <span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">),</span> <span class="n">kind</span>
+                        <span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-except</span>
                     <span class="k">return</span> <span class="kc">False</span>
                 <span class="k">return</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">),</span> <span class="n">kind</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">),</span> <span class="n">kind</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">True</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start converting and saving the dataset...&quot;</span><span class="p">)</span>
+        <span class="n">n_digits</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start converting and saving the dataset&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))):</span>  <span class="c1"># type: ignore</span>
@@ -338,7 +329,7 @@
                     <span class="s2">&quot;Optional package joblib is required for multiprocessing &quot;</span>
                     <span class="s2">&quot;(n_jobs &gt; 1).&quot;</span>
                 <span class="p">)</span>
-            <span class="c1"># TODO: This is slow due to passing `self` between workers.</span>
+            <span class="c1"># TODO: This is slow as `self` is passed between workers.</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;threading&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">5</span><span class="p">)(</span>
                 <span class="n">delayed</span><span class="p">(</span><span class="n">_saver</span><span class="p">)(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="p">)</span>
@@ -346,7 +337,235 @@
         <span class="nb">print</span><span class="p">(</span>
             <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> out of </span><span class="si">{}</span><span class="s2"> files successfully saved.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="p">)</span>
-        <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div></div>
+        <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Dataset.split"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str or Path, optional</span>
+<span class="sd">            If given and exists, path to the file to read the split from.</span>
+<span class="sd">            If None or not exists, path to save the split.</span>
+<span class="sd">        splits : float or list of float, optional</span>
+<span class="sd">            Ratios for train-test-validation splits. If None, return the</span>
+<span class="sd">            full dataset as a whole. If float, return train and test splits.</span>
+<span class="sd">            If list of two floats, return train and test splits. If list of</span>
+<span class="sd">            three floats, return train, test and validation splits.</span>
+<span class="sd">        random_state : int, array_like or RandomState, optional</span>
+<span class="sd">            Random state used to create the splits. If int or array_like,</span>
+<span class="sd">            the value is passed to :class:`numpy.random.RandomState`, and</span>
+<span class="sd">            the create RandomState object is used to create the splits. If</span>
+<span class="sd">            RandomState, it will be used to create the splits.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="k">return</span> <span class="n">read_split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">splits</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`splits` must be of type float, list or tuple.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">splits</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">splits</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`splits` must be positive.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">splits</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`splits` must be less than 1.&quot;</span><span class="p">)</span>
+            <span class="n">splits</span> <span class="o">=</span> <span class="p">[</span><span class="n">splits</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">splits</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">splits</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="nb">sum</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`splits` must sum to 1.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">splits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`splits` must have length 2 or 3.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">random_state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rand_indices</span> <span class="o">=</span> <span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">random_state</span><span class="p">,</span> <span class="n">RandomState</span><span class="p">):</span>
+                <span class="n">random_state</span> <span class="o">=</span> <span class="n">RandomState</span><span class="p">(</span><span class="n">random_state</span><span class="p">)</span>
+            <span class="n">rand_indices</span> <span class="o">=</span> <span class="n">random_state</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">boundaries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="mf">0.0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">splits</span><span class="p">))</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;validation&quot;</span><span class="p">)</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="n">boundaries</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="p">):</span>
+            <span class="n">start_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">start</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="n">end_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="n">indices</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">rand_indices</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">splits</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                            <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">indices</span></div>
+
+<div class="viewcode-block" id="Dataset.to_pytorch_dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.to_pytorch_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">to_pytorch_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">representation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">split_filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;TorchDataset&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TorchDataset&quot;</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        factory : Callable, optional</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
+<span class="sd">            object, and the output is an array or a tensor.</span>
+<span class="sd">        representation : str, optional</span>
+<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
+<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+<span class="sd">        split_filename : str or Path, optional</span>
+<span class="sd">            If given and exists, path to the file to read the split from.</span>
+<span class="sd">            If None or not exists, path to save the split.</span>
+<span class="sd">        splits : float or list of float, optional</span>
+<span class="sd">            Ratios for train-test-validation splits. If None, return the</span>
+<span class="sd">            full dataset as a whole. If float, return train and test splits.</span>
+<span class="sd">            If list of two floats, return train and test splits. If list of</span>
+<span class="sd">            three floats, return train, test and validation splits.</span>
+<span class="sd">        random_state : int, array_like or RandomState, optional</span>
+<span class="sd">            Random state used to create the splits. If int or array_like,</span>
+<span class="sd">            the value is passed to :class:`numpy.random.RandomState`, and</span>
+<span class="sd">            the create RandomState object is used to create the splits. If</span>
+<span class="sd">            RandomState, it will be used to create the splits.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :class:torch.utils.data.Dataset` or Dict of</span>
+<span class="sd">        :class:torch.utils.data.Dataset`</span>
+<span class="sd">            Converted PyTorch dataset(s).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;One of `representation` and `factory` must be given.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Only one of `representation` and `factory` can be given.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_TORCH</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional package torch is required.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># No split</span>
+        <span class="k">if</span> <span class="n">splits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">TorchRepresentationDataset</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="n">TorchMusicFactoryDataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="n">datasets</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TorchDataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">indices_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_filename</span><span class="p">,</span> <span class="n">splits</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indices_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TorchRepresentationDataset</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">representation</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TorchMusicFactoryDataset</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">datasets</span></div>
+
+<div class="viewcode-block" id="Dataset.to_tensorflow_dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.to_tensorflow_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">to_tensorflow_dataset</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">representation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">split_filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;TFDataset&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TFDataset&quot;</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the dataset as a TensorFlow dataset.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        factory : Callable, optional</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
+<span class="sd">            object, and the output is an array or a tensor.</span>
+<span class="sd">        representation : str, optional</span>
+<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
+<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+<span class="sd">        split_filename : str or Path, optional</span>
+<span class="sd">            If given and exists, path to the file to read the split from.</span>
+<span class="sd">            If None or not exists, path to save the split.</span>
+<span class="sd">        splits : float or list of float, optional</span>
+<span class="sd">            Ratios for train-test-validation splits. If None, return the</span>
+<span class="sd">            full dataset as a whole. If float, return train and test splits.</span>
+<span class="sd">            If list of two floats, return train and test splits. If list of</span>
+<span class="sd">            three floats, return train, test and validation splits.</span>
+<span class="sd">        random_state : int, array_like or RandomState, optional</span>
+<span class="sd">            Random state used to create the splits. If int or array_like,</span>
+<span class="sd">            the value is passed to :class:`numpy.random.RandomState`, and</span>
+<span class="sd">            the create RandomState object is used to create the splits. If</span>
+<span class="sd">            RandomState, it will be used to create the splits.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        :class:tensorflow.data.Dataset` or Dict of</span>
+<span class="sd">        :class:tensorflow.data.dataset`</span>
+<span class="sd">            Converted TensorFlow dataset(s).</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;One of `representation` and `factory` must be given.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factory</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Only one of `representation` and `factory` can be given.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_TENSORFLOW</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional package tensorflow is required.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">representation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">_gen</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">to_representation</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="k">def</span> <span class="nf">_gen</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+
+        <span class="c1"># TODO: `from_generator` is slow.</span>
+
+        <span class="c1"># No split</span>
+        <span class="k">if</span> <span class="n">splits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">TFDataset</span><span class="o">.</span><span class="n">from_generator</span><span class="p">(</span><span class="n">_gen</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">indices</span><span class="p">])</span>
+
+        <span class="n">datasets</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TFDataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">indices_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">split_filename</span><span class="p">,</span> <span class="n">splits</span><span class="p">,</span> <span class="n">random_state</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indices_list</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">datasets</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">TFDataset</span><span class="o">.</span><span class="n">from_generator</span><span class="p">(</span>
+                <span class="n">_gen</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">datasets</span></div></div>
 
 
 <span class="k">class</span> <span class="nc">RemoteDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
@@ -423,6 +642,7 @@
         <span class="n">download_and_extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`root` must be an existing path.&quot;</span><span class="p">)</span>
@@ -526,15 +746,37 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
+            <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
+            <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Full&quot;</span><span class="p">,</span>
+            <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+                <span class="p">)</span>
 
-        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">&quot;TorchMusicFactoryDataset(dataset=</span><span class="si">{}</span><span class="s2">, factory=</span><span class="si">{}</span><span class="s2">, subset=</span><span class="si">{}</span><span class="s2">)&quot;</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">[</span><span class="n">index</span><span class="p">]])</span>
 
         <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
 
     <span class="k">class</span> <span class="nc">TorchRepresentationDataset</span><span class="p">(</span><span class="n">TorchMusicFactoryDataset</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;A PyTorch music dataset.</span>
@@ -550,14 +792,27 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">representation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
+            <span class="n">representation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Full&quot;</span><span class="p">,</span>
+            <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
         <span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="n">representation</span>
 
             <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="n">music</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">to_representation</span><span class="p">(</span><span class="n">representation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">subset</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">&quot;TorchRepresentationDataset(dataset=</span><span class="si">{}</span><span class="s2">, representation=</span><span class="si">{}</span><span class="s2">, &quot;</span>
+                <span class="s2">&quot;subset=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">representation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subset</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 </pre></div>
 
            </div>

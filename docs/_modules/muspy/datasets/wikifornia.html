@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -156,24 +157,27 @@
             
   <h1>Source code for muspy.datasets.wikifornia</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Lakh MIDI Dataset.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_musicxml</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
 <span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteFolderDataset</span>
 
-<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Wikifornia Dataset&quot;</span>
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Wikifonia Dataset&quot;</span>
 <span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">Wikifornia dataset is a collection of 6675 lead sheets in MusicMXL format. It</span>
-<span class="s2">was originally hosted at http://www.wikifonia.org/.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Wikifonia dataset is a collection of 6675 lead sheets in MusicMXL format. It</span>
+<span class="s2">was originally hosted at http://www.wikifonia.org/.&quot;&quot;&quot;</span>
 <span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;http://www.wikifonia.org/&quot;</span>
 
 
-<div class="viewcode-block" id="WikiforniaDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.WikiforniaDataset">[docs]</a><span class="k">class</span> <span class="nc">WikiforniaDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Wikifornia dataset.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WikifoniaDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.WikifoniaDataset">[docs]</a><span class="k">class</span> <span class="nc">WikifoniaDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Wikifonia dataset.&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">)</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_full&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;wikifonia&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;Wikifonia.zip&quot;</span><span class="p">,</span>
             <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;http://www.synthzone.com/files/Wikifonia/Wikifonia.zip&quot;</span><span class="p">,</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -182,9 +186,9 @@
     <span class="p">}</span>
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mxl&quot;</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+<div class="viewcode-block" id="WikifoniaDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.WikifoniaDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

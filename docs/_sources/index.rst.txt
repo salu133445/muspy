@@ -14,7 +14,7 @@ Features
 - Data manipulation, evaluation and visualization
 - Dataset management with interface to PyTorch
 
-Here is a system diagram of the package.
+Here is the system diagram of the package.
 
 .. image:: images/system.svg
     :alt: System diagram
@@ -26,8 +26,9 @@ Contents
 .. toctree::
     :maxdepth: 2
 
-    music
     examples
+    classes
+    example_music
     timing
     io
     representations

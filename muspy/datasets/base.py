@@ -108,7 +108,7 @@ class Dataset:
     ):
         """Save all the music objects to a directory.
 
-        The converted files will be named by its index and saved to``root/``.
+        The converted files will be named by its index and saved to ``root/``.
 
         Parameters
         ----------

@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -164,6 +165,7 @@
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">.abc</span> <span class="kn">import</span> <span class="n">read_abc</span>
 <span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">from_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="kn">import</span> <span class="n">load_json</span>
 <span class="kn">from</span> <span class="nn">.midi</span> <span class="kn">import</span> <span class="n">from_pretty_midi</span><span class="p">,</span> <span class="n">read_midi</span>
@@ -232,7 +234,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the file to be read.</span>
-<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;}, optional</span>
+<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;abc&#39;}, optional</span>
 <span class="sd">        Format to save. If None, infer the format from the extension of</span>
 <span class="sd">        `path`.</span>
 
@@ -253,6 +255,8 @@
             <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">))</span>
         <span class="p">):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musicxml&quot;</span>
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.abc&quot;</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;Got unsupported file format (expect MIDI or MusicXML).&quot;</span>
@@ -261,7 +265,9 @@
         <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;midi&#39; or &#39;musicxml&#39;.&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_abc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be one of &#39;midi&#39;, &#39;musicxml&#39; and &#39;abc&#39;.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="from_object"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_object">[docs]</a><span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>

@@ -39,6 +39,7 @@ song           Song information   :class:`muspy.SongInfo`   :class:`muspy.SongIn
 source         Source information :class:`muspy.SourceInfo` :class:`muspy.SourceInfo()`
 ============== ================== ========================= ===========================
 
+
 SongInfo Class
 ==============
 
@@ -51,6 +52,7 @@ title      Song title              str
 artist     Main artist of the song str
 creators   Creators(s) of the song list of str []
 ========== ======================= =========== =======
+
 
 SourceInfo  Class
 =================
@@ -161,6 +163,7 @@ program     MIDI program number [#]_ int (0-127)                       0
 is_drum     If it is a drum track    bool                              False
 name        Track name               str
 notes       Musical notes            list of :class:`muspy.Note`       []
+chords      Chords                   list of :class:`muspy.Chord`      []
 lyrics      Lyrics                   list of :class:`muspy.Lyric`      []
 annotations Annotations              list of :class:`muspy.Annotation` []
 =========== ======================== ================================= =======

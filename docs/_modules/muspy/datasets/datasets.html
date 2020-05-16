@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -157,9 +158,9 @@
   <h1>Source code for muspy.datasets.datasets</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Some simple dataset.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">load</span>
+<span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">read_abc_string</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">RemoteDataset</span>
 
@@ -265,12 +266,12 @@
 <span class="sd">    ---------</span>
 <span class="sd">    :meth:`muspy.FolderDataset.converted_exists` depends solely on a</span>
 <span class="sd">    special file named ``.muspy.success`` in the folder</span>
-<span class="sd">    ``{root}/converted/``, which serves as an indicator for the existence</span>
+<span class="sd">    ``{root}/_converted/``, which serves as an indicator for the existence</span>
 <span class="sd">    and integrity of the converted dataset. If the converted dataset is</span>
 <span class="sd">    built by :meth:`muspy.FolderDataset.convert`, the ``.muspy.success``</span>
 <span class="sd">    file will be created as well. If the converted dataset is created</span>
 <span class="sd">    manually, make sure to create the ``.muspy.success`` file in the folder</span>
-<span class="sd">    ``{root}/converted/`` to prevent errors.</span>
+<span class="sd">    ``{root}/_converted/`` to prevent errors.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -279,12 +280,11 @@
 <span class="sd">    the docmentation of the methods ``__getitem__`` and ``__len__``, and the</span>
 <span class="sd">    class attribute ``_info``.</span>
 
-<span class="sd">    In addition, the class attributes ``_extension`` and ``_converter``</span>
-<span class="sd">    should be properly set. ``_extension`` is the extension to look for when</span>
-<span class="sd">    building the dataset. All files with the given extension will be</span>
-<span class="sd">    included as source files. ``_converter`` is a class method that takes as</span>
-<span class="sd">    inputs a filename of a source file and return the converted Music</span>
-<span class="sd">    object.</span>
+<span class="sd">    In addition, the attribute ``_extension`` and method ``read`` should be</span>
+<span class="sd">    properly set. ``_extension`` is the extension to look for when building</span>
+<span class="sd">    the dataset. All files with the given extension will be included as</span>
+<span class="sd">    source files. ``read`` is a callable that takes as inputs a filename of</span>
+<span class="sd">    a source file and return the converted Music object.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -293,10 +293,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -309,42 +305,48 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="n">use_converted</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="p">(</span>
-                <span class="n">filename</span>
-                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-                    <span class="s2">&quot;_converted/&quot;</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+        <span class="c1"># An internal pointer to the callable used to produce the Music object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
+
+        <span class="c1"># An internal pointer to the list of filenames used when indexing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">use_converted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_converted</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">use_converted</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_converted</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">on_the_fly</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Nothing found in the directory.&quot;</span><span class="p">)</span>
+
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span><span class="p">)</span>
+
+<div class="viewcode-block" id="FolderDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="FolderDataset.load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FolderDataset.exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
@@ -370,15 +372,30 @@
                 <span class="s2">&quot;Converted data not found. Run `convert()` to convert &quot;</span>
                 <span class="s2">&quot;the dataset.&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="FolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FolderDataset&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">filename</span>
+                    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                        <span class="s2">&quot;_converted/&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="FolderDataset.convert"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span>
@@ -409,12 +426,13 @@
 <span class="sd">            Defaults to False.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skipped conversion as the target folder exists.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_the_fly</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">converted_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="n">kind</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_converted</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
 
@@ -461,10 +479,6 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
@@ -478,6 +492,82 @@
     <span class="p">):</span>
         <span class="n">RemoteDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
         <span class="n">FolderDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">convert</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">,</span> <span class="n">use_converted</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+
+<span class="k">class</span> <span class="nc">ABCFolderDataset</span><span class="p">(</span><span class="n">FolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class of local datasets containing ABC files in a folder.&quot;&quot;&quot;</span>
+
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
+
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="n">filename_</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename_</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">end</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">):</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">read_abc_string</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FolderDataset&quot;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">:</span>
+            <span class="n">filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">filename</span>
+                    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extension</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">))</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                        <span class="s2">&quot;_converted/&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+
+                    <span class="c1"># Detect parts in a file</span>
+                    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;X:&quot;</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                    <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">idx</span><span class="p">))</span>
+                                <span class="p">)</span>
+                            <span class="n">start</span> <span class="o">=</span> <span class="n">idx</span>
+
+                    <span class="c1"># Append the last part</span>
+                    <span class="k">if</span> <span class="n">start</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">filename</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">idx</span><span class="p">)))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_converted</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<span class="k">class</span> <span class="nc">RemoteABCFolderDataset</span><span class="p">(</span><span class="n">ABCFolderDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class of remote datasets containing ABC files in a folder.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">download_and_extract</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="n">RemoteDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
+        <span class="n">ABCFolderDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">convert</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">,</span> <span class="n">use_converted</span>
         <span class="p">)</span>
 </pre></div>

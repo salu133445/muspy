@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -159,21 +160,14 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">corpus</span>
+
 <span class="kn">from</span> <span class="nn">..datasets</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">MusicDataset</span>
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">corpus</span>
-
-    <span class="n">HAS_MUSIC21</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">HAS_MUSIC21</span> <span class="o">=</span> <span class="kc">False</span>
-
 <span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Music21 Corpus Dataset&quot;</span>
-<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
-<span class="s2">Dataset automatically created from a music21 corpus.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Dataset automatically created from a music21 corpus.&quot;&quot;&quot;</span>
 <span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://web.mit.edu/music21/doc/about/referenceCorpus.html&quot;</span>
 <span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">@inproceedings{cuthbert2010music21,</span>
@@ -183,8 +177,7 @@
 <span class="s2">  booktitle={Proceedings of the 11th International Society for Music </span><span class="se">\</span>
 <span class="s2">Information Retrieval Conference (ISMIR)},</span>
 <span class="s2">  year=</span><span class="si">{2010}</span><span class="s2"></span>
-<span class="s2">}</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">}&quot;&quot;&quot;</span>
 
 
 <div class="viewcode-block" id="Music21Dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.Music21Dataset">[docs]</a><span class="k">class</span> <span class="nc">Music21Dataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
@@ -205,11 +198,15 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_extensions</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;.mid&quot;</span><span class="p">,</span> <span class="s2">&quot;.midi&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">_extensions</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;.mid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.midi&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.mxl&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.xml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.musicxml&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;.abc&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">composer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_MUSIC21</span><span class="p">:</span>
@@ -230,7 +227,7 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(composer=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">composer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_converter</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>

@@ -1,90 +1,16 @@
-====================
-Example Music Object
-====================
+========
+Examples
+========
 
-Here is an example of a Music object stored in YAML format.
+Here is an example of data preparation pipeline using MusPy.
 
-.. code-block:: yaml
+.. image:: images/data_pipeline.svg
+    :align: center
+    :width: 500px
 
-    meta:
-      schema_version: '0.0'
-      song:
-        title: Fur Elise
-        artist: Ludwig van Beethoven
-        composers:
-          - Ludwig van Beethoven
-      source:
-        collection: collection
-        filename: example.yaml
-        format: null
-        id: 0123456789
-    timing:
-      is_metrical: true
-      resolution: 4
-      tempos:
-        - time: 0
-          tempo: 120
-    key_signatures:
-      - time: 0
-        root: A
-        mode: minor
-    time_signatures:
-      - time: 0
-        numerator: 3
-        denominator: 8
-    downbeats:
-      - 4
-      - 16
-    lyrics:
-      - time: 0
-        lyric: nothing but a lyric
-    annotations:
-      - time: 0
-        annotation: nothing but an annotation
-    tracks:
-      - program: 0
-        is_drum: false
-        name: melody
-        notes:
-          - start: 0
-            end: 2
-            pitch: 76
-            velocity: 127
-          - start: 2
-            end: 4
-            pitch: 75
-            velocity: 127
-          - start: 4
-            end: 6
-            pitch: 76
-            velocity: 127
-          - start: 6
-            end: 8
-            pitch: 75
-            velocity: 127
-          - start: 8
-            end: 10
-            pitch: 76
-            velocity: 127
-          - start: 10
-            end: 12
-            pitch: 71
-            velocity: 127
-          - start: 12
-            end: 14
-            pitch: 74
-            velocity: 127
-          - start: 14
-            end: 16
-            pitch: 72
-            velocity: 127
-          - start: 16
-            end: 18
-            pitch: 69
-            velocity: 127
-        lyrics:
-          - time: 0
-            lyric: nothing but a lyric
-        annotations:
-          - time: 0
-            annotation: nothing but an annotation
+
+Here is an example of result writing pipeline using MusPy.
+
+.. image:: images/write_pipeline.svg
+    :align: center
+    :width: 500px

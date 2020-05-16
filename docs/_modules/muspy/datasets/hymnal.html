@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -157,19 +158,19 @@
   <h1>Source code for muspy.datasets.hymnal</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Hymnal Dataset.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">requests</span>
 
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_midi</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
 <span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">FolderDataset</span>
 
 <span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Hymnal Dataset&quot;</span>
 <span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">The Hymnal Dataset is a collection of hymns in MIDI format available at</span>
-<span class="s2">hymnal.net.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">hymnal.net.&quot;&quot;&quot;</span>
 <span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://www.hymnal.net/&quot;</span>
 
 
@@ -179,10 +180,6 @@
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">)</span>
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
     <span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -207,6 +204,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">root</span><span class="p">,</span> <span class="n">convert</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">,</span> <span class="n">use_converted</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="HymnalDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.HymnalDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HymnalDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.HymnalDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FolderDataset&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Download the source datasets.&quot;&quot;&quot;</span>
@@ -270,10 +271,6 @@
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
     <span class="n">_type</span> <span class="o">=</span> <span class="s2">&quot;tune&quot;</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
@@ -297,6 +294,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">root</span><span class="p">,</span> <span class="n">convert</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">,</span> <span class="n">use_converted</span>
         <span class="p">)</span>
+
+<div class="viewcode-block" id="HymnalTuneDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.HymnalTuneDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="HymnalTuneDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.HymnalTuneDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;FolderDataset&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Download the source datasets.&quot;&quot;&quot;</span>

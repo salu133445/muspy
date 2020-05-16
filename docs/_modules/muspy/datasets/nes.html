@@ -83,8 +83,9 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../music.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -156,7 +157,11 @@
             
   <h1>Source code for muspy.datasets.nes</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;NES Music Database.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_midi</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span>
 <span class="kn">from</span> <span class="nn">.datasets</span> <span class="kn">import</span> <span class="n">RemoteFolderDataset</span>
 
@@ -168,8 +173,7 @@
 <span class="s2">parameters which are well-suited to a wide variety of current machine </span><span class="se">\</span>
 <span class="s2">learning techniques. The synthesizer is typically programmed in assembly, but </span><span class="se">\</span>
 <span class="s2">we parse the assembly into straightforward formats that are more suitable for </span><span class="se">\</span>
-<span class="s2">machine learning.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">machine learning.&quot;&quot;&quot;</span>
 <span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://github.com/chrisdonahue/nesmdb&quot;</span>
 <span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">@inproceedings{donahue2018nesmdb,</span>
@@ -179,16 +183,15 @@
 <span class="s2">  booktitle={Proceedings of the 19th International Society for Music </span><span class="se">\</span>
 <span class="s2">Information Retrieval Conference (ISMIR)},</span>
 <span class="s2">  year=</span><span class="si">{2018}</span><span class="s2"></span>
-<span class="s2">}</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">}&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="NESMusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.NESMusicDataset">[docs]</a><span class="k">class</span> <span class="nc">NESMusicDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+<div class="viewcode-block" id="NESMusicDatabase"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.NESMusicDatabase">[docs]</a><span class="k">class</span> <span class="nc">NESMusicDatabase</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;NES Music Database.&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_CITATION</span><span class="p">)</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;lmd_full&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;nes&quot;</span><span class="p">:</span> <span class="p">{</span>
             <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;nesmdb_midi.tar.gz&quot;</span><span class="p">,</span>
             <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="p">(</span>
                 <span class="s2">&quot;http://deepyeti.ucsd.edu/cdonahue/nesmdb/nesmdb_midi.tar.gz&quot;</span>
@@ -202,9 +205,9 @@
     <span class="p">}</span>
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
 
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_converter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+<div class="viewcode-block" id="NESMusicDatabase.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.NESMusicDatabase.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>
