@@ -20,8 +20,8 @@ import muspy
 # -- Project information -----------------------------------------------------
 
 project = "MusPy"
-copyright = "2020, ISMIR Anonymous Submission"
-author = "ISMIR Anonymous Submission"
+copyright = "MusPy Developers"
+author = "MusPy Developers"
 
 
 # -- General configuration ---------------------------------------------------
