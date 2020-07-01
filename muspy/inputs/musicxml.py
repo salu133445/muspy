@@ -280,10 +280,10 @@ def parse_part(
                     raise MusicXMLElementError(
                         "Element 'pitch' is required for element 'note'."
                     )
-                step = get_required_text(pitch_elem, "step")
+                step = STEP_MAP[get_required_text(pitch_elem, "step")]
                 octave = int(get_required_text(pitch_elem, "octave"))
-                alter = int(get_required_text(pitch_elem, "alter"))
-                pitch = STEP_MAP[step] + alter + octave * 12
+                alter = int(get_text(pitch_elem, "alter", 0))
+                pitch = 12 * octave + step + alter
 
                 # Create a note and append it to the note list
                 note = Note(
@@ -434,11 +434,11 @@ def read_musicxml(
                         "ID of a 'midi-instrument' element must be "
                         "specified in a 'score-instrument' element."
                     )
-            part_info[part_id][instrument_id]["program"] = get_text(
-                midi_instrument_elem, "midi-program", 0
+            part_info[part_id][instrument_id]["program"] = int(
+                get_text(midi_instrument_elem, "midi-program", 0)
             )
             part_info[part_id][instrument_id]["is_drum"] = (
-                get_text(midi_instrument_elem, "midi-channel", 0) == 10
+                int(get_text(midi_instrument_elem, "midi-channel", 0)) == 10
             )
         if not part_info[part_id]:
             part_info[part_id][""] = {"name": None}
