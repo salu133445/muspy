@@ -282,7 +282,7 @@ def parse_part(
                     )
                 step = get_required_text(pitch_elem, "step")
                 octave = int(get_required_text(pitch_elem, "octave"))
-                alter = int(get_required_text(pitch_elem, "octave"))
+                alter = int(get_required_text(pitch_elem, "alter"))
                 pitch = STEP_MAP[step] + alter + octave * 12
 
                 # Create a note and append it to the note list
