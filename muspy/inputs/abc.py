@@ -5,8 +5,8 @@ from typing import List, Optional, Union
 from music21.converter.subConverters import ConverterABC
 from music21.stream import Opus
 
-from ..classes import DEFAULT_RESOLUTION, SourceInfo
-from ..music import Music
+from ..classes import SourceInfo
+from ..music import DEFAULT_RESOLUTION, Music
 from .music21 import from_music21, from_music21_opus
 
 

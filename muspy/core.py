@@ -1,14 +1,8 @@
-"""
-Core functions
-==============
-
-Core functions that can be applied to a :class:`muspy.Music` object.
-
-"""
+"""Core functions that can be applied to a :class:`muspy.Music` object."""
 from collections import OrderedDict
 from typing import Callable, Optional, Union
 
-from .classes import Note, Timing, Track
+from .classes import Note, Track
 from .music import Music
 
 __all__ = [
@@ -67,9 +61,7 @@ def adjust_time(obj: Union[Music, Track], func: Callable[[float], float]):
     return obj.adjust_time(func=func)
 
 
-def append(
-    obj1: Union[Music, Track, Timing], obj2,
-):
+def append(obj1: Union[Music, Track], obj2):
     """Append an object to the correseponding list.
 
     - If `obj1` is of type :class:`muspy.Music`, `obj2` can be
@@ -95,7 +87,7 @@ def append(
 
 
 def clip(
-    obj: Union[Music, Track, Note], lower: float = 0, upper: float = 127,
+    obj: Union[Music, Track, Note], lower: int = 0, upper: int = 127,
 ):
     """Clip the velocity of each note.
 
@@ -130,9 +122,7 @@ def to_ordered_dict(music: Music) -> OrderedDict:
     return music.to_ordered_dict()
 
 
-def get_end_time(
-    obj: Union[Music, Track, Timing], is_sorted: bool = False
-) -> float:
+def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> float:
     """Return the time of the last event.
 
     Parameters
@@ -147,19 +137,19 @@ def get_end_time(
     return obj.get_end_time(is_sorted=is_sorted)
 
 
-def remove_duplicate_changes(obj: Union[Music, Timing]):
+def remove_duplicate_changes(obj: Union[Music]):
     """Remove duplicate change events.
 
     Parameters
     ----------
-    obj : :class:`muspy.Music` or :class:`muspy.Timing` object
+    obj : :class:`muspy.Music` object
         Object to be processed.
 
     """
     return obj.remove_duplicate_changes()
 
 
-def sort(obj: Union[Music, Track, Timing]):
+def sort(obj: Union[Music, Track]):
     """Sort all the time-stamped objects with respect to event time.
 
     - If a :class:`muspy.Music` is given, this will sort key signatures,
@@ -167,12 +157,10 @@ def sort(obj: Union[Music, Track, Timing]):
       annotations for each track.
     - If a :class:`muspy.Track` is given, this will sort notes, lyrics and
       annotations.
-    - If a :class:`muspy.Timing` is given, this will sort tempos.
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track` or
-          :class:`muspy.Timing` object
+    obj : :class:`muspy.Music`, :class:`muspy.Track` object
         Object to be sorted.
 
     """

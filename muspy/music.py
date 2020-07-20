@@ -5,9 +5,7 @@ Music object
 This is the core class of MusPy.
 
 """
-from bisect import bisect_left
 from collections import OrderedDict
-from operator import attrgetter
 from pathlib import Path
 from typing import Any, List, Optional, Union
 
@@ -24,13 +22,14 @@ from .classes import (
     MetaData,
     Tempo,
     TimeSignature,
-    Timing,
     Track,
 )
 from .outputs import save, to_object, to_representation, write
 from .visualization import show
 
 __all__ = ["Music"]
+
+DEFAULT_RESOLUTION = 24
 
 # pylint: disable=super-init-not-called
 
@@ -52,12 +51,12 @@ class Music(ComplexBase):
 
     Attributes
     ----------
-    meta : :class:`muspy.MetaData` object
-        Meta data.
-    timing : :class:`muspy.Timing` object
-        Timing infomation.
+    resolution : int, optional
+        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+    tempos : list of :class:`muspy.Tempo`
+        Tempo changes.
     key_signatures : list of :class:`muspy.KeySignature` object
-        Time signatures.
+        Key signatures changes.
     time_signatures : list of :class:`muspy.TimeSignature` object
         Time signature changes.
     downbeats : list of int or float
@@ -68,26 +67,41 @@ class Music(ComplexBase):
         Annotations.
     tracks : list of :class:`muspy.Track`
         Music tracks.
+    meta : :class:`muspy.MetaData` object
+        Meta data.
 
     """
 
     _attributes = OrderedDict(
         [
-            ("meta", MetaData),
-            ("timing", Timing),
+            ("resolution", int),
+            ("tempos", Tempo),
             ("key_signatures", KeySignature),
             ("time_signatures", TimeSignature),
             ("downbeats", list),
             ("lyrics", Lyric),
             ("annotations", Annotation),
             ("tracks", Track),
+            ("meta", MetaData),
         ]
     )
-    _optional_attributes = ["meta"]
-    # _temporal_attributes = ["downbeats"] # TODO
-    _list_attributes = [
+    _optional_attributes = [
+        "resolution",
+        "tempos",
         "key_signatures",
         "time_signatures",
+        "downbeats",
+        "lyrics",
+        "annotations",
+        "tracks",
+        "meta",
+    ]
+    _temporal_attributes = ["downbeats"]
+    _list_attributes = [
+        "tempos",
+        "key_signatures",
+        "time_signatures",
+        "downbeats",
         "lyrics",
         "annotations",
         "tracks",
@@ -95,17 +109,21 @@ class Music(ComplexBase):
 
     def __init__(
         self,
-        meta: Optional[MetaData] = None,
-        timing: Optional[Timing] = None,
+        resolution: Optional[int] = None,
+        tempos: Optional[List[Tempo]] = None,
         key_signatures: Optional[List[KeySignature]] = None,
         time_signatures: Optional[List[TimeSignature]] = None,
-        downbeats: Optional[List[float]] = None,
+        downbeats: Optional[List[int]] = None,
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
         tracks: Optional[List[Track]] = None,
+        meta: Optional[MetaData] = None,
     ):
         self.meta = meta if meta is not None else MetaData()
-        self.timing = timing if timing is not None else Timing()
+        self.resolution = (
+            resolution if resolution is not None else DEFAULT_RESOLUTION
+        )
+        self.tempos = tempos if tempos is not None else []
         self.key_signatures = (
             key_signatures if key_signatures is not None else []
         )
@@ -119,7 +137,13 @@ class Music(ComplexBase):
 
     def remove_duplicate_changes(self) -> "Music":
         """Remove duplicate key signature, time signature and tempo changes."""
-        self.timing.remove_duplicate_changes()
+        tempos = self.tempos
+        self.tempos = [
+            next_tempo
+            for tempo, next_tempo in zip(tempos[:-1], tempos[1:])
+            if tempo.tempo != next_tempo.tempo
+        ]
+        self.tempos.insert(0, tempos[0])
 
         key_signs = self.key_signatures
         self.key_signatures = [
@@ -160,7 +184,7 @@ class Music(ComplexBase):
 
         """
         if realtime:
-            self.timing.validate()
+            self.validate("tempos")
 
         def _get_end_time(list_):
             if not list_:
@@ -177,7 +201,7 @@ class Music(ComplexBase):
             track_end_time = 0
 
         end_time = max(
-            self.timing.get_end_time(is_sorted),
+            _get_end_time(self.tempos),
             _get_end_time(self.key_signatures),
             _get_end_time(self.time_signatures),
             _get_end_time(self.lyrics),
@@ -189,15 +213,15 @@ class Music(ComplexBase):
             return end_time
 
         # If no tempo information is available, assume 120 quarter per minutes
-        if not self.timing.tempos:
-            return 0.5 * end_time / self.timing.resolution
+        if not self.tempos:
+            return 0.5 * end_time / self.resolution
 
         # Compute the real time
         position = 0.0
         acc_time = 0.0
         qpm = 120.0
-        factor = 60.0 / self.timing.resolution  # type: ignore
-        for tempo in self.timing.tempos:
+        factor = 60.0 / self.resolution  # type: ignore
+        for tempo in self.tempos:
             if tempo.tempo <= 0:
                 continue
             acc_time += (tempo.time - position) * factor / qpm
@@ -223,9 +247,9 @@ class Music(ComplexBase):
             resolution.
 
         """
-        if self.timing.resolution is None:
+        if self.resolution is None:
             raise TypeError("`resolution` must not be None.")
-        if self.timing.resolution < 0:
+        if self.resolution < 0:
             raise ValueError("`resolution` must be positive.")
 
         if target is None and factor is None:
@@ -237,10 +261,10 @@ class Music(ComplexBase):
             if not isinstance(target, int):
                 raise TypeError("`target` must be an integer.")
             target_ = int(target)
-            factor_ = target / self.timing.resolution
+            factor_ = target / self.resolution
 
         if factor is not None:
-            new_resolution = self.timing.resolution * factor
+            new_resolution = self.resolution * factor
             if not new_resolution.is_integer():
                 raise ValueError(
                     "`factor` must be a factor of the resolution."
@@ -248,25 +272,8 @@ class Music(ComplexBase):
             factor_ = float(factor)
             target_ = int(new_resolution)
 
-        self.timing.resolution = int(target_)
+        self.resolution = int(target_)
         self.adjust_time(lambda time: round(time * factor_))
-        return self
-
-    def append(self, obj) -> "Music":
-        """Append an object to the correseponding list.
-
-        Parameters
-        ----------
-        obj : Muspy objects (see below)
-            Object to be appended. Supported object types are
-            :class:`muspy.KeySignature`, :class:`muspy.TimeSignature`,
-            :class:`muspy.Tempo`, :class:`muspy.Lyric`,
-            :class:`muspy.Annotation` and :class:`muspy.Track` objects.
-
-        """
-        if isinstance(obj, Tempo):
-            self.timing.tempos.append(obj)
-        self._append(obj)
         return self
 
     def clip(self, lower: int = 0, upper: int = 127) -> "Music":
@@ -283,18 +290,6 @@ class Music(ComplexBase):
         for track in self.tracks:
             track.clip(lower, upper)
         return self
-
-    def _sort(self, attr):
-        if not getattr(self, attr):
-            return
-        if attr == "tracks":
-            for track in self.tracks:
-                track.sort()
-            return
-        if attr == "timing":
-            self.timing.sort()
-            return
-        getattr(self, attr).sort(attrgetter("time"))
 
     def transpose(self, semitone: int) -> "Music":
         """Transpose all the notes for all tracks by a number of semitones.

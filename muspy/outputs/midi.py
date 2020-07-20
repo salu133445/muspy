@@ -109,14 +109,14 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
 
     """
     # Create a MIDI file object
-    midi = MidiFile(type=1, ticks_per_beat=music.timing.resolution)
+    midi = MidiFile(type=1, ticks_per_beat=music.resolution)
 
     # Create a track to store the meta data
     meta_track = MidiTrack()
     midi.tracks.append(meta_track)
 
     # Tempos
-    for tempo in music.timing.tempos:
+    for tempo in music.tempos:
         meta_track.append(
             MetaMessage(
                 "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.tempo),

@@ -12,7 +12,6 @@ from typing import Any, List, Optional
 from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
 
-DEFAULT_RESOLUTION = 24
 DEFAULT_VELOCITY = 64
 
 __all__ = [
@@ -25,7 +24,6 @@ __all__ = [
     "SourceInfo",
     "Tempo",
     "TimeSignature",
-    "Timing",
     "Track",
 ]
 
@@ -165,65 +163,6 @@ class Tempo(Base):
     def __init__(self, time: int, tempo: float):
         self.time = time
         self.tempo = float(tempo)
-
-
-class Timing(ComplexBase):
-    """A container for song information.
-
-    Attributes
-    ----------
-    resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
-    tempos : list of :class:`muspy.Tempo`
-        Tempo changes. Defaults to an empty list.
-
-    """
-
-    _attributes = OrderedDict([("resolution", int), ("tempos", Tempo)])
-    _optional_attributes = ["resolution"]
-    _list_attributes = ["tempos"]
-
-    def __init__(
-        self,
-        resolution: Optional[int] = None,
-        tempos: Optional[List[Tempo]] = None,
-    ):
-        self.resolution = (
-            DEFAULT_RESOLUTION if resolution is None else resolution
-        )
-        self.tempos = tempos if tempos is not None else []
-
-    def validate(self, attr=None):
-        """Raise proper errors if any attribute is invalid."""
-        self._validate()
-        if self.resolution < 1:
-            raise ValueError("`resolution` must be positive.")
-
-    def remove_duplicate_changes(self):
-        """Remove duplicate tempo changes."""
-        tempos = self.tempos
-        self.tempos = [
-            next_tempo
-            for tempo, next_tempo in zip(tempos[:-1], tempos[1:])
-            if tempo.tempo != next_tempo.tempo
-        ]
-        self.tempos.insert(0, tempos[0])
-        return self
-
-    def get_end_time(self, is_sorted: bool = False) -> int:
-        """Return the time of the last tempo event.
-
-        Parameters
-        ----------
-        is_sorted : bool
-            Whether the tempos are sorted. Defaults to False.
-
-        """
-        if not self.tempos:
-            return 0
-        if is_sorted:
-            return self.tempos[-1].time
-        return max(item.time for item in self.tempos)
 
 
 class KeySignature(Base):

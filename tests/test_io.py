@@ -1,8 +1,8 @@
 """Test cases for `muspy.inputs` and `muspy.outputs` module."""
 import os.path
-from unittest import TestCase
 import shutil
 import tempfile
+from unittest import TestCase
 
 import muspy
 
@@ -22,25 +22,25 @@ class IOTestCase(TestCase):
         shutil.rmtree(self.test_dir)
 
 
-class JSONIOTestCase(IOTestCase):
+class JSONTestCase(IOTestCase):
     def test_load_save_json(self):
         music = muspy.load(TEST_JSON_PATH)
         music.save(os.path.join(self.test_dir, "test.json"))
 
 
-class YAMLIOTestCase(IOTestCase):
+class YAMLTestCase(IOTestCase):
     def test_load_save_yaml(self):
         music = muspy.load(TEST_YAML_PATH)
         music.save(os.path.join(self.test_dir, "test.yaml"))
 
 
-class MIDIIOTestCase(IOTestCase):
+class MIDITestCase(IOTestCase):
     def test_read_write_midi(self):
         music = muspy.read_midi(TEST_MIDI_PATH)
         music.write(os.path.join(self.test_dir, "test.mid"))
 
 
-class MusicXMLIOTestCase(IOTestCase):
+class MusicXMLTestCase(IOTestCase):
     def test_read_musicxml(self):
         music = muspy.read(TEST_XML_PATH)
 

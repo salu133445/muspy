@@ -1,12 +1,4 @@
-"""
-Base classes
-============
-
-These are the two base classes of MusPy. All MusPy objects inherit from
-the base class :class:`muspy.Base`. Some MusPy objects inherit from
-:class:`muspy.ComplexBase`, which also inherit from :class:`muspy.Base`.
-
-"""
+"""Base classes."""
 from collections import OrderedDict
 from inspect import isclass
 from typing import Any, Callable, List, Mapping, Optional
@@ -70,7 +62,7 @@ class Base:
 
     _attributes: Mapping[str, Any] = {}
     _optional_attributes: List[str] = []
-    _temporal_attributes: List[str] = []
+    _temporal_attributes: List[str] = ["time"]
     _list_attributes: List[str] = []
 
     def _init(self, **kwargs):
@@ -349,9 +341,12 @@ class ComplexBase(Base):
         attr_cls = self._attributes[attr]
         if isclass(attr_cls) and issubclass(attr_cls, Base):
             # pylint: disable=protected-access
-            if attr_cls._temporal_attributes:
+            if issubclass(attr_cls, ComplexBase):
+                getattr(self, attr).sort()
+            elif attr_cls._temporal_attributes:
                 ref_attr = attr_cls._temporal_attributes[0]
-                getattr(self, attr).sort(attrgetter(ref_attr))
+                if ref_attr in attr_cls._attributes:
+                    getattr(self, attr).sort(attrgetter(ref_attr))
 
     def sort(self, attr: Optional[str] = None):
         """Sort the time-stamped objects recursively."""

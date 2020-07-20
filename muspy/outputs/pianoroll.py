@@ -25,12 +25,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         Converted Multitrack object.
 
     """
-    if music.timing.resolution is None:
-        resolution = 1
-        length = music.get_end_time()
-    else:
-        resolution = music.timing.resolution
-        length = (music.get_end_time() // resolution + 1) * resolution
+    length = (music.get_end_time() // music.resolution + 1) * music.resolution
 
     # Tracks
     tracks = []
@@ -50,10 +45,11 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         )
 
     # Tempos
-    tempo_arr = 120.0 * np.ones(music.timing.get_end_time() + 1)
+    last_tempo_time = max((tempo.time for tempo in music.tempos))
+    tempo_arr = 120.0 * np.ones(last_tempo_time + 1)
     qpm = 120.0
     position = 0
-    for tempo in music.timing.tempos:
+    for tempo in music.tempos:
         tempo_arr[position : tempo.time] = qpm  # type:ignore
         tempo_arr[tempo.time] = tempo.tempo  # type:ignore
         position = tempo.time + 1  # type:ignore
@@ -69,8 +65,8 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     return Multitrack(
         tracks=tracks,
         tempo=tempo_arr,
-        downbeat=music.downbeats if music.downbeats else None,
-        beat_resolution=resolution,
+        # downbeat=music.downbeats if music.downbeats else None,
+        beat_resolution=music.resolution,
         name=name,
     )
 

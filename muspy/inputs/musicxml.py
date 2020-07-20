@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from functools import reduce
 from pathlib import Path
-from typing import Any, List, Optional, Union, Dict
+from typing import Any, Dict, List, Optional, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
@@ -19,7 +19,6 @@ from ..classes import (
     SourceInfo,
     Tempo,
     TimeSignature,
-    Timing,
     Track,
 )
 from ..music import Music
@@ -248,6 +247,8 @@ def parse_part(
             # TODO: lyrics
 
             elif elem.tag == "note":
+                # TODO: handle voice information
+
                 # Check if it is a rest
                 grace_elem = elem.find("grace")
                 if grace_elem is not None:
@@ -404,6 +405,7 @@ def read_musicxml(
                 "Noninteger 'division' values are not supported."
             )
         divisions.append(int(division_elem.text))
+    # TODO: support custom resolution
     resolution = lcm(divisions)
 
     # Part information
@@ -480,10 +482,11 @@ def read_musicxml(
     )
 
     return Music(
-        meta=MetaData(song=song_info, source=source_info),
-        timing=Timing(resolution=resolution, tempos=tempos),
+        resolution=resolution,
+        tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,
         tracks=tracks,
+        meta=MetaData(song=song_info, source=source_info),
     )

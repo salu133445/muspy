@@ -5,7 +5,6 @@ from music21.instrument import partitionByInstrument
 from music21.stream import Opus, Score, Stream
 
 from ..classes import (
-    DEFAULT_RESOLUTION,
     Chord,
     KeySignature,
     MetaData,
@@ -14,10 +13,9 @@ from ..classes import (
     SourceInfo,
     Tempo,
     TimeSignature,
-    Timing,
     Track,
 )
-from ..music import Music
+from ..music import DEFAULT_RESOLUTION, Music
 
 
 def parse_notes_and_chords(
@@ -259,11 +257,10 @@ def from_music21(stream: Stream, resolution=DEFAULT_RESOLUTION) -> Music:
             tracks.append(parse_track(stream))
 
     return Music(
-        meta=parse_meta_data(stream),
-        timing=Timing(
-            resolution=DEFAULT_RESOLUTION, tempos=parse_tempos(stream)
-        ),
+        resolution=DEFAULT_RESOLUTION,
+        tempos=parse_tempos(stream),
         key_signatures=parse_key_signatures(stream, resolution),
         time_signatures=parse_time_signatures(stream, resolution),
         tracks=tracks,
+        meta=parse_meta_data(stream),
     )
