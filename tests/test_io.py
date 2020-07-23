@@ -32,17 +32,3 @@ class YAMLTestCase(IOTestCase):
     def test_load_save_yaml(self):
         music = muspy.load(TEST_YAML_PATH)
         music.save(os.path.join(self.test_dir, "test.yaml"))
-
-
-class MIDITestCase(IOTestCase):
-    def test_read_write_midi(self):
-        music = muspy.read_midi(TEST_MIDI_PATH)
-        music.write(os.path.join(self.test_dir, "test.mid"))
-
-
-class MusicXMLTestCase(IOTestCase):
-    def test_read_musicxml(self):
-        music = muspy.read(TEST_XML_PATH)
-
-    def test_read_compressed_musicxml(self):
-        music = muspy.read(TEST_MXL_PATH)

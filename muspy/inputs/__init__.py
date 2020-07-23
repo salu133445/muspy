@@ -16,9 +16,9 @@ MusPy provides the following input interfaces.
 from .abc import read_abc, read_abc_string
 from .event import from_event_representation
 from .json import load_json
-from .midi import from_pretty_midi, read_midi
+from .midi import from_pretty_midi, read_midi, MIDIError
 from .music21 import from_music21, from_music21_opus
-from .musicxml import read_musicxml
+from .musicxml import read_musicxml, MusicXMLError
 from .note import from_note_representation
 from .pianoroll import from_pianoroll_representation, from_pypianoroll
 from .token import from_monotoken_representation, from_polytoken_representation
@@ -26,6 +26,8 @@ from .wrappers import from_object, from_representation, load, read
 from .yaml import load_yaml
 
 __all__ = [
+    "MIDIError",
+    "MusicXMLError",
     "from_event_representation",
     "from_monotoken_representation",
     "from_music21",

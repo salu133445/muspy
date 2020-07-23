@@ -1,6 +1,6 @@
 """MIDI input interface."""
-import warnings
 from collections import OrderedDict, defaultdict
+from operator import attrgetter
 from pathlib import Path
 from typing import List, Union
 
@@ -19,6 +19,10 @@ from ..classes import (
     Track,
 )
 from ..music import Music
+
+
+class MIDIError(Exception):
+    """An error class for MIDI related exceptions."""
 
 
 def _is_drum(channel):
@@ -170,14 +174,21 @@ def read_midi_mido(
         tracks[t_idx][key] = Track(program, _is_drum(channel))
         return tracks[t_idx][key]
 
+    # Read MIDI file with mido
     midi = MidiFile(filename=str(path))
+
+    # Raise MIDIError if the MIDI file is of Type 2 (i.e., asynchronous)
+    if midi.type == 2:
+        raise MIDIError("Type 2 MIDI file is not supported.")
+
+    # Raise MIDIError if ticks_per_beat is not positive
     if midi.ticks_per_beat < 1:
-        raise ValueError("`ticks_per_beat` must be positive.")
+        raise MIDIError("`ticks_per_beat` must be positive.")
 
     time = 0
     tempos, key_signatures, time_signatures = [], [], []
     lyrics, annotations = [], []
-    copyright_ = None
+    copyrights = []
 
     # Create a list to store converted tracks
     tracks: List[OrderedDict] = [
@@ -185,13 +196,6 @@ def read_midi_mido(
     ]
     # Create a list to store track names
     track_names = [None] * len(midi.tracks)
-
-    # Warn if the MIDI file is of Type 2 (i.e., asynchronous)
-    if midi.type == 2:
-        warnings.warn(
-            "Got type 2 MIDI file. Conversion might be incorrect.",
-            RuntimeWarning,
-        )
 
     # Iterate over MIDI tracks
     for track_idx, midi_track in enumerate(midi.tracks):
@@ -244,7 +248,7 @@ def read_midi_mido(
 
             # Copyright messages
             elif msg.type == "copyright":
-                copyright_ = msg.text
+                copyrights.append(msg.text)
 
             # === Track specific Data ===
 
@@ -319,9 +323,17 @@ def read_midi_mido(
             sub_track.name = track_name
         music_tracks.extend(track.values())
 
+    # Sort notes
+    for music_track in music_tracks:
+        music_track.notes.sort(
+            key=attrgetter("start", "pitch", "end", "velocity")
+        )
+
     # Meta data
     source_info = SourceInfo(
-        filename=Path(path).name, format="midi", copyright=copyright_,
+        filename=Path(path).name,
+        format="midi",
+        copyright=" ".join(copyrights) if copyrights else None,
     )
 
     return Music(
