@@ -47,13 +47,10 @@ class Music21Dataset(Dataset):
         ".xml",
         ".mxml",
         ".musicxml",
-        ".abc",
+        # ".abc",
     )
 
     def __init__(self, composer: Optional[str] = None):
-        if not HAS_MUSIC21:
-            raise ImportError("Optional package music21 is required.")
-
         if composer is None:
             self.composer = "ALL"
             self.filenames = [

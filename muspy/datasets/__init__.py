@@ -17,7 +17,7 @@ from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
 from .music21 import Music21Dataset
 from .nes import NESMusicDatabase
 from .nmd import NottinghamDatabase
-from .wikifornia import WikifoniaDataset
+from .wikifonia import WikifoniaDataset
 
 __all__ = [
     "Dataset",

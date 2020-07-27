@@ -255,8 +255,6 @@ class FolderDataset(Dataset):
 
         Parameters
         ----------
-        root : str or Path
-            Root directory to save the data.
         kind : {'json', 'yaml'}, optional
             File format to save the data. Defaults to 'json'.
         n_jobs : int, optional
