@@ -8,19 +8,27 @@ generative models.
 
 """
 from .metrics import (
+    chroma_entropy,
     empty_beat_rate,
+    groove_consistency,
     in_scale_rate,
-    n_pitch_classes_used,
+    n_chroma_used,
     n_pitches_used,
+    pitch_entropy,
     pitch_range,
-    polyphony_rate,
+    polyphony,
+    scale_consistency,
 )
 
 __all__ = [
+    "chroma_entropy",
     "empty_beat_rate",
+    "groove_consistency",
     "in_scale_rate",
-    "n_pitch_classes_used",
+    "n_chroma_used",
     "n_pitches_used",
+    "pitch_entropy",
     "pitch_range",
-    "polyphony_rate",
+    "polyphony",
+    "scale_consistency",
 ]
