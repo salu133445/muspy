@@ -1,34 +1,27 @@
-"""Test cases for `muspy.inputs` and `muspy.outputs` module."""
-import os.path
+"""Test cases for MusPy I/O functionality."""
 import shutil
 import tempfile
-from unittest import TestCase
+from pathlib import Path
 
 import muspy
 
-DIR = os.path.dirname(__file__)
-TEST_JSON_PATH = os.path.join(DIR, "examples", "test.json")
-TEST_YAML_PATH = os.path.join(DIR, "examples", "test.yaml")
-TEST_MIDI_PATH = os.path.join(DIR, "data", "fur_elise.mid")
-TEST_XML_PATH = os.path.join(DIR, "data", "fur_elise.xml")
-TEST_MXL_PATH = os.path.join(DIR, "data", "fur_elise.mxl")
+DIR = Path(__file__).parent
+TEST_JSON_PATH = DIR / "data" / "test.json"
+TEST_YAML_PATH = DIR / "data" / "test.yaml"
+TEST_MIDI_PATH = DIR / "data" / "midi" / "fur_elise.mid"
+TEST_XML_PATH = DIR / "data" / "musicxml" / "fur_elise.xml"
+TEST_MXL_PATH = DIR / "data" / "musicxml" / "fur_elise.mxl"
 
 
-class IOTestCase(TestCase):
-    def setUp(self):
-        self.test_dir = tempfile.mkdtemp()
-
-    def tearDown(self):
-        shutil.rmtree(self.test_dir)
-
-
-class JSONTestCase(IOTestCase):
-    def test_load_save_json(self):
-        music = muspy.load(TEST_JSON_PATH)
-        music.save(os.path.join(self.test_dir, "test.json"))
+def test_load_save_json():
+    test_dir = Path(tempfile.mkdtemp())
+    music = muspy.load(TEST_JSON_PATH)
+    music.save(test_dir / "test.json")
+    shutil.rmtree(test_dir)
 
 
-class YAMLTestCase(IOTestCase):
-    def test_load_save_yaml(self):
-        music = muspy.load(TEST_YAML_PATH)
-        music.save(os.path.join(self.test_dir, "test.yaml"))
+def test_load_save_yaml():
+    test_dir = Path(tempfile.mkdtemp())
+    music = muspy.load(TEST_YAML_PATH)
+    music.save(test_dir / "test.yaml")
+    shutil.rmtree(test_dir)
