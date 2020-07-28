@@ -59,7 +59,7 @@ class Music(ComplexBase):
         Key signatures changes.
     time_signatures : list of :class:`muspy.TimeSignature` object
         Time signature changes.
-    downbeats : list of int or float
+    downbeats : list of int
         Downbeat positions.
     lyrics : list of :class:`muspy.Lyric`
         Lyrics.

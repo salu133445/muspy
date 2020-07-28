@@ -4,20 +4,32 @@ Metrics
 
 We implement several commonly used evaluation metrics.
 
-.. autofunction:: muspy.metrics.n_pitches_used
+.. autofunction:: muspy.n_pitches_used
     :noindex:
 
-.. autofunction:: muspy.metrics.n_pitch_classes_used
+.. autofunction:: muspy.n_pitch_classes_used
     :noindex:
 
-.. autofunction:: muspy.metrics.pitch_range
+.. autofunction:: muspy.pitch_range
     :noindex:
 
-.. autofunction:: muspy.metrics.empty_beat_rate
+.. autofunction:: muspy.empty_beat_rate
     :noindex:
 
-.. autofunction:: muspy.metrics.polyphony_rate
+.. autofunction:: muspy.polyphony
     :noindex:
 
-.. autofunction:: muspy.metrics.in_scale_rate
+.. autofunction:: muspy.in_scale_rate
+    :noindex:
+
+.. autofunction:: muspy.scale_consistency
+    :noindex:
+
+.. autofunction:: muspy.pitch_entropy
+    :noindex:
+
+.. autofunction:: muspy.chroma_entropy
+    :noindex:
+
+.. autofunction:: muspy.groove_consistency
     :noindex:
