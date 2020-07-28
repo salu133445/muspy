@@ -183,7 +183,7 @@ class Dataset:
 
     def split(
         self,
-        filename: Union[str, Path] = None,
+        filename: Optional[Union[str, Path]] = None,
         splits: Optional[Union[float, List[float]]] = None,
         random_state: Any = None,
     ) -> Dict[str, List[int]]:
@@ -258,7 +258,7 @@ class Dataset:
         self,
         factory: Optional[Callable] = None,
         representation: Optional[str] = None,
-        split_filename: Union[str, Path] = None,
+        split_filename: Optional[Union[str, Path]] = None,
         splits: Optional[Union[float, List[float]]] = None,
         random_state: Any = None,
         **kwargs: Any
@@ -332,7 +332,7 @@ class Dataset:
         self,
         factory: Optional[Callable] = None,
         representation: Optional[str] = None,
-        split_filename: Union[str, Path] = None,
+        split_filename: Optional[Union[str, Path]] = None,
         splits: Optional[Union[float, List[float]]] = None,
         random_state: Any = None,
         **kwargs: Any
@@ -521,6 +521,8 @@ class RemoteDataset(Dataset):
             filename = self.root / source["filename"]
             if not filename.is_file():
                 return False
+            if "size" in source and filename.stat().st_size != source["size"]:
+                return False
         return True
 
     def download(self) -> "RemoteDataset":
@@ -528,18 +530,27 @@ class RemoteDataset(Dataset):
         for source in self._sources.values():
             filename = self.root / source["filename"]
             md5 = source.get("md5")
+
             if filename.is_file():
-                print(
-                    "Skipped existing source : {}.".format(source["filename"])
+                if (
+                    "size" not in source
+                    or filename.stat().st_size == source["size"]
+                ):
+                    print(
+                        "Skipped existing source : {}.".format(
+                            source["filename"]
+                        )
+                    )
+                    continue
+                print("Source file is found but corrupted.")
+
+            print("Downloading source : {}".format(source["filename"]))
+            if source.get("google_drive_id") is not None:
+                download_google_drive_file(
+                    source["google_drive_id"], filename, md5
                 )
             else:
-                print("Downloading source : {}".format(source["filename"]))
-                if source.get("google_drive_id") is not None:
-                    download_google_drive_file(
-                        source["google_drive_id"], filename, md5
-                    )
-                else:
-                    download_url(source["url"], filename, md5)
+                download_url(source["url"], filename, md5)
         return self
 
     def extract(self, cleanup: bool = False) -> "RemoteDataset":

@@ -39,6 +39,7 @@ class JSBChoralesDataset(RemoteFolderDataset):
                 "http://www-etud.iro.umontreal.ca/~boulanni/JSB%20Chorales.zip"
             ),
             "archive": True,
+            "size": 215242,
             "md5": None,
         }
     }
@@ -50,6 +51,6 @@ class JSBChoralesDataset(RemoteFolderDataset):
 
         # The resolution of MIDI file in this datset should be 120, but is
         # incorrectly set to 100
-        music.timing.resolution = 120
+        music.resolution = 120
 
         return music

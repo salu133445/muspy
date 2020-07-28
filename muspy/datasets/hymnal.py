@@ -59,6 +59,7 @@ class HymnalDataset(FolderDataset):
         kinds = ["Classic", "New Tunes", "New Songs", "Children"]
         keys = ["h", "nt", "ns", "c"]
 
+        print("Downloading sources.")
         for kind, key in zip(kinds, keys):
             # Make sure the folder exists
             (self.root / kind).mkdir(exist_ok=True)
@@ -101,6 +102,9 @@ class HymnalDataset(FolderDataset):
                     consecutive_failure_count = 0
 
                 idx += 1
+
+                if idx % 100 == 0:
+                    print("Successfully downloaded {} files.".format(idx))
 
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self
@@ -149,6 +153,7 @@ class HymnalTuneDataset(FolderDataset):
         kinds = ["Classic", "New Tunes", "New Songs", "Children"]
         keys = ["h", "nt", "ns", "c"]
 
+        print("Downloading sources.")
         for kind, key in zip(kinds, keys):
             # Make sure the folder exists
             (self.root / kind).mkdir(exist_ok=True)
@@ -191,6 +196,9 @@ class HymnalTuneDataset(FolderDataset):
                     consecutive_failure_count = 0
 
                 idx += 1
+
+                if idx % 100 == 0:
+                    print("Successfully downloaded {} files.".format(idx))
 
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self

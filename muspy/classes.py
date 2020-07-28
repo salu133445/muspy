@@ -47,7 +47,7 @@ class SongInfo(Base):
     _attributes = OrderedDict(
         [("title", str), ("artist", str), ("creators", list)]
     )
-    _optional_attributes = ["title", "artist"]
+    _optional_attributes = ["title", "artist", "creators"]
 
     def __init__(
         self,
@@ -258,6 +258,7 @@ class Annotation(Base):
     _attributes = _attributes = OrderedDict(
         [("time", int), ("annotation", str)]
     )
+    _optional_attributes = ["group"]
     _temporal_attributes = ["time"]
 
     def __init__(
@@ -485,7 +486,7 @@ class Track(ComplexBase):
             ("annotations", Annotation),
         ]
     )
-    _optional_attributes = ["name"]
+    _optional_attributes = ["name", "notes", "chords", "lyrics", "annotations"]
     _list_attributes = ["notes", "chords", "lyrics", "annotations"]
 
     def __init__(

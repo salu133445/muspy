@@ -23,6 +23,7 @@ class WikifoniaDataset(RemoteFolderDataset):
             "filename": "Wikifonia.zip",
             "url": "http://www.synthzone.com/files/Wikifonia/Wikifonia.zip",
             "archive": True,
+            "size": 35727800,
             "md5": None,
         }
     }

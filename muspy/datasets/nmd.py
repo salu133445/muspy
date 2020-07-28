@@ -21,6 +21,7 @@ class NottinghamDatabase(RemoteABCFolderDataset):
                 "http://ifdo.ca/~seymour/nottingham/nottingham_database.zip"
             ),
             "archive": True,
+            "size": 142934,
             "md5": None,
         }
     }

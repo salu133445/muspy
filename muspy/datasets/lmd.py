@@ -34,6 +34,7 @@ class LakhMIDIDataset(RemoteFolderDataset):
             "filename": "lmd_full.tar.gz",
             "url": "http://hog.ee.columbia.edu/craffel/lmd/lmd_full.tar.gz",
             "archive": True,
+            "size": 35727800,
             "md5": None,
         }
     }
@@ -72,6 +73,7 @@ class LakhMIDIAlignedDataset(RemoteFolderDataset):
             "filename": "lmd_aligned.tar.gz",
             "url": "http://hog.ee.columbia.edu/craffel/lmd/lmd_aligned.tar.gz",
             "archive": True,
+            "size": 1407072670,
             "md5": None,
         }
     }

@@ -39,6 +39,7 @@ class NESMusicDatabase(RemoteFolderDataset):
                 "http://deepyeti.ucsd.edu/cdonahue/nesmdb/nesmdb_midi.tar.gz"
             ),
             "archive": True,
+            "size": 12922275,
             "sha256": (
                 "37610e2ca5fe70359c85170cf1f4982596783bb304c59d9c439f68c24ff4e"
                 "e93"

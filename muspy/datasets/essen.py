@@ -21,6 +21,7 @@ class EssenFolkSongDatabase(RemoteABCFolderDataset):
             "filename": "esac.zip",
             "url": "https://ifdo.ca/~seymour/runabc/esac/esac.zip",
             "archive": True,
+            "size": 1700981,
             "md5": None,
         }
     }
