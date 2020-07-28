@@ -6,23 +6,10 @@ Here is an example of a Music object stored in YAML format.
 
 .. code-block:: yaml
 
-    meta:
-      schema_version: '0.0'
-      song:
-        title: Fur Elise
-        artist: Ludwig van Beethoven
-        creators:
-          - Ludwig van Beethoven
-      source:
-        filename: example.yaml
-        collection: collection
-        format: null
-        copyright: null
-    timing:
-      resolution: 4
-      tempos:
-        - time: 0
-          tempo: 120
+    resolution: 4
+    tempos:
+      - time: 0
+        tempo: 120
     key_signatures:
       - time: 0
         root: A
@@ -87,3 +74,15 @@ Here is an example of a Music object stored in YAML format.
         annotations:
           - time: 0
             annotation: nothing but an annotation
+    meta:
+      schema_version: '0.0'
+      song:
+        title: Fur Elise
+        artist: Ludwig van Beethoven
+        creators:
+          - Ludwig van Beethoven
+      source:
+        filename: example.yaml
+        collection: collection
+        format: null
+        copyright: null

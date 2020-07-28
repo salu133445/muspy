@@ -91,7 +91,7 @@ def empty_beat_rate(music: Music) -> float:
     (where no pitch is played) to the number of beats. This metric is also
     implemented in Pypianoroll [1].
 
-    .. math:: empty\_beat\_rate = \frac{\# of empty beats}{\# of beats}
+    .. math:: empty\_beat\_rate = \frac{\#\_of\_empty\_beats}{\#\_of\_beats}
 
     Parameters
     ----------
@@ -103,8 +103,8 @@ def empty_beat_rate(music: Music) -> float:
     float
         Empty beat rate.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
        Source Python Package for Handling Multitrack Pianorolls,” in
        Late-Breaking Demos of the 18th International Society for Music
@@ -150,8 +150,8 @@ def polyphony(music: Music, threshold: int = 2) -> float:
     float
         Polyphony.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks with
        adversarial training," in NeuIPS Workshop on Constructive Machine
        Learning, 2016.
@@ -186,7 +186,7 @@ def in_scale_rate(music: Music, root: int, mode: str) -> float:
     used in [1].
 
     .. math::
-        in\_scale\_rate = \frac{\#\_of\_notes\_in_scale}{\#\_of\_notes}
+        in\_scale\_rate = \frac{\#\_of\_notes\_in\_scale}{\#\_of\_notes}
 
     Parameters
     ----------
@@ -202,8 +202,8 @@ def in_scale_rate(music: Music, root: int, mode: str) -> float:
     float
         In scale rate.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
        "MuseGAN: Multi-track sequential generative adversarial networks for
        symbolic music generation and accompaniment," in Proceedings of the
@@ -243,8 +243,8 @@ def scale_consistency(music: Music) -> float:
     float
         Scale consistency.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks with
        adversarial training," in NeuIPS Workshop on Constructive Machine
        Learning, 2016.
@@ -264,14 +264,13 @@ def _entropy(prob):
 
 
 def pitch_entropy(music: Music) -> float:
-    r"""Return the entropy of pitch histogram.
+    r"""Return the entropy of the normalized pitch histogram.
 
-    The pitch entropy is defined as the Shannon entropy of the pitch
-    histogram. Drum tracks are ignored. This metric is used in [1].
+    The pitch entropy is defined as the Shannon entropy of the normalized
+    pitch histogram. Drum tracks are ignored. This metric is used in [1].
 
     .. math::
-        pitch\_entropy = -\sum_{i = 0}^{127}{
-            P(pitch=i) \times \log_2 P(pitch=i)}
+        pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}
 
     Parameters
     ----------
@@ -285,10 +284,11 @@ def pitch_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.chroma_entropy`: Compute the entropy of chroma histogram.
+    :func:`muspy.chroma_entropy`: Compute the entropy of the normalized
+    chroma histogram.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
@@ -306,10 +306,10 @@ def pitch_entropy(music: Music) -> float:
 
 
 def chroma_entropy(music: Music) -> float:
-    r"""Return the entropy of chroma (pitch class) histogram.
+    r"""Return the entropy of the normalized chroma (pitch class) histogram.
 
-    The chroma entropy is defined as the Shannon entropy of the chroma
-    histogram. Drum tracks are ignored. This metric is used in [1].
+    The chroma entropy is defined as the Shannon entropy of the normalized
+    chroma histogram. Drum tracks are ignored. This metric is used in [1].
 
     .. math::
         chroma\_entropy = -\sum_{i = 0}^{11}{
@@ -327,10 +327,11 @@ def chroma_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_entropy`: Compute the entropy of pitch histogram.
+    :func:`muspy.pitch_entropy`: Compute the entropy of the normalized pitch
+    histogram.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
@@ -354,29 +355,30 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
     neighboring measures.
 
     .. math::
-        groove\_consistency = -\frac{1}{T - 1} \sum_{i = 1}^{T - 1}{
+        groove\_consistency = 1 - \frac{1}{T - 1} \sum_{i = 1}^{T - 1}{
             d(G_i, G_{i + 1})}
 
-    Here, :math:`G_i` is the onset vector of the :math:`i`-th measure
-    (having a one at position that has an onset, otherwise a zero), and
-    :math:`d(G, G')` is the hamming distance between two vectors :math:`G`
-    and :math:`G'`. This metric is used in [1].
+    Here, :math:`T` is the number of measures, :math:`G_i` is the binary
+    onset vector of the :math:`i`-th measure (a one at position that has an
+    onset, otherwise a zero), and :math:`d(G, G')` is the hamming distance
+    between two vectors :math:`G` and :math:`G'`. Note that this metric only
+    works for songs with a constant time signature. This metric is used in
+    [1].
 
     Parameters
     ----------
     music : :class:`muspy.Music` object
         Music object to evaluate.
     measure_resolution : int
-        Time steps per measure. Note that this metric only works for songs
-        with a constant time signature.
+        Time steps per measure.
 
     Returns
     -------
     float
         Groove consistency.
 
-    Reference
-    ---------
+    References
+    ----------
     1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
@@ -402,4 +404,4 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
         groove_patterns[:-1] != groove_patterns[1:]
     )
 
-    return hamming_distance / (measure_resolution * (n_measures - 1))
+    return 1 - hamming_distance / (measure_resolution * (n_measures - 1))

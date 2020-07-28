@@ -7,7 +7,7 @@ We implement several commonly used evaluation metrics.
 .. autofunction:: muspy.n_pitches_used
     :noindex:
 
-.. autofunction:: muspy.n_pitch_classes_used
+.. autofunction:: muspy.n_chroma_used
     :noindex:
 
 .. autofunction:: muspy.pitch_range

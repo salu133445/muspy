@@ -189,9 +189,9 @@ generative models.</p>
 <dl class="py function">
 <dt id="muspy.metrics.chroma_entropy">
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">chroma_entropy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#chroma_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.chroma_entropy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the entropy of chroma (pitch class) histogram.</p>
-<p>The chroma entropy is defined as the Shannon entropy of the chroma
-histogram. Drum tracks are ignored. This metric is used in [1].</p>
+<dd><p>Return the entropy of the normalized chroma (pitch class) histogram.</p>
+<p>The chroma entropy is defined as the Shannon entropy of the normalized
+chroma histogram. Drum tracks are ignored. This metric is used in [1].</p>
 <div class="math notranslate nohighlight">
 \[chroma\_entropy = -\sum_{i = 0}^{11}{
     P(chroma=i) \times \log_2 P(chroma=i)}\]</div>
@@ -208,14 +208,19 @@ histogram. Drum tracks are ignored. This metric is used in [1].</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="muspy.html#muspy.pitch_entropy" title="muspy.pitch_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.pitch_entropy()</span></code></a>: Compute the entropy of pitch histogram.</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.pitch_entropy" title="muspy.pitch_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.pitch_entropy()</span></code></a></dt><dd><p>Compute the entropy of the normalized pitch</p>
+</dd>
+</dl>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">histogram.()</span></code></p>
+</div>
+<p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front
 Line: Exploring the Shortcomings of AI-composed Music through
 Quantitative Measures”, in Proceedings of the 21st International
 Society for Music Information Retrieval Conference, 2020.</p></li>
 </ol>
-</div>
 </dd></dl>
 
 <dl class="py function">
@@ -226,23 +231,25 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 (where no pitch is played) to the number of beats. This metric is also
 implemented in Pypianoroll [1].</p>
 <div class="math notranslate nohighlight">
-\[empty\_beat\_rate = \frac{\# of empty beats}{\# of beats}\]</div>
+\[empty\_beat\_rate = \frac{\#\_of\_empty\_beats}{\#\_of\_beats}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>float</em> – Empty beat rate.</p></li>
-<li><p><em>Reference</em></p></li>
-<li><p><em>———</em></p></li>
-<li><p><strong>1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll</strong> (<em>Open</em>) – Source Python Package for Handling Multitrack Pianorolls,” in
-Late-Breaking Demos of the 18th International Society for Music
-Information Retrieval Conference (ISMIR), 2018.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Empty beat rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
+Source Python Package for Handling Multitrack Pianorolls,” in
+Late-Breaking Demos of the 18th International Society for Music
+Information Retrieval Conference (ISMIR), 2018.</p></li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -252,32 +259,35 @@ Information Retrieval Conference (ISMIR), 2018.</p></li>
 <p>The groove consistency is defined as the mean hamming distance of the
 neighboring measures.</p>
 <div class="math notranslate nohighlight">
-\[groove\_consistency = -\frac{1}{T - 1} \sum_{i = 1}^{T - 1}{
+\[groove\_consistency = 1 - \frac{1}{T - 1} \sum_{i = 1}^{T - 1}{
     d(G_i, G_{i + 1})}\]</div>
-<p>Here, <span class="math notranslate nohighlight">\(G_i\)</span> is the onset vector of the <span class="math notranslate nohighlight">\(i\)</span>-th measure
-(having a one at position that has an onset, otherwise a zero), and
-<span class="math notranslate nohighlight">\(d(G, G')\)</span> is the hamming distance between two vectors <span class="math notranslate nohighlight">\(G\)</span>
-and <span class="math notranslate nohighlight">\(G'\)</span>. This metric is used in [1].</p>
+<p>Here, <span class="math notranslate nohighlight">\(T\)</span> is the number of measures, <span class="math notranslate nohighlight">\(G_i\)</span> is the binary
+onset vector of the <span class="math notranslate nohighlight">\(i\)</span>-th measure (a one at position that has an
+onset, otherwise a zero), and <span class="math notranslate nohighlight">\(d(G, G')\)</span> is the hamming distance
+between two vectors <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(G'\)</span>. Note that this metric only
+works for songs with a constant time signature. This metric is used in
+[1].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p></li>
-<li><p><strong>measure_resolution</strong> (<em>int</em>) – Time steps per measure. Note that this metric only works for songs
-with a constant time signature.</p></li>
+<li><p><strong>measure_resolution</strong> (<em>int</em>) – Time steps per measure.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>float</em> – Groove consistency.</p></li>
-<li><p><em>Reference</em></p></li>
-<li><p><em>———</em></p></li>
-<li><p><em>1. Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front</em> – Line: Exploring the Shortcomings of AI-composed Music through
-Quantitative Measures”, in Proceedings of the 21st International
-Society for Music Information Retrieval Conference, 2020.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Groove consistency.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front
+Line: Exploring the Shortcomings of AI-composed Music through
+Quantitative Measures”, in Proceedings of the 21st International
+Society for Music Information Retrieval Conference, 2020.</p></li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -288,7 +298,7 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 to the total number of notes. Drum tracks are ignored. This metric is
 used in [1].</p>
 <div class="math notranslate nohighlight">
-\[in\_scale\_rate = \frac{\#\_of\_notes\_in_scale}{\#\_of\_notes}\]</div>
+\[in\_scale\_rate = \frac{\#\_of\_notes\_in\_scale}{\#\_of\_notes}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -298,17 +308,19 @@ used in [1].</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>float</em> – In scale rate.</p></li>
-<li><p><em>Reference</em></p></li>
-<li><p><em>———</em></p></li>
-<li><p><em>1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,</em> – “MuseGAN: Multi-track sequential generative adversarial networks for
-symbolic music generation and accompaniment,” in Proceedings of the
-32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>In scale rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+“MuseGAN: Multi-track sequential generative adversarial networks for
+symbolic music generation and accompaniment,” in Proceedings of the
+32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -350,12 +362,11 @@ symbolic music generation and accompaniment,” in Proceedings of the
 <dl class="py function">
 <dt id="muspy.metrics.pitch_entropy">
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">pitch_entropy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.pitch_entropy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the entropy of pitch histogram.</p>
-<p>The pitch entropy is defined as the Shannon entropy of the pitch
-histogram. Drum tracks are ignored. This metric is used in [1].</p>
+<dd><p>Return the entropy of the normalized pitch histogram.</p>
+<p>The pitch entropy is defined as the Shannon entropy of the normalized
+pitch histogram. Drum tracks are ignored. This metric is used in [1].</p>
 <div class="math notranslate nohighlight">
-\[pitch\_entropy = -\sum_{i = 0}^{127}{
-    P(pitch=i) \times \log_2 P(pitch=i)}\]</div>
+\[pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
@@ -369,14 +380,19 @@ histogram. Drum tracks are ignored. This metric is used in [1].</p>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="muspy.html#muspy.chroma_entropy" title="muspy.chroma_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.chroma_entropy()</span></code></a>: Compute the entropy of chroma histogram.</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.chroma_entropy" title="muspy.chroma_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.chroma_entropy()</span></code></a></dt><dd><p>Compute the entropy of the normalized</p>
+</dd>
+</dl>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">chroma()</span></code></p>
+</div>
+<p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front
 Line: Exploring the Shortcomings of AI-composed Music through
 Quantitative Measures”, in Proceedings of the 21st International
 Society for Music Information Retrieval Conference, 2020.</p></li>
 </ol>
-</div>
 </dd></dl>
 
 <dl class="py function">
@@ -403,16 +419,18 @@ are ignored. This metric is used in [1].</p>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>float</em> – Polyphony.</p></li>
-<li><p><em>Reference</em></p></li>
-<li><p><em>———</em></p></li>
-<li><p><strong>1. Olof Mogren, “C-RNN-GAN</strong> (<em>Continuous recurrent neural networks with</em>) – adversarial training,” in NeuIPS Workshop on Constructive Machine
-Learning, 2016.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Polyphony.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Olof Mogren, “C-RNN-GAN: Continuous recurrent neural networks with
+adversarial training,” in NeuIPS Workshop on Constructive Machine
+Learning, 2016.</p></li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -429,16 +447,18 @@ in [1].</p>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><em>float</em> – Scale consistency.</p></li>
-<li><p><em>Reference</em></p></li>
-<li><p><em>———</em></p></li>
-<li><p><strong>1. Olof Mogren, “C-RNN-GAN</strong> (<em>Continuous recurrent neural networks with</em>) – adversarial training,” in NeuIPS Workshop on Constructive Machine
-Learning, 2016.</p></li>
-</ul>
-</p>
+<dd class="field-even"><p>Scale consistency.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Olof Mogren, “C-RNN-GAN: Continuous recurrent neural networks with
+adversarial training,” in NeuIPS Workshop on Constructive Machine
+Learning, 2016.</p></li>
+</ol>
 </dd></dl>
 
 </div>

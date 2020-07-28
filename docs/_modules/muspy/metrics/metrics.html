@@ -196,7 +196,7 @@
     <span class="k">return</span> <span class="n">count</span></div>
 
 
-<div class="viewcode-block" id="n_chroma_used"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.metrics.n_chroma_used">[docs]</a><span class="k">def</span> <span class="nf">n_chroma_used</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="n_chroma_used"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.n_chroma_used">[docs]</a><span class="k">def</span> <span class="nf">n_chroma_used</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return the number of unique chroma (pitch classes) used.</span>
 
 <span class="sd">    Drum tracks are ignored.</span>
@@ -252,7 +252,7 @@
 <span class="sd">    (where no pitch is played) to the number of beats. This metric is also</span>
 <span class="sd">    implemented in Pypianoroll [1].</span>
 
-<span class="sd">    .. math:: empty\_beat\_rate = \frac{\# of empty beats}{\# of beats}</span>
+<span class="sd">    .. math:: empty\_beat\_rate = \frac{\#\_of\_empty\_beats}{\#\_of\_beats}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -264,8 +264,8 @@
 <span class="sd">    float</span>
 <span class="sd">        Empty beat rate.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open</span>
 <span class="sd">       Source Python Package for Handling Multitrack Pianorolls,” in</span>
 <span class="sd">       Late-Breaking Demos of the 18th International Society for Music</span>
@@ -311,8 +311,8 @@
 <span class="sd">    float</span>
 <span class="sd">        Polyphony.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Olof Mogren, &quot;C-RNN-GAN: Continuous recurrent neural networks with</span>
 <span class="sd">       adversarial training,&quot; in NeuIPS Workshop on Constructive Machine</span>
 <span class="sd">       Learning, 2016.</span>
@@ -347,7 +347,7 @@
 <span class="sd">    used in [1].</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        in\_scale\_rate = \frac{\#\_of\_notes\_in_scale}{\#\_of\_notes}</span>
+<span class="sd">        in\_scale\_rate = \frac{\#\_of\_notes\_in\_scale}{\#\_of\_notes}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -363,8 +363,8 @@
 <span class="sd">    float</span>
 <span class="sd">        In scale rate.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,</span>
 <span class="sd">       &quot;MuseGAN: Multi-track sequential generative adversarial networks for</span>
 <span class="sd">       symbolic music generation and accompaniment,&quot; in Proceedings of the</span>
@@ -404,8 +404,8 @@
 <span class="sd">    float</span>
 <span class="sd">        Scale consistency.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Olof Mogren, &quot;C-RNN-GAN: Continuous recurrent neural networks with</span>
 <span class="sd">       adversarial training,&quot; in NeuIPS Workshop on Constructive Machine</span>
 <span class="sd">       Learning, 2016.</span>
@@ -425,14 +425,13 @@
 
 
 <div class="viewcode-block" id="pitch_entropy"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_entropy">[docs]</a><span class="k">def</span> <span class="nf">pitch_entropy</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of pitch histogram.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of the normalized pitch histogram.</span>
 
-<span class="sd">    The pitch entropy is defined as the Shannon entropy of the pitch</span>
-<span class="sd">    histogram. Drum tracks are ignored. This metric is used in [1].</span>
+<span class="sd">    The pitch entropy is defined as the Shannon entropy of the normalized</span>
+<span class="sd">    pitch histogram. Drum tracks are ignored. This metric is used in [1].</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        pitch\_entropy = -\sum_{i = 0}^{127}{</span>
-<span class="sd">            P(pitch=i) \times \log_2 P(pitch=i)}</span>
+<span class="sd">        pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -446,10 +445,11 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.chroma_entropy`: Compute the entropy of chroma histogram.</span>
+<span class="sd">    :func:`muspy.chroma_entropy`: Compute the entropy of the normalized</span>
+<span class="sd">    chroma histogram.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Shih-Lun Wu and Yi-Hsuan Yang, &quot;The Jazz Transformer on the Front</span>
 <span class="sd">       Line: Exploring the Shortcomings of AI-composed Music through</span>
 <span class="sd">       Quantitative Measures”, in Proceedings of the 21st International</span>
@@ -467,10 +467,10 @@
 
 
 <div class="viewcode-block" id="chroma_entropy"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.chroma_entropy">[docs]</a><span class="k">def</span> <span class="nf">chroma_entropy</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of chroma (pitch class) histogram.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of the normalized chroma (pitch class) histogram.</span>
 
-<span class="sd">    The chroma entropy is defined as the Shannon entropy of the chroma</span>
-<span class="sd">    histogram. Drum tracks are ignored. This metric is used in [1].</span>
+<span class="sd">    The chroma entropy is defined as the Shannon entropy of the normalized</span>
+<span class="sd">    chroma histogram. Drum tracks are ignored. This metric is used in [1].</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        chroma\_entropy = -\sum_{i = 0}^{11}{</span>
@@ -488,10 +488,11 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.pitch_entropy`: Compute the entropy of pitch histogram.</span>
+<span class="sd">    :func:`muspy.pitch_entropy`: Compute the entropy of the normalized pitch</span>
+<span class="sd">    histogram.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Shih-Lun Wu and Yi-Hsuan Yang, &quot;The Jazz Transformer on the Front</span>
 <span class="sd">       Line: Exploring the Shortcomings of AI-composed Music through</span>
 <span class="sd">       Quantitative Measures”, in Proceedings of the 21st International</span>
@@ -515,29 +516,30 @@
 <span class="sd">    neighboring measures.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        groove\_consistency = -\frac{1}{T - 1} \sum_{i = 1}^{T - 1}{</span>
+<span class="sd">        groove\_consistency = 1 - \frac{1}{T - 1} \sum_{i = 1}^{T - 1}{</span>
 <span class="sd">            d(G_i, G_{i + 1})}</span>
 
-<span class="sd">    Here, :math:`G_i` is the onset vector of the :math:`i`-th measure</span>
-<span class="sd">    (having a one at position that has an onset, otherwise a zero), and</span>
-<span class="sd">    :math:`d(G, G&#39;)` is the hamming distance between two vectors :math:`G`</span>
-<span class="sd">    and :math:`G&#39;`. This metric is used in [1].</span>
+<span class="sd">    Here, :math:`T` is the number of measures, :math:`G_i` is the binary</span>
+<span class="sd">    onset vector of the :math:`i`-th measure (a one at position that has an</span>
+<span class="sd">    onset, otherwise a zero), and :math:`d(G, G&#39;)` is the hamming distance</span>
+<span class="sd">    between two vectors :math:`G` and :math:`G&#39;`. Note that this metric only</span>
+<span class="sd">    works for songs with a constant time signature. This metric is used in</span>
+<span class="sd">    [1].</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to evaluate.</span>
 <span class="sd">    measure_resolution : int</span>
-<span class="sd">        Time steps per measure. Note that this metric only works for songs</span>
-<span class="sd">        with a constant time signature.</span>
+<span class="sd">        Time steps per measure.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Groove consistency.</span>
 
-<span class="sd">    Reference</span>
-<span class="sd">    ---------</span>
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    1. Shih-Lun Wu and Yi-Hsuan Yang, &quot;The Jazz Transformer on the Front</span>
 <span class="sd">       Line: Exploring the Shortcomings of AI-composed Music through</span>
 <span class="sd">       Quantitative Measures”, in Proceedings of the 21st International</span>
@@ -563,7 +565,7 @@
         <span class="n">groove_patterns</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">groove_patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">hamming_distance</span> <span class="o">/</span> <span class="p">(</span><span class="n">measure_resolution</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_measures</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">hamming_distance</span> <span class="o">/</span> <span class="p">(</span><span class="n">measure_resolution</span> <span class="o">*</span> <span class="p">(</span><span class="n">n_measures</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span></div>
 </pre></div>
 
            </div>
