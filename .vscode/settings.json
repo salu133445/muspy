@@ -50,6 +50,10 @@
         "MD034": false,
         "MD037": false
     },
+    "python.autoComplete.extraPaths": [
+        "${workspaceFolder}"
+    ],
+    "python.envFile": "${workspaceFolder}/.vscode/.env",
     "python.formatting.blackArgs": [
         "--line-length=79"
     ],
@@ -72,12 +76,27 @@
     "python.linting.pylintArgs": [
         "--disable=format,R0913",
         "--good-names=i,j,k,ex,Run,_,x,y,t,n,ax,id,f,pm",
-        "--ignore-patterns=test_.*?py"
+        "--ignore-patterns=test_.*?py",
+        "--init-hook",
+        "import sys; sys.path.append('./')"
     ],
     "python.linting.pylintEnabled": true,
     "python.sortImports.args": [
         "-fgw=0",
         "-m=3",
         "-tc"
-    ]
+    ],
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.pytestEnabled": true,
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
+    "terminal.integrated.env.osx": {
+        "PYTHONPATH": "${workspaceFolder}"
+    },
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}"
+    }
 }
