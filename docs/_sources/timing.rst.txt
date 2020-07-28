@@ -14,7 +14,7 @@ Here is the formula relating the metrical and the absolute timing systems.
 
 .. math:: absolute\_time = \frac{60 \times tempo}{resolution} \times metrical\_time
 
-Here, *resolution* is the number of time steps per beat and *tempo* is the current tempo (in beats per minute, or bpm). These two values are stored in a :class:`muspy.Music` object as ``music.timing.resolution`` and ``music.timing.tempos``.
+Here, *resolution* is the number of time steps per beat and *tempo* is the current tempo (in beats per minute, or bpm). These two values are stored in a :class:`muspy.Music` object as ``music.resolution`` and ``music.tempos``.
 
 The following are some illustrations of the relationships between time steps and time.
 
@@ -28,4 +28,4 @@ The following are some illustrations of the relationships between time steps and
     :align: center
     :width: 500px
 
-When reading a MIDI file, ``music.timing.resolution`` is set to the pulses per quarter note (a.k.a., PPQ, PPQN, ticks per beat). When reading a MusicXML file, ``music.timing.resolution`` is set to the *division* attribute, which determines the number of divisions per quarter note.
+When reading a MIDI file, ``music.resolution`` is set to the pulses per quarter note (a.k.a., PPQ, PPQN, ticks per beat). When reading a MusicXML file, ``music.resolution`` is set to the *division* attribute, which determines the number of divisions per quarter note.

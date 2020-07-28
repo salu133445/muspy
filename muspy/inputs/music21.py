@@ -25,7 +25,7 @@ def parse_notes_and_chords(
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream` object
+    stream : `music21.stream.Stream` object
         Stream object to be parsed.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
@@ -62,7 +62,7 @@ def parse_track(stream: Stream, resolution=DEFAULT_RESOLUTION) -> Track:
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream` object
+    stream : `music21.stream.Stream` object
         Stream object to be parsed.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
@@ -90,7 +90,7 @@ def parse_key_signatures(
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream` object
+    stream : `music21.stream.Stream` object
         Stream object to be parsed.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
@@ -118,7 +118,7 @@ def parse_time_signatures(
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream` object
+    stream : `music21.stream.Stream` object
         Stream object to be parsed.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
@@ -144,7 +144,7 @@ def parse_meta_data(stream: Stream) -> Union[MetaData, None]:
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream` object
+    stream : `music21.stream.Stream` object
         Stream object to be parsed.
 
     Returns
@@ -178,7 +178,7 @@ def parse_tempos(stream: Stream, resolution=DEFAULT_RESOLUTION) -> List[Tempo]:
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream` object
+    stream : `music21.stream.Stream` object
         Stream object to be parsed.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
@@ -204,7 +204,7 @@ def from_music21_opus(
 
     Parameters
     ----------
-    opus : :class:`music21.stream.Opus`
+    opus : `music21.stream.Opus`
         Stream object to be converted.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
@@ -223,7 +223,7 @@ def from_music21(stream: Stream, resolution=DEFAULT_RESOLUTION) -> Music:
 
     Parameters
     ----------
-    stream : :class:`music21.stream.Stream`
+    stream : `music21.stream.Stream`
         Stream object to be converted.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.

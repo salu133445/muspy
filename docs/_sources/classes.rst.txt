@@ -13,17 +13,137 @@ The :class:`muspy.Music` class is the core element of MusPy. It is a universal c
 =============== ====================== ==================================== =========================
 Attributes      Description            Type                                 Default
 =============== ====================== ==================================== =========================
-meta            Meta data              :class:`muspy.MetaData`              :class:`muspy.MetaData()`
-timing          Timing information     :class:`muspy.Timing`                :class:`muspy.Timing()`
+resolution      Time steps per beat    int                                  ``muspy.DEFAULT_RESOLUTION``
+tempos          Tempo changes          list of :class:`muspy.Tempo`         []
 key_signatures  Key signature changes  list of :class:`muspy.KeySignature`  []
 time_signatures Time signature changes list of :class:`muspy.TimeSignature` []
-downbeats       Downbeat positions     list of float                        []
+downbeats       Downbeat positions     list of int                          []
 lyrics          Lyrics                 list of :class:`muspy.Lyric`         []
 annotations     Annotations            list of :class:`muspy.Annotation`    []
 tracks          Music tracks           list of :class:`muspy.Track`         []
+meta            Meta data              :class:`muspy.MetaData`              :class:`muspy.MetaData()`
 =============== ====================== ==================================== =========================
 
 .. Hint:: An example of a MusPy Music object as a YAML file is available `here <../examples.html>`__.
+
+
+Tempo Class
+===========
+
+The :class:`muspy.Tempo` class is a container for tempo changes.
+
+========== ======================================= ===== =======
+Attributes Description                             Type  Default
+========== ======================================= ===== =======
+time       Start time of the tempo                 int
+tempo      Tempo in qpm (quarter notes per minute) float
+========== ======================================= ===== =======
+
+
+KeySignature Class
+==================
+
+The :class:`muspy.KeySignature` class is a container for key signature changes.
+
+========== ==================== ==== =======
+Attributes Description          Type Default
+========== ==================== ==== =======
+time       Start time           int
+root       Root (e.g., "C")     str
+mode       Mode (e.g., "major") str
+========== ==================== ==== =======
+
+
+TimeSignature Class
+===================
+
+The :class:`muspy.TimeSignature` class is a container for time signature changes.
+
+=========== =============================== ===== =======
+Attributes  Description                     Type  Default
+=========== =============================== ===== =======
+time        Start time                      int
+numerator   Numerator (e.g., "3" for 3/4)   int
+denominator Denominator (e.g., "4" for 3/4) int
+=========== =============================== ===== =======
+
+
+Lyric Class
+===========
+
+The :class:`muspy.Lyric` class is a container for lyrics.
+
+========== ====================================== ==== =======
+Attributes Description                            Type Default
+========== ====================================== ==== =======
+time       Start time                             int
+lyric      Lyric (sentence, word, syllable, etc.) str
+========== ====================================== ==== =======
+
+
+Annotation Class
+================
+
+The :class:`muspy.Annotation` class is a container for annotations. In fact, `annotation` can hold any type of data.
+
+========== ====================== ==== =======
+Attributes Description            Type  Default
+========== ====================== ==== =======
+time       Start time             int
+annotation Annotation of any type
+========== ====================== ==== =======
+
+
+Track Class
+===========
+
+The :class:`muspy.Note` class is a container for musical tracks.
+
+=========== ======================== ================================= =======
+Attributes  Description              Type                              Default
+=========== ======================== ================================= =======
+program     MIDI program number* int (0-127)                       0
+is_drum     If it is a drum track    bool                              False
+name        Track name               str
+notes       Musical notes            list of :class:`muspy.Note`       []
+chords      Chords                   list of :class:`muspy.Chord`      []
+lyrics      Lyrics                   list of :class:`muspy.Lyric`      []
+annotations Annotations              list of :class:`muspy.Annotation` []
+=========== ======================== ================================= =======
+
+(MIDI program number is based on General MIDI specification; see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__.)
+
+
+Note Class
+==========
+
+The :class:`muspy.Note` class is a container for notes.
+
+========== ================================ =========== =======
+Attributes Description                      Type        Default
+========== ================================ =========== =======
+start      Start time                       int
+end        End time                         int
+pitch      Note pitch as a MIDI note number int (0-127)
+velocity   Note velocity                    int (0-127)
+========== ================================ =========== =======
+
+Note that :class:`muspy.Note` has a property `duration` with setter and getter implemented, which can be handy sometimes.
+
+
+Chord Class
+===========
+
+The :class:`muspy.Chord` class is a container for chords.
+
+========== ================================= =================== =======
+Attributes Description                       Type                Default
+========== ================================= =================== =======
+start      Start time                        int
+end        End time                          int
+pitch      Note pitches as MIDI note numbers List of int (0-127) []
+velocity   Chord velocity                    int (0-127)
+========== ================================= =================== =======
 
 
 MetaData Class
@@ -62,126 +182,8 @@ The :class:`muspy.SongInfo` class is a container for source-related meta data. T
 ========== =================================================== ==== =======
 Attributes Description                                         Type Default
 ========== =================================================== ==== =======
+filename   Name of the source file.                            str
 collection Name of the collection                              str
-filename   Relative path to the file w.r.t the collection root str
 format     Format of the source file (e.g., MIDI and MusicXML) str
-id         Unique ID of the file                               str
+copyright  Copyright notice of the source file.                str
 ========== =================================================== ==== =======
-
-
-Timing  Class
-=============
-
-The :class:`muspy.Timing` class is a container for timing system of a song. MusPy uses the *metrical timing* system. That is, time is stored in musically-meaningful unit (e.g., beats, quarter notes). To render the song, the temporal resolution (``resolution``, in time steps per quarter note) and the tempos (``tempos``, in quarter notes per minute, or qpm) are required. Here is the formula used to convert the metrical time to absolute time.
-
-.. math:: absolute\_time = \frac{60 \times tempo}{resolution} \times metrical\_time
-
-=========== ========================== ============================ ============================
-Attributes  Description                Type                         Default
-=========== ========================== ============================ ============================
-resolution  Time steps per beat        int                          ``muspy.DEFAULT_RESOLUTION``
-tempos      Tempo changes              list of :class:`muspy.Tempo` []
-=========== ========================== ============================ ============================
-
-
-Tempo Class
-===========
-
-The :class:`muspy.Tempo` class is a container for tempo changes.
-
-========== ======================================= ===== =======
-Attributes Description                             Type  Default
-========== ======================================= ===== =======
-time       Start time of the tempo                 float
-tempos     Tempo in qpm (quarter notes per minute) float
-========== ======================================= ===== =======
-
-
-KeySignature Class
-==================
-
-The :class:`muspy.KeySignature` class is a container for key signature changes.
-
-========== ==================== ===== =======
-Attributes Description          Type  Default
-========== ==================== ===== =======
-time       Start time           float
-root       Root (e.g., "C")     str
-mode       Mode (e.g., "major") str
-========== ==================== ===== =======
-
-
-TimeSignature Class
-===================
-
-The :class:`muspy.TimeSignature` class is a container for time signature changes.
-
-=========== =============================== ===== =======
-Attributes  Description                     Type  Default
-=========== =============================== ===== =======
-time        Start time                      float
-numerator   Numerator (e.g., "3" for 3/4)   int
-denominator Denominator (e.g., "4" for 3/4) int
-=========== =============================== ===== =======
-
-
-Lyric Class
-===========
-
-The :class:`muspy.Lyric` class is a container for lyrics.
-
-========== ====================================== ===== =======
-Attributes Description                            Type  Default
-========== ====================================== ===== =======
-time       Start time                             float
-lyric      Lyric (sentence, word, syllable, etc.) str
-========== ====================================== ===== =======
-
-
-Annotation Class
-================
-
-The :class:`muspy.Annotation` class is a container for annotations. In fact, `annotation` can hold any type of data.
-
-========== ====================== ===== =======
-Attributes Description            Type  Default
-========== ====================== ===== =======
-time       Start time             float
-annotation Annotation of any type
-========== ====================== ===== =======
-
-
-Track Class
-===========
-
-The :class:`muspy.Note` class is a container for musical tracks.
-
-=========== ======================== ================================= =======
-Attributes  Description              Type                              Default
-=========== ======================== ================================= =======
-program     MIDI program number* int (0-127)                       0
-is_drum     If it is a drum track    bool                              False
-name        Track name               str
-notes       Musical notes            list of :class:`muspy.Note`       []
-chords      Chords                   list of :class:`muspy.Chord`      []
-lyrics      Lyrics                   list of :class:`muspy.Lyric`      []
-annotations Annotations              list of :class:`muspy.Annotation` []
-=========== ======================== ================================= =======
-
-(MIDI program number is based on General MIDI specification; see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__.)
-
-Note Class
-==========
-
-The :class:`muspy.Note` class is a container for notes.
-
-========== ================================ =========== =======
-Attributes Description                      Type        Default
-========== ================================ =========== =======
-start      Start time                       float
-end        End time                         float
-pitch      Note pitch as a MIDI note number int (0-127)
-velocity   Note velocity                    int (0-127)
-========== ================================ =========== =======
-
-Note that :class:`muspy.Note` has a property `duration` with setter and getter implemented, which can be handy sometimes.

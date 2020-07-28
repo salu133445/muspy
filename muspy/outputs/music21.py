@@ -17,7 +17,7 @@ def to_music21(music: "Music", **kwargs: Any) -> Stream:
 
     Returns
     -------
-    stream : :class:`stream.Stream`
+    stream : `music21.stream.Stream` object
         Converted music21 stream object.
 
     """

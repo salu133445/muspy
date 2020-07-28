@@ -73,5 +73,4 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org/", None),
     "pretty_midi": ("https://craffel.github.io/pretty-midi/", None),
     "pypianoroll": ("https://salu133445.github.io/pypianoroll/", None),
-    "music21": ("http://web.mit.edu/music21/", None),
 }

@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
@@ -25,15 +30,11 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="muspy.core" href="core.html" />
@@ -77,6 +78,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -115,6 +117,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -153,7 +156,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
           <li><a href="index.html">Technical Documentation</a> &raquo;</li>
         
@@ -585,57 +588,6 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="muspy.classes.Timing">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Timing</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Timing" title="Permalink to this definition">¶</a></dt>
-<dd><p>A container for song information.</p>
-<dl class="py attribute">
-<dt id="muspy.classes.Timing.resolution">
-<code class="sig-name descname">resolution</code><a class="headerlink" href="#muspy.classes.Timing.resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt id="muspy.classes.Timing.tempos">
-<code class="sig-name descname">tempos</code><a class="headerlink" href="#muspy.classes.Timing.tempos" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tempo changes. Defaults to an empty list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="muspy.html#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.classes.Timing.get_end_time">
-<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Timing.get_end_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the time of the last tempo event.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether the tempos are sorted. Defaults to False.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.classes.Timing.remove_duplicate_changes">
-<code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing.remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Timing.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove duplicate tempo changes.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.classes.Timing.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Timing.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Timing.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise proper errors if any attribute is invalid.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt id="muspy.classes.Track">
 <em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chords</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Track" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for music track.</p>
@@ -798,11 +750,19 @@ raises the pitches, while a negative value lowers the pitches.</p>
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright MusPy Developers
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -813,7 +773,6 @@ raises the pitches, while a negative value lowers the pitches.</p>
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
