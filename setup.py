@@ -22,10 +22,10 @@ setup(
     name="muspy",
     packages=find_packages(include=["muspy", "muspy.*"], exclude=["tests"]),
     version=_get_version(),
-    description="A python package for symbolic music generation.",
+    description="A toolkit for symbolic music generation.",
     long_description=_get_long_description(),
     long_description_content_type="text/markdown",
-    setup_requires=["pytest-runner>=2.0"],
+    setup_requires=["pytest-runner>=5.0"],
     install_requires=[
         "jsonschema>=3.0",
         "music21>=5.0",
@@ -52,7 +52,7 @@ setup(
             "sphinx-rtd-theme>=0.5",
             "sphinx>=3.0",
         ],
-        "pytest": ["pytest>=3.0.0"],
+        "pytest": ["coveralls>=2.0", "pytest-cov>=2.5", "pytest>=5.0"],
     },
     test_suite="tests",
 )
