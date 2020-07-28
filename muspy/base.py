@@ -100,22 +100,18 @@ class Base:
         """
         kwargs = {}
         for attr, attr_cls in cls._attributes.items():
-            if attr not in dict_:
+            value = dict_.get(attr)
+            if value is None:
                 if attr in cls._optional_attributes:
                     continue
                 raise TypeError("`{}` is a required attribute.".format(attr))
             if isclass(attr_cls) and issubclass(attr_cls, Base):
                 if attr in cls._list_attributes:
-                    kwargs[attr] = [
-                        attr_cls.from_dict(value) for value in dict_[attr]
-                    ]
+                    kwargs[attr] = [attr_cls.from_dict(v) for v in value]
                 else:
-                    if dict_[attr] is not None:
-                        kwargs[attr] = attr_cls.from_dict(dict_[attr])
-                    else:
-                        kwargs[attr] = None
+                    kwargs[attr] = attr_cls.from_dict(value)
             else:
-                kwargs[attr] = dict_[attr]
+                kwargs[attr] = value
         return cls(**kwargs)
 
     def to_ordered_dict(self) -> OrderedDict:
