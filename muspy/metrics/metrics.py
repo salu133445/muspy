@@ -392,7 +392,7 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
         )
 
     n_measures = (length // measure_resolution) + 1
-    groove_patterns = np.zeros(n_measures, measure_resolution)
+    groove_patterns = np.zeros((n_measures, measure_resolution), bool)
 
     for track in music.tracks:
         for note in track.notes:
