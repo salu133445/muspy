@@ -285,7 +285,7 @@ def pitch_entropy(music: Music) -> float:
     See Also
     --------
     :func:`muspy.chroma_entropy`: Compute the entropy of the normalized
-    chroma histogram.
+      chroma histogram.
 
     References
     ----------
@@ -328,7 +328,7 @@ def chroma_entropy(music: Music) -> float:
     See Also
     --------
     :func:`muspy.pitch_entropy`: Compute the entropy of the normalized pitch
-    histogram.
+      histogram.
 
     References
     ----------
