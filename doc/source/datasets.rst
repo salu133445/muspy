@@ -16,7 +16,6 @@ Hymnal Tune Dataset          MIDI      18.74   1,756 hymn      O
 Hymnal Dataset               MIDI      17.50   1,723 hymn
 music21's Corpus             misc      16.86     613 misc      \*            \*
 Nottingham Database          ABC       10.54   1,036 folk      O      O
-
 music21's JSBach Corpus      MusicXML   3.46     410 classical               O
 JSBach Chorale Dataset       MIDI       3.21     382 classical               O
 ============================ ======== ====== ======= ========= ====== ====== ==========
@@ -39,27 +38,6 @@ a MusPy Dataset object.
     :width: 475px
 
 
-Base Dataset Class
-==================
-
-.. autoclass:: muspy.Dataset
-    :noindex:
-
-
-MusicDataset Class
-==================
-
-.. autoclass:: muspy.MusicDataset
-    :noindex:
-
-
-FolderDataset Class
-===================
-
-.. autoclass:: muspy.FolderDataset
-    :noindex:
-
-
 Example Usage
 =============
 
@@ -79,3 +57,39 @@ Example Usage
 
     # Convert to a PyTorch dataset
     dataset = nes.to_pytorch_dataset(representation="pianoroll")
+
+
+Base Dataset Classes
+====================
+
+.. autoclass:: muspy.Dataset
+    :noindex:
+
+.. autoclass:: muspy.RemoteDataset
+    :noindex:
+
+
+Dataset Classes
+===============
+
+.. autoclass:: muspy.FolderDataset
+    :noindex:
+
+.. autoclass:: muspy.MusicDataset
+    :noindex:
+
+.. autoclass:: muspy.ABCFolderDataset
+    :noindex:
+
+
+Remote Dataset Classes
+======================
+
+.. autoclass:: muspy.RemoteFolderDataset
+    :noindex:
+
+.. autoclass:: muspy.RemoteMusicDataset
+    :noindex:
+
+.. autoclass:: muspy.RemoteABCFolderDataset
+    :noindex:

@@ -7,8 +7,15 @@ inherit from the base class :class:`muspy.Dataset`.
 
 """
 
-from .base import Dataset, DatasetInfo
-from .datasets import FolderDataset, MusicDataset
+from .base import Dataset, DatasetInfo, RemoteDataset
+from .datasets import (
+    ABCFolderDataset,
+    FolderDataset,
+    MusicDataset,
+    RemoteABCFolderDataset,
+    RemoteFolderDataset,
+    RemoteMusicDataset,
+)
 from .essen import EssenFolkSongDatabase
 from .hymnal import HymnalDataset, HymnalTuneDataset
 from .jsb import JSBChoralesDataset
@@ -20,6 +27,7 @@ from .nmd import NottinghamDatabase
 from .wikifonia import WikifoniaDataset
 
 __all__ = [
+    "ABCFolderDataset",
     "Dataset",
     "DatasetInfo",
     "EssenFolkSongDatabase",
@@ -34,5 +42,9 @@ __all__ = [
     "MusicDataset",
     "NESMusicDatabase",
     "NottinghamDatabase",
+    "RemoteABCFolderDataset",
+    "RemoteDataset",
+    "RemoteFolderDataset",
+    "RemoteMusicDataset",
     "WikifoniaDataset",
 ]
