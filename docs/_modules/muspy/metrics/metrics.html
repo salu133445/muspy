@@ -183,6 +183,11 @@
 <span class="sd">    int</span>
 <span class="sd">        Number of unique pitch classes used.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.n_pitch_class_used`: Compute the number of unique pitch</span>
+<span class="sd">      classes used.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">is_used</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="mi">128</span>
@@ -196,8 +201,8 @@
     <span class="k">return</span> <span class="n">count</span></div>
 
 
-<div class="viewcode-block" id="n_chroma_used"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.n_chroma_used">[docs]</a><span class="k">def</span> <span class="nf">n_chroma_used</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the number of unique chroma (pitch classes) used.</span>
+<div class="viewcode-block" id="n_pitch_classes_used"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.n_pitch_classes_used">[docs]</a><span class="k">def</span> <span class="nf">n_pitch_classes_used</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the number of unique pitch classes used.</span>
 
 <span class="sd">    Drum tracks are ignored.</span>
 
@@ -211,6 +216,10 @@
 <span class="sd">    int</span>
 <span class="sd">        Number of unique pitch classes used.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.n_pitches_used`: Compute the number of unique pitches used.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">is_used</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span>
@@ -218,9 +227,9 @@
         <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">chroma</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span> <span class="o">%</span> <span class="mi">12</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used</span><span class="p">[</span><span class="n">chroma</span><span class="p">]:</span>
-                <span class="n">is_used</span><span class="p">[</span><span class="n">chroma</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">pitch_class</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span> <span class="o">%</span> <span class="mi">12</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]:</span>
+                <span class="n">is_used</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">count</span></div>
 
@@ -228,7 +237,7 @@
 <div class="viewcode-block" id="pitch_range"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_range">[docs]</a><span class="k">def</span> <span class="nf">pitch_range</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return the pitch range.</span>
 
-<span class="sd">    Drum tracks are ignored.</span>
+<span class="sd">    Drum tracks are ignored. Return zero if no note is found.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -263,8 +272,8 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of empty beats.</span>
 
 <span class="sd">    The empty-beat rate is defined as the ratio of the number of empty beats</span>
-<span class="sd">    (where no note is played) to the total number of beats. This metric is</span>
-<span class="sd">    also implemented in Pypianoroll [1].</span>
+<span class="sd">    (where no note is played) to the total number of beats. Return NaN if</span>
+<span class="sd">    song length is zero. This metric is also implemented in Pypianoroll [1].</span>
 
 <span class="sd">    .. math:: empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}</span>
 
@@ -278,6 +287,10 @@
 <span class="sd">    float</span>
 <span class="sd">        Empty-beat rate.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.empty_measure_rate`: Compute the ratio of empty measures.</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open</span>
@@ -287,13 +300,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
-    <span class="n">n_beats</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">+</span> <span class="mi">1</span>
-
-    <span class="k">if</span> <span class="n">n_beats</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
 
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_beats</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_beats</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
@@ -311,7 +323,7 @@
 <span class="sd">    The empty-measure rate is defined as the ratio of the number of empty</span>
 <span class="sd">    measures (where no note is played) to the total number of measures. Note</span>
 <span class="sd">    that this metric only works for songs with a constant time signature.</span>
-<span class="sd">    This metric is used in [1].</span>
+<span class="sd">    Return NaN if song length is zero. This metric is used in [1].</span>
 
 <span class="sd">    .. math:: empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}</span>
 
@@ -327,6 +339,10 @@
 <span class="sd">    float</span>
 <span class="sd">        Empty-measure rate.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.empty_beat_rate`: Compute the ratio of empty beats.</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,</span>
@@ -336,13 +352,12 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
-    <span class="n">n_measures</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">measure_resolution</span> <span class="o">+</span> <span class="mi">1</span>
-
-    <span class="k">if</span> <span class="n">n_measures</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
 
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_measures</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">measure_resolution</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_measures</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">//</span> <span class="n">measure_resolution</span>
@@ -371,11 +386,11 @@
 
 <span class="sd">    The polyphony is defined as the average number of pitches being played</span>
 <span class="sd">    at the same time, evaluated only at time steps where at least one pitch</span>
-<span class="sd">    is on. Drum tracks are ignored.</span>
+<span class="sd">    is on. Drum tracks are ignored. Return NaN if no note is found.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        polyphony = \frac{</span>
-<span class="sd">            \#(pitches\_at\_time\_steps\_where\_at\_least\_one\_pitch\_is\_on)</span>
+<span class="sd">            \#(pitches\_when\_at\_least\_one\_pitch\_is\_on)</span>
 <span class="sd">        }{</span>
 <span class="sd">            \#(time\_steps\_where\_at\_least\_one\_pitch\_is\_on)</span>
 <span class="sd">        }</span>
@@ -390,6 +405,11 @@
 <span class="sd">    float</span>
 <span class="sd">        Polyphony.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.polyphony_rate`: Compute the ratio of time steps where</span>
+<span class="sd">      multiple pitches are on.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">_get_pianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
     <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">pianoroll</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
@@ -403,11 +423,11 @@
 
 <span class="sd">    The polyphony is defined as the ratio of the number of time steps where</span>
 <span class="sd">    multiple pitches are on to the total number of time steps. Drum tracks</span>
-<span class="sd">    are ignored. This metric is used in [1], where it is called</span>
-<span class="sd">    *polyphonicity*.</span>
+<span class="sd">    are ignored. Return NaN if song length is zero. This metric is used in</span>
+<span class="sd">    [1], where it is called *polyphonicity*.</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        polyphony_rate = \frac{</span>
+<span class="sd">        polyphony\_rate = \frac{</span>
 <span class="sd">            \#(time\_steps\_where\_multiple\_pitches\_are\_on)</span>
 <span class="sd">        }{</span>
 <span class="sd">            \#(time\_steps)</span>
@@ -424,6 +444,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Polyphony rate.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.polyphony`: Compute the average number of pitches being</span>
+<span class="sd">      played at the same time.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -455,7 +480,7 @@
 
 <span class="sd">    The pitch-in-scale rate is defined as the ratio of the number of notes</span>
 <span class="sd">    in a certain scale to the total number of notes. Drum tracks are</span>
-<span class="sd">    ignored. This metric is used in [1].</span>
+<span class="sd">    ignored. Return NaN if no note is found. This metric is used in [1].</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}</span>
@@ -473,6 +498,10 @@
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Pitch-in-scale rate.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.scale_consistency`: Compute the largest pitch-in-class rate.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -501,8 +530,8 @@
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the largest pitch-in-scale rate.</span>
 
 <span class="sd">    The scale consistency is defined as the largest pitch-in-scale rate over</span>
-<span class="sd">    all major and minor scales. Drum tracks are ignored. This metric is used</span>
-<span class="sd">    in [1].</span>
+<span class="sd">    all major and minor scales. Drum tracks are ignored. Return NaN if no</span>
+<span class="sd">    note is found. This metric is used in [1].</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        scale\_consistency = \max_{root, mode}{</span>
@@ -517,6 +546,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Scale consistency.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.pitch_in_scale_rate`: Compute the ratio of pitches in a</span>
+<span class="sd">      certain musical scale.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -558,7 +592,8 @@
 
 <span class="sd">    The drum-in-pattern rate is defined as the ratio of the number of</span>
 <span class="sd">    notes in a certain scale to the total number of notes. Only drum tracks</span>
-<span class="sd">    are considered. This metric is used in [1].</span>
+<span class="sd">    are considered. Return NaN if no drum note is found. This metric is used</span>
+<span class="sd">    in [1].</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        drum\_in\_pattern\_rate = \frac{</span>
@@ -575,6 +610,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Drum-in-pattern rate.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.drum_pattern_consistency`: Compute the largest</span>
+<span class="sd">      drum-in-pattern rate.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -604,6 +644,7 @@
 
 <span class="sd">    The drum pattern consistency is defined as the largest drum-in-pattern</span>
 <span class="sd">    rate over duple and triple meters. Only drum tracks are considered.</span>
+<span class="sd">    Return NaN if no drum note is found.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        drum\_pattern\_consistency = \max_{meter}{</span>
@@ -618,6 +659,11 @@
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
 <span class="sd">        Drum pattern consistency.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.drum_in_pattern_rate`: Compute the ratio of drum notes in a</span>
+<span class="sd">      certain drum pattern.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">drum_in_duple_pattern_rate</span> <span class="o">=</span> <span class="n">drum_in_pattern_rate</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="s2">&quot;duple&quot;</span><span class="p">)</span>
@@ -635,10 +681,11 @@
 
 
 <div class="viewcode-block" id="pitch_entropy"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_entropy">[docs]</a><span class="k">def</span> <span class="nf">pitch_entropy</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of the normalized pitch histogram.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of the normalized note pitch histogram.</span>
 
 <span class="sd">    The pitch entropy is defined as the Shannon entropy of the normalized</span>
-<span class="sd">    pitch histogram. Drum tracks are ignored. This metric is used in [1].</span>
+<span class="sd">    note pitch histogram. Drum tracks are ignored. Return NaN if no note is</span>
+<span class="sd">    found.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}</span>
@@ -655,15 +702,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.chroma_entropy`: Compute the entropy of the normalized</span>
-<span class="sd">      chroma histogram.</span>
-
-<span class="sd">    References</span>
-<span class="sd">    ----------</span>
-<span class="sd">    1. Shih-Lun Wu and Yi-Hsuan Yang, &quot;The Jazz Transformer on the Front</span>
-<span class="sd">       Line: Exploring the Shortcomings of AI-composed Music through</span>
-<span class="sd">       Quantitative Measures”, in Proceedings of the 21st International</span>
-<span class="sd">       Society for Music Information Retrieval Conference, 2020.</span>
+<span class="sd">    :func:`muspy.pitch_class_entropy`: Compute the entropy of the normalized</span>
+<span class="sd">      pitch class histogram.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
@@ -679,15 +719,16 @@
     <span class="k">return</span> <span class="n">_entropy</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="chroma_entropy"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.chroma_entropy">[docs]</a><span class="k">def</span> <span class="nf">chroma_entropy</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of the normalized chroma (pitch class) histogram.</span>
+<div class="viewcode-block" id="pitch_class_entropy"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_class_entropy">[docs]</a><span class="k">def</span> <span class="nf">pitch_class_entropy</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the entropy of the normalized note pitch class histogram.</span>
 
-<span class="sd">    The chroma entropy is defined as the Shannon entropy of the normalized</span>
-<span class="sd">    chroma histogram. Drum tracks are ignored. This metric is used in [1].</span>
+<span class="sd">    The pitch class entropy is defined as the Shannon entropy of the</span>
+<span class="sd">    normalized note pitch class histogram. Drum tracks are ignored. Return</span>
+<span class="sd">    NaN if no note is found. This metric is used in [1].</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        chroma\_entropy = -\sum_{i = 0}^{11}{</span>
-<span class="sd">            P(chroma=i) \times \log_2 P(chroma=i)}</span>
+<span class="sd">        pitch\_class\_entropy = -\sum_{i = 0}^{11}{</span>
+<span class="sd">            P(pitch\_class=i) \times \log_2 P(pitch\_class=i)}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -697,7 +738,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        Chroma entropy.</span>
+<span class="sd">        Pitch class entropy.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -739,8 +780,8 @@
 <span class="sd">    onset vector of the :math:`i`-th measure (a one at position that has an</span>
 <span class="sd">    onset, otherwise a zero), and :math:`d(G, G&#39;)` is the hamming distance</span>
 <span class="sd">    between two vectors :math:`G` and :math:`G&#39;`. Note that this metric only</span>
-<span class="sd">    works for songs with a constant time signature. This metric is used in</span>
-<span class="sd">    [1].</span>
+<span class="sd">    works for songs with a constant time signature. Return NaN if the number</span>
+<span class="sd">    of measures is less than two. This metric is used in [1].</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

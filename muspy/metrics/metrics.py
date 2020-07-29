@@ -22,6 +22,11 @@ def n_pitches_used(music: Music) -> int:
     int
         Number of unique pitch classes used.
 
+    See Also
+    --------
+    :func:`muspy.n_pitch_class_used`: Compute the number of unique pitch
+      classes used.
+
     """
     count = 0
     is_used = [False] * 128
@@ -35,8 +40,8 @@ def n_pitches_used(music: Music) -> int:
     return count
 
 
-def n_chroma_used(music: Music) -> int:
-    """Return the number of unique chroma (pitch classes) used.
+def n_pitch_classes_used(music: Music) -> int:
+    """Return the number of unique pitch classes used.
 
     Drum tracks are ignored.
 
@@ -50,6 +55,10 @@ def n_chroma_used(music: Music) -> int:
     int
         Number of unique pitch classes used.
 
+    See Also
+    --------
+    :func:`muspy.n_pitches_used`: Compute the number of unique pitches used.
+
     """
     count = 0
     is_used = [False] * 12
@@ -57,9 +66,9 @@ def n_chroma_used(music: Music) -> int:
         if track.is_drum:
             continue
         for note in track.notes:
-            chroma = note.pitch % 12
-            if not is_used[chroma]:
-                is_used[chroma] = True
+            pitch_class = note.pitch % 12
+            if not is_used[pitch_class]:
+                is_used[pitch_class] = True
                 count += 1
     return count
 
@@ -67,7 +76,7 @@ def n_chroma_used(music: Music) -> int:
 def pitch_range(music: Music) -> int:
     """Return the pitch range.
 
-    Drum tracks are ignored.
+    Drum tracks are ignored. Return zero if no note is found.
 
     Parameters
     ----------
@@ -102,8 +111,8 @@ def empty_beat_rate(music: Music) -> float:
     r"""Return the ratio of empty beats.
 
     The empty-beat rate is defined as the ratio of the number of empty beats
-    (where no note is played) to the total number of beats. This metric is
-    also implemented in Pypianoroll [1].
+    (where no note is played) to the total number of beats. Return NaN if
+    song length is zero. This metric is also implemented in Pypianoroll [1].
 
     .. math:: empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}
 
@@ -117,6 +126,10 @@ def empty_beat_rate(music: Music) -> float:
     float
         Empty-beat rate.
 
+    See Also
+    --------
+    :func:`muspy.empty_measure_rate`: Compute the ratio of empty measures.
+
     References
     ----------
     1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
@@ -126,13 +139,12 @@ def empty_beat_rate(music: Music) -> float:
 
     """
     length = max(track.get_end_time() for track in music.tracks)
-    n_beats = length // music.resolution + 1
-
-    if n_beats < 1:
+    if length < 1:
         return math.nan
 
-    count = 0
+    n_beats = length // music.resolution + 1
     is_empty = [True] * n_beats
+    count = 0
     for track in music.tracks:
         for note in track.notes:
             start = note.start // music.resolution
@@ -150,7 +162,7 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
     The empty-measure rate is defined as the ratio of the number of empty
     measures (where no note is played) to the total number of measures. Note
     that this metric only works for songs with a constant time signature.
-    This metric is used in [1].
+    Return NaN if song length is zero. This metric is used in [1].
 
     .. math:: empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}
 
@@ -166,6 +178,10 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
     float
         Empty-measure rate.
 
+    See Also
+    --------
+    :func:`muspy.empty_beat_rate`: Compute the ratio of empty beats.
+
     References
     ----------
     1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
@@ -175,13 +191,12 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
 
     """
     length = max(track.get_end_time() for track in music.tracks)
-    n_measures = length // measure_resolution + 1
-
-    if n_measures < 1:
+    if length < 1:
         return math.nan
 
-    count = 0
+    n_measures = length // measure_resolution + 1
     is_empty = [True] * n_measures
+    count = 0
     for track in music.tracks:
         for note in track.notes:
             start = note.start // measure_resolution
@@ -210,11 +225,11 @@ def polyphony(music: Music) -> float:
 
     The polyphony is defined as the average number of pitches being played
     at the same time, evaluated only at time steps where at least one pitch
-    is on. Drum tracks are ignored.
+    is on. Drum tracks are ignored. Return NaN if no note is found.
 
     .. math::
         polyphony = \frac{
-            \#(pitches\_at\_time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
+            \#(pitches\_when\_at\_least\_one\_pitch\_is\_on)
         }{
             \#(time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
         }
@@ -229,6 +244,11 @@ def polyphony(music: Music) -> float:
     float
         Polyphony.
 
+    See Also
+    --------
+    :func:`muspy.polyphony_rate`: Compute the ratio of time steps where
+      multiple pitches are on.
+
     """
     pianoroll = _get_pianoroll(music)
     denominator = np.count_nonzero(pianoroll.sum(1) > 0)
@@ -242,11 +262,11 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
 
     The polyphony is defined as the ratio of the number of time steps where
     multiple pitches are on to the total number of time steps. Drum tracks
-    are ignored. This metric is used in [1], where it is called
-    *polyphonicity*.
+    are ignored. Return NaN if song length is zero. This metric is used in
+    [1], where it is called *polyphonicity*.
 
     .. math::
-        polyphony_rate = \frac{
+        polyphony\_rate = \frac{
             \#(time\_steps\_where\_multiple\_pitches\_are\_on)
         }{
             \#(time\_steps)
@@ -263,6 +283,11 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
     -------
     float
         Polyphony rate.
+
+    See Also
+    --------
+    :func:`muspy.polyphony`: Compute the average number of pitches being
+      played at the same time.
 
     References
     ----------
@@ -294,7 +319,7 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
 
     The pitch-in-scale rate is defined as the ratio of the number of notes
     in a certain scale to the total number of notes. Drum tracks are
-    ignored. This metric is used in [1].
+    ignored. Return NaN if no note is found. This metric is used in [1].
 
     .. math::
         pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}
@@ -312,6 +337,10 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
     -------
     float
         Pitch-in-scale rate.
+
+    See Also
+    --------
+    :func:`muspy.scale_consistency`: Compute the largest pitch-in-class rate.
 
     References
     ----------
@@ -340,8 +369,8 @@ def scale_consistency(music: Music) -> float:
     r"""Return the largest pitch-in-scale rate.
 
     The scale consistency is defined as the largest pitch-in-scale rate over
-    all major and minor scales. Drum tracks are ignored. This metric is used
-    in [1].
+    all major and minor scales. Drum tracks are ignored. Return NaN if no
+    note is found. This metric is used in [1].
 
     .. math::
         scale\_consistency = \max_{root, mode}{
@@ -356,6 +385,11 @@ def scale_consistency(music: Music) -> float:
     -------
     float
         Scale consistency.
+
+    See Also
+    --------
+    :func:`muspy.pitch_in_scale_rate`: Compute the ratio of pitches in a
+      certain musical scale.
 
     References
     ----------
@@ -397,7 +431,8 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
 
     The drum-in-pattern rate is defined as the ratio of the number of
     notes in a certain scale to the total number of notes. Only drum tracks
-    are considered. This metric is used in [1].
+    are considered. Return NaN if no drum note is found. This metric is used
+    in [1].
 
     .. math::
         drum\_in\_pattern\_rate = \frac{
@@ -414,6 +449,11 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
     -------
     float
         Drum-in-pattern rate.
+
+    See Also
+    --------
+    :func:`muspy.drum_pattern_consistency`: Compute the largest
+      drum-in-pattern rate.
 
     References
     ----------
@@ -443,6 +483,7 @@ def drum_pattern_consistency(music: Music) -> float:
 
     The drum pattern consistency is defined as the largest drum-in-pattern
     rate over duple and triple meters. Only drum tracks are considered.
+    Return NaN if no drum note is found.
 
     .. math::
         drum\_pattern\_consistency = \max_{meter}{
@@ -457,6 +498,11 @@ def drum_pattern_consistency(music: Music) -> float:
     -------
     float
         Drum pattern consistency.
+
+    See Also
+    --------
+    :func:`muspy.drum_in_pattern_rate`: Compute the ratio of drum notes in a
+      certain drum pattern.
 
     """
     drum_in_duple_pattern_rate = drum_in_pattern_rate(music, "duple")
@@ -474,10 +520,11 @@ def _entropy(prob):
 
 
 def pitch_entropy(music: Music) -> float:
-    r"""Return the entropy of the normalized pitch histogram.
+    r"""Return the entropy of the normalized note pitch histogram.
 
     The pitch entropy is defined as the Shannon entropy of the normalized
-    pitch histogram. Drum tracks are ignored. This metric is used in [1].
+    note pitch histogram. Drum tracks are ignored. Return NaN if no note is
+    found.
 
     .. math::
         pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}
@@ -494,15 +541,8 @@ def pitch_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.chroma_entropy`: Compute the entropy of the normalized
-      chroma histogram.
-
-    References
-    ----------
-    1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
-       Line: Exploring the Shortcomings of AI-composed Music through
-       Quantitative Measures”, in Proceedings of the 21st International
-       Society for Music Information Retrieval Conference, 2020.
+    :func:`muspy.pitch_class_entropy`: Compute the entropy of the normalized
+      pitch class histogram.
 
     """
     counter = np.zeros(128)
@@ -518,15 +558,16 @@ def pitch_entropy(music: Music) -> float:
     return _entropy(prob)
 
 
-def chroma_entropy(music: Music) -> float:
-    r"""Return the entropy of the normalized chroma (pitch class) histogram.
+def pitch_class_entropy(music: Music) -> float:
+    r"""Return the entropy of the normalized note pitch class histogram.
 
-    The chroma entropy is defined as the Shannon entropy of the normalized
-    chroma histogram. Drum tracks are ignored. This metric is used in [1].
+    The pitch class entropy is defined as the Shannon entropy of the
+    normalized note pitch class histogram. Drum tracks are ignored. Return
+    NaN if no note is found. This metric is used in [1].
 
     .. math::
-        chroma\_entropy = -\sum_{i = 0}^{11}{
-            P(chroma=i) \times \log_2 P(chroma=i)}
+        pitch\_class\_entropy = -\sum_{i = 0}^{11}{
+            P(pitch\_class=i) \times \log_2 P(pitch\_class=i)}
 
     Parameters
     ----------
@@ -536,7 +577,7 @@ def chroma_entropy(music: Music) -> float:
     Returns
     -------
     float
-        Chroma entropy.
+        Pitch class entropy.
 
     See Also
     --------
@@ -578,8 +619,8 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
     onset vector of the :math:`i`-th measure (a one at position that has an
     onset, otherwise a zero), and :math:`d(G, G')` is the hamming distance
     between two vectors :math:`G` and :math:`G'`. Note that this metric only
-    works for songs with a constant time signature. This metric is used in
-    [1].
+    works for songs with a constant time signature. Return NaN if the number
+    of measures is less than two. This metric is used in [1].
 
     Parameters
     ----------

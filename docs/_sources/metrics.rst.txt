@@ -2,18 +2,22 @@
 Metrics
 =======
 
-MusPy provides several commonly used objective metrics.
+MusPy provides several commonly used objective metrics, summarized as follows.
+
+- Pitch-related metrics: polyphony, polyphony rate, pitch-in-scale rate, scale consistency, pitch entropy and pitch class entropy.
+- Rhythm-related metrics: empty-beat rate, drum-in-pattern rate, drum pattern consistency and groove consistency.
+
 
 Pitch-related metrics
 =====================
 
+.. autofunction:: muspy.pitch_range
+    :noindex:
+
 .. autofunction:: muspy.n_pitches_used
     :noindex:
 
-.. autofunction:: muspy.n_chroma_used
-    :noindex:
-
-.. autofunction:: muspy.pitch_range
+.. autofunction:: muspy.n_pitch_classes_used
     :noindex:
 
 .. autofunction:: muspy.polyphony
@@ -31,7 +35,7 @@ Pitch-related metrics
 .. autofunction:: muspy.pitch_entropy
     :noindex:
 
-.. autofunction:: muspy.chroma_entropy
+.. autofunction:: muspy.pitch_class_entropy
     :noindex:
 
 

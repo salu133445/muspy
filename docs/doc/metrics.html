@@ -187,48 +187,13 @@
 object. This can be useful for analyzing datasets and evaluating
 generative models.</p>
 <dl class="py function">
-<dt id="muspy.metrics.chroma_entropy">
-<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">chroma_entropy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#chroma_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.chroma_entropy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the entropy of the normalized chroma (pitch class) histogram.</p>
-<p>The chroma entropy is defined as the Shannon entropy of the normalized
-chroma histogram. Drum tracks are ignored. This metric is used in [1].</p>
-<div class="math notranslate nohighlight">
-\[chroma\_entropy = -\sum_{i = 0}^{11}{
-    P(chroma=i) \times \log_2 P(chroma=i)}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Chroma entropy.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="muspy.html#muspy.pitch_entropy" title="muspy.pitch_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.pitch_entropy()</span></code></a></dt><dd><p>Compute the entropy of the normalized pitch histogram.</p>
-</dd>
-</dl>
-</div>
-<p class="rubric">References</p>
-<ol class="arabic simple">
-<li><p>Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front
-Line: Exploring the Shortcomings of AI-composed Music through
-Quantitative Measures”, in Proceedings of the 21st International
-Society for Music Information Retrieval Conference, 2020.</p></li>
-</ol>
-</dd></dl>
-
-<dl class="py function">
 <dt id="muspy.metrics.drum_in_pattern_rate">
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">drum_in_pattern_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">meter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#drum_in_pattern_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.drum_in_pattern_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ratio of drum notes in a certain drum pattern.</p>
 <p>The drum-in-pattern rate is defined as the ratio of the number of
 notes in a certain scale to the total number of notes. Only drum tracks
-are considered. This metric is used in [1].</p>
+are considered. Return NaN if no drum note is found. This metric is used
+in [1].</p>
 <div class="math notranslate nohighlight">
 \[drum\_in\_pattern\_rate = \frac{
     \#(drum\_notes\_in\_pattern)}{\#(drum\_notes)}\]</div>
@@ -246,6 +211,13 @@ are considered. This metric is used in [1].</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.drum_pattern_consistency" title="muspy.drum_pattern_consistency"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.drum_pattern_consistency()</span></code></a></dt><dd><p>Compute the largest drum-in-pattern rate.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
@@ -260,7 +232,8 @@ symbolic music generation and accompaniment,” in Proceedings of the
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">drum_pattern_consistency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#drum_pattern_consistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.drum_pattern_consistency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the largest drum-in-pattern rate.</p>
 <p>The drum pattern consistency is defined as the largest drum-in-pattern
-rate over duple and triple meters. Only drum tracks are considered.</p>
+rate over duple and triple meters. Only drum tracks are considered.
+Return NaN if no drum note is found.</p>
 <div class="math notranslate nohighlight">
 \[drum\_pattern\_consistency = \max_{meter}{
     drum\_in\_pattern\_rate(meter)}\]</div>
@@ -275,6 +248,13 @@ rate over duple and triple meters. Only drum tracks are considered.</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.drum_in_pattern_rate" title="muspy.drum_in_pattern_rate"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.drum_in_pattern_rate()</span></code></a></dt><dd><p>Compute the ratio of drum notes in a certain drum pattern.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -282,8 +262,8 @@ rate over duple and triple meters. Only drum tracks are considered.</p>
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">empty_beat_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#empty_beat_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.empty_beat_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the ratio of empty beats.</p>
 <p>The empty-beat rate is defined as the ratio of the number of empty beats
-(where no note is played) to the total number of beats. This metric is
-also implemented in Pypianoroll [1].</p>
+(where no note is played) to the total number of beats. Return NaN if
+song length is zero. This metric is also implemented in Pypianoroll [1].</p>
 <div class="math notranslate nohighlight">
 \[empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}\]</div>
 <dl class="field-list simple">
@@ -297,6 +277,13 @@ also implemented in Pypianoroll [1].</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.empty_measure_rate" title="muspy.empty_measure_rate"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.empty_measure_rate()</span></code></a></dt><dd><p>Compute the ratio of empty measures.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
@@ -313,7 +300,7 @@ Information Retrieval Conference (ISMIR), 2018.</p></li>
 <p>The empty-measure rate is defined as the ratio of the number of empty
 measures (where no note is played) to the total number of measures. Note
 that this metric only works for songs with a constant time signature.
-This metric is used in [1].</p>
+Return NaN if song length is zero. This metric is used in [1].</p>
 <div class="math notranslate nohighlight">
 \[empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}\]</div>
 <dl class="field-list simple">
@@ -330,6 +317,13 @@ This metric is used in [1].</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.empty_beat_rate" title="muspy.empty_beat_rate"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.empty_beat_rate()</span></code></a></dt><dd><p>Compute the ratio of empty beats.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
@@ -352,8 +346,8 @@ neighboring measures.</p>
 onset vector of the <span class="math notranslate nohighlight">\(i\)</span>-th measure (a one at position that has an
 onset, otherwise a zero), and <span class="math notranslate nohighlight">\(d(G, G')\)</span> is the hamming distance
 between two vectors <span class="math notranslate nohighlight">\(G\)</span> and <span class="math notranslate nohighlight">\(G'\)</span>. Note that this metric only
-works for songs with a constant time signature. This metric is used in
-[1].</p>
+works for songs with a constant time signature. Return NaN if the number
+of measures is less than two. This metric is used in [1].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -378,9 +372,9 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="muspy.metrics.n_chroma_used">
-<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">n_chroma_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#n_chroma_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.n_chroma_used" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the number of unique chroma (pitch classes) used.</p>
+<dt id="muspy.metrics.n_pitch_classes_used">
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">n_pitch_classes_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#n_pitch_classes_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.n_pitch_classes_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of unique pitch classes used.</p>
 <p>Drum tracks are ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -393,6 +387,13 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.n_pitches_used" title="muspy.n_pitches_used"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.n_pitches_used()</span></code></a></dt><dd><p>Compute the number of unique pitches used.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -411,14 +412,59 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 <dd class="field-odd"><p>int</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.n_pitch_class_used()</span></code></dt><dd><p>Compute the number of unique pitch classes used.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.metrics.pitch_class_entropy">
+<code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">pitch_class_entropy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_class_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.pitch_class_entropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the entropy of the normalized note pitch class histogram.</p>
+<p>The pitch class entropy is defined as the Shannon entropy of the
+normalized note pitch class histogram. Drum tracks are ignored. Return
+NaN if no note is found. This metric is used in [1].</p>
+<div class="math notranslate nohighlight">
+\[pitch\_class\_entropy = -\sum_{i = 0}^{11}{
+    P(pitch\_class=i) \times \log_2 P(pitch\_class=i)}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pitch class entropy.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.pitch_entropy" title="muspy.pitch_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.pitch_entropy()</span></code></a></dt><dd><p>Compute the entropy of the normalized pitch histogram.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front
+Line: Exploring the Shortcomings of AI-composed Music through
+Quantitative Measures”, in Proceedings of the 21st International
+Society for Music Information Retrieval Conference, 2020.</p></li>
+</ol>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.metrics.pitch_entropy">
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">pitch_entropy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.pitch_entropy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the entropy of the normalized pitch histogram.</p>
+<dd><p>Return the entropy of the normalized note pitch histogram.</p>
 <p>The pitch entropy is defined as the Shannon entropy of the normalized
-pitch histogram. Drum tracks are ignored. This metric is used in [1].</p>
+note pitch histogram. Drum tracks are ignored. Return NaN if no note is
+found.</p>
 <div class="math notranslate nohighlight">
 \[pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}\]</div>
 <dl class="field-list simple">
@@ -435,17 +481,10 @@ pitch histogram. Drum tracks are ignored. This metric is used in [1].</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="muspy.html#muspy.chroma_entropy" title="muspy.chroma_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.chroma_entropy()</span></code></a></dt><dd><p>Compute the entropy of the normalized chroma histogram.</p>
+<dt><a class="reference internal" href="muspy.html#muspy.pitch_class_entropy" title="muspy.pitch_class_entropy"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.pitch_class_entropy()</span></code></a></dt><dd><p>Compute the entropy of the normalized pitch class histogram.</p>
 </dd>
 </dl>
 </div>
-<p class="rubric">References</p>
-<ol class="arabic simple">
-<li><p>Shih-Lun Wu and Yi-Hsuan Yang, “The Jazz Transformer on the Front
-Line: Exploring the Shortcomings of AI-composed Music through
-Quantitative Measures”, in Proceedings of the 21st International
-Society for Music Information Retrieval Conference, 2020.</p></li>
-</ol>
 </dd></dl>
 
 <dl class="py function">
@@ -454,7 +493,7 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 <dd><p>Return the ratio of pitches in a certain musical scale.</p>
 <p>The pitch-in-scale rate is defined as the ratio of the number of notes
 in a certain scale to the total number of notes. Drum tracks are
-ignored. This metric is used in [1].</p>
+ignored. Return NaN if no note is found. This metric is used in [1].</p>
 <div class="math notranslate nohighlight">
 \[pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}\]</div>
 <dl class="field-list simple">
@@ -472,6 +511,13 @@ ignored. This metric is used in [1].</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.scale_consistency" title="muspy.scale_consistency"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.scale_consistency()</span></code></a></dt><dd><p>Compute the largest pitch-in-class rate.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
@@ -485,7 +531,7 @@ symbolic music generation and accompaniment,” in Proceedings of the
 <dt id="muspy.metrics.pitch_range">
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">pitch_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.pitch_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the pitch range.</p>
-<p>Drum tracks are ignored.</p>
+<p>Drum tracks are ignored. Return zero if no note is found.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
@@ -505,10 +551,10 @@ symbolic music generation and accompaniment,” in Proceedings of the
 <dd><p>Return the average number of pitches being played at the same time.</p>
 <p>The polyphony is defined as the average number of pitches being played
 at the same time, evaluated only at time steps where at least one pitch
-is on. Drum tracks are ignored.</p>
+is on. Drum tracks are ignored. Return NaN if no note is found.</p>
 <div class="math notranslate nohighlight">
 \[polyphony = \frac{
-    \#(pitches\_at\_time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
+    \#(pitches\_when\_at\_least\_one\_pitch\_is\_on)
 }{
     \#(time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
 }\]</div>
@@ -523,6 +569,13 @@ is on. Drum tracks are ignored.</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.polyphony_rate" title="muspy.polyphony_rate"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.polyphony_rate()</span></code></a></dt><dd><p>Compute the ratio of time steps where multiple pitches are on.</p>
+</dd>
+</dl>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -531,10 +584,10 @@ is on. Drum tracks are ignored.</p>
 <dd><p>Return the ratio of time steps where multiple pitches are on.</p>
 <p>The polyphony is defined as the ratio of the number of time steps where
 multiple pitches are on to the total number of time steps. Drum tracks
-are ignored. This metric is used in [1], where it is called
-<em>polyphonicity</em>.</p>
+are ignored. Return NaN if song length is zero. This metric is used in
+[1], where it is called <em>polyphonicity</em>.</p>
 <div class="math notranslate nohighlight">
-\[polyphony_rate = \frac{
+\[polyphony\_rate = \frac{
     \#(time\_steps\_where\_multiple\_pitches\_are\_on)
 }{
     \#(time\_steps)
@@ -553,6 +606,13 @@ are ignored. This metric is used in [1], where it is called
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.polyphony" title="muspy.polyphony"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.polyphony()</span></code></a></dt><dd><p>Compute the average number of pitches being played at the same time.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
@@ -567,8 +627,8 @@ symbolic music generation and accompaniment,” in Proceedings of the
 <code class="sig-prename descclassname">muspy.metrics.</code><code class="sig-name descname">scale_consistency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#scale_consistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.metrics.scale_consistency" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the largest pitch-in-scale rate.</p>
 <p>The scale consistency is defined as the largest pitch-in-scale rate over
-all major and minor scales. Drum tracks are ignored. This metric is used
-in [1].</p>
+all major and minor scales. Drum tracks are ignored. Return NaN if no
+note is found. This metric is used in [1].</p>
 <div class="math notranslate nohighlight">
 \[scale\_consistency = \max_{root, mode}{
     pitch\_in\_scale\_rate(root, mode)}\]</div>
@@ -583,6 +643,13 @@ in [1].</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="muspy.html#muspy.pitch_in_scale_rate" title="muspy.pitch_in_scale_rate"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.pitch_in_scale_rate()</span></code></a></dt><dd><p>Compute the ratio of pitches in a certain musical scale.</p>
+</dd>
+</dl>
+</div>
 <p class="rubric">References</p>
 <ol class="arabic simple">
 <li><p>Olof Mogren, “C-RNN-GAN: Continuous recurrent neural networks with
