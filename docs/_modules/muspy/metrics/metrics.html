@@ -160,6 +160,8 @@
             
   <h1>Source code for muspy.metrics.metrics</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Evaluation metrics.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
 
@@ -191,8 +193,6 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]:</span>
                 <span class="n">is_used</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">:</span>
-                    <span class="k">break</span>
     <span class="k">return</span> <span class="n">count</span></div>
 
 
@@ -222,13 +222,25 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">is_used</span><span class="p">[</span><span class="n">chroma</span><span class="p">]:</span>
                 <span class="n">is_used</span><span class="p">[</span><span class="n">chroma</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">11</span><span class="p">:</span>
-                    <span class="k">break</span>
     <span class="k">return</span> <span class="n">count</span></div>
 
 
 <div class="viewcode-block" id="pitch_range"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_range">[docs]</a><span class="k">def</span> <span class="nf">pitch_range</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the pitch range.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return the pitch range.</span>
+
+<span class="sd">    Drum tracks are ignored.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to evaluate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        Pitch range.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
@@ -237,6 +249,8 @@
     <span class="n">highest</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">lowest</span> <span class="o">=</span> <span class="mi">127</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
+            <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span> <span class="o">&gt;</span> <span class="n">highest</span><span class="p">:</span>
                 <span class="n">highest</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span>
@@ -246,13 +260,13 @@
 
 
 <div class="viewcode-block" id="empty_beat_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.empty_beat_rate">[docs]</a><span class="k">def</span> <span class="nf">empty_beat_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the empty beat rate.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of empty beats.</span>
 
-<span class="sd">    The empty beat rate is defined as the ratio of the number of empty beats</span>
-<span class="sd">    (where no pitch is played) to the number of beats. This metric is also</span>
-<span class="sd">    implemented in Pypianoroll [1].</span>
+<span class="sd">    The empty-beat rate is defined as the ratio of the number of empty beats</span>
+<span class="sd">    (where no note is played) to the total number of beats. This metric is</span>
+<span class="sd">    also implemented in Pypianoroll [1].</span>
 
-<span class="sd">    .. math:: empty\_beat\_rate = \frac{\#\_of\_empty\_beats}{\#\_of\_beats}</span>
+<span class="sd">    .. math:: empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -262,7 +276,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        Empty beat rate.</span>
+<span class="sd">        Empty-beat rate.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -273,32 +287,97 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
-    <span class="n">total_beats</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
-    <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">total_beats</span>
+    <span class="n">n_beats</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">n_beats</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_beats</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
             <span class="n">end</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
             <span class="k">for</span> <span class="n">beat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_empty</span><span class="p">[</span><span class="n">beat</span><span class="p">]:</span>
-                    <span class="n">is_empty</span><span class="p">[</span><span class="n">beat</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="n">is_empty</span><span class="p">[</span><span class="n">beat</span><span class="p">]:</span>
+                    <span class="n">is_empty</span><span class="p">[</span><span class="n">beat</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">count</span> <span class="o">/</span> <span class="n">total_beats</span></div>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">count</span> <span class="o">/</span> <span class="n">n_beats</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="polyphony"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.polyphony">[docs]</a><span class="k">def</span> <span class="nf">polyphony</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the polyphony measure.</span>
+<div class="viewcode-block" id="empty_measure_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.empty_measure_rate">[docs]</a><span class="k">def</span> <span class="nf">empty_measure_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">measure_resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of empty measures.</span>
 
-<span class="sd">    The polyphony is defined as the ratio of the number of time steps where</span>
-<span class="sd">    multiple pitches are on to the total number of time steps. Drum tracks</span>
-<span class="sd">    are ignored. This metric is used in [1].</span>
+<span class="sd">    The empty-measure rate is defined as the ratio of the number of empty</span>
+<span class="sd">    measures (where no note is played) to the total number of measures. Note</span>
+<span class="sd">    that this metric only works for songs with a constant time signature.</span>
+<span class="sd">    This metric is used in [1].</span>
+
+<span class="sd">    .. math:: empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to evaluate.</span>
+<span class="sd">    measure_resolution : int</span>
+<span class="sd">        Time steps per measure.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Empty-measure rate.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,</span>
+<span class="sd">       &quot;MuseGAN: Multi-track sequential generative adversarial networks for</span>
+<span class="sd">       symbolic music generation and accompaniment,&quot; in Proceedings of the</span>
+<span class="sd">       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
+    <span class="n">n_measures</span> <span class="o">=</span> <span class="n">length</span> <span class="o">//</span> <span class="n">measure_resolution</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">n_measures</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">is_empty</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_measures</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">//</span> <span class="n">measure_resolution</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">//</span> <span class="n">measure_resolution</span>
+            <span class="k">for</span> <span class="n">measure</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">is_empty</span><span class="p">[</span><span class="n">measure</span><span class="p">]:</span>
+                    <span class="n">is_empty</span><span class="p">[</span><span class="n">measure</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">count</span> <span class="o">/</span> <span class="n">n_measures</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_pianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the binary pianoroll matrix.&quot;&quot;&quot;</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
+    <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">pianoroll</span>
+
+
+<div class="viewcode-block" id="polyphony"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.polyphony">[docs]</a><span class="k">def</span> <span class="nf">polyphony</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the average number of pitches being played at the same time.</span>
+
+<span class="sd">    The polyphony is defined as the average number of pitches being played</span>
+<span class="sd">    at the same time, evaluated only at time steps where at least one pitch</span>
+<span class="sd">    is on. Drum tracks are ignored.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        polyphony = \frac{</span>
-<span class="sd">            \#\_of\_time\_steps\_where\_multiple\_pitches\_are\_on</span>
+<span class="sd">            \#(pitches\_at\_time\_steps\_where\_at\_least\_one\_pitch\_is\_on)</span>
 <span class="sd">        }{</span>
-<span class="sd">            \#\_of\_time\_steps</span>
+<span class="sd">            \#(time\_steps\_where\_at\_least\_one\_pitch\_is\_on)</span>
 <span class="sd">        }</span>
 
 <span class="sd">    Parameters</span>
@@ -311,43 +390,75 @@
 <span class="sd">    float</span>
 <span class="sd">        Polyphony.</span>
 
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">_get_pianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">pianoroll</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">pianoroll</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">denominator</span></div>
+
+
+<div class="viewcode-block" id="polyphony_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.polyphony_rate">[docs]</a><span class="k">def</span> <span class="nf">polyphony_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of time steps where multiple pitches are on.</span>
+
+<span class="sd">    The polyphony is defined as the ratio of the number of time steps where</span>
+<span class="sd">    multiple pitches are on to the total number of time steps. Drum tracks</span>
+<span class="sd">    are ignored. This metric is used in [1], where it is called</span>
+<span class="sd">    *polyphonicity*.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        polyphony_rate = \frac{</span>
+<span class="sd">            \#(time\_steps\_where\_multiple\_pitches\_are\_on)</span>
+<span class="sd">        }{</span>
+<span class="sd">            \#(time\_steps)</span>
+<span class="sd">        }</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to evaluate.</span>
+<span class="sd">    threshold : int</span>
+<span class="sd">        The threshold of number of pitches to count into the numerator.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Polyphony rate.</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
-<span class="sd">    1. Olof Mogren, &quot;C-RNN-GAN: Continuous recurrent neural networks with</span>
-<span class="sd">       adversarial training,&quot; in NeuIPS Workshop on Constructive Machine</span>
-<span class="sd">       Learning, 2016.</span>
+<span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,</span>
+<span class="sd">       &quot;MuseGAN: Multi-track sequential generative adversarial networks for</span>
+<span class="sd">       symbolic music generation and accompaniment,&quot; in Proceedings of the</span>
+<span class="sd">       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
-    <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">128</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">pianoroll</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">pianoroll</span><span class="p">)</span></div>
+    <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">_get_pianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pianoroll</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">pianoroll</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">pianoroll</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_scale</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a scale mask for the given key.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return the scale mask of a specific key.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;major&quot;</span><span class="p">:</span>
-        <span class="n">a_scale_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="n">c_scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;minor&quot;</span><span class="p">:</span>
-        <span class="n">a_scale_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
+        <span class="n">c_scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`mode` must be either &#39;major&#39; or &#39;minor&#39;.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">a_scale_mask</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">c_scale</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="in_scale_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.in_scale_rate">[docs]</a><span class="k">def</span> <span class="nf">in_scale_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the rate of notes in a musical scale.</span>
+<div class="viewcode-block" id="pitch_in_scale_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_in_scale_rate">[docs]</a><span class="k">def</span> <span class="nf">pitch_in_scale_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of pitches in a certain musical scale.</span>
 
-<span class="sd">    In scale rate is defined as the ratio of the number of notes in a scale</span>
-<span class="sd">    to the total number of notes. Drum tracks are ignored. This metric is</span>
-<span class="sd">    used in [1].</span>
+<span class="sd">    The pitch-in-scale rate is defined as the ratio of the number of notes</span>
+<span class="sd">    in a certain scale to the total number of notes. Drum tracks are</span>
+<span class="sd">    ignored. This metric is used in [1].</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        in\_scale\_rate = \frac{\#\_of\_notes\_in\_scale}{\#\_of\_notes}</span>
+<span class="sd">        pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -361,7 +472,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    float</span>
-<span class="sd">        In scale rate.</span>
+<span class="sd">        Pitch-in-scale rate.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -372,27 +483,30 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">scale</span> <span class="o">=</span> <span class="n">_get_scale</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">note_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">in_scale_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">note_count</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="k">if</span> <span class="n">scale</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span> <span class="o">%</span> <span class="mi">12</span><span class="p">]:</span>
                 <span class="n">in_scale_count</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="k">return</span> <span class="n">in_scale_count</span> <span class="o">/</span> <span class="n">count</span></div>
+    <span class="k">if</span> <span class="n">note_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">in_scale_count</span> <span class="o">/</span> <span class="n">note_count</span></div>
 
 
 <div class="viewcode-block" id="scale_consistency"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.scale_consistency">[docs]</a><span class="k">def</span> <span class="nf">scale_consistency</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the largest in scale rate.</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the largest pitch-in-scale rate.</span>
 
-<span class="sd">    The scale consistency is defined as the largest in scale rate over all</span>
-<span class="sd">    major and minor scales. Drum tracks are ignored. This metric is used</span>
+<span class="sd">    The scale consistency is defined as the largest pitch-in-scale rate over</span>
+<span class="sd">    all major and minor scales. Drum tracks are ignored. This metric is used</span>
 <span class="sd">    in [1].</span>
 
 <span class="sd">    .. math::</span>
-<span class="sd">        scale\_consistency = \max_{root, mode}{in\_scale\_rate(root, mode)}</span>
+<span class="sd">        scale\_consistency = \max_{root, mode}{</span>
+<span class="sd">            pitch\_in\_scale\_rate(root, mode)}</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -414,10 +528,106 @@
     <span class="n">max_in_scale_rate</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;major&quot;</span><span class="p">,</span> <span class="s2">&quot;minor&quot;</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">root</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
-            <span class="n">rate</span> <span class="o">=</span> <span class="n">in_scale_rate</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="n">rate</span> <span class="o">=</span> <span class="n">pitch_in_scale_rate</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">rate</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
             <span class="k">if</span> <span class="n">rate</span> <span class="o">&gt;</span> <span class="n">max_in_scale_rate</span><span class="p">:</span>
                 <span class="n">max_in_scale_rate</span> <span class="o">=</span> <span class="n">rate</span>
     <span class="k">return</span> <span class="n">max_in_scale_rate</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_drum_pattern</span><span class="p">(</span><span class="n">res</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">meter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the drum pattern mask of a specific meter.&quot;&quot;&quot;</span>
+    <span class="n">drum_pattern</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+    <span class="n">drum_pattern</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">meter</span> <span class="o">==</span> <span class="s2">&quot;duple&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">drum_pattern</span><span class="p">[::</span> <span class="p">(</span><span class="n">res</span> <span class="o">//</span> <span class="mi">4</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">drum_pattern</span><span class="p">[::</span> <span class="p">(</span><span class="n">res</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">meter</span> <span class="o">==</span> <span class="s2">&quot;triple&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">drum_pattern</span><span class="p">[::</span> <span class="p">(</span><span class="n">res</span> <span class="o">//</span> <span class="mi">3</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only duple and triple meters are supported.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">drum_pattern</span>
+
+
+<div class="viewcode-block" id="drum_in_pattern_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.drum_in_pattern_rate">[docs]</a><span class="k">def</span> <span class="nf">drum_in_pattern_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">meter</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of drum notes in a certain drum pattern.</span>
+
+<span class="sd">    The drum-in-pattern rate is defined as the ratio of the number of</span>
+<span class="sd">    notes in a certain scale to the total number of notes. Only drum tracks</span>
+<span class="sd">    are considered. This metric is used in [1].</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        drum\_in\_pattern\_rate = \frac{</span>
+<span class="sd">            \#(drum\_notes\_in\_pattern)}{\#(drum\_notes)}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to evaluate.</span>
+<span class="sd">    meter : str, {&#39;duple&#39;, &#39;triple&#39;}</span>
+<span class="sd">        Meter of the drum pattern.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Drum-in-pattern rate.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,</span>
+<span class="sd">       &quot;MuseGAN: Multi-track sequential generative adversarial networks for</span>
+<span class="sd">       symbolic music generation and accompaniment,&quot; in Proceedings of the</span>
+<span class="sd">       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">drum_pattern</span> <span class="o">=</span> <span class="n">_get_drum_pattern</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span> <span class="n">meter</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="n">note_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">in_pattern_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">note_count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">drum_pattern</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">%</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">]:</span>
+                <span class="n">in_pattern_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">note_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">return</span> <span class="n">in_pattern_count</span> <span class="o">/</span> <span class="n">note_count</span></div>
+
+
+<div class="viewcode-block" id="drum_pattern_consistency"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.drum_pattern_consistency">[docs]</a><span class="k">def</span> <span class="nf">drum_pattern_consistency</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the largest drum-in-pattern rate.</span>
+
+<span class="sd">    The drum pattern consistency is defined as the largest drum-in-pattern</span>
+<span class="sd">    rate over duple and triple meters. Only drum tracks are considered.</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        drum\_pattern\_consistency = \max_{meter}{</span>
+<span class="sd">            drum\_in\_pattern\_rate(meter)}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to evaluate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Drum pattern consistency.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">drum_in_duple_pattern_rate</span> <span class="o">=</span> <span class="n">drum_in_pattern_rate</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="s2">&quot;duple&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">drum_in_duple_pattern_rate</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">drum_in_triple_pattern_rate</span> <span class="o">=</span> <span class="n">drum_in_pattern_rate</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="s2">&quot;triple&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">drum_in_duple_pattern_rate</span> <span class="o">&gt;</span> <span class="n">drum_in_triple_pattern_rate</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">drum_in_duple_pattern_rate</span>
+    <span class="k">return</span> <span class="n">drum_in_triple_pattern_rate</span></div>
 
 
 <span class="k">def</span> <span class="nf">_entropy</span><span class="p">(</span><span class="n">prob</span><span class="p">):</span>
@@ -462,7 +672,10 @@
             <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">counter</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="n">prob</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">/</span> <span class="n">counter</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">counter</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">prob</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">/</span> <span class="n">denominator</span>
     <span class="k">return</span> <span class="n">_entropy</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span></div>
 
 
@@ -505,7 +718,10 @@
             <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">counter</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span> <span class="o">%</span> <span class="mi">12</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-    <span class="n">prob</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">/</span> <span class="n">counter</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="n">counter</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+    <span class="n">prob</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">/</span> <span class="n">denominator</span>
     <span class="k">return</span> <span class="n">_entropy</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span></div>
 
 
@@ -547,12 +763,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">measure_resolution</span> <span class="o">%</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;Measure resolution must be a multiple of resolution.&quot;</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">measure_resolution</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Measure resolution must be a positive integer.&quot;</span><span class="p">)</span>
 
     <span class="n">n_measures</span> <span class="o">=</span> <span class="p">(</span><span class="n">length</span> <span class="o">//</span> <span class="n">measure_resolution</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">n_measures</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
+
     <span class="n">groove_patterns</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_measures</span><span class="p">,</span> <span class="n">measure_resolution</span><span class="p">),</span> <span class="nb">bool</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>

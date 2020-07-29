@@ -1635,20 +1635,75 @@ Object to be clipped.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="muspy.empty_beat_rate">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">empty_beat_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#empty_beat_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.empty_beat_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the empty beat rate.</p>
-<p>The empty beat rate is defined as the ratio of the number of empty beats
-(where no pitch is played) to the number of beats. This metric is also
-implemented in Pypianoroll [1].</p>
+<dt id="muspy.drum_in_pattern_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">drum_in_pattern_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">meter</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#drum_in_pattern_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.drum_in_pattern_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ratio of drum notes in a certain drum pattern.</p>
+<p>The drum-in-pattern rate is defined as the ratio of the number of
+notes in a certain scale to the total number of notes. Only drum tracks
+are considered. This metric is used in [1].</p>
 <div class="math notranslate nohighlight">
-\[empty\_beat\_rate = \frac{\#\_of\_empty\_beats}{\#\_of\_beats}\]</div>
+\[drum\_in\_pattern\_rate = \frac{
+    \#(drum\_notes\_in\_pattern)}{\#(drum\_notes)}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p></li>
+<li><p><strong>meter</strong> (<em>str</em><em>, </em><em>{'duple'</em><em>, </em><em>'triple'}</em>) – Meter of the drum pattern.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Drum-in-pattern rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+“MuseGAN: Multi-track sequential generative adversarial networks for
+symbolic music generation and accompaniment,” in Proceedings of the
+32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.drum_pattern_consistency">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">drum_pattern_consistency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#drum_pattern_consistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.drum_pattern_consistency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the largest drum-in-pattern rate.</p>
+<p>The drum pattern consistency is defined as the largest drum-in-pattern
+rate over duple and triple meters. Only drum tracks are considered.</p>
+<div class="math notranslate nohighlight">
+\[drum\_pattern\_consistency = \max_{meter}{
+    drum\_in\_pattern\_rate(meter)}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Empty beat rate.</p>
+<dd class="field-even"><p>Drum pattern consistency.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.empty_beat_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">empty_beat_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#empty_beat_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.empty_beat_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ratio of empty beats.</p>
+<p>The empty-beat rate is defined as the ratio of the number of empty beats
+(where no note is played) to the total number of beats. This metric is
+also implemented in Pypianoroll [1].</p>
+<div class="math notranslate nohighlight">
+\[empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Empty-beat rate.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>float</p>
@@ -1660,6 +1715,39 @@ implemented in Pypianoroll [1].</p>
 Source Python Package for Handling Multitrack Pianorolls,” in
 Late-Breaking Demos of the 18th International Society for Music
 Information Retrieval Conference (ISMIR), 2018.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.empty_measure_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">empty_measure_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">measure_resolution</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#empty_measure_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.empty_measure_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ratio of empty measures.</p>
+<p>The empty-measure rate is defined as the ratio of the number of empty
+measures (where no note is played) to the total number of measures. Note
+that this metric only works for songs with a constant time signature.
+This metric is used in [1].</p>
+<div class="math notranslate nohighlight">
+\[empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p></li>
+<li><p><strong>measure_resolution</strong> (<em>int</em>) – Time steps per measure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Empty-measure rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+“MuseGAN: Multi-track sequential generative adversarial networks for
+symbolic music generation and accompaniment,” in Proceedings of the
+32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
 </ol>
 </dd></dl>
 
@@ -2017,39 +2105,6 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="muspy.in_scale_rate">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">in_scale_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#in_scale_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.in_scale_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the rate of notes in a musical scale.</p>
-<p>In scale rate is defined as the ratio of the number of notes in a scale
-to the total number of notes. Drum tracks are ignored. This metric is
-used in [1].</p>
-<div class="math notranslate nohighlight">
-\[in\_scale\_rate = \frac{\#\_of\_notes\_in\_scale}{\#\_of\_notes}\]</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p></li>
-<li><p><strong>root</strong> (<em>int</em>) – Root of the scale.</p></li>
-<li><p><strong>mode</strong> (<em>int</em>) – Mode of the scale.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>In scale rate.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<ol class="arabic simple">
-<li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
-“MuseGAN: Multi-track sequential generative adversarial networks for
-symbolic music generation and accompaniment,” in Proceedings of the
-32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
-</ol>
-</dd></dl>
-
-<dl class="py function">
 <dt id="muspy.load">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">schema_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/wrappers.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object loaded from a JSON or a YAML file.</p>
@@ -2196,23 +2251,68 @@ Society for Music Information Retrieval Conference, 2020.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.pitch_in_scale_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">pitch_in_scale_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_in_scale_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.pitch_in_scale_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ratio of pitches in a certain musical scale.</p>
+<p>The pitch-in-scale rate is defined as the ratio of the number of notes
+in a certain scale to the total number of notes. Drum tracks are
+ignored. This metric is used in [1].</p>
+<div class="math notranslate nohighlight">
+\[pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p></li>
+<li><p><strong>root</strong> (<em>int</em>) – Root of the scale.</p></li>
+<li><p><strong>mode</strong> (<em>int</em>) – Mode of the scale.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pitch-in-scale rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<ol class="arabic simple">
+<li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+“MuseGAN: Multi-track sequential generative adversarial networks for
+symbolic music generation and accompaniment,” in Proceedings of the
+32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.pitch_range">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">pitch_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#pitch_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.pitch_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the pitch range.</p>
+<p>Drum tracks are ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pitch range.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.polyphony">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">polyphony</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#polyphony"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.polyphony" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the polyphony measure.</p>
-<p>The polyphony is defined as the ratio of the number of time steps where
-multiple pitches are on to the total number of time steps. Drum tracks
-are ignored. This metric is used in [1].</p>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">polyphony</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#polyphony"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.polyphony" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the average number of pitches being played at the same time.</p>
+<p>The polyphony is defined as the average number of pitches being played
+at the same time, evaluated only at time steps where at least one pitch
+is on. Drum tracks are ignored.</p>
 <div class="math notranslate nohighlight">
 \[polyphony = \frac{
-    \#\_of\_time\_steps\_where\_multiple\_pitches\_are\_on
+    \#(pitches\_at\_time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
 }{
-    \#\_of\_time\_steps
+    \#(time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
 }\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -2225,11 +2325,42 @@ are ignored. This metric is used in [1].</p>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.polyphony_rate">
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">polyphony_rate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="o">=</span><span class="default_value">2</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#polyphony_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.polyphony_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ratio of time steps where multiple pitches are on.</p>
+<p>The polyphony is defined as the ratio of the number of time steps where
+multiple pitches are on to the total number of time steps. Drum tracks
+are ignored. This metric is used in [1], where it is called
+<em>polyphonicity</em>.</p>
+<div class="math notranslate nohighlight">
+\[polyphony_rate = \frac{
+    \#(time\_steps\_where\_multiple\_pitches\_are\_on)
+}{
+    \#(time\_steps)
+}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p></li>
+<li><p><strong>threshold</strong> (<em>int</em>) – The threshold of number of pitches to count into the numerator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Polyphony rate.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 <p class="rubric">References</p>
 <ol class="arabic simple">
-<li><p>Olof Mogren, “C-RNN-GAN: Continuous recurrent neural networks with
-adversarial training,” in NeuIPS Workshop on Constructive Machine
-Learning, 2016.</p></li>
+<li><p>Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+“MuseGAN: Multi-track sequential generative adversarial networks for
+symbolic music generation and accompaniment,” in Proceedings of the
+32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.</p></li>
 </ol>
 </dd></dl>
 
@@ -2414,12 +2545,13 @@ example, in an Annotation object, which can store data of any type).</p>
 <dl class="py function">
 <dt id="muspy.scale_consistency">
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">scale_consistency</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/metrics/metrics.html#scale_consistency"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.scale_consistency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the largest in scale rate.</p>
-<p>The scale consistency is defined as the largest in scale rate over all
-major and minor scales. Drum tracks are ignored. This metric is used
+<dd><p>Return the largest pitch-in-scale rate.</p>
+<p>The scale consistency is defined as the largest pitch-in-scale rate over
+all major and minor scales. Drum tracks are ignored. This metric is used
 in [1].</p>
 <div class="math notranslate nohighlight">
-\[scale\_consistency = \max_{root, mode}{in\_scale\_rate(root, mode)}\]</div>
+\[scale\_consistency = \max_{root, mode}{
+    pitch\_in\_scale\_rate(root, mode)}\]</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to evaluate.</p>
