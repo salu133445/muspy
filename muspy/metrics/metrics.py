@@ -1,4 +1,6 @@
 """Evaluation metrics."""
+import math
+
 import numpy as np
 from numpy import ndarray
 
@@ -30,8 +32,6 @@ def n_pitches_used(music: Music) -> int:
             if not is_used[note.pitch]:
                 is_used[note.pitch] = True
                 count += 1
-                if count > 127:
-                    break
     return count
 
 
@@ -61,13 +61,25 @@ def n_chroma_used(music: Music) -> int:
             if not is_used[chroma]:
                 is_used[chroma] = True
                 count += 1
-                if count > 11:
-                    break
     return count
 
 
 def pitch_range(music: Music) -> int:
-    """Return the pitch range."""
+    """Return the pitch range.
+
+    Drum tracks are ignored.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to evaluate.
+
+    Returns
+    -------
+    int
+        Pitch range.
+
+    """
     if not music.tracks:
         return 0
     if not any(len(track.notes) > 0 for track in music.tracks):
@@ -76,6 +88,8 @@ def pitch_range(music: Music) -> int:
     highest = 0
     lowest = 127
     for track in music.tracks:
+        if track.is_drum:
+            continue
         for note in track.notes:
             if note.pitch > highest:
                 highest = note.pitch
@@ -85,13 +99,13 @@ def pitch_range(music: Music) -> int:
 
 
 def empty_beat_rate(music: Music) -> float:
-    r"""Return the empty beat rate.
+    r"""Return the ratio of empty beats.
 
-    The empty beat rate is defined as the ratio of the number of empty beats
-    (where no pitch is played) to the number of beats. This metric is also
-    implemented in Pypianoroll [1].
+    The empty-beat rate is defined as the ratio of the number of empty beats
+    (where no note is played) to the total number of beats. This metric is
+    also implemented in Pypianoroll [1].
 
-    .. math:: empty\_beat\_rate = \frac{\#\_of\_empty\_beats}{\#\_of\_beats}
+    .. math:: empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}
 
     Parameters
     ----------
@@ -101,7 +115,7 @@ def empty_beat_rate(music: Music) -> float:
     Returns
     -------
     float
-        Empty beat rate.
+        Empty-beat rate.
 
     References
     ----------
@@ -112,32 +126,97 @@ def empty_beat_rate(music: Music) -> float:
 
     """
     length = max(track.get_end_time() for track in music.tracks)
-    total_beats = length // music.resolution
-    is_empty = [False] * total_beats
+    n_beats = length // music.resolution + 1
+
+    if n_beats < 1:
+        return math.nan
+
     count = 0
+    is_empty = [True] * n_beats
     for track in music.tracks:
         for note in track.notes:
             start = note.start // music.resolution
             end = note.end // music.resolution
             for beat in range(start, end + 1):
-                if not is_empty[beat]:
-                    is_empty[beat] = True
+                if is_empty[beat]:
+                    is_empty[beat] = False
                     count += 1
-    return count / total_beats
+    return 1 - (count / n_beats)
 
 
-def polyphony(music: Music, threshold: int = 2) -> float:
-    r"""Return the polyphony measure.
+def empty_measure_rate(music: Music, measure_resolution: int) -> float:
+    r"""Return the ratio of empty measures.
 
-    The polyphony is defined as the ratio of the number of time steps where
-    multiple pitches are on to the total number of time steps. Drum tracks
-    are ignored. This metric is used in [1].
+    The empty-measure rate is defined as the ratio of the number of empty
+    measures (where no note is played) to the total number of measures. Note
+    that this metric only works for songs with a constant time signature.
+    This metric is used in [1].
+
+    .. math:: empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to evaluate.
+    measure_resolution : int
+        Time steps per measure.
+
+    Returns
+    -------
+    float
+        Empty-measure rate.
+
+    References
+    ----------
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks for
+       symbolic music generation and accompaniment," in Proceedings of the
+       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
+
+    """
+    length = max(track.get_end_time() for track in music.tracks)
+    n_measures = length // measure_resolution + 1
+
+    if n_measures < 1:
+        return math.nan
+
+    count = 0
+    is_empty = [True] * n_measures
+    for track in music.tracks:
+        for note in track.notes:
+            start = note.start // measure_resolution
+            end = note.end // measure_resolution
+            for measure in range(start, end + 1):
+                if is_empty[measure]:
+                    is_empty[measure] = False
+                    count += 1
+    return 1 - (count / n_measures)
+
+
+def _get_pianoroll(music: Music) -> ndarray:
+    """Return the binary pianoroll matrix."""
+    length = max(track.get_end_time() for track in music.tracks)
+    pianoroll = np.zeros((length, 128), bool)
+    for track in music.tracks:
+        if track.is_drum:
+            continue
+        for note in track.notes:
+            pianoroll[note.start : note.end, note.pitch] = 1
+    return pianoroll
+
+
+def polyphony(music: Music) -> float:
+    r"""Return the average number of pitches being played at the same time.
+
+    The polyphony is defined as the average number of pitches being played
+    at the same time, evaluated only at time steps where at least one pitch
+    is on. Drum tracks are ignored.
 
     .. math::
         polyphony = \frac{
-            \#\_of\_time\_steps\_where\_multiple\_pitches\_are\_on
+            \#(pitches\_at\_time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
         }{
-            \#\_of\_time\_steps
+            \#(time\_steps\_where\_at\_least\_one\_pitch\_is\_on)
         }
 
     Parameters
@@ -150,43 +229,75 @@ def polyphony(music: Music, threshold: int = 2) -> float:
     float
         Polyphony.
 
+    """
+    pianoroll = _get_pianoroll(music)
+    denominator = np.count_nonzero(pianoroll.sum(1) > 0)
+    if denominator < 1:
+        return math.nan
+    return pianoroll.sum() / denominator
+
+
+def polyphony_rate(music: Music, threshold: int = 2) -> float:
+    r"""Return the ratio of time steps where multiple pitches are on.
+
+    The polyphony is defined as the ratio of the number of time steps where
+    multiple pitches are on to the total number of time steps. Drum tracks
+    are ignored. This metric is used in [1], where it is called
+    *polyphonicity*.
+
+    .. math::
+        polyphony_rate = \frac{
+            \#(time\_steps\_where\_multiple\_pitches\_are\_on)
+        }{
+            \#(time\_steps)
+        }
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to evaluate.
+    threshold : int
+        The threshold of number of pitches to count into the numerator.
+
+    Returns
+    -------
+    float
+        Polyphony rate.
+
     References
     ----------
-    1. Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks with
-       adversarial training," in NeuIPS Workshop on Constructive Machine
-       Learning, 2016.
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks for
+       symbolic music generation and accompaniment," in Proceedings of the
+       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
 
     """
-    length = max(track.get_end_time() for track in music.tracks)
-    pianoroll = np.zeros((length, 128), bool)
-    for track in music.tracks:
-        if track.is_drum:
-            continue
-        for note in track.notes:
-            pianoroll[note.start : note.end] = 1
-    return (pianoroll.sum(1) > threshold) / len(pianoroll)
+    pianoroll = _get_pianoroll(music)
+    if len(pianoroll) < 1:
+        return math.nan
+    return np.count_nonzero(pianoroll.sum(1) > threshold) / len(pianoroll)
 
 
 def _get_scale(key: int, mode: str) -> ndarray:
-    """Return a scale mask for the given key."""
+    """Return the scale mask of a specific key."""
     if mode == "major":
-        a_scale_mask = np.array([0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1], bool)
+        c_scale = np.array([1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1], bool)
     elif mode == "minor":
-        a_scale_mask = np.array([1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1], bool)
+        c_scale = np.array([1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0], bool)
     else:
         raise ValueError("`mode` must be either 'major' or 'minor'.")
-    return np.roll(a_scale_mask, key)
+    return np.roll(c_scale, key)
 
 
-def in_scale_rate(music: Music, root: int, mode: str) -> float:
-    r"""Return the rate of notes in a musical scale.
+def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
+    r"""Return the ratio of pitches in a certain musical scale.
 
-    In scale rate is defined as the ratio of the number of notes in a scale
-    to the total number of notes. Drum tracks are ignored. This metric is
-    used in [1].
+    The pitch-in-scale rate is defined as the ratio of the number of notes
+    in a certain scale to the total number of notes. Drum tracks are
+    ignored. This metric is used in [1].
 
     .. math::
-        in\_scale\_rate = \frac{\#\_of\_notes\_in\_scale}{\#\_of\_notes}
+        pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}
 
     Parameters
     ----------
@@ -200,7 +311,7 @@ def in_scale_rate(music: Music, root: int, mode: str) -> float:
     Returns
     -------
     float
-        In scale rate.
+        Pitch-in-scale rate.
 
     References
     ----------
@@ -211,27 +322,30 @@ def in_scale_rate(music: Music, root: int, mode: str) -> float:
 
     """
     scale = _get_scale(root, mode.lower())
-    count = 0
+    note_count = 0
     in_scale_count = 0
     for track in music.tracks:
         if track.is_drum:
             continue
         for note in track.notes:
-            count += 1
+            note_count += 1
             if scale[note.pitch % 12]:
                 in_scale_count += 1
-    return in_scale_count / count
+    if note_count < 1:
+        return math.nan
+    return in_scale_count / note_count
 
 
 def scale_consistency(music: Music) -> float:
-    r"""Return the largest in scale rate.
+    r"""Return the largest pitch-in-scale rate.
 
-    The scale consistency is defined as the largest in scale rate over all
-    major and minor scales. Drum tracks are ignored. This metric is used
+    The scale consistency is defined as the largest pitch-in-scale rate over
+    all major and minor scales. Drum tracks are ignored. This metric is used
     in [1].
 
     .. math::
-        scale\_consistency = \max_{root, mode}{in\_scale\_rate(root, mode)}
+        scale\_consistency = \max_{root, mode}{
+            pitch\_in\_scale\_rate(root, mode)}
 
     Parameters
     ----------
@@ -253,10 +367,106 @@ def scale_consistency(music: Music) -> float:
     max_in_scale_rate = 0.0
     for mode in ("major", "minor"):
         for root in range(12):
-            rate = in_scale_rate(music, root, mode)
+            rate = pitch_in_scale_rate(music, root, mode)
+            if math.isnan(rate):
+                return math.nan
             if rate > max_in_scale_rate:
                 max_in_scale_rate = rate
     return max_in_scale_rate
+
+
+def _get_drum_pattern(res: int, meter: str) -> ndarray:
+    """Return the drum pattern mask of a specific meter."""
+    drum_pattern = np.zeros(res, dtype=bool)
+    drum_pattern[0] = 1
+    if meter == "duple":
+        if res % 4 == 0:
+            drum_pattern[:: (res // 4)] = 1
+        if res % 2 == 0:
+            drum_pattern[:: (res // 2)] = 1
+    elif meter == "triple":
+        if res % 3 == 0:
+            drum_pattern[:: (res // 3)] = 1
+    else:
+        raise ValueError("Only duple and triple meters are supported.")
+    return drum_pattern
+
+
+def drum_in_pattern_rate(music: Music, meter: str) -> float:
+    r"""Return the ratio of drum notes in a certain drum pattern.
+
+    The drum-in-pattern rate is defined as the ratio of the number of
+    notes in a certain scale to the total number of notes. Only drum tracks
+    are considered. This metric is used in [1].
+
+    .. math::
+        drum\_in\_pattern\_rate = \frac{
+            \#(drum\_notes\_in\_pattern)}{\#(drum\_notes)}
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to evaluate.
+    meter : str, {'duple', 'triple'}
+        Meter of the drum pattern.
+
+    Returns
+    -------
+    float
+        Drum-in-pattern rate.
+
+    References
+    ----------
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks for
+       symbolic music generation and accompaniment," in Proceedings of the
+       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
+
+    """
+    drum_pattern = _get_drum_pattern(music.resolution, meter.lower())
+    note_count = 0
+    in_pattern_count = 0
+    for track in music.tracks:
+        if not track.is_drum:
+            continue
+        for note in track.notes:
+            note_count += 1
+            if drum_pattern[note.start % music.resolution]:
+                in_pattern_count += 1
+    if note_count < 1:
+        return math.nan
+    return in_pattern_count / note_count
+
+
+def drum_pattern_consistency(music: Music) -> float:
+    r"""Return the largest drum-in-pattern rate.
+
+    The drum pattern consistency is defined as the largest drum-in-pattern
+    rate over duple and triple meters. Only drum tracks are considered.
+
+    .. math::
+        drum\_pattern\_consistency = \max_{meter}{
+            drum\_in\_pattern\_rate(meter)}
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to evaluate.
+
+    Returns
+    -------
+    float
+        Drum pattern consistency.
+
+    """
+    drum_in_duple_pattern_rate = drum_in_pattern_rate(music, "duple")
+    if math.isnan(drum_in_duple_pattern_rate):
+        return math.nan
+    drum_in_triple_pattern_rate = drum_in_pattern_rate(music, "triple")
+
+    if drum_in_duple_pattern_rate > drum_in_triple_pattern_rate:
+        return drum_in_duple_pattern_rate
+    return drum_in_triple_pattern_rate
 
 
 def _entropy(prob):
@@ -301,7 +511,10 @@ def pitch_entropy(music: Music) -> float:
             continue
         for note in track.notes:
             counter[note.pitch] += 1
-    prob = counter / counter.sum()
+    denominator = counter.sum()
+    if denominator < 1:
+        return math.nan
+    prob = counter / denominator
     return _entropy(prob)
 
 
@@ -344,7 +557,10 @@ def chroma_entropy(music: Music) -> float:
             continue
         for note in track.notes:
             counter[note.pitch % 12] += 1
-    prob = counter / counter.sum()
+    denominator = counter.sum()
+    if denominator < 1:
+        return math.nan
+    prob = counter / denominator
     return _entropy(prob)
 
 
@@ -386,12 +602,13 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
 
     """
     length = max(track.get_end_time() for track in music.tracks)
-    if measure_resolution % music.resolution > 0:
-        raise ValueError(
-            "Measure resolution must be a multiple of resolution."
-        )
+    if measure_resolution < 1:
+        raise ValueError("Measure resolution must be a positive integer.")
 
     n_measures = (length // measure_resolution) + 1
+    if n_measures < 2:
+        return math.nan
+
     groove_patterns = np.zeros((n_measures, measure_resolution), bool)
 
     for track in music.tracks:
