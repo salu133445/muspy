@@ -69,8 +69,8 @@ Base Dataset Classes
     :noindex:
 
 
-Dataset Classes
-===============
+Local Dataset Classes
+=====================
 
 .. autoclass:: muspy.FolderDataset
     :noindex:

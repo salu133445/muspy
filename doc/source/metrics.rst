@@ -4,9 +4,9 @@ Metrics
 
 MusPy provides several several objective metrics proposed in the literature, summarized as follows.
 
-- Pitch-related metrics: pitch_range, n_pitches_used, n_pitch_classes_used, polyphony, polyphony rate, pitch-in-scale rate, scale consistency, pitch entropy and pitch class entropy.
-- Rhythm-related metrics: empty-beat rate, drum-in-pattern rate, drum pattern consistency and groove consistency.
-- Other metrics: empty_measure_rate.
+- **Pitch-related metrics**: pitch_range, n_pitches_used, n_pitch_classes_used, polyphony, polyphony rate, pitch-in-scale rate, scale consistency, pitch entropy and pitch class entropy.
+- **Rhythm-related metrics**: empty-beat rate, drum-in-pattern rate, drum pattern consistency and groove consistency.
+- **Other metrics**:* empty_measure_rate.
 
 These objective metrics could be used to evaluate a music generation system by comparing the statistical difference between the training data and the generated samples.
 
