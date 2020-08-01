@@ -315,7 +315,7 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
     --------
     :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.
     :class:`muspy.FolderDataset` : A class of datasets containing files in a
-    folder.
+      folder.
 
     """
 
