@@ -14,13 +14,15 @@ def write_musicxml(music: "Music", path: Union[str, Path]):
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+        Music object to write.
     path : str or Path
         Path to write the MusicXML file.
 
     """
     stream = to_music21(music)
-    musicxml_bytes = music21.musicxml.m21ToXml.GeneralObjectExporter().parse(stream)
-    f = open(path, 'wb')
+    musicxml_bytes = music21.musicxml.m21ToXml.GeneralObjectExporter().parse(
+        stream
+    )
+    f = open(path, "wb")
     f.write(musicxml_bytes)
     f.close()

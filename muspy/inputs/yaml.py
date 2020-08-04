@@ -16,7 +16,7 @@ def load_yaml(
     Parameters
     ----------
     path : str or Path
-        Path to the file to be loaded.
+        Path to the file to load.
     schema_path : str or Path, optional
         Path to the schema file. If given, validate the loaded data by the
         schema.
@@ -24,7 +24,7 @@ def load_yaml(
     Returns
     -------
     :class:`muspy.Music` object
-        Loaded MusPy Music object.
+        Loaded Music object.
 
     """
     if schema_path is not None:

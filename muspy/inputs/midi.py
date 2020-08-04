@@ -35,12 +35,12 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
     Parameters
     ----------
     obj : :class:`pretty_midi.PrettyMIDI` object
-        PrettyMIDI object to be converted.
+        PrettyMIDI object to convert.
 
     Returns
     -------
     music : :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     """
     key_signatures = [
@@ -90,7 +90,7 @@ def read_midi(
     Parameters
     ----------
     path : str or Path
-        Path to the MIDI file to be read.
+        Path to the MIDI file to read.
     backend: {'mido', 'pretty_midi'}
         Backend to use.
     duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
@@ -104,11 +104,10 @@ def read_midi(
         - 'lifo' (first in first out):close the latest note on
         - 'close_all': close all note on messages
 
-
     Returns
     -------
     :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     """
     if backend == "mido":
@@ -124,12 +123,12 @@ def read_midi_pretty_midi(path: Union[str, Path]) -> Music:
     Parameters
     ----------
     path : str or Path
-        Path to the MIDI file to be read.
+        Path to the MIDI file to read.
 
     Returns
     -------
     :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     """
     return from_pretty_midi(PrettyMIDI(str(path)))
@@ -143,7 +142,7 @@ def read_midi_mido(
     Parameters
     ----------
     path : str or Path
-        Path to the MIDI file to be read.
+        Path to the MIDI file to read.
     duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
         Policy for dealing with duplicate notes. When a note off message is
         presetned while there are multiple correspoding note on messages
@@ -157,7 +156,7 @@ def read_midi_mido(
     Returns
     -------
     :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     """
     if duplicate_note_mode.lower() not in ("fifo", "lifo", "close_all"):

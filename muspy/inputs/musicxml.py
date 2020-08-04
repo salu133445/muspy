@@ -503,7 +503,12 @@ def read_musicxml(
     Parameters
     ----------
     path : str or Path
-        Path to the MusicXML file to be read.
+        Path to the MusicXML file to read.
+
+    Returns
+    -------
+    :class:`muspy.Music` object
+        Converted Music object.
 
     Notes
     -----

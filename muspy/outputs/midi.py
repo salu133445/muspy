@@ -16,7 +16,7 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+        Music object to convert.
 
     Returns
     -------
@@ -68,7 +68,7 @@ def write_midi(music: "Music", path: Union[str, Path], backend: str = "mido"):
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+        Music object to write.
     path : str or Path
         Path to write the MIDI file.
     backend: {'mido', 'pretty_midi'}
@@ -88,7 +88,7 @@ def write_midi_pretty_midi(music: "Music", path: Union[str, Path]):
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+        Music object to convert.
     path : str or Path
         Path to write the MIDI file.
 
@@ -103,7 +103,7 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+        Music object to write.
     path : str or Path
         Path to write the MIDI file.
 

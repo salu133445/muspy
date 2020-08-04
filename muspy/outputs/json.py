@@ -13,7 +13,7 @@ def save_json(music: "Music", path: Union[str, Path]):
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be saved.
+        Music object to save.
     path : str or Path
         Path to save the JSON file.
 
