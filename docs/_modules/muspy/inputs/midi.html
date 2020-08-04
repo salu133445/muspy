@@ -196,12 +196,12 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`pretty_midi.PrettyMIDI` object</span>
-<span class="sd">        PrettyMIDI object to be converted.</span>
+<span class="sd">        PrettyMIDI object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
+<span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
@@ -251,7 +251,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the MIDI file to be read.</span>
+<span class="sd">        Path to the MIDI file to read.</span>
 <span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}</span>
 <span class="sd">        Backend to use.</span>
 <span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
@@ -265,11 +265,10 @@
 <span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
 <span class="sd">        - &#39;close_all&#39;: close all note on messages</span>
 
-
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
+<span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;mido&quot;</span><span class="p">:</span>
@@ -285,12 +284,12 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the MIDI file to be read.</span>
+<span class="sd">        Path to the MIDI file to read.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
+<span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">PrettyMIDI</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
@@ -304,7 +303,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the MIDI file to be read.</span>
+<span class="sd">        Path to the MIDI file to read.</span>
 <span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
 <span class="sd">        Policy for dealing with duplicate notes. When a note off message is</span>
 <span class="sd">        presetned while there are multiple correspoding note on messages</span>
@@ -318,7 +317,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
+<span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;fifo&quot;</span><span class="p">,</span> <span class="s2">&quot;lifo&quot;</span><span class="p">,</span> <span class="s2">&quot;close_all&quot;</span><span class="p">):</span>

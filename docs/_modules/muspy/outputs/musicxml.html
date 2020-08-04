@@ -175,14 +175,16 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">        Music object to write.</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to write the MusicXML file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">stream</span> <span class="o">=</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="n">musicxml_bytes</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">musicxml</span><span class="o">.</span><span class="n">m21ToXml</span><span class="o">.</span><span class="n">GeneralObjectExporter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span>
+    <span class="n">musicxml_bytes</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">musicxml</span><span class="o">.</span><span class="n">m21ToXml</span><span class="o">.</span><span class="n">GeneralObjectExporter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
+        <span class="n">stream</span>
+    <span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">musicxml_bytes</span><span class="p">)</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>

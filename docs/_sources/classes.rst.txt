@@ -102,7 +102,7 @@ The :class:`muspy.Note` class is a container for musical tracks.
 =========== ======================== ================================= =======
 Attributes  Description              Type                              Default
 =========== ======================== ================================= =======
-program     MIDI program number* int (0-127)                       0
+program     MIDI program number      int (0-127)                       0
 is_drum     If it is a drum track    bool                              False
 name        Track name               str
 notes       Musical notes            list of :class:`muspy.Note`       []
@@ -141,7 +141,7 @@ Attributes Description                       Type                Default
 ========== ================================= =================== =======
 start      Start time                        int
 end        End time                          int
-pitch      Note pitches as MIDI note numbers List of int (0-127) []
+pitch      Note pitches as MIDI note numbers list of int (0-127) []
 velocity   Chord velocity                    int (0-127)
 ========== ================================= =================== =======
 

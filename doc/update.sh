@@ -19,3 +19,4 @@ rm -rf "$DIR/../docs/".[!.]*
 # Copy updated documentation
 cp -r "$DIR/_build/html/"* "$DIR/../docs"
 cp -r "$DIR/_build/html/".[!.]* "$DIR/../docs"
+cp -r "$DIR/source/pdf/" "$DIR/../docs/"
