@@ -34,7 +34,7 @@ class HymnalDataset(FolderDataset):
         use_converted: Optional[bool] = None,
     ):
 
-        self.root = Path(root).expanduser()
+        self.root = Path(root).expanduser().resolve()
         if not self.root.exists():
             raise ValueError("`root` must be an existing path.")
         if not self.root.is_dir():
@@ -128,7 +128,7 @@ class HymnalTuneDataset(FolderDataset):
         use_converted: Optional[bool] = None,
     ):
 
-        self.root = Path(root).expanduser()
+        self.root = Path(root).expanduser().resolve()
         if not self.root.exists():
             raise ValueError("`root` must be an existing path.")
         if not self.root.is_dir():

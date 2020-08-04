@@ -20,7 +20,7 @@ class MusicDataset(Dataset):
     """
 
     def __init__(self, root: Union[str, Path], kind: str = "json"):
-        self.root = Path(root).expanduser()
+        self.root = Path(root).expanduser().resolve()
         if not self.root.exists():
             raise ValueError("`root` must be an existing path.")
         if not self.root.is_dir():
@@ -145,7 +145,7 @@ class FolderDataset(Dataset):
         ignore_exceptions: bool = False,
         use_converted: Optional[bool] = None,
     ):
-        self.root = Path(root)
+        self.root = Path(root).expanduser().resolve()
         self.kind = kind
 
         # An internal pointer to the callable used to produce the Music object

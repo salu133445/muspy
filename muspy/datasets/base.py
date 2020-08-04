@@ -138,7 +138,7 @@ class Dataset:
         if n_jobs < 0:
             raise ValueError("`n_jobs` must be positive.")
 
-        root = Path(root)
+        root = Path(root).expanduser().resolve()
         if not root.exists():
             raise ValueError("`root` must be an existing path.")
 
@@ -485,7 +485,7 @@ class RemoteDataset(Dataset):
         cleanup: bool = False,
     ):
         super().__init__()
-        self.root = Path(root).expanduser()
+        self.root = Path(root).expanduser().resolve()
         if not self.root.exists():
             raise ValueError("`root` must be an existing path.")
         if not self.root.is_dir():
