@@ -2,6 +2,48 @@
 Datasets
 ========
 
+MusPy provides an easy-to-use dataset management system. Each supported dataset comes with a class inherited from the base MusPy Dataset class. MusPy also provides interfaces to PyTorch and TensorFlow for creating input pipelines for machine learning. Here is an example of preparing training data in the piano-roll representation from the NES Music Database using MusPy.
+
+.. code-block::
+
+    import muspy
+
+    # Download and extract the dataset
+    nes = muspy.NESMusicDatabase("data/nes/", download_and_extract=True)
+
+    # Convert the dataset to MusPy Music objects
+    nes.convert()
+
+    # Iterate over the dataset
+    for music in nes:
+        do_something(music)
+
+    # Convert to a PyTorch dataset
+    dataset = nes.to_pytorch_dataset(representation="pianoroll")
+
+
+Iterating over a MusPy Dataset object
+=====================================
+
+Here is an illustration of the two internal processing modes for iterating over
+a MusPy Dataset object.
+
+.. image:: images/on_the_fly.svg
+    :align: center
+    :width: 475px
+
+.. image:: images/preconverted1.svg
+    :align: center
+    :width: 500px
+
+.. image:: images/preconverted2.svg
+    :align: center
+    :width: 475px
+
+
+Supported Datasets
+==================
+
 Here is a list of the supported datasets.
 
 ============================ ======== ====== ======= ========= ====== ====== ==========
@@ -22,45 +64,11 @@ JSBach Chorale Dataset       MIDI       3.21     382 classical               O
 
 (Asterisk marks indicate partial support.)
 
-Here is an illustration of the two internal processing modes for iterating over
-a MusPy Dataset object.
-
-.. image:: images/on_the_fly.svg
-    :align: center
-    :width: 475px
-
-.. image:: images/preconverted1.svg
-    :align: center
-    :width: 500px
-
-.. image:: images/preconverted2.svg
-    :align: center
-    :width: 475px
-
-
-Example Usage
-=============
-
-.. code-block::
-
-    import muspy
-
-    # Download and extract the dataset
-    nes = muspy.NESMusicDatabase("data/nes/", download_and_extract=True)
-
-    # Convert the dataset to MusPy Music objects
-    nes.convert()
-
-    # Iterate over the dataset
-    for music in nes:
-        do_something(music)
-
-    # Convert to a PyTorch dataset
-    dataset = nes.to_pytorch_dataset(representation="pianoroll")
-
 
 Base Dataset Classes
 ====================
+
+Here are the two base classes for MusPy datasets.
 
 .. autoclass:: muspy.Dataset
     :noindex:
@@ -71,6 +79,8 @@ Base Dataset Classes
 
 Local Dataset Classes
 =====================
+
+Here are the classes for local datasets.
 
 .. autoclass:: muspy.FolderDataset
     :noindex:
@@ -84,6 +94,8 @@ Local Dataset Classes
 
 Remote Dataset Classes
 ======================
+
+Here are the classes for remote datasets.
 
 .. autoclass:: muspy.RemoteFolderDataset
     :noindex:

@@ -85,13 +85,13 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
@@ -168,7 +168,7 @@
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">Chord</span><span class="p">,</span>
     <span class="n">KeySignature</span><span class="p">,</span>
-    <span class="n">MetaData</span><span class="p">,</span>
+    <span class="n">Metadata</span><span class="p">,</span>
     <span class="n">Note</span><span class="p">,</span>
     <span class="n">SongInfo</span><span class="p">,</span>
     <span class="n">SourceInfo</span><span class="p">,</span>
@@ -300,7 +300,7 @@
     <span class="k">return</span> <span class="n">time_signatures</span>
 
 
-<span class="k">def</span> <span class="nf">parse_meta_data</span><span class="p">(</span><span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">MetaData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">parse_meta_data</span><span class="p">(</span><span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Metadata</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return meta data parsed from a music21 Stream object.</span>
 
 <span class="sd">    Parameters</span>
@@ -310,7 +310,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.MetaData` object</span>
+<span class="sd">    :class:`muspy.Metadata` object</span>
 <span class="sd">        Parsed meta data.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -326,7 +326,7 @@
         <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;copyright&quot;</span><span class="p">:</span>
             <span class="n">copyright_</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="k">return</span> <span class="n">MetaData</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span>
         <span class="n">song</span><span class="o">=</span><span class="n">SongInfo</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="n">stream</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">artist</span><span class="o">=</span><span class="n">stream</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">composer</span><span class="p">,</span>
         <span class="p">),</span>

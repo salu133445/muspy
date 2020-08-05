@@ -1,4 +1,8 @@
-========
+===============
+Getting Started
+===============
+
+
 Examples
 ========
 
@@ -9,7 +13,7 @@ Here is an example of data preparation pipeline using MusPy.
     :width: 400px
 
 
-Here is an example of result writing pipeline using MusPy.
+Here is another example of result writing pipeline using MusPy.
 
 .. image:: images/write_pipeline.svg
     :align: center

@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Examples" href="examples.html" /> 
+    <link rel="next" title="Getting Started" href="getting_started.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,13 +86,13 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classes.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_music.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
@@ -167,18 +167,37 @@
 <div class="section" id="features">
 <h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Data I/O supports for common symbolic music formats and interfaces to other symbolic music libraries</p></li>
-<li><p>Manipulation, rendering, visualization and evaluation tools for symbolic music data</p></li>
-<li><p>Support for common music representations</p></li>
-<li><p>Dataset management for common datasets and local collections, with interfaces to PyTorch and TensorFlow</p></li>
+<li><p>Dataset management system for commonly used datasets with interfaces
+to PyTorch and TensorFlow.</p></li>
+<li><p>Data I/O for common symbolic music formats (e.g., MIDI, MusicXML and
+ABC) and interfaces to other symbolic music libraries (e.g., music21,
+mido, pretty_midi and Pypianoroll).</p></li>
+<li><p>Implementations of common music representations for music generation,
+including the pitch-based, the event-based, the piano-roll and the
+note-based representations.</p></li>
+<li><p>Model evaluation tools for music generation systems, including audio
+rendering, score and piano-roll visualizations and objective metrics.</p></li>
 </ul>
-<p>Here is the system diagram of the package.</p>
+<p>Here is an overview of the library.</p>
 <img alt="System diagram" src="_images/system.svg" /></div>
+<div class="section" id="why-muspy">
+<h2>Why MusPy<a class="headerlink" href="#why-muspy" title="Permalink to this headline">¶</a></h2>
+<p>A music generation pipeline usually consists of several steps&amp;mdash;data collection, data preprocessing, model creation, model training and model evaluation.</p>
+<img alt="Music generation pipeline" src="_images/pipeline.svg" /><p>While some components need to be customized for each model, others can be shared across systems. For symbolic music generation in particular, a number of datasets, representations and metrics have been proposed in the literature. As a result, an easy-to-use toolkit that implements standard versions of such routines could save a great deal of time and effort and might lead to increased reproducibility.</p>
+</div>
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="timing.html#metrical-timing">Metrical Timing</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="classes.html">MusPy Classes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="classes.html#music-class">Music Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes.html#tempo-class">Tempo Class</a></li>
@@ -189,20 +208,23 @@
 <li class="toctree-l2"><a class="reference internal" href="classes.html#track-class">Track Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes.html#note-class">Note Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes.html#chord-class">Chord Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="classes.html#metadata-class">MetaData Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="classes.html#metadata-class">Metadata Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes.html#songinfo-class">SongInfo Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes.html#sourceinfo-class">SourceInfo  Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="example_music.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="timing.html#metrical-timing">Metrical Timing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="io.html#read-and-write">Read and Write</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#save-and-load">Save and Load</a></li>
+<li class="toctree-l2"><a class="reference internal" href="io.html#interfaces-to-other-symbolic-music-packages">Interfaces to other symbolic music packages</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="io.html#reading-and-writing">Reading and Writing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#saving-and-loading">Saving and Loading</a></li>
-<li class="toctree-l2"><a class="reference internal" href="io.html#interface-with-other-packages">Interface with other packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#iterating-over-a-muspy-dataset-object">Iterating over a MusPy Dataset object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#supported-datasets">Supported Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#base-dataset-classes">Base Dataset Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#local-dataset-classes">Local Dataset Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasets.html#remote-dataset-classes">Remote Dataset Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a><ul>
@@ -210,13 +232,6 @@
 <li class="toctree-l2"><a class="reference internal" href="representations.html#note-representation">Note Representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="representations.html#monotoken-representation">Monotoken Representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="representations.html#pianoroll-representation">Pianoroll Representation</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#example-usage">Example Usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#base-dataset-classes">Base Dataset Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#local-dataset-classes">Local Dataset Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasets.html#remote-dataset-classes">Remote Dataset Classes</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a><ul>
@@ -252,7 +267,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="getting_started.html" class="btn btn-neutral float-right" title="Getting Started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

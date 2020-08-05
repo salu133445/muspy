@@ -2,7 +2,7 @@
 Example Music Object
 ====================
 
-Here is an example of a Music object stored in YAML format.
+Here is an example of a Music object in YAML format.
 
 .. code-block:: yaml
 

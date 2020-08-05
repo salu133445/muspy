@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Metrics" href="metrics.html" />
-    <link rel="prev" title="Representations" href="representations.html" /> 
+    <link rel="next" title="Representations" href="representations.html" />
+    <link rel="prev" title="Data I/O" href="io.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,19 +87,20 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="classes.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_music.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="classes.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Datasets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#example-usage">Example Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iterating-over-a-muspy-dataset-object">Iterating over a MusPy Dataset object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-datasets">Supported Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#base-dataset-classes">Base Dataset Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#local-dataset-classes">Local Dataset Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#remote-dataset-classes">Remote Dataset Classes</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
@@ -170,6 +171,33 @@
             
   <div class="section" id="datasets">
 <h1>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h1>
+<p>MusPy provides an easy-to-use dataset management system. Each supported dataset comes with a class inherited from the base MusPy Dataset class. MusPy also provides interfaces to PyTorch and TensorFlow for creating input pipelines for machine learning. Here is an example of preparing training data in the piano-roll representation from the NES Music Database using MusPy.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">muspy</span>
+
+<span class="c1"># Download and extract the dataset</span>
+<span class="n">nes</span> <span class="o">=</span> <span class="n">muspy</span><span class="o">.</span><span class="n">NESMusicDatabase</span><span class="p">(</span><span class="s2">&quot;data/nes/&quot;</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Convert the dataset to MusPy Music objects</span>
+<span class="n">nes</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
+
+<span class="c1"># Iterate over the dataset</span>
+<span class="k">for</span> <span class="n">music</span> <span class="ow">in</span> <span class="n">nes</span><span class="p">:</span>
+    <span class="n">do_something</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+
+<span class="c1"># Convert to a PyTorch dataset</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">nes</span><span class="o">.</span><span class="n">to_pytorch_dataset</span><span class="p">(</span><span class="n">representation</span><span class="o">=</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="iterating-over-a-muspy-dataset-object">
+<h2>Iterating over a MusPy Dataset object<a class="headerlink" href="#iterating-over-a-muspy-dataset-object" title="Permalink to this headline">¶</a></h2>
+<p>Here is an illustration of the two internal processing modes for iterating over
+a MusPy Dataset object.</p>
+<a class="reference internal image-reference" href="_images/on_the_fly.svg"><img alt="_images/on_the_fly.svg" class="align-center" src="_images/on_the_fly.svg" width="475px" /></a>
+<a class="reference internal image-reference" href="_images/preconverted1.svg"><img alt="_images/preconverted1.svg" class="align-center" src="_images/preconverted1.svg" width="500px" /></a>
+<a class="reference internal image-reference" href="_images/preconverted2.svg"><img alt="_images/preconverted2.svg" class="align-center" src="_images/preconverted2.svg" width="475px" /></a>
+</div>
+<div class="section" id="supported-datasets">
+<h2>Supported Datasets<a class="headerlink" href="#supported-datasets" title="Permalink to this headline">¶</a></h2>
 <p>Here is a list of the supported datasets.</p>
 <table class="docutils align-default">
 <colgroup>
@@ -296,32 +324,10 @@
 </tbody>
 </table>
 <p>(Asterisk marks indicate partial support.)</p>
-<p>Here is an illustration of the two internal processing modes for iterating over
-a MusPy Dataset object.</p>
-<a class="reference internal image-reference" href="_images/on_the_fly.svg"><img alt="_images/on_the_fly.svg" class="align-center" src="_images/on_the_fly.svg" width="475px" /></a>
-<a class="reference internal image-reference" href="_images/preconverted1.svg"><img alt="_images/preconverted1.svg" class="align-center" src="_images/preconverted1.svg" width="500px" /></a>
-<a class="reference internal image-reference" href="_images/preconverted2.svg"><img alt="_images/preconverted2.svg" class="align-center" src="_images/preconverted2.svg" width="475px" /></a>
-<div class="section" id="example-usage">
-<h2>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">muspy</span>
-
-<span class="c1"># Download and extract the dataset</span>
-<span class="n">nes</span> <span class="o">=</span> <span class="n">muspy</span><span class="o">.</span><span class="n">NESMusicDatabase</span><span class="p">(</span><span class="s2">&quot;data/nes/&quot;</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="c1"># Convert the dataset to MusPy Music objects</span>
-<span class="n">nes</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
-
-<span class="c1"># Iterate over the dataset</span>
-<span class="k">for</span> <span class="n">music</span> <span class="ow">in</span> <span class="n">nes</span><span class="p">:</span>
-    <span class="n">do_something</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-
-<span class="c1"># Convert to a PyTorch dataset</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">nes</span><span class="o">.</span><span class="n">to_pytorch_dataset</span><span class="p">(</span><span class="n">representation</span><span class="o">=</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 </div>
 <div class="section" id="base-dataset-classes">
 <h2>Base Dataset Classes<a class="headerlink" href="#base-dataset-classes" title="Permalink to this headline">¶</a></h2>
+<p>Here are the two base classes for MusPy datasets.</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Dataset</code><a class="reference internal" href="_modules/muspy/datasets/base.html#Dataset"><span class="viewcode-link">[source]</span></a></dt>
@@ -407,6 +413,7 @@ following information of each source file.</p>
 </div>
 <div class="section" id="local-dataset-classes">
 <h2>Local Dataset Classes<a class="headerlink" href="#local-dataset-classes" title="Permalink to this headline">¶</a></h2>
+<p>Here are the classes for local datasets.</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#FolderDataset"><span class="viewcode-link">[source]</span></a></dt>
@@ -509,6 +516,7 @@ a source file and return the converted Music object.</p>
 </div>
 <div class="section" id="remote-dataset-classes">
 <h2>Remote Dataset Classes<a class="headerlink" href="#remote-dataset-classes" title="Permalink to this headline">¶</a></h2>
+<p>Here are the classes for remote datasets.</p>
 <dl class="py class">
 <dt>
 <em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#RemoteFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
@@ -612,10 +620,10 @@ details.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="representations.html" class="btn btn-neutral float-right" title="Representations" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="representations.html" class="btn btn-neutral float-left" title="Representations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="io.html" class="btn btn-neutral float-left" title="Data I/O" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

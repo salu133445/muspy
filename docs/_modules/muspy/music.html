@@ -85,13 +85,13 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../classes.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../example_music.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classes.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
@@ -180,7 +180,7 @@
     <span class="n">Annotation</span><span class="p">,</span>
     <span class="n">KeySignature</span><span class="p">,</span>
     <span class="n">Lyric</span><span class="p">,</span>
-    <span class="n">MetaData</span><span class="p">,</span>
+    <span class="n">Metadata</span><span class="p">,</span>
     <span class="n">Tempo</span><span class="p">,</span>
     <span class="n">TimeSignature</span><span class="p">,</span>
     <span class="n">Track</span><span class="p">,</span>
@@ -228,7 +228,7 @@
 <span class="sd">        Annotations.</span>
 <span class="sd">    tracks : list of :class:`muspy.Track`</span>
 <span class="sd">        Music tracks.</span>
-<span class="sd">    meta : :class:`muspy.MetaData` object</span>
+<span class="sd">    meta : :class:`muspy.Metadata` object</span>
 <span class="sd">        Meta data.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -243,7 +243,7 @@
             <span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tracks&quot;</span><span class="p">,</span> <span class="n">Track</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="n">MetaData</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span>
@@ -278,9 +278,9 @@
         <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tracks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">MetaData</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span> <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">MetaData</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span> <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Metadata</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resolution</span> <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_RESOLUTION</span>
         <span class="p">)</span>

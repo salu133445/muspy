@@ -1,28 +1,28 @@
 MusPy
 =====
 
-MusPy is a toolkit for symbolic music generation.
+MusPy is an open source Python library for symbolic music generation. It provides essential tools for developing a music generation system, including dataset management, data I/O, data preprocessing and model evaluation.
 
 
 Features
 --------
 
-- Data I/O for common symbolic music formats and interfaces to other symbolic music libraries.
-- Manipulation, rendering, visualization and evaluation tools for symbolic music data
-- Support for common music representations
-- Dataset management for common datasets and local collections, with interfaces to PyTorch and TensorFlow
+- Dataset management system for commonly used datasets with interfaces to PyTorch and TensorFlow.
+- Data I/O for common symbolic music formats (e.g., MIDI, MusicXML and ABC) and interfaces to other symbolic music libraries (e.g., music21, mido, pretty_midi and Pypianoroll).
+- Implementations of common music representations for music generation, including the pitch-based, the event-based, the piano-roll and the note-based representations.
+- Model evaluation tools for music generation systems, including audio rendering, score and piano-roll visualizations and objective metrics.
 
 
 Installation
 ------------
 
-Run the command `python setup.py install`.
+To install MusPy, please run `pip install muspy`. To build MusPy from source, please download the [source](https://github.com/salu133445/muspy/releases) and run `python setup.py install`.
 
 
 Documentation
 -------------
 
-Documentation can be found at https://salu133445.github.io/muspy, and is also provided as docstrings with the code.
+Documentation is available [here](https://salu133445.github.io/muspy) and as docstrings with the code.
 
 
 Citing

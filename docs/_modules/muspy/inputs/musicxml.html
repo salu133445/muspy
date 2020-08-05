@@ -85,13 +85,13 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../example_music.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
@@ -173,7 +173,7 @@
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">KeySignature</span><span class="p">,</span>
-    <span class="n">MetaData</span><span class="p">,</span>
+    <span class="n">Metadata</span><span class="p">,</span>
     <span class="n">Note</span><span class="p">,</span>
     <span class="n">SongInfo</span><span class="p">,</span>
     <span class="n">SourceInfo</span><span class="p">,</span>
@@ -621,8 +621,8 @@
     <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">parse_meta_data</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetaData</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a MetaData object parsed from a MusicXML file.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">parse_meta_data</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MusicXML file.&quot;&quot;&quot;</span>
     <span class="c1"># Song title</span>
     <span class="n">work_title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">movement_title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;movement-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -653,7 +653,7 @@
         <span class="n">copyright</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">copyrights</span><span class="p">)</span> <span class="k">if</span> <span class="n">copyrights</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">MetaData</span><span class="p">(</span><span class="n">song</span><span class="o">=</span><span class="n">song_info</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source_info</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">song</span><span class="o">=</span><span class="n">song_info</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source_info</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="read_musicxml"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_musicxml">[docs]</a><span class="k">def</span> <span class="nf">read_musicxml</span><span class="p">(</span>

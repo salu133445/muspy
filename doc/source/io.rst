@@ -2,19 +2,15 @@
 Data I/O
 ========
 
-MusPy provides three type of data I/O interface.
+MusPy provides three type of data I/O interfaces.
 
-- Reading and writing with MIDI and MusicXML
-- Saving and loading with JSON and YAML
-- Conversion between objects in other packages
-
-.. image:: images/io.svg
-    :align: center
-    :width: 400px
+- Common symbolic music formats (MIDI, MusicXML and ABC)
+- MusPy's native JSON and YAML formats
+- Other symbolic music libraries (music21, mido, pretty_midi and Pypianoroll)
 
 
-Reading and Writing
-===================
+Read and Write
+==============
 
 MusPy supports reading and writing with MIDI nad MusicXML formats.
 
@@ -22,8 +18,8 @@ MusPy supports reading and writing with MIDI nad MusicXML formats.
 - **MusicXML**: :func:`muspy.read_musicxml()` and :func:`muspy.write_musicxml()`
 
 
-Saving and Loading
-==================
+Save and Load
+=============
 
 MusPy supports save/load functions for losslessly storing Music object.
 
@@ -41,11 +37,13 @@ MusPy provides schemas in JSON_ and YAML_ formats. These can be used to validate
 .. _YAML: https://github.com/icebergnlp/muspy/blob/master/muspy/schemas/music.schema.yaml
 
 
-Interface with other packages
-=============================
+Interfaces to other symbolic music packages
+===========================================
 
 MusPy supports conversion between :class:`muspy.Music` objects and objects from
-other packages, such as :class:`pretty_midi.PrettyMIDI` and :class:`pypianoroll.Multitrack` objects.
+other packages.
 
+- **Music21**: :func:`muspy.from_music21()` and :func:`muspy.to_music21()`
+- **mido**: :func:`muspy.from_mido()` and :func:`muspy.to_mido()`
 - **pretty_midi**: :func:`muspy.from_pretty_midi()` and :func:`muspy.to_pretty_midi()`
 - **Pypianoroll**: :func:`muspy.from_pypianoroll()` and :func:`muspy.to_pypianoroll()`
