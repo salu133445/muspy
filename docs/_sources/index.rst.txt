@@ -22,7 +22,6 @@ Features
 Here is an overview of the library.
 
 .. image:: images/system.svg
-    :alt: System diagram
 
 
 Why MusPy
@@ -31,7 +30,8 @@ Why MusPy
 A music generation pipeline usually consists of several steps&mdash;data collection, data preprocessing, model creation, model training and model evaluation.
 
 .. image:: images/pipeline.svg
-    :alt: Music generation pipeline
+    :align: center
+    :width: 500px
 
 While some components need to be customized for each model, others can be shared across systems. For symbolic music generation in particular, a number of datasets, representations and metrics have been proposed in the literature. As a result, an easy-to-use toolkit that implements standard versions of such routines could save a great deal of time and effort and might lead to increased reproducibility.
 
