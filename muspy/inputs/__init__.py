@@ -2,15 +2,9 @@
 Input Interfaces
 ================
 
-MusPy provides the following input interfaces.
-
-- Load from saved objects: :func:`muspy.load_json` and :func:`muspy.load_yaml`
-- Read from other formats: :func:`muspy.read_midi` and
-  :func:`muspy.read_musicxml`
-- Convert from other objects: :func:`muspy.from_pretty_midi` and
-  :func:`muspy.from_pypianoroll`
-- Wrappers: :func:`muspy.load`, :func:`muspy.read` and
-  :func:`muspy.from_object`
+This module provides input interfaces for common symbolic music formats,
+MusPy's native JSON and YAML formats, other symbolic music libraries and
+commonly-used representations in music generation.
 
 """
 from .abc import read_abc, read_abc_string

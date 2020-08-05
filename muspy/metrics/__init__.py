@@ -2,9 +2,10 @@
 Metrics
 =======
 
-This module provides functions for computing common metrics on a Music
-object. This can be useful for analyzing datasets and evaluating
-generative models.
+This module provides common objective metrics in music generation.
+These objective metrics could be used to evaluate a music generation
+system by comparing the statistical difference between the training
+data and the generated samples.
 
 """
 from .metrics import (

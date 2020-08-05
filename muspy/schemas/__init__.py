@@ -1,8 +1,9 @@
 """
-Schemas for Music objects
-=========================
+Schemas
+=======
 
-This module provide functions for working with the JSON and YAML schemas.
+This module provide functions for working with MusPy's JSON and YAML
+schemas and the MusicXML schema.
 
 """
 from .utils import (

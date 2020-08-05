@@ -1,9 +1,11 @@
 """
-Music Datasets
-==============
+Datasets
+========
 
-This module provides classes for common datasets. All these datasets
-inherit from the base class :class:`muspy.Dataset`.
+This module provides an easy-to-use dataset management system. Each
+supported dataset in MusPy comes with a class inherited from the base
+MusPy Dataset class. It also provides interfaces to PyTorch and
+TensorFlow for creating input pipelines for machine learning.
 
 """
 

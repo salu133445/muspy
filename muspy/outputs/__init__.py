@@ -2,15 +2,9 @@
 Output Interfaces
 =================
 
-MusPy provides the following output interfaces.
-
-- Save losslessly to JSON or YAML: :func:`muspy.save_json` and
-  :func:`muspy.save_yaml`
-- Write to other formats: :func:`muspy.write_midi` and
-  :func:`muspy.write_musicxml`
-- Convert to other objects: :func:`muspy.to_pretty_midi` and
-  :func:`muspy.to_pypianoroll`
-- Wrappers: :func:`muspy.save`, :func:`muspy.write` and :func:`muspy.to_object`
+This module provides output interfaces for common symbolic music formats,
+MusPy's native JSON and YAML formats, other symbolic music libraries and
+commonly-used representations in music generation.
 
 """
 from .event import to_event_representation
