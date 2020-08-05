@@ -12,9 +12,9 @@ def test_n_pitches_used():
     assert muspy.metrics.n_pitches_used(music) == 6
 
 
-def test_n_chroma_used():
+def test_n_pitch_classes_used():
     music = muspy.load(TEST_JSON_PATH)
-    assert muspy.metrics.n_chroma_used(music) == 6
+    assert muspy.metrics.n_pitch_classes_used(music) == 6
 
 
 def test_pitch_range():
