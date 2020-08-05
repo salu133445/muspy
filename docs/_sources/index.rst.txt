@@ -31,7 +31,7 @@ A music generation pipeline usually consists of several steps&mdash;data collect
 
 .. image:: images/pipeline.svg
     :align: center
-    :width: 500px
+    :width: 400px
 
 While some components need to be customized for each model, others can be shared across systems. For symbolic music generation in particular, a number of datasets, representations and metrics have been proposed in the literature. As a result, an easy-to-use toolkit that implements standard versions of such routines could save a great deal of time and effort and might lead to increased reproducibility.
 
