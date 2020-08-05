@@ -7,7 +7,7 @@ from music21.stream import Opus, Score, Stream
 from ..classes import (
     Chord,
     KeySignature,
-    MetaData,
+    Metadata,
     Note,
     SongInfo,
     SourceInfo,
@@ -139,7 +139,7 @@ def parse_time_signatures(
     return time_signatures
 
 
-def parse_meta_data(stream: Stream) -> Union[MetaData, None]:
+def parse_meta_data(stream: Stream) -> Union[Metadata, None]:
     """Return meta data parsed from a music21 Stream object.
 
     Parameters
@@ -149,7 +149,7 @@ def parse_meta_data(stream: Stream) -> Union[MetaData, None]:
 
     Returns
     -------
-    :class:`muspy.MetaData` object
+    :class:`muspy.Metadata` object
         Parsed meta data.
 
     """
@@ -165,7 +165,7 @@ def parse_meta_data(stream: Stream) -> Union[MetaData, None]:
         if item[0] == "copyright":
             copyright_ = item[1]
 
-    return MetaData(
+    return Metadata(
         song=SongInfo(
             title=stream.metadata.title, artist=stream.metadata.composer,
         ),

@@ -21,7 +21,7 @@ downbeats       Downbeat positions     list of int                          []
 lyrics          Lyrics                 list of :class:`muspy.Lyric`         []
 annotations     Annotations            list of :class:`muspy.Annotation`    []
 tracks          Music tracks           list of :class:`muspy.Track`         []
-meta            Meta data              :class:`muspy.MetaData`              :class:`muspy.MetaData()`
+meta            Meta data              :class:`muspy.Metadata`              :class:`muspy.Metadata()`
 =============== ====================== ==================================== =========================
 
 .. Hint:: An example of a MusPy Music object as a YAML file is available `here <../examples.html>`__.
@@ -146,10 +146,10 @@ velocity   Chord velocity                    int (0-127)
 ========== ================================= =================== =======
 
 
-MetaData Class
+Metadata Class
 ==============
 
-The :class:`muspy.MetaData` class is a container for meta data of a song.
+The :class:`muspy.Metadata` class is a container for meta data of a song.
 
 ============== ================== ========================= ===========================
 Attributes     Description        Type                      Default

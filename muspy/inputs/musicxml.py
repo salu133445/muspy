@@ -12,7 +12,7 @@ import xmlschema
 
 from ..classes import (
     KeySignature,
-    MetaData,
+    Metadata,
     Note,
     SongInfo,
     SourceInfo,
@@ -460,8 +460,8 @@ def parse_part(
     }
 
 
-def parse_meta_data(root: Element, filename: str) -> MetaData:
-    """Return a MetaData object parsed from a MusicXML file."""
+def parse_meta_data(root: Element, filename: str) -> Metadata:
+    """Return a Metadata object parsed from a MusicXML file."""
     # Song title
     work_title = get_text(root, "work/work-title", remove_newlines=True)
     movement_title = get_text(root, "movement-title", remove_newlines=True)
@@ -492,7 +492,7 @@ def parse_meta_data(root: Element, filename: str) -> MetaData:
         copyright=" ".join(copyrights) if copyrights else None,
     )
 
-    return MetaData(song=song_info, source=source_info)
+    return Metadata(song=song_info, source=source_info)
 
 
 def read_musicxml(

@@ -18,7 +18,7 @@ __all__ = [
     "Annotation",
     "KeySignature",
     "Lyric",
-    "MetaData",
+    "Metadata",
     "Note",
     "SongInfo",
     "SourceInfo",
@@ -105,7 +105,7 @@ class SourceInfo(Base):
         self.copyright = copyright
 
 
-class MetaData(Base):
+class Metadata(Base):
     """A container for meta data.
 
     Attributes

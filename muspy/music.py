@@ -19,7 +19,7 @@ from .classes import (
     Annotation,
     KeySignature,
     Lyric,
-    MetaData,
+    Metadata,
     Tempo,
     TimeSignature,
     Track,
@@ -67,7 +67,7 @@ class Music(ComplexBase):
         Annotations.
     tracks : list of :class:`muspy.Track`
         Music tracks.
-    meta : :class:`muspy.MetaData` object
+    meta : :class:`muspy.Metadata` object
         Meta data.
 
     """
@@ -82,7 +82,7 @@ class Music(ComplexBase):
             ("lyrics", Lyric),
             ("annotations", Annotation),
             ("tracks", Track),
-            ("meta", MetaData),
+            ("meta", Metadata),
         ]
     )
     _optional_attributes = [
@@ -117,9 +117,9 @@ class Music(ComplexBase):
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
         tracks: Optional[List[Track]] = None,
-        meta: Optional[MetaData] = None,
+        meta: Optional[Metadata] = None,
     ):
-        self.meta = meta if meta is not None else MetaData()
+        self.meta = meta if meta is not None else Metadata()
         self.resolution = (
             resolution if resolution is not None else DEFAULT_RESOLUTION
         )
