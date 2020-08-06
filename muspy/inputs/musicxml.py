@@ -14,8 +14,6 @@ from ..classes import (
     KeySignature,
     Metadata,
     Note,
-    SongInfo,
-    SourceInfo,
     Tempo,
     TimeSignature,
     Track,
@@ -460,7 +458,7 @@ def parse_part(
     }
 
 
-def parse_meta_data(root: Element, filename: str) -> Metadata:
+def parse_metadata(root: Element, filename: str) -> Metadata:
     """Return a Metadata object parsed from a MusicXML file."""
     # Song title
     work_title = get_text(root, "work/work-title", remove_newlines=True)
@@ -485,14 +483,13 @@ def parse_meta_data(root: Element, filename: str) -> Metadata:
             if right_elem.text:
                 copyrights.append(right_elem.text)
 
-    song_info = SongInfo(title=title, creators=creators)
-    source_info = SourceInfo(
-        filename=filename,
-        format="musicxml",
+    return Metadata(
+        title=title,
+        creators=creators,
         copyright=" ".join(copyrights) if copyrights else None,
+        source_filename=filename,
+        source_format="musicxml",
     )
-
-    return Metadata(song=song_info, source=source_info)
 
 
 def read_musicxml(
@@ -542,7 +539,7 @@ def read_musicxml(
         raise ValueError("MusicXML file with timewise type is not supported.")
 
     # Meta data
-    meta_data = parse_meta_data(root, Path(path).name)
+    metadata = parse_metadata(root, Path(path).name)
 
     # Set resolution to the least common multiple of all divisions
     divisions = []
@@ -653,10 +650,10 @@ def read_musicxml(
     time_signatures.sort(key=attrgetter("time"))
 
     return Music(
+        metadata=metadata,
         resolution=resolution,
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         tracks=tracks,
-        meta=meta_data,
     )

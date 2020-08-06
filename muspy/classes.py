@@ -20,8 +20,6 @@ __all__ = [
     "Lyric",
     "Metadata",
     "Note",
-    "SongInfo",
-    "SourceInfo",
     "Tempo",
     "TimeSignature",
     "Track",
@@ -30,109 +28,72 @@ __all__ = [
 # pylint: disable=super-init-not-called
 
 
-class SongInfo(Base):
-    """A container for song information.
+class Metadata(Base):
+    """A container for metadata.
 
     Attributes
     ----------
+    schema_version : str
+        Schema version. Defaults to the latest version.
     title : str, optional
         Song title.
     artist : str, optional
         Main artist of the song.
     creators : list of str, optional
         Creator(s) of the song.
-
-    """
-
-    _attributes = OrderedDict(
-        [("title", str), ("artist", str), ("creators", list)]
-    )
-    _optional_attributes = ["title", "artist", "creators"]
-
-    def __init__(
-        self,
-        title: Optional[str] = None,
-        artist: Optional[str] = None,
-        creators: Optional[List[str]] = None,
-    ):
-        self.title = title
-        self.artist = artist
-        self.creators = creators if creators is not None else []
-
-
-class SourceInfo(Base):
-    """A container for source information.
-
-    Attributes
-    ----------
-    filename : str, optional
-        Name of the source file.
+    copyright : str, optional
+        Copyright notice.
     collection : str, optional
         Name of the collection.
-    format : str, optional
+    source_filename : str, optional
+        Name of the source file.
+    source_format : str, optional
         Format of the source file.
-    copyright : str, optional
-        Copyright notice of the source file.
 
     """
 
     _attributes = OrderedDict(
         [
-            ("filename", str),
-            ("collection", str),
-            ("format", str),
+            ("schema_version", str),
+            ("title", str),
+            ("artist", str),
+            ("creators", list),
             ("copyright", str),
+            ("collection", str),
+            ("source_filename", str),
+            ("source_format", str),
         ]
     )
     _optional_attributes = [
-        "filename",
-        "collection",
-        "format",
+        "title",
+        "artist",
+        "creators",
         "copyright",
+        "collection",
+        "source_filename",
+        "source_format",
     ]
 
     def __init__(
         self,
-        filename: Optional[str] = None,
-        collection: Optional[str] = None,
-        format: Optional[str] = None,
+        schema_version: str = DEFAULT_SCHEMA_VERSION,
+        title: Optional[str] = None,
+        artist: Optional[str] = None,
+        creators: Optional[List[str]] = None,
         copyright: Optional[str] = None,
+        collection: Optional[str] = None,
+        source_filename: Optional[str] = None,
+        source_format: Optional[str] = None,
     ):
         # pylint: disable=redefined-builtin
-        self.collection = collection
-        self.filename = filename
-        self.format = format
-        self.copyright = copyright
-
-
-class Metadata(Base):
-    """A container for meta data.
-
-    Attributes
-    ----------
-    schema_version : str
-        Schema version. Defaults to the latest version.
-    song : :class:`muspy.SongInfo` object, optional
-        Song infomation.
-    source : :class:`muspy.SourceInfo` object, optional
-        Source infomation.
-
-    """
-
-    _attributes = OrderedDict(
-        [("schema_version", str), ("song", SongInfo), ("source", SourceInfo)]
-    )
-    _optional_attributes = ["song", "source"]
-
-    def __init__(
-        self,
-        schema_version: str = DEFAULT_SCHEMA_VERSION,
-        song: Optional[SongInfo] = None,
-        source: Optional[SourceInfo] = None,
-    ):
         self.schema_version = schema_version
-        self.song = song
-        self.source = source
+        self.title = title
+        self.artist = artist
+        self.creators = creators if creators is not None else []
+        self.copyright = copyright
+        self.collection = collection
+        self.source_filename = source_filename
+        self.source_format = source_format
 
     def validate(self, attr=None):
         """Raise proper errors if a certain attribute is invalid.

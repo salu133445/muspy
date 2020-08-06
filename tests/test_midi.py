@@ -15,7 +15,7 @@ def test_empty():
     music = muspy.read(DATA_DIR / "empty.mid")
 
     assert len(music.tracks) == 0
-    assert music.meta.source.format == "midi"
+    assert music.metadata.source_format == "midi"
 
 
 def test_type2():
@@ -43,8 +43,7 @@ def test_multiple_copyrights():
     music = muspy.read(DATA_DIR / "multiple-copyrights.mid")
 
     assert (
-        music.meta.source.copyright
-        == "Test copyright. Another test copyright."
+        music.metadata.copyright == "Test copyright. Another test copyright."
     )
 
 
@@ -216,8 +215,8 @@ def test_multitrack():
 def test_realworld():
     music = muspy.read(DATA_DIR / "fur-elise.mid")
 
-    assert music.meta.source.filename == "fur-elise.mid"
-    assert music.meta.source.format == "midi"
+    assert music.metadata.source_filename == "fur-elise.mid"
+    assert music.metadata.source_format == "midi"
 
     assert len(music.tracks) == 2
 

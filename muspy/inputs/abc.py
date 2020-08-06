@@ -5,7 +5,6 @@ from typing import List, Optional, Union
 from music21.converter.subConverters import ConverterABC
 from music21.stream import Opus
 
-from ..classes import SourceInfo
 from ..music import DEFAULT_RESOLUTION, Music
 from .music21 import from_music21, from_music21_opus
 
@@ -75,8 +74,9 @@ def read_abc(
     else:
         music_list = [from_music21(converter.stream, resolution)]
 
-    # Set meta data
+    # Set metadata
     for music in music_list:
-        music.meta.source = SourceInfo(filename=Path(path).name)
+        music.metadata.source_filename = Path(path).name
+        music.metadata.source_format = "abc"
 
     return music_list

@@ -51,6 +51,8 @@ class Music(ComplexBase):
 
     Attributes
     ----------
+    metadata : :class:`muspy.Metadata` object
+        Metadata.
     resolution : int, optional
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
     tempos : list of :class:`muspy.Tempo`
@@ -67,13 +69,12 @@ class Music(ComplexBase):
         Annotations.
     tracks : list of :class:`muspy.Track`
         Music tracks.
-    meta : :class:`muspy.Metadata` object
-        Meta data.
 
     """
 
     _attributes = OrderedDict(
         [
+            ("metadata", Metadata),
             ("resolution", int),
             ("tempos", Tempo),
             ("key_signatures", KeySignature),
@@ -82,10 +83,10 @@ class Music(ComplexBase):
             ("lyrics", Lyric),
             ("annotations", Annotation),
             ("tracks", Track),
-            ("meta", Metadata),
         ]
     )
     _optional_attributes = [
+        "metadata",
         "resolution",
         "tempos",
         "key_signatures",
@@ -94,7 +95,6 @@ class Music(ComplexBase):
         "lyrics",
         "annotations",
         "tracks",
-        "meta",
     ]
     _temporal_attributes = ["downbeats"]
     _list_attributes = [
@@ -109,6 +109,7 @@ class Music(ComplexBase):
 
     def __init__(
         self,
+        metadata: Optional[Metadata] = None,
         resolution: Optional[int] = None,
         tempos: Optional[List[Tempo]] = None,
         key_signatures: Optional[List[KeySignature]] = None,
@@ -117,9 +118,8 @@ class Music(ComplexBase):
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
         tracks: Optional[List[Track]] = None,
-        meta: Optional[Metadata] = None,
     ):
-        self.meta = meta if meta is not None else Metadata()
+        self.metadata = metadata if metadata is not None else Metadata()
         self.resolution = (
             resolution if resolution is not None else DEFAULT_RESOLUTION
         )

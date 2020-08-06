@@ -441,15 +441,15 @@ def test_piano_staff():
 def test_quoted_headers():
     music = muspy.read(DATA_DIR / "51b-Header-Quotes.xml")
 
-    assert music.meta.song.title == '"Quotes" in header fields'
-    assert music.meta.song.creators == ['Some "Tester" Name']
+    assert music.metadata.title == '"Quotes" in header fields'
+    assert music.metadata.creators == ['Some "Tester" Name']
 
 
 def test_multiple_rights():
     music = muspy.read(DATA_DIR / "51c-MultipleRights.xml")
 
     assert (
-        music.meta.source.copyright
+        music.metadata.copyright
         == "Copyright © XXXX by Y. ZZZZ. Released To The Public Domain."
     )
 
@@ -457,9 +457,7 @@ def test_multiple_rights():
 def test_empty_title():
     music = muspy.read(DATA_DIR / "51d-EmptyTitle.xml")
 
-    assert (
-        music.meta.song.title == "Empty work-title, non-empty movement-title"
-    )
+    assert music.metadata.title == "Empty work-title, non-empty movement-title"
 
 
 def test_transpose_instruments():
@@ -496,7 +494,7 @@ def test_percussion():
 def test_compressed_musicxml():
     music = muspy.read(DATA_DIR / "90a-Compressed-MusicXML.mxl")
 
-    assert music.meta.song.title == "Compressed MusicXML file"
+    assert music.metadata.title == "Compressed MusicXML file"
     assert len(music.tracks) == 1
     assert len(music.tracks[0].notes) == 4
 
@@ -504,9 +502,9 @@ def test_compressed_musicxml():
 def test_realworld():
     music = muspy.read(REALWORLD_DATA_DIR / "fur-elise.xml")
 
-    assert music.meta.song.creators == ["Ludwig van Beethoven"]
-    assert music.meta.source.filename == "fur-elise.xml"
-    assert music.meta.source.format == "musicxml"
+    assert music.metadata.creators == ["Ludwig van Beethoven"]
+    assert music.metadata.source_filename == "fur-elise.xml"
+    assert music.metadata.source_format == "musicxml"
 
     assert len(music.tracks) == 1
 
@@ -525,9 +523,9 @@ def test_realworld():
 def test_realworld_compressed():
     music = muspy.read(REALWORLD_DATA_DIR / "fur-elise.mxl")
 
-    assert music.meta.song.creators == ["Ludwig van Beethoven"]
-    assert music.meta.source.filename == "fur-elise.mxl"
-    assert music.meta.source.format == "musicxml"
+    assert music.metadata.creators == ["Ludwig van Beethoven"]
+    assert music.metadata.source_filename == "fur-elise.mxl"
+    assert music.metadata.source_format == "musicxml"
 
     assert len(music.tracks) == 1
 

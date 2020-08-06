@@ -9,8 +9,6 @@ from ..classes import (
     KeySignature,
     Metadata,
     Note,
-    SongInfo,
-    SourceInfo,
     Tempo,
     TimeSignature,
     Track,
@@ -139,8 +137,8 @@ def parse_time_signatures(
     return time_signatures
 
 
-def parse_meta_data(stream: Stream) -> Union[Metadata, None]:
-    """Return meta data parsed from a music21 Stream object.
+def parse_metadata(stream: Stream) -> Union[Metadata, None]:
+    """Return metadata parsed from a music21 Stream object.
 
     Parameters
     ----------
@@ -150,7 +148,7 @@ def parse_meta_data(stream: Stream) -> Union[Metadata, None]:
     Returns
     -------
     :class:`muspy.Metadata` object
-        Parsed meta data.
+        Parsed metadata.
 
     """
     if stream.metadata is None:
@@ -166,10 +164,9 @@ def parse_meta_data(stream: Stream) -> Union[Metadata, None]:
             copyright_ = item[1]
 
     return Metadata(
-        song=SongInfo(
-            title=stream.metadata.title, artist=stream.metadata.composer,
-        ),
-        source=SourceInfo(copyright=copyright_),
+        title=stream.metadata.title,
+        artist=stream.metadata.composer,
+        copyright=copyright_,
     )
 
 
@@ -262,5 +259,5 @@ def from_music21(stream: Stream, resolution=DEFAULT_RESOLUTION) -> Music:
         key_signatures=parse_key_signatures(stream, resolution),
         time_signatures=parse_time_signatures(stream, resolution),
         tracks=tracks,
-        meta=parse_meta_data(stream),
+        metadata=parse_metadata(stream),
     )

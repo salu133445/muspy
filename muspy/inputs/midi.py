@@ -13,7 +13,6 @@ from ..classes import (
     Lyric,
     Metadata,
     Note,
-    SourceInfo,
     Tempo,
     TimeSignature,
     Track,
@@ -72,7 +71,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
         tracks.append(Track(track.program, track.is_drum, track.name, notes))
 
     return Music(
-        meta=Metadata(source=SourceInfo(format="midi")),
+        metadata=Metadata(source_format="midi"),
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,
@@ -329,18 +328,18 @@ def read_midi_mido(
         )
 
     # Meta data
-    source_info = SourceInfo(
-        filename=Path(path).name,
-        format="midi",
+    metadata = Metadata(
+        source_filename=Path(path).name,
+        source_format="midi",
         copyright=" ".join(copyrights) if copyrights else None,
     )
 
     return Music(
+        metadata=metadata,
         resolution=midi.ticks_per_beat,
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,
         tracks=music_tracks,
-        meta=Metadata(source=source_info),
     )
