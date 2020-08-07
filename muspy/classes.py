@@ -37,8 +37,6 @@ class Metadata(Base):
         Schema version. Defaults to the latest version.
     title : str, optional
         Song title.
-    artist : str, optional
-        Main artist of the song.
     creators : list of str, optional
         Creator(s) of the song.
     copyright : str, optional
@@ -56,7 +54,6 @@ class Metadata(Base):
         [
             ("schema_version", str),
             ("title", str),
-            ("artist", str),
             ("creators", list),
             ("copyright", str),
             ("collection", str),
@@ -66,7 +63,6 @@ class Metadata(Base):
     )
     _optional_attributes = [
         "title",
-        "artist",
         "creators",
         "copyright",
         "collection",
@@ -78,7 +74,6 @@ class Metadata(Base):
         self,
         schema_version: str = DEFAULT_SCHEMA_VERSION,
         title: Optional[str] = None,
-        artist: Optional[str] = None,
         creators: Optional[List[str]] = None,
         copyright: Optional[str] = None,
         collection: Optional[str] = None,
@@ -88,7 +83,6 @@ class Metadata(Base):
         # pylint: disable=redefined-builtin
         self.schema_version = schema_version
         self.title = title
-        self.artist = artist
         self.creators = creators if creators is not None else []
         self.copyright = copyright
         self.collection = collection
