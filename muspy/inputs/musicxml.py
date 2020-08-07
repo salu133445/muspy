@@ -220,8 +220,7 @@ def parse_part(
     notes: Dict[str, List[Note]] = {
         instrument_id: [] for instrument_id in instrument_info
     }
-    incoming_ties: Dict[Tuple[str, int], int] = {}
-    outgoing_ties: Dict[Tuple[str, int], int] = {}
+    ties: Dict[Tuple[str, int], int] = {}
 
     # Initialize variables
     time = 0
@@ -403,14 +402,17 @@ def parse_part(
                     instrument_id = default_instrument_id
 
                 # Check if it is an incoming tied note
-                if (instrument_id, pitch,) in incoming_ties:
-                    note_idx = incoming_ties[(instrument_id, pitch)]
+                note_key = (instrument_id, pitch)
+                if note_key in ties:
+                    note_idx = ties[note_key]
                     notes[instrument_id][note_idx].duration += (
                         duration * factor
                     )
 
                     if is_outgoing_tie:
-                        outgoing_ties[(instrument_id, pitch)] = note_idx
+                        ties[note_key] = note_idx
+                    else:
+                        del ties[note_key]
 
                 else:
                     # Create a new note and append it to the note list
@@ -423,9 +425,7 @@ def parse_part(
                     notes[instrument_id].append(note)
 
                     if is_outgoing_tie:
-                        outgoing_ties[(instrument_id, pitch)] = (
-                            len(notes[instrument_id]) - 1
-                        )
+                        ties[note_key] = len(notes[instrument_id]) - 1
 
                 # Move time position forward if it is not in chord
                 last_note_position = position
@@ -440,9 +440,6 @@ def parse_part(
                 position -= duration * factor
 
         time += position
-
-        incoming_ties = outgoing_ties
-        outgoing_ties = {}
 
     # Sort notes
     for instrument_notes in notes.values():
