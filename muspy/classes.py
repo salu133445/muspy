@@ -28,7 +28,7 @@ __all__ = [
 # pylint: disable=super-init-not-called
 
 
-class Metadata(Base):
+class Metadata(ComplexBase):
     """A container for metadata.
 
     Attributes
@@ -69,6 +69,7 @@ class Metadata(Base):
         "source_filename",
         "source_format",
     ]
+    _list_attributes = ["creators"]
 
     def __init__(
         self,
@@ -229,10 +230,10 @@ class Note(Base):
 
     Attributes
     ----------
-    start : int
-        Start time of the note, in time steps or seconds.
-    end : int
-        End time of the note, in time steps or seconds.
+    time : int
+        Start time of the note, in time steps.
+    duration : int
+        Duration of the note, in time steps.
     pitch : int
         Note pitch, as a MIDI note number.
     velocity : int, optional
@@ -241,39 +242,49 @@ class Note(Base):
     """
 
     _attributes = OrderedDict(
-        [("start", int), ("end", int), ("pitch", int), ("velocity", int)]
+        [("time", int), ("duration", int), ("pitch", int), ("velocity", int)]
     )
-    _temporal_attributes = ["start", "end"]
+    _temporal_attributes = ["time", "duration"]
 
     def __init__(
         self,
-        start: int,
-        end: int,
+        time: int,
+        duration: int,
         pitch: int,
         velocity: int = DEFAULT_VELOCITY,
     ):
-        self.start = start
-        self.end = end
+        self.time = time
+        self.duration = duration
         self.pitch = pitch
         self.velocity = velocity
 
     @property
-    def duration(self):
-        """Duration of the note."""
-        return self.end - self.start
+    def end(self):
+        """End time of the note."""
+        return self.time + self.duration
 
-    @duration.setter
-    def duration(self, duration):
-        """Setter for duration."""
-        self.end = self.start + duration
+    @end.setter
+    def end(self, end):
+        """Setter for end time."""
+        self.duration = end - self.time
+
+    @property
+    def start(self):
+        """Start time of the note."""
+        return self.time
+
+    @start.setter
+    def start(self, start):
+        """Setter for start time."""
+        self.time = start
 
     def validate(self):
         """Raise proper errors if any attribute is invalid."""
         self._validate()
-        if self.start < 0:
-            raise ValueError("`start` must be nonnegative.")
-        if self.end < self.start:
-            raise ValueError("`end` must be greater than `start`.")
+        if self.time < 0:
+            raise ValueError("`time` must be nonnegative.")
+        if self.duration < 0:
+            raise ValueError("`duration` must be nonnegative.")
         if 0 <= self.pitch < 128:
             raise ValueError("`pitch` must be in between 0 to 127.")
         if 0 <= self.velocity < 128:
@@ -316,10 +327,10 @@ class Chord(ComplexBase):
 
     Attributes
     ----------
-    start : int
-        Start time of the note, in time steps or seconds.
-    end : int
-        End time of the note, in time steps or seconds.
+    time : int
+        Start time of the chord, in time steps.
+    duration : int
+        Duration of the chord, in time steps.
     pitches : list of int
         Note pitches, as MIDI note numbers.
     velocity : int, optional
@@ -328,45 +339,55 @@ class Chord(ComplexBase):
     """
 
     _attributes = OrderedDict(
-        [("start", int), ("end", int), ("pitches", int), ("velocity", int)]
+        [("time", int), ("duration", int), ("pitches", int), ("velocity", int)]
     )
-    _temporal_attributes = ["start", "end"]
+    _temporal_attributes = ["time", "duration"]
     _list_attributes = ["pitches"]
 
     def __init__(
         self,
-        start: int,
-        end: int,
+        time: int,
+        duration: int,
         pitches: List[int],
         velocity: int = DEFAULT_VELOCITY,
     ):
-        self.start = start
-        self.end = end
+        self.time = time
+        self.duration = duration
         self.pitches = pitches
         self.velocity = velocity
 
     def __repr__(self):
-        return "Chord(start={}, end={}, pitches={}, velocity={})".format(
-            self.start, self.end, self.pitches, self.velocity,
+        return "Chord(time={}, duration={}, pitches={}, velocity={})".format(
+            self.time, self.duration, self.pitches, self.velocity,
         )
 
     @property
-    def duration(self):
-        """Duration of the note."""
-        return self.end - self.start
+    def end(self):
+        """End time of the chord."""
+        return self.time + self.duration
 
-    @duration.setter
-    def duration(self, duration):
-        """Setter for duration."""
-        self.end = self.start + duration
+    @end.setter
+    def end(self, end):
+        """Setter for end time."""
+        self.duration = end - self.time
+
+    @property
+    def start(self):
+        """Start time of the chord."""
+        return self.time
+
+    @start.setter
+    def start(self, start):
+        """Setter for start time."""
+        self.time = start
 
     def validate(self):
         """Raise proper errors if any attribute is invalid."""
         self._validate()
-        if self.start < 0:
-            raise ValueError("`start` must be nonnegative.")
-        if self.end < self.start:
-            raise ValueError("`end` must be greater than `start`.")
+        if self.time < 0:
+            raise ValueError("`time` must be nonnegative.")
+        if self.duration < 0:
+            raise ValueError("`duration` must be nonnegative.")
         for pitch in self.pitches:
             if 0 <= pitch < 128:
                 raise ValueError("`pitch` must be in between 0 to 127.")
@@ -377,15 +398,15 @@ class Chord(ComplexBase):
         Parameters
         ----------
         semitone : int
-            The number of semitones to transpose the note. A positive value
-            raises the pitch, while a negative value lowers the pitch.
+            The number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the pitches.
 
         """
         self.pitches += [pitch + semitone for pitch in self.pitches]
         return self
 
     def clip(self, lower: int = 0, upper: int = 127):
-        """Clip the velocity of the note.
+        """Clip the velocity of the chord.
 
         Parameters
         ----------

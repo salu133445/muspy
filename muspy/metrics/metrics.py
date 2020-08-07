@@ -147,7 +147,7 @@ def empty_beat_rate(music: Music) -> float:
     count = 0
     for track in music.tracks:
         for note in track.notes:
-            start = note.start // music.resolution
+            start = note.time // music.resolution
             end = note.end // music.resolution
             for beat in range(start, end + 1):
                 if is_empty[beat]:
@@ -199,7 +199,7 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
     count = 0
     for track in music.tracks:
         for note in track.notes:
-            start = note.start // measure_resolution
+            start = note.time // measure_resolution
             end = note.end // measure_resolution
             for measure in range(start, end + 1):
                 if is_empty[measure]:
@@ -216,7 +216,7 @@ def _get_pianoroll(music: Music) -> ndarray:
         if track.is_drum:
             continue
         for note in track.notes:
-            pianoroll[note.start : note.end, note.pitch] = 1
+            pianoroll[note.time : note.end, note.pitch] = 1
     return pianoroll
 
 
@@ -471,7 +471,7 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
             continue
         for note in track.notes:
             note_count += 1
-            if drum_pattern[note.start % music.resolution]:
+            if drum_pattern[note.time % music.resolution]:
                 in_pattern_count += 1
     if note_count < 1:
         return math.nan
@@ -654,7 +654,7 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
 
     for track in music.tracks:
         for note in track.notes:
-            measure, position = divmod(note.start, measure_resolution)
+            measure, position = divmod(note.time, measure_resolution)
             if not groove_patterns[measure, position]:
                 groove_patterns[measure, position] = 1
 

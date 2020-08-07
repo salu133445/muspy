@@ -54,7 +54,7 @@ class ReprProcessor(ABC):
         new_note_seq = [
             Note(
                 start=int(d.start / self.min_step),
-                end=int(d.end / self.min_step),
+                duration=int(d.duration / self.min_step),
                 pitch=d.pitch,
                 velocity=d.velocity,
             )
@@ -75,8 +75,8 @@ class ReprProcessor(ABC):
         """
         new_note_seq = [
             Note(
-                start=int(d.start * self.min_step),
-                end=int(d.end * self.min_step),
+                time=int(d.time * self.min_step),
+                duration=int(d.duration * self.min_step),
                 pitch=d.pitch,
                 velocity=d.velocity,
             )
@@ -123,7 +123,7 @@ class NoteProcessor(ReprProcessor):
         - D = 4 {
             pitch: 0 - 127,
             start: start ticks,
-            end: end ticks,
+            duration: duration ticks,
             velocity: 0 - 100
         }
     e.g.  [C5 - - - E5 - - / G5 - - / /]
@@ -155,7 +155,9 @@ class NoteProcessor(ReprProcessor):
 
         repr_seq = []
         for note in note_seq:
-            repr_seq.append([note.pitch, note.start, note.end, note.velocity])
+            repr_seq.append(
+                [note.pitch, note.time, note.duration, note.velocity]
+            )
         return repr_seq
 
     def decode(self, repr_seq=None):
@@ -177,8 +179,8 @@ class NoteProcessor(ReprProcessor):
             notes.append(
                 Note(
                     pitch=int(token[0]),
-                    start=int(token[1]),
-                    end=int(token[2]),
+                    time=int(token[1]),
+                    duration=int(token[2]),
                     velocity=token[3],
                 )
             )
@@ -234,10 +236,10 @@ class MonoTokenProcessor(ReprProcessor):
 
         repr_seq = []
         cst = 0.0
-        cet = note_seq[0].start
+        cet = note_seq[0].time
         prev = self.rest_state
         for note in note_seq:
-            if note.start - cet >= 0:
+            if note.time - cet >= 0:
                 steps = int(cet - cst)
                 if steps > 0:
                     repr_seq.extend([prev])
@@ -245,20 +247,20 @@ class MonoTokenProcessor(ReprProcessor):
                         repr_seq.extend([self.rest_state] * (steps - 1))
                     else:
                         repr_seq.extend([self.hold_state] * (steps - 1))
-                den_step = int(note.start - cet)
+                den_step = int(note.time - cet)
                 repr_seq.extend([self.rest_state] * den_step)
-                cst = note.start
+                cst = note.time
                 cet = note.end
                 prev = note.pitch
-            elif note.start - cst > 0:
-                steps = int(note.start - cst)
+            elif note.time - cst > 0:
+                steps = int(note.time - cst)
                 if steps > 0:
                     repr_seq.extend([prev])
                     if prev == self.rest_state:
                         repr_seq.extend([self.rest_state] * (steps - 1))
                     else:
                         repr_seq.extend([self.hold_state] * (steps - 1))
-                cst = note.start
+                cst = note.time
                 cet = note.end
                 prev = note.pitch
             else:
@@ -302,8 +304,8 @@ class MonoTokenProcessor(ReprProcessor):
                     i_note = Note(
                         velocity=100,
                         pitch=int(prev),
-                        start=int(time_shift),
-                        end=int(time_shift + duration),
+                        time=int(time_shift),
+                        duration=int(duration),
                     )
                     notes.append(i_note)
                 prev = token
@@ -313,8 +315,8 @@ class MonoTokenProcessor(ReprProcessor):
             i_note = Note(
                 velocity=100,
                 pitch=int(prev),
-                start=int(time_shift),
-                end=int(time_shift + duration),
+                time=int(time_shift),
+                duration=int(duration),
             )
             notes.append(i_note)
         if self.min_step > 1:
@@ -407,7 +409,7 @@ class MidiEventProcessor(ReprProcessor):
         for note in notes:
             token_on = {
                 "name": "note_on",
-                "time": note.start,
+                "time": note.time,
                 "pitch": note.pitch,
                 "vel": note.velocity,
             }
@@ -507,13 +509,13 @@ class MidiEventProcessor(ReprProcessor):
                         Note(
                             velocity=token_on["vel"],
                             pitch=int(token_on["pitch"]),
-                            start=int(token_on["time"]),
-                            end=int(token_off["time"]),
+                            time=int(token_on["time"]),
+                            duration=int(token_off["time"] - token_on["time"]),
                         )
                     )
                 except:
                     skip_notes.append(me)
-        notes.sort(key=lambda x: x.start)
+        notes.sort(key=lambda x: x.time)
         if self.min_step > 1:
             notes = self._expand(notes)
         return notes
@@ -559,7 +561,7 @@ class PianoRollProcessor(ReprProcessor):
         repr_seq = np.zeros((max_length, 128))
 
         for note in note_seq:
-            repr_seq[note.start : note.end - 1, note.pitch] = (
+            repr_seq[note.time : note.end - 1, note.pitch] = (
                 note.velocity > 0 if self.binarized else note.velocity
             )
         return repr_seq
@@ -591,8 +593,8 @@ class PianoRollProcessor(ReprProcessor):
                 if repr_seq[cur_time, cur_pitch] == 0 and cst != -1:
                     notes.append(
                         Note(
-                            start=int(cst),
-                            end=int(cur_time) + 1,
+                            time=int(cst),
+                            duration=int(cur_time - cst + 1),
                             pitch=int(cur_pitch),
                             velocity=default_velocity
                             if self.binarized
@@ -603,5 +605,5 @@ class PianoRollProcessor(ReprProcessor):
                     cvel = 0
         if self.min_step > 1:
             notes = self._expand(notes)
-        notes.sort(key=lambda x: x.start)
+        notes.sort(key=lambda x: x.time)
         return notes

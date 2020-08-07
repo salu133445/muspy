@@ -418,7 +418,7 @@ def parse_part(
                     # Create a new note and append it to the note list
                     note = Note(
                         time + position,
-                        time + position + duration * factor,
+                        duration * factor,
                         pitch,
                         velocity,
                     )
@@ -444,7 +444,7 @@ def parse_part(
     # Sort notes
     for instrument_notes in notes.values():
         instrument_notes.sort(
-            key=attrgetter("start", "pitch", "end", "velocity")
+            key=attrgetter("time", "pitch", "duration", "velocity")
         )
 
     return {

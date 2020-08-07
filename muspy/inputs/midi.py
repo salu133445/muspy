@@ -65,7 +65,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
     tracks = []
     for track in pm.tracks:
         notes = [
-            Note(note.start, note.end, note.pitch, note.velocity)
+            Note(note.start, note.duration, note.pitch, note.velocity)
             for note in track.notes
         ]
         tracks.append(Track(track.program, track.is_drum, track.name, notes))
@@ -288,20 +288,24 @@ def read_midi_mido(
                 # 'FIFO': (first in first out) close the earliest note
                 if duplicate_note_mode.lower() == "fifo":
                     onset, velocity = active_notes[note_key][0]
-                    track.notes.append(Note(onset, time, msg.note, velocity))
+                    track.notes.append(
+                        Note(onset, time - onset, msg.note, velocity)
+                    )
                     del active_notes[note_key][0]
 
                 # 'LIFO': (last in first out) close the latest note on
                 elif duplicate_note_mode.lower() == "lifo":
                     onset, velocity = active_notes[note_key][-1]
-                    track.notes.append(Note(onset, time, msg.note, velocity))
+                    track.notes.append(
+                        Note(onset, time - onset, msg.note, velocity)
+                    )
                     del active_notes[note_key][-1]
 
                 # 'close_all' - close all note on messages
                 elif duplicate_note_mode.lower() in ("close_all", "close all"):
                     for onset, velocity in active_notes[note_key]:
                         track.notes.append(
-                            Note(onset, time, msg.note, velocity)
+                            Note(onset, time - onset, msg.note, velocity)
                         )
                     del active_notes[note_key]
 
@@ -312,7 +316,9 @@ def read_midi_mido(
                     program = channel_programs[channel]
                     track = _get_active_track(track_idx, program, channel)
                     for onset, velocity in note_ons:
-                        track.notes.append(Note(onset, time, note, velocity))
+                        track.notes.append(
+                            Note(onset, time - onset, note, velocity)
+                        )
                 break
 
     music_tracks = []
@@ -324,7 +330,7 @@ def read_midi_mido(
     # Sort notes
     for music_track in music_tracks:
         music_track.notes.sort(
-            key=attrgetter("start", "pitch", "end", "velocity")
+            key=attrgetter("time", "pitch", "duration", "velocity")
         )
 
     # Meta data

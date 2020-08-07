@@ -30,7 +30,7 @@ def to_note_representation(music: "Music", min_step: int = 1) -> ndarray:
                 - D = 4 {
                     pitch: 0 - 127,
                     start: start ticks,
-                    end: end ticks,
+                    duration: duration ticks,
                     velocity: 0 - 100
                 }
             e.g.  [C5 - - - E5 - - / G5 - - / /]

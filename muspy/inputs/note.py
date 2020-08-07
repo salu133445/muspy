@@ -18,7 +18,7 @@ def from_note_representation(data, min_step: int = 1, **kwargs: Any) -> Music:
                     - D = 4 {
                         pitch: 0 - 127,
                         start: start ticks,
-                        end: end ticks,
+                        duration: duration ticks,
                         velocity: 0 - 100
                     }
                 e.g. [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]

@@ -56,6 +56,6 @@ def to_event_representation(
     notes = []
     for track in music.tracks:
         notes.extend(track.notes)
-    notes.sort(key=lambda x: x.start)
+    notes.sort(key=lambda x: x.time)
     processor = MidiEventProcessor(min_step=min_step, **kwargs)
     return np.array(processor.encode(notes))

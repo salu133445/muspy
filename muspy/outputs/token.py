@@ -44,7 +44,7 @@ def to_monotoken_representation(music: "Music", min_step: int = 1) -> ndarray:
             "Mono token representation only works for single-track music."
         )
     notes = music.tracks[0].notes
-    notes.sort(key=lambda x: x.start)
+    notes.sort(key=lambda x: x.time)
     processor = MonoTokenProcessor(min_step=min_step)
     return np.array(processor.encode(notes))
 

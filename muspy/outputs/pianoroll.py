@@ -33,7 +33,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         pianoroll = np.zeros((length, 128))
         for note in track.notes:
             pianoroll[
-                note.start : note.end + 1, note.pitch  # type:ignore
+                note.time : note.end + 1, note.pitch  # type:ignore
             ] = note.velocity
         tracks.append(
             Track(
@@ -103,7 +103,7 @@ def to_pianoroll_representation(
     notes = []
     for track in music.tracks:
         notes.extend(track.notes)
-    notes.sort(key=lambda x: x.start)
+    notes.sort(key=lambda x: x.time)
 
     if compact:
         if min_step > 1:
@@ -114,7 +114,7 @@ def to_pianoroll_representation(
         compacted_pianoroll = np.empty(length, np.uint8)
         compacted_pianoroll.fill(129)
         for note in notes:
-            compacted_pianoroll[note.start : note.end - 1] = note.pitch
+            compacted_pianoroll[note.time : note.end - 1] = note.pitch
         return compacted_pianoroll
 
     processor = PianoRollProcessor(min_step=min_step, binarized=binarized)

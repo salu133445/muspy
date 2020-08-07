@@ -54,7 +54,7 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
             track.program, track.is_drum, track.name
         )
         instrument.notes = [
-            pretty_midi.Note(note.velocity, note.pitch, note.start, note.end)
+            pretty_midi.Note(note.velocity, note.pitch, note.time, note.end)
             for note in track.notes
         ]
         pm.instruments.append(instrument)
@@ -195,7 +195,7 @@ def write_midi_mido(music: "Music", path: Union[str, Path]):
             midi_track.append(
                 Message(
                     "note_on",
-                    time=note.start,
+                    time=note.time,
                     note=note.pitch,
                     velocity=int(note.velocity),
                     channel=channel,

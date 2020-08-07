@@ -4,7 +4,7 @@ resolution: int(required=False)
 tempos: list(include("tempo"), required=False)
 time_signatures: list(include("time_signature"), required=False)
 key_signatures: list(include("key_signature"), required=False)
-downbeats: list(num(), required=False)
+downbeats: list(int(), required=False)
 lyrics: list(include("lyric"), required=False)
 annotations: list(include("annotation"), required=False)
 tracks: any(list(include("track")), required=False)
@@ -29,37 +29,37 @@ source_:
   copyright: str(required=False)
 
 tempo:
-  time: num()
+  time: int()
   tempo: num()
 
 key_signature:
-  time: num()
+  time: int()
   root: str()
-  mode: enum('major', 'minor')
+  mode: str()
 
 time_signature:
-  time: num()
+  time: int()
   numerator: int()
   denominator: int()
 
 note:
-  start: num()
-  end: num()
+  time: int()
+  duration: int()
   pitch: int()
   velocity: int()
 
 chord:
-  start: num()
-  end: num()
+  time: int()
+  duration: int()
   pitches: list(int)
   velocity: int()
 
 lyric:
-  time: num()
+  time: int()
   lyric: str()
 
 annotation:
-  time: num()
+  time: int()
   annotation: any()
   group: str(required=False)
 
