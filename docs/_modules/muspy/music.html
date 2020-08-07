@@ -212,6 +212,8 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
+<span class="sd">    metadata : :class:`muspy.Metadata` object</span>
+<span class="sd">        Metadata.</span>
 <span class="sd">    resolution : int, optional</span>
 <span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
 <span class="sd">    tempos : list of :class:`muspy.Tempo`</span>
@@ -228,13 +230,12 @@
 <span class="sd">        Annotations.</span>
 <span class="sd">    tracks : list of :class:`muspy.Track`</span>
 <span class="sd">        Music tracks.</span>
-<span class="sd">    meta : :class:`muspy.Metadata` object</span>
-<span class="sd">        Meta data.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
         <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;metadata&quot;</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;resolution&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">),</span>
@@ -243,10 +244,10 @@
             <span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tracks&quot;</span><span class="p">,</span> <span class="n">Track</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;meta&quot;</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;metadata&quot;</span><span class="p">,</span>
         <span class="s2">&quot;resolution&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tempos&quot;</span><span class="p">,</span>
         <span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span>
@@ -255,7 +256,6 @@
         <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tracks&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;meta&quot;</span><span class="p">,</span>
     <span class="p">]</span>
     <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span>
     <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span>
@@ -270,6 +270,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tempos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">key_signatures</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -278,9 +279,8 @@
         <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tracks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">meta</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">meta</span> <span class="o">=</span> <span class="n">meta</span> <span class="k">if</span> <span class="n">meta</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Metadata</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Metadata</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">resolution</span> <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_RESOLUTION</span>
         <span class="p">)</span>

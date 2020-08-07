@@ -175,8 +175,6 @@
     <span class="n">KeySignature</span><span class="p">,</span>
     <span class="n">Metadata</span><span class="p">,</span>
     <span class="n">Note</span><span class="p">,</span>
-    <span class="n">SongInfo</span><span class="p">,</span>
-    <span class="n">SourceInfo</span><span class="p">,</span>
     <span class="n">Tempo</span><span class="p">,</span>
     <span class="n">TimeSignature</span><span class="p">,</span>
     <span class="n">Track</span><span class="p">,</span>
@@ -383,8 +381,7 @@
     <span class="n">notes</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">instrument_id</span><span class="p">:</span> <span class="p">[]</span> <span class="k">for</span> <span class="n">instrument_id</span> <span class="ow">in</span> <span class="n">instrument_info</span>
     <span class="p">}</span>
-    <span class="n">incoming_ties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">outgoing_ties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">ties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="c1"># Initialize variables</span>
     <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
@@ -566,14 +563,17 @@
                     <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">default_instrument_id</span>
 
                 <span class="c1"># Check if it is an incoming tied note</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">instrument_id</span><span class="p">,</span> <span class="n">pitch</span><span class="p">,)</span> <span class="ow">in</span> <span class="n">incoming_ties</span><span class="p">:</span>
-                    <span class="n">note_idx</span> <span class="o">=</span> <span class="n">incoming_ties</span><span class="p">[(</span><span class="n">instrument_id</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)]</span>
+                <span class="n">note_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">instrument_id</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">note_key</span> <span class="ow">in</span> <span class="n">ties</span><span class="p">:</span>
+                    <span class="n">note_idx</span> <span class="o">=</span> <span class="n">ties</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span>
                     <span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="n">note_idx</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="p">(</span>
                         <span class="n">duration</span> <span class="o">*</span> <span class="n">factor</span>
                     <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">is_outgoing_tie</span><span class="p">:</span>
-                        <span class="n">outgoing_ties</span><span class="p">[(</span><span class="n">instrument_id</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)]</span> <span class="o">=</span> <span class="n">note_idx</span>
+                        <span class="n">ties</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">note_idx</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">del</span> <span class="n">ties</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span>
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Create a new note and append it to the note list</span>
@@ -586,9 +586,7 @@
                     <span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">is_outgoing_tie</span><span class="p">:</span>
-                        <span class="n">outgoing_ties</span><span class="p">[(</span><span class="n">instrument_id</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)]</span> <span class="o">=</span> <span class="p">(</span>
-                            <span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
-                        <span class="p">)</span>
+                        <span class="n">ties</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span>
 
                 <span class="c1"># Move time position forward if it is not in chord</span>
                 <span class="n">last_note_position</span> <span class="o">=</span> <span class="n">position</span>
@@ -604,9 +602,6 @@
 
         <span class="n">time</span> <span class="o">+=</span> <span class="n">position</span>
 
-        <span class="n">incoming_ties</span> <span class="o">=</span> <span class="n">outgoing_ties</span>
-        <span class="n">outgoing_ties</span> <span class="o">=</span> <span class="p">{}</span>
-
     <span class="c1"># Sort notes</span>
     <span class="k">for</span> <span class="n">instrument_notes</span> <span class="ow">in</span> <span class="n">notes</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">instrument_notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
@@ -621,7 +616,7 @@
     <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">parse_meta_data</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MusicXML file.&quot;&quot;&quot;</span>
     <span class="c1"># Song title</span>
     <span class="n">work_title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -646,14 +641,13 @@
             <span class="k">if</span> <span class="n">right_elem</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
                 <span class="n">copyrights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right_elem</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="n">song_info</span> <span class="o">=</span> <span class="n">SongInfo</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">creators</span><span class="o">=</span><span class="n">creators</span><span class="p">)</span>
-    <span class="n">source_info</span> <span class="o">=</span> <span class="n">SourceInfo</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
-        <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;musicxml&quot;</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">creators</span><span class="o">=</span><span class="n">creators</span><span class="p">,</span>
         <span class="n">copyright</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">copyrights</span><span class="p">)</span> <span class="k">if</span> <span class="n">copyrights</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source_filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+        <span class="n">source_format</span><span class="o">=</span><span class="s2">&quot;musicxml&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span><span class="n">song</span><span class="o">=</span><span class="n">song_info</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">source_info</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="read_musicxml"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_musicxml">[docs]</a><span class="k">def</span> <span class="nf">read_musicxml</span><span class="p">(</span>
@@ -703,7 +697,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MusicXML file with timewise type is not supported.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Meta data</span>
-    <span class="n">meta_data</span> <span class="o">=</span> <span class="n">parse_meta_data</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="c1"># Set resolution to the least common multiple of all divisions</span>
     <span class="n">divisions</span> <span class="o">=</span> <span class="p">[]</span>
@@ -814,12 +808,12 @@
     <span class="n">time_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
         <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
         <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">,</span>
         <span class="n">key_signatures</span><span class="o">=</span><span class="n">key_signatures</span><span class="p">,</span>
         <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
-        <span class="n">meta</span><span class="o">=</span><span class="n">meta_data</span><span class="p">,</span>
     <span class="p">)</span></div>
 </pre></div>
 

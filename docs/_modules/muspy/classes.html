@@ -181,8 +181,6 @@
     <span class="s2">&quot;Lyric&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Metadata&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Note&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SongInfo&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;SourceInfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Tempo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;TimeSignature&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Track&quot;</span><span class="p">,</span>
@@ -191,109 +189,66 @@
 <span class="c1"># pylint: disable=super-init-not-called</span>
 
 
-<div class="viewcode-block" id="SongInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SongInfo">[docs]</a><span class="k">class</span> <span class="nc">SongInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for song information.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    title : str, optional</span>
-<span class="sd">        Song title.</span>
-<span class="sd">    artist : str, optional</span>
-<span class="sd">        Main artist of the song.</span>
-<span class="sd">    creators : list of str, optional</span>
-<span class="sd">        Creator(s) of the song.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;creators&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">)]</span>
-    <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;artist&quot;</span><span class="p">,</span> <span class="s2">&quot;creators&quot;</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">artist</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">creators</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">artist</span> <span class="o">=</span> <span class="n">artist</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="o">=</span> <span class="n">creators</span> <span class="k">if</span> <span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span></div>
-
-
-<div class="viewcode-block" id="SourceInfo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.SourceInfo">[docs]</a><span class="k">class</span> <span class="nc">SourceInfo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for source information.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    filename : str, optional</span>
-<span class="sd">        Name of the source file.</span>
-<span class="sd">    collection : str, optional</span>
-<span class="sd">        Name of the collection.</span>
-<span class="sd">    format : str, optional</span>
-<span class="sd">        Format of the source file.</span>
-<span class="sd">    copyright : str, optional</span>
-<span class="sd">        Copyright notice of the source file.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="p">(</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;filename&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;collection&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;format&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;copyright&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">collection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="nb">format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">copyright</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="c1"># pylint: disable=redefined-builtin</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="nb">format</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">copyright</span> <span class="o">=</span> <span class="n">copyright</span></div>
-
-
 <div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for meta data.</span>
+    <span class="sd">&quot;&quot;&quot;A container for metadata.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    schema_version : str</span>
 <span class="sd">        Schema version. Defaults to the latest version.</span>
-<span class="sd">    song : :class:`muspy.SongInfo` object, optional</span>
-<span class="sd">        Song infomation.</span>
-<span class="sd">    source : :class:`muspy.SourceInfo` object, optional</span>
-<span class="sd">        Source infomation.</span>
+<span class="sd">    title : str, optional</span>
+<span class="sd">        Song title.</span>
+<span class="sd">    creators : list of str, optional</span>
+<span class="sd">        Creator(s) of the song.</span>
+<span class="sd">    copyright : str, optional</span>
+<span class="sd">        Copyright notice.</span>
+<span class="sd">    collection : str, optional</span>
+<span class="sd">        Name of the collection.</span>
+<span class="sd">    source_filename : str, optional</span>
+<span class="sd">        Name of the source file.</span>
+<span class="sd">    source_format : str, optional</span>
+<span class="sd">        Format of the source file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="n">SongInfo</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;source&quot;</span><span class="p">,</span> <span class="n">SourceInfo</span><span class="p">)]</span>
+        <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;creators&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;source_filename&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;source_format&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+        <span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;source&quot;</span><span class="p">]</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;creators&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;copyright&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;collection&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_filename&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;source_format&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">schema_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_SCHEMA_VERSION</span><span class="p">,</span>
-        <span class="n">song</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SongInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">source</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SourceInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">creators</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">copyright</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">collection</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source_filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_version</span> <span class="o">=</span> <span class="n">schema_version</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">song</span> <span class="o">=</span> <span class="n">song</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">source</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="o">=</span> <span class="n">creators</span> <span class="k">if</span> <span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copyright</span> <span class="o">=</span> <span class="n">copyright</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">collection</span> <span class="o">=</span> <span class="n">collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">source_filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source_format</span> <span class="o">=</span> <span class="n">source_format</span>
 
 <div class="viewcode-block" id="Metadata.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Metadata.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is invalid.</span>

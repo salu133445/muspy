@@ -163,18 +163,15 @@
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">music21.converter.subConverters</span> <span class="k">import</span> <span class="n">ConverterABC</span>
+<span class="kn">import</span> <span class="nn">music21.converter</span>
 <span class="kn">from</span> <span class="nn">music21.stream</span> <span class="k">import</span> <span class="n">Opus</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">SourceInfo</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">.music21</span> <span class="k">import</span> <span class="n">from_music21</span><span class="p">,</span> <span class="n">from_music21_opus</span>
 
 
 <div class="viewcode-block" id="read_abc_string"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_abc_string">[docs]</a><span class="k">def</span> <span class="nf">read_abc_string</span><span class="p">(</span>
-    <span class="n">data_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">ref_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span>
+    <span class="n">data_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read ABC data into Music object(s) using music21 as backend.</span>
 
@@ -182,7 +179,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    data_str : str</span>
 <span class="sd">        ABC data to parse.</span>
-<span class="sd">    ref_number : int</span>
+<span class="sd">    number : int</span>
 <span class="sd">        Reference number of a specific tune to read (i.e., the &#39;X:&#39; field).</span>
 <span class="sd">    resolution : int, optional</span>
 <span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
@@ -194,21 +191,20 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Parse the ABC data using music21</span>
-    <span class="n">converter</span> <span class="o">=</span> <span class="n">ConverterABC</span><span class="p">()</span>
-    <span class="n">converter</span><span class="o">.</span><span class="n">parseData</span><span class="p">(</span><span class="n">data_str</span><span class="p">,</span> <span class="n">ref_number</span><span class="p">)</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">data_str</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">)</span>
 
     <span class="c1"># Convert music21 object(s) to MusPy Music object(s)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">Opus</span><span class="p">):</span>
-        <span class="n">music_list</span> <span class="o">=</span> <span class="n">from_music21_opus</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">Opus</span><span class="p">):</span>
+        <span class="n">music_list</span> <span class="o">=</span> <span class="n">from_music21_opus</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">music_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_music21</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)]</span>
+        <span class="n">music_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_music21</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)]</span>
 
     <span class="k">return</span> <span class="n">music_list</span></div>
 
 
 <div class="viewcode-block" id="read_abc"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_abc">[docs]</a><span class="k">def</span> <span class="nf">read_abc</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="n">ref_number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">number</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return an ABC file into Music object(s) using music21 as backend.</span>
@@ -217,6 +213,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the ABC file to read.</span>
+<span class="sd">    number : int</span>
+<span class="sd">        Reference number of a specific tune to read (i.e., the &#39;X:&#39; field).</span>
 <span class="sd">    resolution : int, optional</span>
 <span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
 
@@ -227,18 +225,18 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Parse the ABC file using music21</span>
-    <span class="n">converter</span> <span class="o">=</span> <span class="n">ConverterABC</span><span class="p">()</span>
-    <span class="n">converter</span><span class="o">.</span><span class="n">parseFile</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">ref_number</span><span class="p">)</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;abc&quot;</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">number</span><span class="p">)</span>
 
     <span class="c1"># Convert music21 object(s) to MusPy Music object(s)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">Opus</span><span class="p">):</span>
-        <span class="n">music_list</span> <span class="o">=</span> <span class="n">from_music21_opus</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">Opus</span><span class="p">):</span>
+        <span class="n">music_list</span> <span class="o">=</span> <span class="n">from_music21_opus</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">music_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_music21</span><span class="p">(</span><span class="n">converter</span><span class="o">.</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)]</span>
+        <span class="n">music_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_music21</span><span class="p">(</span><span class="n">parsed</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)]</span>
 
-    <span class="c1"># Set meta data</span>
+    <span class="c1"># Set metadata</span>
     <span class="k">for</span> <span class="n">music</span> <span class="ow">in</span> <span class="n">music_list</span><span class="p">:</span>
-        <span class="n">music</span><span class="o">.</span><span class="n">meta</span><span class="o">.</span><span class="n">source</span> <span class="o">=</span> <span class="n">SourceInfo</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_format</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
 
     <span class="k">return</span> <span class="n">music_list</span></div>
 </pre></div>
