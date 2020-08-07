@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 import muspy
-from muspy import MIDIError, MusicXMLError
+from muspy import MIDIError
 
 DATA_DIR = Path(__file__).parent / "data" / "midi"
 
@@ -56,7 +56,6 @@ def test_pitches():
     assert len(notes) == 128
 
     for i, note in enumerate(notes):
-
         assert note.start == music.resolution * i
         assert note.duration == music.resolution
         assert note.pitch == i

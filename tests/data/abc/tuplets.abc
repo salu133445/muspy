@@ -1,0 +1,5 @@
+X:1
+T:Tuplets
+M:C
+K:C
+(2AB (3ABA (4ABAB (5ABABA (6ABABAB (7ABABABA|]

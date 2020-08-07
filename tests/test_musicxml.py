@@ -238,50 +238,16 @@ def test_chords_and_durations():
     music = muspy.read(DATA_DIR / "21c-Chords-ThreeNotesDuration.xml")
 
     # Answers
-    pitches = [
-        65,
-        69,
-        72,
-        69,
-        79,
-        65,
-        69,
-        72,
-        65,
-        69,
-        72,
-        65,
-        69,
-        76,
-        65,
-        69,
-        77,
-        65,
-        69,
-        74,
-    ]
-    durations = [
-        1.5,
-        1.5,
-        1.5,
-        0.5,
-        0.5,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        2,
-        2,
-        2,
-    ]
+    pitches = (
+        [65, 69, 72]
+        + [69, 79]
+        + [65, 69, 72]
+        + [65, 69, 72]
+        + [65, 69, 76]
+        + [65, 69, 77]
+        + [65, 69, 74,]
+    )
+    durations = [1.5, 1.5, 1.5] + [0.5, 0.5] + [1, 1, 1] * 4 + [2, 2, 2]
 
     for i, note in enumerate(music.tracks[0].notes):
         assert note.duration == music.resolution * durations[i]
