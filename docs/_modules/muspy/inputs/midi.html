@@ -226,7 +226,7 @@
     <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+            <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span>
         <span class="p">]</span>
         <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Track</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">notes</span><span class="p">))</span>
@@ -449,20 +449,24 @@
                 <span class="c1"># &#39;FIFO&#39;: (first in first out) close the earliest note</span>
                 <span class="k">if</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fifo&quot;</span><span class="p">:</span>
                     <span class="n">onset</span><span class="p">,</span> <span class="n">velocity</span> <span class="o">=</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">))</span>
+                    <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span> <span class="o">-</span> <span class="n">onset</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
+                    <span class="p">)</span>
                     <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
                 <span class="c1"># &#39;LIFO&#39;: (last in first out) close the latest note on</span>
                 <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;lifo&quot;</span><span class="p">:</span>
                     <span class="n">onset</span><span class="p">,</span> <span class="n">velocity</span> <span class="o">=</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                    <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">))</span>
+                    <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span> <span class="o">-</span> <span class="n">onset</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
+                    <span class="p">)</span>
                     <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
                 <span class="c1"># &#39;close_all&#39; - close all note on messages</span>
                 <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;close_all&quot;</span><span class="p">,</span> <span class="s2">&quot;close all&quot;</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">onset</span><span class="p">,</span> <span class="n">velocity</span> <span class="ow">in</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">]:</span>
                         <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                            <span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
+                            <span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span> <span class="o">-</span> <span class="n">onset</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
                         <span class="p">)</span>
                     <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span>
 
@@ -473,7 +477,9 @@
                     <span class="n">program</span> <span class="o">=</span> <span class="n">channel_programs</span><span class="p">[</span><span class="n">channel</span><span class="p">]</span>
                     <span class="n">track</span> <span class="o">=</span> <span class="n">_get_active_track</span><span class="p">(</span><span class="n">track_idx</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">onset</span><span class="p">,</span> <span class="n">velocity</span> <span class="ow">in</span> <span class="n">note_ons</span><span class="p">:</span>
-                        <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">))</span>
+                        <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Note</span><span class="p">(</span><span class="n">onset</span><span class="p">,</span> <span class="n">time</span> <span class="o">-</span> <span class="n">onset</span><span class="p">,</span> <span class="n">note</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
+                        <span class="p">)</span>
                 <span class="k">break</span>
 
     <span class="n">music_tracks</span> <span class="o">=</span> <span class="p">[]</span>
@@ -485,7 +491,7 @@
     <span class="c1"># Sort notes</span>
     <span class="k">for</span> <span class="n">music_track</span> <span class="ow">in</span> <span class="n">music_tracks</span><span class="p">:</span>
         <span class="n">music_track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
-            <span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">)</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="c1"># Meta data</span>

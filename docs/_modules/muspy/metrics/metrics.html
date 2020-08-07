@@ -308,7 +308,7 @@
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
             <span class="n">end</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
             <span class="k">for</span> <span class="n">beat</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">is_empty</span><span class="p">[</span><span class="n">beat</span><span class="p">]:</span>
@@ -360,7 +360,7 @@
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">//</span> <span class="n">measure_resolution</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">//</span> <span class="n">measure_resolution</span>
             <span class="n">end</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="o">//</span> <span class="n">measure_resolution</span>
             <span class="k">for</span> <span class="n">measure</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">is_empty</span><span class="p">[</span><span class="n">measure</span><span class="p">]:</span>
@@ -377,7 +377,7 @@
         <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">pianoroll</span>
 
 
@@ -632,7 +632,7 @@
             <span class="k">continue</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">note_count</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">if</span> <span class="n">drum_pattern</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="o">%</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">drum_pattern</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">%</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">]:</span>
                 <span class="n">in_pattern_count</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">note_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">nan</span>
@@ -815,7 +815,7 @@
 
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">measure</span><span class="p">,</span> <span class="n">position</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">measure_resolution</span><span class="p">)</span>
+            <span class="n">measure</span><span class="p">,</span> <span class="n">position</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">measure_resolution</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">groove_patterns</span><span class="p">[</span><span class="n">measure</span><span class="p">,</span> <span class="n">position</span><span class="p">]:</span>
                 <span class="n">groove_patterns</span><span class="p">[</span><span class="n">measure</span><span class="p">,</span> <span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 

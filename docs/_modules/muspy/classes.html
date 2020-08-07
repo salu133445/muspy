@@ -189,7 +189,7 @@
 <span class="c1"># pylint: disable=super-init-not-called</span>
 
 
-<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for metadata.</span>
 
 <span class="sd">    Attributes</span>
@@ -230,6 +230,7 @@
         <span class="s2">&quot;source_filename&quot;</span><span class="p">,</span>
         <span class="s2">&quot;source_format&quot;</span><span class="p">,</span>
     <span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;creators&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -390,10 +391,10 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    start : int</span>
-<span class="sd">        Start time of the note, in time steps or seconds.</span>
-<span class="sd">    end : int</span>
-<span class="sd">        End time of the note, in time steps or seconds.</span>
+<span class="sd">    time : int</span>
+<span class="sd">        Start time of the note, in time steps.</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of the note, in time steps.</span>
 <span class="sd">    pitch : int</span>
 <span class="sd">        Note pitch, as a MIDI note number.</span>
 <span class="sd">    velocity : int, optional</span>
@@ -402,39 +403,49 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)]</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)]</span>
     <span class="p">)</span>
-    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">]</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">pitch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Duration of the note.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;End time of the note.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
 
-    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setter for duration.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">duration</span>
+    <span class="nd">@end</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start time of the note.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="nd">@start</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">start</span>
 
 <div class="viewcode-block" id="Note.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.classes.Note.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`start` must be nonnegative.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`end` must be greater than `start`.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be nonnegative.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`duration` must be nonnegative.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`pitch` must be in between 0 to 127.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
@@ -477,10 +488,10 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    start : int</span>
-<span class="sd">        Start time of the note, in time steps or seconds.</span>
-<span class="sd">    end : int</span>
-<span class="sd">        End time of the note, in time steps or seconds.</span>
+<span class="sd">    time : int</span>
+<span class="sd">        Start time of the chord, in time steps.</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of the chord, in time steps.</span>
 <span class="sd">    pitches : list of int</span>
 <span class="sd">        Note pitches, as MIDI note numbers.</span>
 <span class="sd">    velocity : int, optional</span>
@@ -489,45 +500,55 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span>
-        <span class="p">[(</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pitches&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)]</span>
+        <span class="p">[(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pitches&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)]</span>
     <span class="p">)</span>
-    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;start&quot;</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">]</span>
+    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]</span>
     <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pitches&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">pitches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
         <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">start</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="n">end</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">=</span> <span class="n">pitches</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s2">&quot;Chord(start=</span><span class="si">{}</span><span class="s2">, end=</span><span class="si">{}</span><span class="s2">, pitches=</span><span class="si">{}</span><span class="s2">, velocity=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+        <span class="k">return</span> <span class="s2">&quot;Chord(time=</span><span class="si">{}</span><span class="s2">, duration=</span><span class="si">{}</span><span class="s2">, pitches=</span><span class="si">{}</span><span class="s2">, velocity=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Duration of the note.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;End time of the chord.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
 
-    <span class="nd">@duration</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setter for duration.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">duration</span>
+    <span class="nd">@end</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Start time of the chord.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="nd">@start</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">start</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if any attribute is invalid.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`start` must be nonnegative.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`end` must be greater than `start`.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be nonnegative.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`duration` must be nonnegative.&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">:</span>
             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">pitch</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`pitch` must be in between 0 to 127.&quot;</span><span class="p">)</span>
@@ -538,15 +559,15 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        semitone : int</span>
-<span class="sd">            The number of semitones to transpose the note. A positive value</span>
-<span class="sd">            raises the pitch, while a negative value lowers the pitch.</span>
+<span class="sd">            The number of semitones to transpose the notes. A positive value</span>
+<span class="sd">            raises the pitches, while a negative value lowers the pitches.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">+=</span> <span class="p">[</span><span class="n">pitch</span> <span class="o">+</span> <span class="n">semitone</span> <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Clip the velocity of the note.</span>
+        <span class="sd">&quot;&quot;&quot;Clip the velocity of the chord.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

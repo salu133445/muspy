@@ -6,6 +6,15 @@ Here is an example of a Music object in YAML format.
 
 .. code-block:: yaml
 
+    metadata:
+      schema_version: '0.0'
+      title: Fur Elise
+      creators:
+        - Ludwig van Beethoven
+      copyright: null
+      collection: collection
+      source_filename: example.yaml
+      source_format: null
     resolution: 4
     tempos:
       - time: 0
@@ -32,40 +41,40 @@ Here is an example of a Music object in YAML format.
         is_drum: false
         name: melody
         notes:
-          - start: 0
-            end: 2
+          - time: 0
+            duration: 2
             pitch: 76
             velocity: 127
-          - start: 2
-            end: 4
+          - time: 2
+            duration: 2
             pitch: 75
             velocity: 127
-          - start: 4
-            end: 6
+          - time: 4
+            duration: 2
             pitch: 76
             velocity: 127
-          - start: 6
-            end: 8
+          - time: 6
+            duration: 2
             pitch: 75
             velocity: 127
-          - start: 8
-            end: 10
+          - time: 8
+            duration: 2
             pitch: 76
             velocity: 127
-          - start: 10
-            end: 12
+          - time: 10
+            duration: 2
             pitch: 71
             velocity: 127
-          - start: 12
-            end: 14
+          - time: 12
+            duration: 2
             pitch: 74
             velocity: 127
-          - start: 14
-            end: 16
+          - time: 14
+            duration: 2
             pitch: 72
             velocity: 127
-          - start: 16
-            end: 18
+          - time: 16
+            duration: 2
             pitch: 69
             velocity: 127
         lyrics:
@@ -74,15 +83,3 @@ Here is an example of a Music object in YAML format.
         annotations:
           - time: 0
             annotation: nothing but an annotation
-    meta:
-      schema_version: '0.0'
-      song:
-        title: Fur Elise
-        artist: Ludwig van Beethoven
-        creators:
-          - Ludwig van Beethoven
-      source:
-        filename: example.yaml
-        collection: collection
-        format: null
-        copyright: null
