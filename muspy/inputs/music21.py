@@ -92,7 +92,7 @@ def parse_key_signatures(
     key_signatures = []
     for item in stream.flat.getKeySignatures():
         time = int(float(item.offset * resolution))
-        key_signature = KeySignature(time, item.tonic.pitchClass, item.mode)
+        key_signature = KeySignature(time, item.tonic.name, item.mode)
         key_signatures.append(key_signature)
     return key_signatures
 

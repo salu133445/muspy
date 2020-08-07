@@ -24,7 +24,7 @@ def test_header():
 
     assert len(music.key_signatures) == 1
     assert music.key_signatures[0].time == 0
-    assert music.key_signatures[0].root == 0
+    assert music.key_signatures[0].root == "C"
     assert music.key_signatures[0].mode == "major"
 
     assert len(music.time_signatures) == 1
