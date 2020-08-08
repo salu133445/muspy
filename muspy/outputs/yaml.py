@@ -33,15 +33,15 @@ def _yaml_dump(data):
     return yaml.dump(data, Dumper=OrderedDumper)
 
 
-def save_yaml(music: "Music", path: Union[str, Path]):
+def save_yaml(path: Union[str, Path], music: "Music"):
     """Save a Music object to a YAML file.
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
-        Music object to save.
     path : str or Path
         Path to save the YAML file.
+    music : :class:`muspy.Music` object
+        Music object to save.
 
     """
     with open(str(path), "w") as f:

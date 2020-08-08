@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 
 
 def save(
-    music: "Music",
     path: Union[str, Path],
+    music: "Music",
     kind: Optional[str] = None,
     **kwargs: Any
 ):
@@ -29,10 +29,10 @@ def save(
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
-        MusPy Music object to be saved.
     path : str or Path
         Path to save the file.
+    music : :class:`muspy.Music` object
+        MusPy Music object to be saved.
     kind : {'json', 'yaml'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
@@ -57,15 +57,15 @@ def save(
                 "Got unsupported file format (expect JSON or YAML)."
             )
     if kind == "json":
-        return save_json(music, path, **kwargs)  # type: ignore
+        return save_json(path, music, **kwargs)  # type: ignore
     if kind == "yaml":
-        return save_yaml(music, path, **kwargs)  # type: ignore
+        return save_yaml(path, music, **kwargs)  # type: ignore
     raise ValueError("`kind` must be either 'json' or 'yaml'.")
 
 
 def write(
-    music: "Music",
     path: Union[str, Path],
+    music: "Music",
     kind: Optional[str] = None,
     **kwargs: Any
 ):
@@ -73,11 +73,10 @@ def write(
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
-        MusPy Music object to be converted. The file format is inferred from
-        the extension.
     path : str or Path
         Path to write the file.
+    music : :class:`muspy.Music` object
+        MusPy Music object to be converted.
     kind : {'midi', 'musicxml'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
@@ -99,9 +98,9 @@ def write(
                 "Got unsupported file format (expect MIDI or MusicXML)."
             )
     if kind == "midi":
-        return write_midi(music, path, **kwargs)  # type: ignore
+        return write_midi(path, music, **kwargs)
     if kind == "musicxml":
-        return write_musicxml(music, path, **kwargs)  # type: ignore
+        return write_musicxml(path, music)
     raise ValueError("`kind` must be either 'midi' or 'musicxml'.")
 
 
@@ -124,9 +123,9 @@ def to_object(
 
     """
     if target.lower() in ("pretty_midi", "prettymidi"):
-        return to_pretty_midi(music, **kwargs)  # type: ignore
+        return to_pretty_midi(music)
     if target.lower() == "pypianoroll":
-        return to_pypianoroll(music, **kwargs)  # type: ignore
+        return to_pypianoroll(music)
     raise ValueError("`target` must be either 'pretty_midi' or 'pypianoroll'.")
 
 

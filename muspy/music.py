@@ -313,7 +313,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.save` for full documentation.
 
         """
-        return save(self, path, kind, **kwargs)
+        return save(path, self, kind, **kwargs)
 
     def save_json(self, path: Union[str, Path], **kwargs: Any):
         """Save loselessly to a JSON file.
@@ -321,7 +321,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.save_json` for full documentation.
 
         """
-        return save(self, path, "json", **kwargs)
+        return save(path, self, "json", **kwargs)
 
     def save_yaml(self, path: Union[str, Path]):
         """Save loselessly to a YAML file.
@@ -329,7 +329,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.save_yaml` for full documentation.
 
         """
-        return save(self, path, "yaml")
+        return save(path, self, "yaml")
 
     def write(
         self, path: Union[str, Path], kind: Optional[str], **kwargs: Any
@@ -339,7 +339,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write` for full documentation.
 
         """
-        return write(self, path, kind, **kwargs)
+        return write(path, self, kind, **kwargs)
 
     def write_midi(self, path: Union[str, Path], **kwargs: Any):
         """Write to a MIDI file.
@@ -347,7 +347,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write_midi` for full documentation.
 
         """
-        return write(self, path, kind="midi", **kwargs)
+        return write(path, self, kind="midi", **kwargs)
 
     def write_musicxml(self, path: Union[str, Path], **kwargs: Any):
         """Write to a MusicXML file.
@@ -355,7 +355,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write_musicxml` for full documentation.
 
         """
-        return write(self, path, "musicxml", **kwargs)
+        return write(path, self, "musicxml", **kwargs)
 
     def to_object(self, target: str, **kwargs: Any):
         """Convert to a target class.

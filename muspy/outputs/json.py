@@ -7,15 +7,15 @@ if TYPE_CHECKING:
     from ..music import Music
 
 
-def save_json(music: "Music", path: Union[str, Path]):
+def save_json(path: Union[str, Path], music: "Music"):
     """Save a Music object to a JSON file.
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
-        Music object to save.
     path : str or Path
         Path to save the JSON file.
+    music : :class:`muspy.Music` object
+        Music object to save.
 
     """
     with open(str(path), "w") as f:
