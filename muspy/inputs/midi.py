@@ -5,7 +5,8 @@ from pathlib import Path
 from typing import List, Union
 
 from mido import MidiFile, tempo2bpm
-from pretty_midi import PrettyMIDI, key_number_to_key_name
+import pretty_midi
+from pretty_midi import Instrument, PrettyMIDI, key_number_to_key_name
 
 from ..classes import (
     Annotation,
@@ -26,111 +27,6 @@ class MIDIError(Exception):
 
 def _is_drum(channel):
     return channel == 9
-
-
-def from_pretty_midi(pm: PrettyMIDI) -> Music:
-    """Return a Music object converted from a pretty_midi PrettyMIDI object.
-
-    Parameters
-    ----------
-    obj : :class:`pretty_midi.PrettyMIDI` object
-        PrettyMIDI object to convert.
-
-    Returns
-    -------
-    music : :class:`muspy.Music` object
-        Converted Music object.
-
-    """
-    key_signatures = [
-        KeySignature(
-            key_signature.time,
-            key_number_to_key_name(key_signature.key_number).split()[0],
-            key_number_to_key_name(key_signature.key_number).split()[1],
-        )
-        for key_signature in pm.key_signature_changes
-    ]
-
-    time_signatures = [
-        TimeSignature(
-            time_signature.time,
-            time_signature.numerator,
-            time_signature.denominator,
-        )
-        for time_signature in pm.time_signature_changes
-    ]
-
-    lyrics = [Lyric(lyric.time, lyric.text) for lyric in pm.lyrics]
-
-    tracks = []
-    for track in pm.tracks:
-        notes = [
-            Note(note.start, note.duration, note.pitch, note.velocity)
-            for note in track.notes
-        ]
-        tracks.append(Track(track.program, track.is_drum, track.name, notes))
-
-    return Music(
-        metadata=Metadata(source_format="midi"),
-        key_signatures=key_signatures,
-        time_signatures=time_signatures,
-        lyrics=lyrics,
-        tracks=tracks,
-    )
-
-
-def read_midi(
-    path: Union[str, Path],
-    backend: str = "mido",
-    duplicate_note_mode: str = "fifo",
-) -> Music:
-    """Read a MIDI file into a Music object.
-
-    Parameters
-    ----------
-    path : str or Path
-        Path to the MIDI file to read.
-    backend: {'mido', 'pretty_midi'}
-        Backend to use.
-    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
-        Policy for dealing with duplicate notes. When a note off message is
-        presetned while there are multiple correspoding note on messages
-        that have not yet been closed, we need a policy to decide which note
-        on messages to close. Defaults to 'fifo'. Only used when
-        `backend='mido'`.
-
-        - 'fifo' (first in first out): close the earliest note on
-        - 'lifo' (first in first out):close the latest note on
-        - 'close_all': close all note on messages
-
-    Returns
-    -------
-    :class:`muspy.Music` object
-        Converted Music object.
-
-    """
-    if backend == "mido":
-        return read_midi_mido(path, duplicate_note_mode)
-    if backend == "pretty_midi":
-        return read_midi_pretty_midi(path)
-    raise ValueError("`backend` must by one of 'mido' and 'pretty_midi'.")
-
-
-def read_midi_pretty_midi(path: Union[str, Path]) -> Music:
-    """Read a MIDI file into a Music object using pretty_midi as backend.
-
-    Parameters
-    ----------
-    path : str or Path
-        Path to the MIDI file to read.
-
-    Returns
-    -------
-    :class:`muspy.Music` object
-        Converted Music object.
-
-    """
-    return from_pretty_midi(PrettyMIDI(str(path)))
 
 
 def read_midi_mido(
@@ -349,3 +245,185 @@ def read_midi_mido(
         lyrics=lyrics,
         tracks=music_tracks,
     )
+
+
+def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
+    """Return key signatures parsed from a PrettyMIDI object.
+
+    Parameters
+    ----------
+    pm : :class:`pretty_midi.PrettyMIDI` object
+        PrettyMIDI object to convert.
+
+    Returns
+    -------
+    list of :class:`muspy.KeySignature` objects
+        Converted key signatures.
+
+    """
+    key_signatures = []
+    for key_signature in pm.key_signature_changes:
+        root, mode = key_number_to_key_name(key_signature.key_number).split()
+        key_signatures.append(KeySignature(key_signature.time, root, mode))
+    return key_signatures
+
+
+def parse_pretty_midi_time_signatures(pm: PrettyMIDI) -> List[TimeSignature]:
+    """Return time signatures parsed from a PrettyMIDI object.
+
+    Parameters
+    ----------
+    pm : :class:`pretty_midi.PrettyMIDI` object
+        PrettyMIDI object to convert.
+
+    Returns
+    -------
+    list of :class:`muspy.TimeSignature` objects
+        Converted time signatures.
+
+    """
+    time_signatures = []
+    for time_signature in pm.time_signature_changes:
+        time_signatures.append(
+            TimeSignature(
+                time_signature.time,
+                time_signature.numerator,
+                time_signature.denominator,
+            )
+        )
+    return time_signatures
+
+
+def parse_pretty_midi_lyrics(pm: PrettyMIDI) -> List[Lyric]:
+    """Return lyrics parsed from a PrettyMIDI object.
+
+    Parameters
+    ----------
+    pm : :class:`pretty_midi.PrettyMIDI` object
+        PrettyMIDI object to convert.
+
+    Returns
+    -------
+    list of :class:`muspy.Lyric` objects
+        Converted lyrics.
+
+    """
+    return [Lyric(lyric.time, lyric.text) for lyric in pm.lyrics]
+
+
+def parse_pretty_midi_note(note: Note) -> Note:
+    """Return note parsed from a pretty_midi Note object.
+
+    Parameters
+    ----------
+    note : :class:`pretty_midi.Note` object
+        pretty_midi Note object to convert.
+
+    Returns
+    -------
+    :class:`muspy.Note` object
+        Converted note.
+
+    """
+    return Note(note.start, note.duration, note.pitch, note.velocity)
+
+
+def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
+    """Return lyrics parsed from a pretty_midi Instrument object.
+
+    Parameters
+    ----------
+    instrument : :class:`pretty_midi.Instrument` object
+        pretty_midi Instrument object to convert.
+
+    Returns
+    -------
+    :class:`muspy.Track` object
+        Converted track.
+
+    """
+    notes = [parse_pretty_midi_note(note) for note in instrument.notes]
+    return Track(
+        instrument.program, instrument.is_drum, instrument.name, notes
+    )
+
+
+def from_pretty_midi(pm: PrettyMIDI) -> Music:
+    """Return a Music object converted from a pretty_midi PrettyMIDI object.
+
+    Parameters
+    ----------
+    pm : :class:`pretty_midi.PrettyMIDI` object
+        PrettyMIDI object to convert.
+
+    Returns
+    -------
+    :class:`muspy.KeySignature` object
+        Converted Music object.
+
+    """
+    key_signatures = parse_pretty_midi_key_signatures(pm)
+    time_signatures = parse_pretty_midi_time_signatures(pm)
+    lyrics = parse_pretty_midi_lyrics(pm)
+    tracks = [parse_pretty_midi_instrument(track) for track in pm.tracks]
+    return Music(
+        metadata=Metadata(source_format="midi"),
+        key_signatures=key_signatures,
+        time_signatures=time_signatures,
+        lyrics=lyrics,
+        tracks=tracks,
+    )
+
+
+def read_midi_pretty_midi(path: Union[str, Path]) -> Music:
+    """Read a MIDI file into a Music object using pretty_midi as backend.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the MIDI file to read.
+
+    Returns
+    -------
+    :class:`muspy.Music` object
+        Converted Music object.
+
+    """
+    return from_pretty_midi(PrettyMIDI(str(path)))
+
+
+def read_midi(
+    path: Union[str, Path],
+    backend: str = "mido",
+    duplicate_note_mode: str = "fifo",
+) -> Music:
+    """Read a MIDI file into a Music object.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the MIDI file to read.
+    backend: {'mido', 'pretty_midi'}
+        Backend to use.
+    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
+        Policy for dealing with duplicate notes. When a note off message is
+        presetned while there are multiple correspoding note on messages
+        that have not yet been closed, we need a policy to decide which note
+        on messages to close. Defaults to 'fifo'. Only used when
+        `backend='mido'`.
+
+        - 'fifo' (first in first out): close the earliest note on
+        - 'lifo' (first in first out):close the latest note on
+        - 'close_all': close all note on messages
+
+    Returns
+    -------
+    :class:`muspy.Music` object
+        Converted Music object.
+
+    """
+    if backend == "mido":
+        return read_midi_mido(path, duplicate_note_mode)
+    if backend == "pretty_midi":
+        return read_midi_pretty_midi(path)
+    raise ValueError("`backend` must by one of 'mido' and 'pretty_midi'.")

@@ -197,7 +197,8 @@ def get_required_text(
     return elem.text
 
 
-def parse_metronome(elem: Element) -> Optional[float]:
+def parse_metronome_elem(elem: Element) -> Optional[float]:
+    """Return a qpm value parsed from a metronome element."""
     beat_unit = get_text(elem, "beat-unit")
     if beat_unit is not None:
         per_minute = get_text(elem, "per-minute")
@@ -209,10 +210,29 @@ def parse_metronome(elem: Element) -> Optional[float]:
     return None
 
 
-def parse_part(
+def parse_key_elem(elem: Element, time) -> KeySignature:
+    """Return a key signature parsed from a key element."""
+    fifths = int(get_required_text(elem, "fifths"))
+    mode = get_text(elem, "mode", "major")
+    if mode == "major":
+        root = MAJOR_KEY_MAP[fifths + 14]
+    else:
+        root = MINOR_KEY_MAP[fifths + 14]
+    return KeySignature(time=time, root=root, mode=mode)
+
+
+def parse_pitch_elem(elem: Element) -> int:
+    """Return a pitch parsed from a pitch element."""
+    step = STEP_MAP[get_required_text(elem, "step")]
+    octave = int(get_required_text(elem, "octave"))
+    alter = int(get_text(elem, "alter", 0))
+    return 12 * (octave + 1) + step + alter
+
+
+def parse_part_elem(
     part_elem: Element, resolution: int, instrument_info: dict
 ) -> dict:
-    """Return a dictionary containing data parsed from a part."""
+    """Return a dictionary containing data parsed from a part element."""
     # Initialize lists and placeholders
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
@@ -290,16 +310,8 @@ def parse_part(
                 # Key signatures
                 key_elem = elem.find("key")
                 if key_elem is not None:
-                    fifths = int(get_required_text(key_elem, "fifths"))
-                    mode = get_text(key_elem, "mode", "major")
                     key_signatures.append(
-                        KeySignature(
-                            time=time + position,
-                            root=MAJOR_KEY_MAP[fifths + 14]
-                            if mode == "major"
-                            else MINOR_KEY_MAP[fifths + 14],
-                            mode=mode,
-                        )
+                        parse_key_elem(key_elem, time + position)
                     )
 
             # Sound element
@@ -338,7 +350,7 @@ def parse_part(
                 if not tempo_set:
                     metronome_elem = elem.find("direction-type/metronome")
                     if metronome_elem is not None:
-                        qpm = parse_metronome(metronome_elem)
+                        qpm = parse_metronome_elem(metronome_elem)
                         if qpm is not None:
                             tempos.append(Tempo(time + position, qpm))
 
@@ -372,16 +384,9 @@ def parse_part(
                     continue
 
                 # Compute pitch number
-                pitch_elem = get_required(elem, "pitch")
-                step = STEP_MAP[get_required_text(pitch_elem, "step")]
-                octave = int(get_required_text(pitch_elem, "octave"))
-                alter = int(get_text(pitch_elem, "alter", 0))
-                pitch = (
-                    12 * (octave + 1 + transpose_octave)
-                    + step
-                    + alter
-                    + transpose_semitone
-                )
+
+                pitch = parse_pitch_elem(get_required(elem, "pitch"))
+                pitch += 12 * transpose_octave + transpose_semitone
 
                 # Check if it is a tied note
                 is_outgoing_tie = False
@@ -417,10 +422,7 @@ def parse_part(
                 else:
                     # Create a new note and append it to the note list
                     note = Note(
-                        time + position,
-                        duration * factor,
-                        pitch,
-                        velocity,
+                        time + position, duration * factor, pitch, velocity,
                     )
                     notes[instrument_id].append(note)
 
@@ -489,6 +491,92 @@ def parse_metadata(root: Element, filename: str) -> Metadata:
     )
 
 
+def _get_root(path: Union[str, Path], compressed: Optional[bool] = None):
+    """Return root of the element tree."""
+    if compressed is None:
+        compressed = str(path).endswith(".mxl")
+
+    if not compressed:
+        tree = ET.parse(str(path))
+        return tree.getroot()
+
+    # Find out the main MusicXML file in the compressed ZIP archive
+    # according to the official tutorial (see
+    # https://www.musicxml.com/tutorial/compressed-mxl-files/).
+    zip_file = ZipFile(str(path))
+    if "META-INF/container.xml" not in zip_file.namelist():
+        raise MusicXMLError("Container file ('container.xml') not found.")
+    container = ET.fromstring(zip_file.read("META-INF/container.xml"))
+    rootfile = container.find("rootfiles/rootfile")
+    if rootfile is None:
+        raise MusicXMLError(
+            "Element 'rootfile' tag not found in the container file "
+            "('container.xml')."
+        )
+    filename = get_required_attr(rootfile, "full-path")
+    return ET.fromstring(zip_file.read(filename))
+
+
+def _get_divisions(root: Element):
+    """Return a list of divisions."""
+    divisions = []
+    for division_elem in root.findall("part/measure/attributes/divisions"):
+        if division_elem.text is None:
+            continue
+        if not float(division_elem.text).is_integer():
+            raise MusicXMLError(
+                "Noninteger 'division' values are not supported."
+            )
+        divisions.append(int(division_elem.text))
+    return divisions
+
+
+def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
+    """Return part information parsed from a score part element."""
+    # Part ID
+    part_id = get_required_attr(elem, "id")
+
+    # Part name
+    part_name = get_text(elem, "part-name", remove_newlines=True)
+
+    # Instruments
+    part_info: OrderedDict = OrderedDict()
+    for score_instrument_elem in elem.findall("score-instrument"):
+        instrument_id = get_required_attr(score_instrument_elem, "id")
+        part_info[instrument_id] = OrderedDict()
+        part_info[instrument_id]["name"] = get_text(
+            score_instrument_elem,
+            "instrument-name",
+            part_name,
+            remove_newlines=True,
+        )
+    for midi_instrument_elem in elem.findall("midi-instrument"):
+        instrument_id = get_required_attr(midi_instrument_elem, "id")
+        if instrument_id not in part_info:
+            if instrument_id == part_id:
+                instrument_id = ""
+                part_info[""] = {"name": part_name}
+            else:
+                raise MusicXMLError(
+                    "ID of a 'midi-instrument' element must be predefined "
+                    "in a 'score-instrument' element."
+                )
+        part_info[instrument_id]["program"] = int(
+            get_text(midi_instrument_elem, "midi-program", 0)
+        )
+        part_info[instrument_id]["is_drum"] = (
+            int(get_text(midi_instrument_elem, "midi-channel", 0)) == 10
+        )
+    if not part_info:
+        part_info[""] = {"name": part_name}
+    for value in part_info.values():
+        if "program" not in value:
+            value["program"] = 0
+        if "is_drum" not in value:
+            value["is_drum"] = False
+    return part_id, part_info
+
+
 def read_musicxml(
     path: Union[str, Path], compressed: Optional[bool] = None
 ) -> Music:
@@ -509,28 +597,8 @@ def read_musicxml(
     Grace notes and unpitched notes are not supported.
 
     """
-    if compressed is None:
-        compressed = str(path).endswith(".mxl")
-
-    if compressed:
-        # Find out the main MusicXML file in the compressed ZIP archive
-        # according to the official tutorial (see
-        # https://www.musicxml.com/tutorial/compressed-mxl-files/).
-        zip_file = ZipFile(str(path))
-        if "META-INF/container.xml" not in zip_file.namelist():
-            raise MusicXMLError("Container file ('container.xml') not found.")
-        container = ET.fromstring(zip_file.read("META-INF/container.xml"))
-        rootfile = container.find("rootfiles/rootfile")
-        if rootfile is None:
-            raise MusicXMLError(
-                "Element 'rootfile' tag not found in the container file "
-                "('container.xml')."
-            )
-        filename = get_required_attr(rootfile, "full-path")
-        root = ET.fromstring(zip_file.read(filename))
-    else:
-        tree = ET.parse(str(path))
-        root = tree.getroot()
+    # Get element tree root
+    root = _get_root(path, compressed)
 
     if root.tag == "score-timewise":
         raise ValueError("MusicXML file with timewise type is not supported.")
@@ -539,65 +607,18 @@ def read_musicxml(
     metadata = parse_metadata(root, Path(path).name)
 
     # Set resolution to the least common multiple of all divisions
-    divisions = []
-    for division_elem in root.findall("part/measure/attributes/divisions"):
-        if division_elem.text is None:
-            continue
-        if not float(division_elem.text).is_integer():
-            raise MusicXMLError(
-                "Noninteger 'division' values are not supported."
-            )
-        divisions.append(int(division_elem.text))
     # TODO: Support custom resolution
+    divisions = _get_divisions(root)
     resolution = lcm(*divisions) if divisions else 1
 
     # Part information
     part_info: OrderedDict = OrderedDict()
     for part_elem in root.findall("part-list/score-part"):
-        # Part ID
-        part_id = get_required_attr(part_elem, "id")
-
-        # Part name
-        part_name = get_text(part_elem, "part-name", remove_newlines=True)
-
-        # Instruments
-        part_info[part_id] = OrderedDict()
-        for score_instrument_elem in part_elem.findall("score-instrument"):
-            instrument_id = get_required_attr(score_instrument_elem, "id")
-            part_info[part_id][instrument_id] = OrderedDict()
-            part_info[part_id][instrument_id]["name"] = get_text(
-                score_instrument_elem,
-                "instrument-name",
-                part_name,
-                remove_newlines=True,
-            )
-        for midi_instrument_elem in part_elem.findall("midi-instrument"):
-            instrument_id = get_required_attr(midi_instrument_elem, "id")
-            if instrument_id not in part_info[part_id]:
-                if instrument_id == part_id:
-                    instrument_id = ""
-                    part_info[part_id][""] = {"name": part_name}
-                else:
-                    raise MusicXMLError(
-                        "ID of a 'midi-instrument' element must be predefined "
-                        "in a 'score-instrument' element."
-                    )
-            part_info[part_id][instrument_id]["program"] = int(
-                get_text(midi_instrument_elem, "midi-program", 0)
-            )
-            part_info[part_id][instrument_id]["is_drum"] = (
-                int(get_text(midi_instrument_elem, "midi-channel", 0)) == 10
-            )
-        if not part_info[part_id]:
-            part_info[part_id][""] = {"name": part_name}
-        for value in part_info[part_id].values():
-            if "program" not in value:
-                value["program"] = 0
-            if "is_drum" not in value:
-                value["is_drum"] = False
+        part_id, info = parse_score_part_elem(part_elem)
+        part_info[part_id] = info
 
     if not root.find("part"):
-        return Music(resolution=resolution, meta=meta_data)
+        return Music(metadata=metadata, resolution=resolution)
 
     # Initialize lists
     tempos: List[Tempo] = []
@@ -613,33 +634,34 @@ def read_musicxml(
             )
         part_elem = get_required(root, "part")
         instrument_info = {"": {"program": 0, "is_drum": False}}
-        part = parse_part(part_elem, resolution, instrument_info)
+        part = parse_part_elem(part_elem, resolution, instrument_info)
 
-    # Iterate over all parts and measures
-    for part_elem in root.findall("part"):
-        part_id = part_elem.get("id")  # type: ignore
-        if part_id is None:
-            if len(root.findall("part")) > 1:
+    else:
+        # Iterate over all parts and measures
+        for part_elem in root.findall("part"):
+            part_id = part_elem.get("id")  # type: ignore
+            if part_id is None:
+                if len(root.findall("part")) > 1:
+                    continue
+                part_id = next(iter(part_info))
+            if part_id not in part_info:
                 continue
-            part_id = next(iter(part_info))
-        if part_id not in part_info:
-            continue
 
-        # Parse part
-        part = parse_part(part_elem, resolution, part_info[part_id])
+            # Parse part
+            part = parse_part_elem(part_elem, resolution, part_info[part_id])
 
-        # Extend lists
-        tempos.extend(part["tempos"])
-        key_signatures.extend(part["key_signatures"])
-        time_signatures.extend(part["time_signatures"])
-        for instrument_id, notes in part["notes"].items():
-            track = Track(
-                program=part_info[part_id][instrument_id]["program"],
-                is_drum=part_info[part_id][instrument_id]["is_drum"],
-                name=part_info[part_id][instrument_id]["name"],
-                notes=notes,
-            )
-            tracks.append(track)
+            # Extend lists
+            tempos.extend(part["tempos"])
+            key_signatures.extend(part["key_signatures"])
+            time_signatures.extend(part["time_signatures"])
+            for instrument_id, notes in part["notes"].items():
+                track = Track(
+                    program=part_info[part_id][instrument_id]["program"],
+                    is_drum=part_info[part_id][instrument_id]["is_drum"],
+                    name=part_info[part_id][instrument_id]["name"],
+                    notes=notes,
+                )
+                tracks.append(track)
 
     # Sort tempos, key signatures and time signatures
     tempos.sort(key=attrgetter("time"))
