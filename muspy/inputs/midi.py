@@ -207,15 +207,14 @@ def read_midi_mido(
 
             # End of track message
             elif msg.type == "end_of_track":
-                # Close all active notes
-                for (channel, note), note_ons in active_notes.items():
-                    program = channel_programs[channel]
-                    track = _get_active_track(track_idx, program, channel)
-                    for onset, velocity in note_ons:
-                        track.notes.append(
-                            Note(onset, time - onset, note, velocity)
-                        )
                 break
+
+        # Close all active notes
+        for (channel, note), note_ons in active_notes.items():
+            program = channel_programs[channel]
+            track = _get_active_track(track_idx, program, channel)
+            for onset, velocity in note_ons:
+                track.notes.append(Note(onset, time - onset, note, velocity))
 
     music_tracks = []
     for track, track_name in zip(tracks, track_names):
