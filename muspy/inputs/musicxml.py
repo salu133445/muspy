@@ -459,15 +459,11 @@ def parse_part_elem(
 
 def parse_metadata(root: Element, filename: str) -> Metadata:
     """Return a Metadata object parsed from a MusicXML file."""
-    # Song title
-    work_title = get_text(root, "work/work-title", remove_newlines=True)
-    movement_title = get_text(root, "movement-title", remove_newlines=True)
-    if not movement_title:
-        title = work_title
-    elif not work_title:
-        title = movement_title
-    else:
-        title = work_title + " - " + movement_title
+    # Title is usually stored in movement-title
+    # See https://www.musicxml.com/tutorial/file-structure/score-header-entity/
+    title = get_text(root, "movement-title", remove_newlines=True)
+    if not title:
+        title = get_text(root, "work/work-title", remove_newlines=True)
 
     # Creators and copyrights
     creators = []

@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import List, Union
 
 from mido import MidiFile, tempo2bpm
-import pretty_midi
 from pretty_midi import Instrument, PrettyMIDI, key_number_to_key_name
 
 from ..classes import (
@@ -80,6 +79,7 @@ def read_midi_mido(
         raise MIDIError("`ticks_per_beat` must be positive.")
 
     time = 0
+    song_title = None
     tempos, key_signatures, time_signatures = [], [], []
     lyrics, annotations = [], []
     copyrights = []
@@ -148,7 +148,10 @@ def read_midi_mido(
 
             # Track name messages
             elif msg.type == "track_name":
-                track_names[track_idx] = msg.name
+                if midi.type == 0 or track_idx == 0:
+                    song_title = msg.name
+                else:
+                    track_names[track_idx] = msg.name
 
             # Program change messages
             elif msg.type == "program_change":
@@ -230,6 +233,7 @@ def read_midi_mido(
 
     # Meta data
     metadata = Metadata(
+        title=song_title,
         source_filename=Path(path).name,
         source_format="midi",
         copyright=" ".join(copyrights) if copyrights else None,
