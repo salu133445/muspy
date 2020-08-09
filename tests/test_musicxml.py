@@ -1,16 +1,27 @@
 """Test cases for MusicXML I/O."""
+import tempfile
 from pathlib import Path
 
 import numpy as np
 
 import muspy
 
-DATA_DIR = Path(__file__).parent / "data" / "musicxml-lilypond"
-REALWORLD_DATA_DIR = Path(__file__).parent / "data" / "musicxml"
+from .utils import (
+    TEST_JSON_PATH,
+    TEST_MUSICXML_DIR,
+    TEST_MUSICXML_LILYPOND_DIR,
+    check_key_signatures,
+    check_lyrics,
+    check_metadata,
+    check_music,
+    check_tempos,
+    check_time_signatures,
+    check_tracks,
+)
 
 
 def test_pitches():
-    music = muspy.read(DATA_DIR / "01a-Pitches-Pitches.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "01a-Pitches-Pitches.xml")
 
     assert len(music.tracks) == 1
 
@@ -43,7 +54,7 @@ def test_pitches():
 
 
 def test_durations():
-    music = muspy.read(DATA_DIR / "03a-Rhythm-Durations.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "03a-Rhythm-Durations.xml")
 
     assert music.resolution == 64
     assert len(music.tracks) == 1
@@ -92,7 +103,9 @@ def test_durations():
 
 
 def test_divisions():
-    music = muspy.read(DATA_DIR / "03c-Rhythm-DivisionChange.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "03c-Rhythm-DivisionChange.xml"
+    )
 
     assert music.resolution == 152
 
@@ -104,7 +117,7 @@ def test_divisions():
 
 
 def test_time_signatures():
-    music = muspy.read(DATA_DIR / "11a-TimeSignatures.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "11a-TimeSignatures.xml")
 
     assert len(music.time_signatures) == 11
 
@@ -122,7 +135,9 @@ def test_time_signatures():
 
 
 def test_compound_time_signatures():
-    music = muspy.read(DATA_DIR / "11c-TimeSignatures-CompoundSimple.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "11c-TimeSignatures-CompoundSimple.xml"
+    )
 
     assert len(music.time_signatures) == 2
 
@@ -134,7 +149,7 @@ def test_compound_time_signatures():
 
 
 def test_key_signatures():
-    music = muspy.read(DATA_DIR / "13a-KeySignatures.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "13a-KeySignatures.xml")
 
     assert len(music.key_signatures) == 46
 
@@ -200,7 +215,9 @@ def test_key_signatures():
 
 
 def test_church_modes():
-    music = muspy.read(DATA_DIR / "13b-KeySignatures-ChurchModes.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "13b-KeySignatures-ChurchModes.xml"
+    )
 
     # Answers
     modes = [
@@ -220,7 +237,7 @@ def test_church_modes():
 
 
 def test_chords():
-    music = muspy.read(DATA_DIR / "21a-Chord-Basic.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "21a-Chord-Basic.xml")
 
     notes = music.tracks[0].notes
     assert len(notes) == 2
@@ -235,7 +252,9 @@ def test_chords():
 
 
 def test_chords_and_durations():
-    music = muspy.read(DATA_DIR / "21c-Chords-ThreeNotesDuration.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "21c-Chords-ThreeNotesDuration.xml"
+    )
 
     # Answers
     pitches = (
@@ -255,7 +274,9 @@ def test_chords_and_durations():
 
 
 def test_pickup_measures():
-    music = muspy.read(DATA_DIR / "21e-Chords-PickupMeasures.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "21e-Chords-PickupMeasures.xml"
+    )
 
     # Answers
     pitches = [72, 65, 69, 72, 69, 72]
@@ -270,7 +291,7 @@ def test_pickup_measures():
 
 
 def test_tuplets():
-    music = muspy.read(DATA_DIR / "23a-Tuplets.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "23a-Tuplets.xml")
 
     # Answers
     pitches = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83, 84]
@@ -287,13 +308,13 @@ def test_tuplets():
 
 
 def test_grace_notes():
-    music = muspy.read(DATA_DIR / "24a-GraceNotes.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "24a-GraceNotes.xml")
 
     assert len(music.tracks[0].notes) == 13
 
 
 def test_directions():
-    music = muspy.read(DATA_DIR / "31a-Directions.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "31a-Directions.xml")
 
     assert len(music.tempos) == 1
     assert music.tempos[0].time == 11 * 4 * music.resolution
@@ -301,7 +322,7 @@ def test_directions():
 
 
 def test_metronome():
-    music = muspy.read(DATA_DIR / "31c-MetronomeMarks.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "31c-MetronomeMarks.xml")
 
     assert len(music.tempos) == 3
 
@@ -313,7 +334,7 @@ def test_metronome():
 
 
 def test_ties():
-    music = muspy.read(DATA_DIR / "33b-Spanners-Tie.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "33b-Spanners-Tie.xml")
 
     notes = music.tracks[0].notes
     assert len(notes) == 1
@@ -323,7 +344,7 @@ def test_ties():
 
 
 def test_ties_not_ended():
-    music = muspy.read(DATA_DIR / "33i-Ties-NotEnded.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "33i-Ties-NotEnded.xml")
 
     notes = music.tracks[0].notes
     assert len(notes) == 2
@@ -336,7 +357,9 @@ def test_ties_not_ended():
 
 
 def test_parts():
-    music = muspy.read(DATA_DIR / "41a-MultiParts-Partorder.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "41a-MultiParts-Partorder.xml"
+    )
 
     assert len(music.tracks) == 4
 
@@ -352,27 +375,31 @@ def test_parts():
 
 def test_part_names_with_line_breaks():
     music = muspy.read(
-        DATA_DIR / "41e-StaffGroups-InstrumentNames-Linebroken.xml"
+        TEST_MUSICXML_LILYPOND_DIR
+        / "41e-StaffGroups-InstrumentNames-Linebroken.xml"
     )
 
     assert music.tracks[0].name == "Long Staff Name"
 
 
 def test_part_without_id():
-    music = muspy.read(DATA_DIR / "41g-PartNoId.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "41g-PartNoId.xml")
 
     assert music.resolution == 1
     assert len(music.tracks) == 1
 
 
 def test_unlisted_parts():
-    music = muspy.read(DATA_DIR / "41h-TooManyParts.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "41h-TooManyParts.xml")
 
     assert len(music.tracks) == 1
 
 
 def test_voices():
-    music = muspy.read(DATA_DIR / "42a-MultiVoice-TwoVoicesOnStaff-Lyrics.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR
+        / "42a-MultiVoice-TwoVoicesOnStaff-Lyrics.xml"
+    )
 
     assert len(music.tracks) == 1
 
@@ -388,7 +415,7 @@ def test_voices():
 
 
 def test_piano_staff():
-    music = muspy.read(DATA_DIR / "43a-PianoStaff.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "43a-PianoStaff.xml")
 
     assert len(music.tracks) == 1
 
@@ -405,14 +432,14 @@ def test_piano_staff():
 
 
 def test_quoted_headers():
-    music = muspy.read(DATA_DIR / "51b-Header-Quotes.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "51b-Header-Quotes.xml")
 
     assert music.metadata.title == '"Quotes" in header fields'
     assert music.metadata.creators == ['Some "Tester" Name']
 
 
 def test_multiple_rights():
-    music = muspy.read(DATA_DIR / "51c-MultipleRights.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "51c-MultipleRights.xml")
 
     assert (
         music.metadata.copyright
@@ -421,13 +448,15 @@ def test_multiple_rights():
 
 
 def test_empty_title():
-    music = muspy.read(DATA_DIR / "51d-EmptyTitle.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "51d-EmptyTitle.xml")
 
     assert music.metadata.title == "Empty work-title, non-empty movement-title"
 
 
 def test_transpose_instruments():
-    music = muspy.read(DATA_DIR / "72a-TransposingInstruments.xml")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "72a-TransposingInstruments.xml"
+    )
 
     assert len(music.tracks) == 3
 
@@ -440,7 +469,7 @@ def test_transpose_instruments():
 
 
 def test_percussion():
-    music = muspy.read(DATA_DIR / "73a-Percussion.xml")
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "73a-Percussion.xml")
 
     assert len(music.tracks) == 3
 
@@ -458,7 +487,9 @@ def test_percussion():
 
 
 def test_compressed_musicxml():
-    music = muspy.read(DATA_DIR / "90a-Compressed-MusicXML.mxl")
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "90a-Compressed-MusicXML.mxl"
+    )
 
     assert music.metadata.title == "Compressed MusicXML file"
     assert len(music.tracks) == 1
@@ -466,7 +497,7 @@ def test_compressed_musicxml():
 
 
 def test_realworld():
-    music = muspy.read(REALWORLD_DATA_DIR / "fur-elise.xml")
+    music = muspy.read(TEST_MUSICXML_DIR / "fur-elise.xml")
 
     assert music.metadata.creators == ["Ludwig van Beethoven"]
     assert music.metadata.source_filename == "fur-elise.xml"
@@ -487,7 +518,7 @@ def test_realworld():
 
 
 def test_realworld_compressed():
-    music = muspy.read(REALWORLD_DATA_DIR / "fur-elise.mxl")
+    music = muspy.read(TEST_MUSICXML_DIR / "fur-elise.mxl")
 
     assert music.metadata.creators == ["Ludwig van Beethoven"]
     assert music.metadata.source_filename == "fur-elise.mxl"
@@ -505,3 +536,42 @@ def test_realworld_compressed():
     assert len(music.time_signatures) == 1
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
+
+
+def test_write():
+    music = muspy.load(TEST_JSON_PATH)
+
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.xml")
+
+    loaded = muspy.read(temp_dir / "test.xml")
+
+    assert loaded.metadata.title == "Fur Elise"
+    assert loaded.metadata.source_filename == "test.xml"
+    assert loaded.metadata.source_format == "musicxml"
+    assert loaded.resolution == 10080
+    print(loaded)
+    check_tempos(loaded.tempos)
+    check_key_signatures(loaded.key_signatures)
+    check_time_signatures(loaded.time_signatures)
+    check_lyrics(loaded.lyrics)
+    check_tracks(loaded.tracks, 10080)
+
+
+def test_write_compressed():
+    music = muspy.load(TEST_JSON_PATH)
+
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.mxl")
+
+    loaded = muspy.read(temp_dir / "test.mxl")
+
+    assert loaded.metadata.title == "Fur Elise"
+    assert loaded.metadata.source_filename == "test.xml"
+    assert loaded.metadata.source_format == "musicxml"
+    assert loaded.resolution == 10080
+    check_tempos(loaded.tempos)
+    check_key_signatures(loaded.key_signatures)
+    check_time_signatures(loaded.time_signatures)
+    check_lyrics(loaded.lyrics)
+    check_tracks(loaded.tracks, 10080)

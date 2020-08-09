@@ -1,18 +1,28 @@
 """Test cases for MIDI I/O."""
-import pytest
+import tempfile
 from io import BytesIO
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 import muspy
 from muspy import MIDIError
 
-DATA_DIR = Path(__file__).parent / "data" / "midi"
+from .utils import (
+    TEST_JSON_PATH,
+    TEST_MIDI_DIR,
+    check_key_signatures,
+    check_lyrics,
+    check_metadata,
+    check_tempos,
+    check_time_signatures,
+    check_tracks,
+)
 
 
 def test_empty():
-    music = muspy.read(DATA_DIR / "empty.mid")
+    music = muspy.read(TEST_MIDI_DIR / "empty.mid")
 
     assert len(music.tracks) == 0
     assert music.metadata.source_format == "midi"
@@ -20,27 +30,27 @@ def test_empty():
 
 def test_type2():
     with pytest.raises(MIDIError):
-        music = muspy.read(DATA_DIR / "type2.mid")
+        music = muspy.read(TEST_MIDI_DIR / "type2.mid")
 
 
 def test_resolution():
-    music = muspy.read(DATA_DIR / "ticks-per-beat-480.mid")
+    music = muspy.read(TEST_MIDI_DIR / "ticks-per-beat-480.mid")
 
     assert music.resolution == 480
 
 
 def test_zero_ticks_per_beat():
     with pytest.raises(MIDIError):
-        music = muspy.read(DATA_DIR / "zero-ticks-per-beat.mid")
+        music = muspy.read(TEST_MIDI_DIR / "zero-ticks-per-beat.mid")
 
 
 def test_negative_ticks_per_beat():
     with pytest.raises(MIDIError):
-        music = muspy.read(DATA_DIR / "negative-ticks-per-beat.mid")
+        music = muspy.read(TEST_MIDI_DIR / "negative-ticks-per-beat.mid")
 
 
 def test_multiple_copyrights():
-    music = muspy.read(DATA_DIR / "multiple-copyrights.mid")
+    music = muspy.read(TEST_MIDI_DIR / "multiple-copyrights.mid")
 
     assert (
         music.metadata.copyright == "Test copyright. Another test copyright."
@@ -48,7 +58,7 @@ def test_multiple_copyrights():
 
 
 def test_pitches():
-    music = muspy.read(DATA_DIR / "pitches.mid")
+    music = muspy.read(TEST_MIDI_DIR / "pitches.mid")
 
     assert len(music.tracks) == 1
 
@@ -62,7 +72,7 @@ def test_pitches():
 
 
 def test_durations():
-    music = muspy.read(DATA_DIR / "durations.mid")
+    music = muspy.read(TEST_MIDI_DIR / "durations.mid")
 
     assert len(music.tracks) == 1
 
@@ -89,7 +99,7 @@ def test_durations():
 
 
 def test_tempos():
-    music = muspy.read(DATA_DIR / "tempos.mid")
+    music = muspy.read(TEST_MIDI_DIR / "tempos.mid")
 
     assert len(music.tempos) == 2
 
@@ -101,7 +111,7 @@ def test_tempos():
 
 
 def test_time_signatures():
-    music = muspy.read(DATA_DIR / "time-signatures.mid")
+    music = muspy.read(TEST_MIDI_DIR / "time-signatures.mid")
 
     assert len(music.time_signatures) == 11
 
@@ -120,7 +130,7 @@ def test_time_signatures():
 
 
 def test_key_signatures():
-    music = muspy.read(DATA_DIR / "key-signatures.mid")
+    music = muspy.read(TEST_MIDI_DIR / "key-signatures.mid")
 
     # Answers
     keys = [
@@ -168,7 +178,7 @@ def test_key_signatures():
 
 
 def test_chords():
-    music = muspy.read(DATA_DIR / "chords.mid")
+    music = muspy.read(TEST_MIDI_DIR / "chords.mid")
 
     notes = music.tracks[0].notes
     assert len(notes) == 12
@@ -183,7 +193,7 @@ def test_chords():
 
 
 def test_single_track_multiple_channels():
-    music = muspy.read(DATA_DIR / "multichannel.mid")
+    music = muspy.read(TEST_MIDI_DIR / "multichannel.mid")
 
     assert len(music.tracks) == 4
 
@@ -197,7 +207,7 @@ def test_single_track_multiple_channels():
 
 
 def test_multitrack():
-    music = muspy.read(DATA_DIR / "multitrack.mid")
+    music = muspy.read(TEST_MIDI_DIR / "multitrack.mid")
 
     assert len(music.tracks) == 4
 
@@ -212,7 +222,7 @@ def test_multitrack():
 
 
 def test_realworld():
-    music = muspy.read(DATA_DIR / "fur-elise.mid")
+    music = muspy.read(TEST_MIDI_DIR / "fur-elise.mid")
 
     assert music.metadata.source_filename == "fur-elise.mid"
     assert music.metadata.source_format == "midi"
@@ -233,3 +243,23 @@ def test_realworld():
     for i, time_signature in enumerate(music.time_signatures):
         assert time_signature.numerator == numerators[i]
         assert time_signature.denominator == 8
+
+
+def test_write():
+    music = muspy.load(TEST_JSON_PATH)
+
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.mid")
+
+    loaded = muspy.read(temp_dir / "test.mid")
+
+    assert loaded.resolution == 4
+    assert loaded.metadata.title == "Fur Elise"
+    assert loaded.metadata.source_filename == "test.mid"
+    assert loaded.metadata.source_format == "midi"
+
+    check_tempos(music.tempos)
+    check_key_signatures(music.key_signatures)
+    check_time_signatures(music.time_signatures)
+    check_lyrics(music.lyrics)
+    check_tracks(music.tracks)

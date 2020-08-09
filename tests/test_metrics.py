@@ -4,7 +4,7 @@ from pathlib import Path
 
 import muspy
 
-TEST_JSON_PATH = Path(__file__).parent / "data" / "test.json"
+from .utils import TEST_JSON_PATH
 
 
 def test_n_pitches_used():
