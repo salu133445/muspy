@@ -9,11 +9,11 @@ if TYPE_CHECKING:
     from ..music import Music
 
 
-class OrderedDumper(yaml.SafeDumper):
+class _OrderedDumper(yaml.SafeDumper):
     """A dumper that supports OrderedDict."""
 
     def increase_indent(self, flow=False, indentless=False):
-        return super(OrderedDumper, self).increase_indent(flow, False)
+        return super().increase_indent(flow, False)
 
 
 def _dict_representer(dumper, data):
@@ -22,7 +22,7 @@ def _dict_representer(dumper, data):
     )
 
 
-OrderedDumper.add_representer(OrderedDict, _dict_representer)
+_OrderedDumper.add_representer(OrderedDict, _dict_representer)
 
 
 def _yaml_dump(data):
@@ -30,7 +30,7 @@ def _yaml_dump(data):
 
     Code adapted from https://stackoverflow.com/a/21912744.
     """
-    return yaml.dump(data, Dumper=OrderedDumper)
+    return yaml.dump(data, Dumper=_OrderedDumper)
 
 
 def save_yaml(path: Union[str, Path], music: "Music"):
