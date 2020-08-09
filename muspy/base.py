@@ -1,8 +1,8 @@
 """Base classes."""
 from collections import OrderedDict
 from inspect import isclass
-from typing import Any, Callable, List, Mapping, Optional
 from operator import attrgetter
+from typing import Any, Callable, List, Mapping, Optional
 
 
 def _get_type_string(attr_cls):

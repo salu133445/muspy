@@ -1,9 +1,13 @@
 """Music21 converter interface."""
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from music21.metadata import Copyright, Contributor, Metadata
-from music21.note import Note
-from music21.stream import Part, Score, Stream
+from music21.metadata import Copyright, Contributor
+from music21.metadata import Metadata as M21MetaData
+from music21.note import Note as M21Note
+from music21.stream import Part, Score
+from music21.tempo import MetronomeMark
+
+from ..classes import Metadata, Tempo
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -16,8 +20,15 @@ def _get_pitch_name(note_number: int) -> str:
     return PITCH_NAMES[pitch_class] + str(octave - 1)
 
 
-def to_music21(music: "Music", **kwargs: Any) -> Stream:
-    """Write a Music object to a music21 stream object.
+def to_music21_metronome(tempo: Tempo) -> MetronomeMark:
+    """Return a Tempo object as a music21 MetronomeMark object."""
+    metronome = MetronomeMark(number=tempo.tempo)
+    metronome.offset = tempo.time
+    return metronome
+
+
+def to_music21_metadata(metadata: Metadata) -> M21MetaData:
+    """Convert a Metadata object to a music21 Metadata object.
 
     Parameters
     ----------
@@ -26,41 +37,54 @@ def to_music21(music: "Music", **kwargs: Any) -> Stream:
 
     Returns
     -------
-    stream : `music21.stream.Stream` object
-        Converted music21 stream object.
+    `music21.metadata.Metadata` object
+        Converted music21 Score object.
 
     """
-    # Create a new part
+    meta = M21MetaData()
+
+    # Title is usually stored in movement-title
+    # See https://www.musicxml.com/tutorial/file-structure/score-header-entity/
+    if metadata.title:
+        meta.movementName = metadata.title
+
+    if metadata.copyright:
+        meta.copyright = Copyright(metadata.copyright)
+    for creator in metadata.creators:
+        meta.addContributor(Contributor(name=creator))
+    return meta
+
+
+def to_music21(music: "Music") -> Score:
+    """Convert a Music object to a music21 Score object.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        MusPy Music object to be converted.
+
+    Returns
+    -------
+    `music21.stream.Score` object
+        Converted music21 Score object.
+
+    """
+    # Create a new score
     score = Score()
 
-    # === Metadata ===
+    # Metadata
     if music.metadata:
-        # Create a new metadata
-        metadata = Metadata()
+        score.append(to_music21_metadata(music.metadata))
 
-        # Set title
-        if music.metadata.title:
-            metadata.title = music.metadata.title
-
-        # Set copyright
-        if music.metadata.copyright:
-            metadata.copyright = Copyright(music.metadata.copyright)
-
-        # Add contributors
-        for creator in music.metadata.creators:
-            metadata.addContributor(Contributor(name=creator))
-
-    # Append metadata to score
-    score.append(metadata)
-
-    # === Tracks ===
+    # Tracks
     for track in music.tracks:
         # Create a new part
         part = Part()
 
         # Add notes to part
         for note in track.notes:
-            m21_note = Note(_get_pitch_name(note.pitch))
+            m21_note = M21Note(_get_pitch_name(note.pitch))
+            m21_note.offset = note.time / music.resolution
             m21_note.quarterLength = note.duration / music.resolution
             part.append(m21_note)
 

@@ -10,6 +10,7 @@ commonly-used representations in music generation.
 from .event import to_event_representation
 from .json import save_json
 from .midi import to_pretty_midi, write_midi
+from .music21 import to_music21
 from .musicxml import write_musicxml
 from .note import to_note_representation
 from .pianoroll import to_pianoroll_representation, to_pypianoroll
@@ -23,6 +24,7 @@ __all__ = [
     "save_yaml",
     "to_event_representation",
     "to_monotoken_representation",
+    "to_music21",
     "to_note_representation",
     "to_object",
     "to_pianoroll_representation",

@@ -9,6 +9,7 @@ from pypianoroll import Multitrack
 from .event import to_event_representation
 from .json import save_json
 from .midi import to_pretty_midi, write_midi
+from .music21 import to_music21
 from .musicxml import write_musicxml
 from .note import to_note_representation
 from .pianoroll import to_pianoroll_representation, to_pypianoroll
@@ -113,8 +114,8 @@ def to_object(
     ----------
     music : :class:`muspy.Music` object
         MusPy Music object to be converted.
-    target : str
-        Target class. Supported values are 'pretty_midi' and 'pypianoroll'.
+    target : str, {'music21', 'pretty_midi', 'pypianoroll'}
+        Target class. Supported values are .
 
     Returns
     -------
@@ -122,11 +123,15 @@ def to_object(
         Converted object.
 
     """
+    if target.lower() == "music21":
+        return to_music21(music)
     if target.lower() in ("pretty_midi", "prettymidi"):
         return to_pretty_midi(music)
     if target.lower() == "pypianoroll":
         return to_pypianoroll(music)
-    raise ValueError("`target` must be either 'pretty_midi' or 'pypianoroll'.")
+    raise ValueError(
+        "`target` must be one of 'music21', 'pretty_midi' and 'pypianoroll'."
+    )
 
 
 def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:

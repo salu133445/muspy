@@ -9,10 +9,10 @@ from collections import OrderedDict
 from pathlib import Path
 from typing import Any, List, Optional, Union
 
+from music21.stream import Stream
 from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
-from music21.stream import Stream
 
 from .base import ComplexBase
 from .classes import (
@@ -332,7 +332,7 @@ class Music(ComplexBase):
         return save(path, self, "yaml")
 
     def write(
-        self, path: Union[str, Path], kind: Optional[str], **kwargs: Any
+        self, path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
     ):
         """Write to a MIDI or a MusicXML file.
 
