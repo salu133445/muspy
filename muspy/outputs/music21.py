@@ -22,7 +22,7 @@ def _get_pitch_name(note_number: int) -> str:
 
 def to_music21_metronome(tempo: Tempo) -> MetronomeMark:
     """Return a Tempo object as a music21 MetronomeMark object."""
-    metronome = MetronomeMark(number=tempo.tempo)
+    metronome = MetronomeMark(number=tempo.qpm)
     metronome.offset = tempo.time
     return metronome
 

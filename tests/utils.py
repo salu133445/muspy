@@ -29,7 +29,7 @@ def check_metadata(metadata, ext=None):
 def check_tempos(tempos):
     """Check tempos."""
     assert len(tempos) == 1
-    assert tempos[0].tempo == 72
+    assert tempos[0].qpm == 72
 
 
 def check_key_signatures(key_signatures):

@@ -43,7 +43,7 @@ def to_mido_tempo(tempo: Tempo) -> MetaMessage:
 
     """
     return MetaMessage(
-        "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.tempo),
+        "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.qpm),
     )
 
 

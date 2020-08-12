@@ -318,7 +318,7 @@ def test_directions():
 
     assert len(music.tempos) == 1
     assert music.tempos[0].time == 11 * 4 * music.resolution
-    assert music.tempos[0].tempo == 60
+    assert music.tempos[0].qpm == 60
 
 
 def test_metronome():
@@ -330,7 +330,7 @@ def test_metronome():
     qpms = [150, 1600, 115.5]
 
     for tempo, qpm in zip(music.tempos, qpms):
-        assert tempo.tempo == qpm
+        assert tempo.qpm == qpm
 
 
 def test_ties():
@@ -506,7 +506,7 @@ def test_realworld():
     assert len(music.tracks) == 1
 
     assert len(music.tempos) == 1
-    assert music.tempos[0].tempo == 72
+    assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 1
     assert music.key_signatures[0].root == "C"
@@ -527,7 +527,7 @@ def test_realworld_compressed():
     assert len(music.tracks) == 1
 
     assert len(music.tempos) == 1
-    assert music.tempos[0].tempo == 72
+    assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 1
     assert music.key_signatures[0].root == "C"

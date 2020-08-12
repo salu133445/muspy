@@ -8,7 +8,7 @@ MusPy provides several classes for working with symbolic music. Here is an illus
 
 
 Music Class
-============
+===========
 
 The :class:`muspy.Music` class is the core element of MusPy. It is a universal container for symbolic music.
 
@@ -32,7 +32,7 @@ tracks          Music tracks           list of :class:`muspy.Track`         []
 Track Class
 ===========
 
-The :class:`muspy.Track` class is a container for musical tracks. In MusPy, each track contains only one instrument.
+The :class:`muspy.Track` class is a container for music tracks. In MusPy, each track contains only one instrument.
 
 =========== ======================== ================================= =======
 Attributes  Description              Type                              Default
@@ -76,7 +76,7 @@ The :class:`muspy.Tempo` class is a container for tempos.
 Attributes Description                             Type  Default
 ========== ======================================= ===== =======
 time       Start time of the tempo                 int
-tempo      Tempo in qpm (quarter notes per minute) float
+qpm        Tempo in qpm (quarter notes per minute) float
 ========== ======================================= ===== =======
 
 
@@ -142,13 +142,13 @@ The :class:`muspy.Note` class is a container for musical notes.
 ========== ================================ =========== =======
 Attributes Description                      Type        Default
 ========== ================================ =========== =======
-start      Start time                       int
-end        End time                         int
+time       Start time                       int
+duration   Note duration, in time steps     int
 pitch      Note pitch as a MIDI note number int (0-127)
 velocity   Note velocity                    int (0-127)
 ========== ================================ =========== =======
 
-Note that :class:`muspy.Note` has a property `duration` with setter and getter implemented, which can be handy sometimes.
+Note that :class:`muspy.Note` has a property `end` with setter and getter implemented, which can be handy sometimes.
 
 
 Chord Class
@@ -159,8 +159,8 @@ The :class:`muspy.Chord` class is a container for chords.
 ========== ================================= =================== =======
 Attributes Description                       Type                Default
 ========== ================================= =================== =======
-start      Start time                        int
-end        End time                          int
+time       Start time                        int
+duration   Chord duration, in time steps     int
 pitch      Note pitches as MIDI note numbers list of int (0-127) []
 velocity   Chord velocity                    int (0-127)
 ========== ================================= =================== =======

@@ -108,17 +108,17 @@ class Tempo(Base):
     ----------
     time : int
         Start time of the tempo, in time steps.
-    tempo : float
+    qpm : float
         Tempo in qpm (quarters per minute).
 
     """
 
-    _attributes = OrderedDict([("time", int), ("tempo", (int, float))])
+    _attributes = OrderedDict([("time", int), ("qpm", (int, float))])
     _temporal_attributes = ["time"]
 
-    def __init__(self, time: int, tempo: float):
+    def __init__(self, time: int, qpm: float):
         self.time = time
-        self.tempo = float(tempo)
+        self.qpm = float(qpm)
 
 
 class KeySignature(Base):

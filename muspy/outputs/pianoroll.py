@@ -50,17 +50,13 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     qpm = 120.0
     position = 0
     for tempo in music.tempos:
-        tempo_arr[position : tempo.time] = qpm  # type:ignore
-        tempo_arr[tempo.time] = tempo.tempo  # type:ignore
-        position = tempo.time + 1  # type:ignore
-        qpm = tempo.tempo
+        tempo_arr[position : tempo.time] = qpm
+        tempo_arr[tempo.time] = tempo.qpm
+        position = tempo.time + 1
+        qpm = tempo.qpm
 
-    try:
-        name = music.meta.song.title  # type: ignore
-        if name is None:
-            name = ""
-    except AttributeError:
-        name = ""
+    if music.metadata and music.metadata.song:
+        name = music.metadata.song.title if name is not None else ""
 
     return Multitrack(
         tracks=tracks,

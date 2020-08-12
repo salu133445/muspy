@@ -20,7 +20,7 @@ def test_header():
 
     assert len(music.tempos) == 1
     assert music.tempos[0].time == 0
-    assert music.tempos[0].tempo == 115
+    assert music.tempos[0].qpm == 115
 
     assert len(music.key_signatures) == 1
     assert music.key_signatures[0].time == 0

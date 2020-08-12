@@ -1,6 +1,5 @@
 """Test cases for MIDI I/O."""
 import tempfile
-from io import BytesIO
 from pathlib import Path
 
 import numpy as np
@@ -104,10 +103,10 @@ def test_tempos():
     assert len(music.tempos) == 2
 
     assert music.tempos[0].time == 0
-    assert music.tempos[0].tempo == 100
+    assert music.tempos[0].qpm == 100
 
     assert music.tempos[1].time == 4 * music.resolution
-    assert music.tempos[1].tempo == 120
+    assert music.tempos[1].qpm == 120
 
 
 def test_time_signatures():
@@ -230,8 +229,8 @@ def test_realworld():
     assert len(music.tracks) == 2
 
     assert len(music.tempos) == 2
-    assert round(music.tempos[0].tempo) == 72
-    assert round(music.tempos[1].tempo) == 72
+    assert round(music.tempos[0].qpm) == 72
+    assert round(music.tempos[1].qpm) == 72
 
     assert len(music.key_signatures) == 2
     assert music.key_signatures[0].root == "C"

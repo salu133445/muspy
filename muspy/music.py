@@ -141,7 +141,7 @@ class Music(ComplexBase):
         self.tempos = [
             next_tempo
             for tempo, next_tempo in zip(tempos[:-1], tempos[1:])
-            if tempo.tempo != next_tempo.tempo
+            if tempo.qpm != next_tempo.qpm
         ]
         self.tempos.insert(0, tempos[0])
 
@@ -222,11 +222,9 @@ class Music(ComplexBase):
         qpm = 120.0
         factor = 60.0 / self.resolution  # type: ignore
         for tempo in self.tempos:
-            if tempo.tempo <= 0:
-                continue
             acc_time += (tempo.time - position) * factor / qpm
             position = tempo.time
-            qpm = tempo.tempo
+            qpm = tempo.qpm
         acc_time += (end_time - position) * factor / qpm
 
         return acc_time
