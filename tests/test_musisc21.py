@@ -17,7 +17,6 @@ def test_to_music21():
     music = muspy.load(TEST_JSON_PATH)
 
     score = muspy.to_music21(music)
-    print(score[0].all())
     loaded = muspy.from_music21(score)
 
     assert loaded.metadata.title == "Für Elise"
@@ -26,5 +25,5 @@ def test_to_music21():
     check_tempos(loaded.tempos)
     check_key_signatures(loaded.key_signatures)
     check_time_signatures(loaded.time_signatures)
-    # check_lyrics(loaded.lyrics)
-    check_tracks(loaded.tracks)
+    check_tracks(loaded.tracks, loaded.resolution)
+    # TODO: Check lyrics and annotations

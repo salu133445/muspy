@@ -35,7 +35,7 @@ def check_tempos(tempos):
 def check_key_signatures(key_signatures):
     """Check key signatures."""
     assert len(key_signatures) == 1
-    assert key_signatures[0].root == "A"
+    assert key_signatures[0].root == 9
     assert key_signatures[0].mode == "minor"
 
 
@@ -82,22 +82,19 @@ def check_tracks(tracks, resolution=4):
 
     assert len(tracks[0].chords) == 0
 
-    assert len(tracks[0].lyrics) == 1
-    assert tracks[0].lyrics[0].lyric == "Nothing but a lyric"
-
-    assert len(tracks[0].annotations) == 1
-    assert tracks[0].annotations[0].annotation == "Nothing but an annotation"
-    assert tracks[0].annotations[0].group is None
-
 
 def check_music(music, ext=None, resolution=4):
     """Check example music."""
     check_metadata(music.metadata, ext)
     assert music.resolution == resolution
+
     check_tempos(music.tempos)
     check_key_signatures(music.key_signatures)
     check_time_signatures(music.time_signatures)
     check_downbeats(music.downbeats)
     check_lyrics(music.lyrics)
     check_annotations(music.annotations)
+
     check_tracks(music.tracks, resolution=resolution)
+    check_lyrics(music.tracks[0].lyrics)
+    check_annotations(music.tracks[0].annotations)

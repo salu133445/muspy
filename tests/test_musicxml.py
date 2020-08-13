@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 
 import muspy
+from muspy.inputs.musicxml import MAJOR_KEY_MAP, MINOR_KEY_MAP
 
 from .utils import (
     TEST_JSON_PATH,
@@ -153,65 +154,15 @@ def test_key_signatures():
 
     assert len(music.key_signatures) == 46
 
-    # Answers
-    major_keys = [
-        "Abb",
-        "Ebb",
-        "Bbb",
-        "Fb",
-        "Cb",
-        "Gb",
-        "Db",
-        "Ab",
-        "Eb",
-        "Bb",
-        "F",
-        "C",
-        "G",
-        "D",
-        "A",
-        "E",
-        "B",
-        "F#",
-        "C#",
-        "G#",
-        "D#",
-        "A#",
-        "E#",
-    ]
-    minor_keys = [
-        "Fb",
-        "Cb",
-        "Gb",
-        "Db",
-        "Ab",
-        "Eb",
-        "Bb",
-        "F",
-        "C",
-        "G",
-        "D",
-        "A",
-        "E",
-        "B",
-        "F#",
-        "C#",
-        "G#",
-        "D#",
-        "A#",
-        "E#",
-        "B#",
-        "F##",
-        "C##",
-    ]
-
     for i, key_signature in enumerate(music.key_signatures):
         if i % 2 == 0:
+            root, root_str = MAJOR_KEY_MAP[i // 2 + 3]
             assert key_signature.mode == "major"
-            assert key_signature.root == major_keys[i // 2]
         else:
+            root, root_str = MINOR_KEY_MAP[i // 2 + 3]
             assert key_signature.mode == "minor"
-            assert key_signature.root == minor_keys[i // 2]
+        assert key_signature.root == root
+        assert key_signature.root_str == root_str
 
 
 def test_church_modes():
@@ -509,7 +460,7 @@ def test_realworld():
     assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 1
-    assert music.key_signatures[0].root == "C"
+    assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
     assert len(music.time_signatures) == 1
@@ -530,7 +481,7 @@ def test_realworld_compressed():
     assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 1
-    assert music.key_signatures[0].root == "C"
+    assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
     assert len(music.time_signatures) == 1
@@ -546,16 +497,16 @@ def test_write():
 
     loaded = muspy.read(temp_dir / "test.xml")
 
-    assert loaded.metadata.title == "Fur Elise"
+    assert loaded.metadata.title == "Für Elise"
     assert loaded.metadata.source_filename == "test.xml"
     assert loaded.metadata.source_format == "musicxml"
     assert loaded.resolution == 10080
-    print(loaded)
+
     check_tempos(loaded.tempos)
     check_key_signatures(loaded.key_signatures)
     check_time_signatures(loaded.time_signatures)
-    check_lyrics(loaded.lyrics)
     check_tracks(loaded.tracks, 10080)
+    # TODO: Check lyrics and annotations
 
 
 def test_write_compressed():
@@ -566,12 +517,13 @@ def test_write_compressed():
 
     loaded = muspy.read(temp_dir / "test.mxl")
 
-    assert loaded.metadata.title == "Fur Elise"
-    assert loaded.metadata.source_filename == "test.xml"
+    assert loaded.metadata.title == "Für Elise"
+    assert loaded.metadata.source_filename == "test.mxl"
     assert loaded.metadata.source_format == "musicxml"
     assert loaded.resolution == 10080
+
     check_tempos(loaded.tempos)
     check_key_signatures(loaded.key_signatures)
     check_time_signatures(loaded.time_signatures)
-    check_lyrics(loaded.lyrics)
     check_tracks(loaded.tracks, 10080)
+    # TODO: Check lyrics and annotations
