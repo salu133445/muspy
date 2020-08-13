@@ -431,7 +431,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_score` for full documentation.
 
         """
-        return show_score(self, **kwargs)
+        return show(self, "score", **kwargs)
 
     def show_pianoroll(self, **kwargs: Any):
         """Show pianoroll visualization.
@@ -439,4 +439,4 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_pianoroll` for full documentation.
 
         """
-        return show_pianoroll(self, **kwargs)
+        return show(self, "pianoroll", **kwargs)

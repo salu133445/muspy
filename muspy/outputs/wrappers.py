@@ -101,7 +101,7 @@ def write(
     if kind == "midi":
         return write_midi(path, music, **kwargs)
     if kind == "musicxml":
-        return write_musicxml(path, music)
+        return write_musicxml(path, music, **kwargs)
     raise ValueError("`kind` must be either 'midi' or 'musicxml'.")
 
 

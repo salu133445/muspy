@@ -96,27 +96,23 @@ def to_music21(music: "Music") -> Score:
     if music.metadata:
         score.append(to_music21_metadata(music.metadata))
 
-    # Meta part
-    metapart = Part()
-
-    # Add tempos
-    for tempo in music.tempos:
-        metapart.append(to_music21_metronome(tempo))
-
-    # Add time signatures
-    for time_signature in music.time_signatures:
-        metapart.append(to_music21_time_signature(time_signature))
-
-    # Add key signatures
-    for key_signature in music.key_signatures:
-        metapart.append(to_music21_key(key_signature))
-
-    score.append(metapart)
-
     # Tracks
     for track in music.tracks:
         # Create a new part
         part = Part()
+        part.partName = track.name
+
+        # Add tempos
+        for tempo in music.tempos:
+            part.append(to_music21_metronome(tempo))
+
+        # Add time signatures
+        for time_signature in music.time_signatures:
+            part.append(to_music21_time_signature(time_signature))
+
+        # Add key signatures
+        for key_signature in music.key_signatures:
+            part.append(to_music21_key(key_signature))
 
         # Add notes to part
         for note in track.notes:
