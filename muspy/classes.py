@@ -90,16 +90,6 @@ class Metadata(ComplexBase):
         self.source_filename = source_filename
         self.source_format = source_format
 
-    def validate(self, attr=None):
-        """Raise proper errors if a certain attribute is invalid.
-
-        When `attr` is not given, check all attributes.
-
-        """
-        if self.schema_version is None:
-            raise TypeError("`schema_version` must not be None.")
-        self._validate()
-
 
 class Tempo(Base):
     """A container for key signature.
@@ -114,7 +104,6 @@ class Tempo(Base):
     """
 
     _attributes = OrderedDict([("time", int), ("qpm", (int, float))])
-    _temporal_attributes = ["time"]
 
     def __init__(self, time: int, qpm: float):
         self.time = time
@@ -136,7 +125,6 @@ class KeySignature(Base):
     """
 
     _attributes = OrderedDict([("time", int), ("root", str), ("mode", str)])
-    _temporal_attributes = ["time"]
 
     def __init__(self, time: int, root: str, mode: str):
         self.time = time
@@ -161,16 +149,25 @@ class TimeSignature(Base):
     _attributes = OrderedDict(
         [("time", int), ("numerator", int), ("denominator", int)]
     )
-    _temporal_attributes = ["time"]
 
     def __init__(self, time: int, numerator: int, denominator: int):
         self.time = time
         self.numerator = numerator
         self.denominator = denominator
 
-    def validate(self):
-        """Raise proper errors if any attribute is invalid."""
-        self._validate()
+    def validate(self, attr: Optional[str] = None):
+        """Raise proper errors if a certain attribute is invalid.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
+
+        """
+        super().validate()
         if self.numerator < 1:
             raise ValueError("`numerator` must be positive.")
         if self.denominator < 1:
@@ -190,7 +187,6 @@ class Lyric(Base):
     """
 
     _attributes = OrderedDict([("time", int), ("lyric", str)])
-    _temporal_attributes = ["time"]
 
     def __init__(self, time: int, lyric: str):
         self.time = time
@@ -215,7 +211,6 @@ class Annotation(Base):
         [("time", int), ("annotation", str)]
     )
     _optional_attributes = ["group"]
-    _temporal_attributes = ["time"]
 
     def __init__(
         self, time: int, annotation: Any, group: Optional[str] = None
@@ -244,7 +239,6 @@ class Note(Base):
     _attributes = OrderedDict(
         [("time", int), ("duration", int), ("pitch", int), ("velocity", int)]
     )
-    _temporal_attributes = ["time", "duration"]
 
     def __init__(
         self,
@@ -278,17 +272,31 @@ class Note(Base):
         """Setter for start time."""
         self.time = start
 
-    def validate(self):
-        """Raise proper errors if any attribute is invalid."""
-        self._validate()
-        if self.time < 0:
-            raise ValueError("`time` must be nonnegative.")
+    def validate(self, attr: Optional[str] = None):
+        """Raise proper errors if a certain attribute is invalid.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
+
+        """
+        super().validate()
         if self.duration < 0:
             raise ValueError("`duration` must be nonnegative.")
         if 0 <= self.pitch < 128:
             raise ValueError("`pitch` must be in between 0 to 127.")
         if 0 <= self.velocity < 128:
             raise ValueError("`velocity` must be in between 0 to 127.")
+
+    def _adjust_time(self, func, attr):
+        if attr == "time":
+            self.time = func(self.time)
+        elif attr == "duration":
+            self.duration = func(self.duration)
 
     def transpose(self, semitone: int):
         """Transpose the note by a number of semitones.
@@ -341,7 +349,6 @@ class Chord(ComplexBase):
     _attributes = OrderedDict(
         [("time", int), ("duration", int), ("pitches", int), ("velocity", int)]
     )
-    _temporal_attributes = ["time", "duration"]
     _list_attributes = ["pitches"]
 
     def __init__(
@@ -381,16 +388,30 @@ class Chord(ComplexBase):
         """Setter for start time."""
         self.time = start
 
-    def validate(self):
-        """Raise proper errors if any attribute is invalid."""
-        self._validate()
-        if self.time < 0:
-            raise ValueError("`time` must be nonnegative.")
+    def validate(self, attr: Optional[str] = None):
+        """Raise proper errors if a certain attribute is invalid.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
+
+        """
+        super().validate()
         if self.duration < 0:
             raise ValueError("`duration` must be nonnegative.")
         for pitch in self.pitches:
             if 0 <= pitch < 128:
                 raise ValueError("`pitch` must be in between 0 to 127.")
+
+    def _adjust_time(self, func, attr):
+        if attr == "time":
+            self.time = func(self.time)
+        elif attr == "duration":
+            self.duration = func(self.duration)
 
     def transpose(self, semitone: int):
         """Transpose the notes by a number of semitones.
@@ -483,13 +504,23 @@ class Track(ComplexBase):
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
 
-    def validate(self):
-        """Raise proper errors if any attribute is invalid."""
+    def validate(self, attr: Optional[str] = None):
+        """Raise proper errors if a certain attribute is invalid.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
+
+        """
+        super().validate()
         if self.program is None:
             raise TypeError("`program` must not be None.")
         if self.is_drum is None:
             raise TypeError("`is_drum` must not be None.")
-        self._validate()
         if self.program < 0 or self.program > 127:
             raise ValueError("`program` must be in between 0 to 127.")
 

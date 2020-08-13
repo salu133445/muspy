@@ -52,17 +52,12 @@ class Base:
       and optional ones) of the object as keys and their types as values.
     - `_optional_attributes`: A list containing optional attributes. An
       attribute in this list is allowed to be None.
-    - _temporal_attributes: A list containing attributes that are considered
-      temporal. An attribute in this list is supposed to always have a
-      nonnegative value. The first item of this list is used to determine
-      the order of objects when being sorted.
     - _list_attributes: A list containing attributes that are lists.
 
     """
 
     _attributes: Mapping[str, Any] = {}
     _optional_attributes: List[str] = []
-    _temporal_attributes: List[str] = ["time"]
     _list_attributes: List[str] = []
 
     def _init(self, **kwargs):
@@ -104,7 +99,7 @@ class Base:
             if value is None:
                 if attr in cls._optional_attributes:
                     continue
-                raise TypeError("`{}` is a required attribute.".format(attr))
+                raise TypeError("`{}` must not be None.".format(attr))
             if isclass(attr_cls) and issubclass(attr_cls, Base):
                 if attr in cls._list_attributes:
                     kwargs[attr] = [attr_cls.from_dict(v) for v in value]
@@ -154,21 +149,23 @@ class Base:
                 )
             )
 
-    def _validate_type(self, attr: Optional[str] = None):
+    def validate_type(self, attr: Optional[str] = None):
+        """Raise proper errors if a certain attribute is of wrong type.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
+
+        """
         if attr is None:
             for attribute in self._attributes:
                 self._validate_attr_type(attribute)
         else:
             self._validate_attr_type(attr)
-
-    def validate_type(self, attr: Optional[str] = None):
-        """Raise proper errors if a certain attribute is of wrong type.
-
-        This will recursively apply to each attribute's attributes. When
-        `attr` is not given, check all attributes.
-
-        """
-        self._validate_type(attr)
 
     def _validate_attr(self, attr: str):
         attr_cls = self._attributes[attr]
@@ -181,31 +178,37 @@ class Base:
                 getattr(self, attr).validate()
         else:
             self._validate_attr_type(attr)
-            if attr in self._temporal_attributes and getattr(self, attr) < 0:
-                raise ValueError("`{}` must be nonnegative.".format(attr))
+            if attr == "time" and getattr(self, "time") < 0:
+                raise ValueError("`time` must be nonnegative.")
 
-    def _validate(self, attr: Optional[str] = None):
+    def validate(self, attr: Optional[str] = None):
+        """Raise proper errors if a certain attribute is invalid.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
+
+        """
         if attr is None:
             for attribute in self._attributes:
                 self._validate_attr(attribute)
         else:
             self._validate_attr(attr)
 
-    def validate(self, attr: Optional[str] = None):
-        """Raise proper errors if a certain attribute is invalid.
-
-        This will recursively apply to each attribute's attributes. When
-        `attr` is not given, check all attributes.
-
-        """
-        self._validate(attr)
-
     def is_type_valid(self, attr: Optional[str] = None):
         """Return True if a certain attribute is valid, otherwise False.
 
-        This will recursively apply to each attribute's attributes. When `attr`
-        is not given, return True only if all attributes are valid, otherwise
-        False.
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
 
         """
         try:
@@ -217,9 +220,13 @@ class Base:
     def is_valid(self, attr: Optional[str] = None):
         """Return True if a certain attribute is valid, otherwise False.
 
-        This will recursively apply to each attribute's attributes. When `attr`
-        is not given, return True only if all attributes are valid, otherwise
-        False.
+        This will recursively apply to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to validate. If None, validate all attributes. Defaults
+            to None.
 
         """
         try:
@@ -230,12 +237,12 @@ class Base:
 
     def _adjust_time(self, func, attr):
         attr_cls = self._attributes[attr]
-        if attr in self._temporal_attributes:
-            if attr in self._list_attributes:
-                new_list = [func(item) for item in getattr(self, attr)]
-                setattr(self, attr, new_list)
+        if attr == "time":
+            if "time" in self._list_attributes:
+                new_list = [func(item) for item in getattr(self, "time")]
+                setattr(self, "time", new_list)
             else:
-                setattr(self, attr, func(getattr(self, attr)))
+                setattr(self, "time", func(getattr(self, attr)))
         else:
             if isclass(attr_cls) and issubclass(attr_cls, Base):
                 if attr in self._list_attributes:
@@ -247,11 +254,16 @@ class Base:
     def adjust_time(self, func: Callable, attr: Optional[str] = None):
         """Adjust the timing of time-stamped objects.
 
+        This will apply recursively to an attribute's attributes.
+
         Parameters
         ----------
         func : callable
             The function used to compute the new timing from the old timing,
             i.e., `new_time = func(old_time)`.
+        attr : str
+            Attribute to adjust. If None, adjust all attributes. Defaults
+            to None.
 
         """
         if attr is None:
@@ -273,11 +285,9 @@ class ComplexBase(Base):
       :class:`muspy.Note` class, then calling `track.append(note)` leads to
       `track.notes.append(note)`.
     - Method `sort`: Sort the time-stamped objects with respect to the
-      first item in `_time_attributes`. For example, if `track` is an
-      instance of the :class:`muspy.Track` class, then calling
-      `track.sort()` leads to `track.notes.sort(lambda x: x.time)`. Note
-      that the `time` attribute is used to sort :class:`muspy.Note` objects
-      since is `muspy.Note._time_attribute = ['time']`.
+      `time` attribute. For example, if `track` is an instance of the
+      :class:`muspy.Track` class, then calling `track.sort()` leads to
+      `track.notes.sort(lambda x: x.time)`.
 
     """
 
@@ -339,18 +349,16 @@ class ComplexBase(Base):
             # pylint: disable=protected-access
             if issubclass(attr_cls, ComplexBase):
                 getattr(self, attr).sort()
-            elif attr_cls._temporal_attributes:
-                ref_attr = attr_cls._temporal_attributes[0]
-                if ref_attr in attr_cls._attributes:
-                    getattr(self, attr).sort(attrgetter(ref_attr))
+            elif "time" in attr_cls._attributes:
+                getattr(self, attr).sort(attrgetter("time"))
 
     def sort(self, attr: Optional[str] = None):
         """Sort the time-stamped objects recursively."""
         if attr is None:
             for attribute in self._list_attributes:
                 self._sort(attribute)
+        elif attr not in self._list_attributes:
+            raise TypeError("`{}` is not a list attribute.")
         else:
-            if attr not in self._list_attributes:
-                raise TypeError("`{}` is not a list attribute.")
             self._sort(attr)
         return self
