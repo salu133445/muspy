@@ -83,8 +83,14 @@ class Base:
                 to_join.append(attr + "=" + repr(value))
         return type(self).__name__ + "(" + ", ".join(to_join) + ")"
 
+    def __eq__(self, other):
+        for attr in self._attributes:
+            if getattr(self, attr) != getattr(other, attr):
+                return False
+        return True
+
     @classmethod
-    def from_dict(cls, dict_: Mapping):
+    def from_dict(cls, dict_: Mapping) -> "Base":
         """Return an instance constructed from a dictionary.
 
         Parameters
@@ -150,7 +156,7 @@ class Base:
                 )
             )
 
-    def validate_type(self, attr: Optional[str] = None):
+    def validate_type(self, attr: Optional[str] = None) -> "Base":
         """Raise proper errors if a certain attribute is of wrong type.
 
         This will apply recursively to an attribute's attributes.
@@ -167,8 +173,9 @@ class Base:
                 self._validate_attr_type(attribute)
         else:
             self._validate_attr_type(attr)
+        return self
 
-    def _validate_attr(self, attr: str):
+    def _validate(self, attr: str):
         attr_cls = self._attributes[attr]
         if isclass(attr_cls) and issubclass(attr_cls, Base):
             if attr in self._list_attributes:
@@ -182,7 +189,7 @@ class Base:
             if attr == "time" and getattr(self, "time") < 0:
                 raise ValueError("`time` must be nonnegative.")
 
-    def validate(self, attr: Optional[str] = None):
+    def validate(self, attr: Optional[str] = None) -> "Base":
         """Raise proper errors if a certain attribute is invalid.
 
         This will apply recursively to an attribute's attributes.
@@ -196,11 +203,12 @@ class Base:
         """
         if attr is None:
             for attribute in self._attributes:
-                self._validate_attr(attribute)
+                self._validate(attribute)
         else:
-            self._validate_attr(attr)
+            self._validate(attr)
+        return self
 
-    def is_type_valid(self, attr: Optional[str] = None):
+    def is_type_valid(self, attr: Optional[str] = None) -> bool:
         """Return True if a certain attribute is valid, otherwise False.
 
         This will apply recursively to an attribute's attributes.
@@ -218,7 +226,7 @@ class Base:
             return False
         return True
 
-    def is_valid(self, attr: Optional[str] = None):
+    def is_valid(self, attr: Optional[str] = None) -> bool:
         """Return True if a certain attribute is valid, otherwise False.
 
         This will recursively apply to an attribute's attributes.
@@ -252,7 +260,9 @@ class Base:
                 elif getattr(self, attr) is not None:
                     getattr(self, attr).adjust_time(func)
 
-    def adjust_time(self, func: Callable, attr: Optional[str] = None):
+    def adjust_time(
+        self, func: Callable, attr: Optional[str] = None
+    ) -> "Base":
         """Adjust the timing of time-stamped objects.
 
         This will apply recursively to an attribute's attributes.
@@ -263,8 +273,8 @@ class Base:
             The function used to compute the new timing from the old timing,
             i.e., `new_time = func(old_time)`.
         attr : str
-            Attribute to adjust. If None, adjust all attributes. Defaults
-            to None.
+            Attribute to adjust. If None, adjust all attributes. Defaults to
+            None.
 
         """
         if attr is None:
@@ -315,36 +325,44 @@ class ComplexBase(Base):
         if not getattr(self, attr):
             return
         attr_cls = self._attributes[attr]
+        new_value = []
         if isclass(attr_cls) and issubclass(attr_cls, Base):
-            new_list = [
-                item for item in getattr(self, attr) if item.is_valid()
-            ]
+            for item in getattr(self, attr):
+                if item.is_valid():
+                    new_value.append(item)
         else:
-            new_list = [
-                item
-                for item in getattr(self, attr)
-                if isinstance(item, self._attributes[attr])
-            ]
-        setattr(self, attr, new_list)
+            for item in getattr(self, attr):
+                if isinstance(item, self._attributes[attr]):
+                    new_value.append(item)
+        setattr(self, attr, new_value)
 
-    def remove_invalid(self, attr: Optional[str] = None):
+    def remove_invalid(self, attr: Optional[str] = None) -> "ComplexBase":
         """Remove invalid items from list attributes, others left unchanged.
 
-        When `attr` is not given, remove invalid items for each list attribute.
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to check. If None, check all attributes. Defaults to
+            None.
 
         """
+        if attr is not None and attr not in self._list_attributes:
+            raise TypeError("`{}` must be a list attribute.")
+
         if attr is None:
             for attribute in self._list_attributes:
                 self._remove_invalid(attribute)
         else:
-            if attr not in self._list_attributes:
-                raise TypeError("`{}` is not a list attribute.")
             self._remove_invalid(attr)
+
         return self
 
     def _sort(self, attr):
         if not getattr(self, attr):
             return
+
         attr_cls = self._attributes[attr]
         if isclass(attr_cls) and issubclass(attr_cls, Base):
             # pylint: disable=protected-access
@@ -355,13 +373,60 @@ class ComplexBase(Base):
                     attrgetter(*attr_cls._sort_attributes)
                 )
 
-    def sort(self, attr: Optional[str] = None):
-        """Sort the time-stamped objects recursively."""
+    def sort(self, attr: Optional[str] = None) -> "ComplexBase":
+        """Sort the time-stamped objects recursively.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to sort. If None, sort all attributes. Defaults to None.
+
+        """
+        if attr is not None and attr not in self._list_attributes:
+            raise TypeError("`{}` must be a list attribute.")
+
         if attr is None:
             for attribute in self._list_attributes:
                 self._sort(attribute)
-        elif attr not in self._list_attributes:
-            raise TypeError("`{}` is not a list attribute.")
         else:
             self._sort(attr)
+
+        return self
+
+    def _remove_duplicate(self, attr):
+        if not getattr(self, attr):
+            return
+
+        attr_cls = self._attributes[attr]
+        if isclass(attr_cls) and issubclass(attr_cls, ComplexBase):
+            getattr(self, attr).remove_duplicate()
+        else:
+            value = getattr(self, attr)
+            new_value = [value[0]]
+            for item, next_item in zip(value[:-1], value[1:]):
+                if item != next_item:
+                    new_value.append(next_item)
+            setattr(self, attr, new_value)
+
+    def remove_duplicate(self, attr: Optional[str] = None) -> "ComplexBase":
+        """Remove duplicate items.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to check. If None, check all attributes. Defaults to
+            None.
+
+        """
+        if attr is not None and attr not in self._list_attributes:
+            raise TypeError("`{}` must be a list attribute.")
+
+        if attr is None:
+            for attribute in self._list_attributes:
+                self._remove_duplicate(attribute)
+        else:
+            self._remove_duplicate(attr)
+
         return self

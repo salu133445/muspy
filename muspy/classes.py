@@ -110,6 +110,15 @@ class Tempo(Base):
         self.time = time
         self.qpm = float(qpm)
 
+    def __eq__(self, other):
+        return self.time == other.time and self.qpm == other.qpm
+
+    def _validate(self, attr: str):
+        super()._validate(attr)
+        if attr == "qpm" and self.qpm <= 0:
+            raise ValueError("`qpm` must be positive.")
+        return self
+
 
 class KeySignature(Base):
     """A container for key signature.
@@ -158,22 +167,11 @@ class TimeSignature(Base):
         self.numerator = numerator
         self.denominator = denominator
 
-    def validate(self, attr: Optional[str] = None):
-        """Raise proper errors if a certain attribute is invalid.
-
-        This will apply recursively to an attribute's attributes.
-
-        Parameters
-        ----------
-        attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
-
-        """
-        super().validate()
-        if self.numerator < 1:
+    def _validate(self, attr: str):
+        super()._validate(attr)
+        if attr == "numerator" and self.numerator < 1:
             raise ValueError("`numerator` must be positive.")
-        if self.denominator < 1:
+        if attr == "numerator" and self.denominator < 1:
             raise ValueError("`denominator` must be positive.")
 
 
@@ -278,25 +276,15 @@ class Note(Base):
         """Setter for start time."""
         self.time = start
 
-    def validate(self, attr: Optional[str] = None):
-        """Raise proper errors if a certain attribute is invalid.
-
-        This will apply recursively to an attribute's attributes.
-
-        Parameters
-        ----------
-        attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
-
-        """
-        super().validate()
-        if self.duration < 0:
+    def _validate(self, attr: str):
+        super()._validate(attr)
+        if attr == "duration" and self.duration < 0:
             raise ValueError("`duration` must be nonnegative.")
-        if 0 <= self.pitch < 128:
+        if attr == "pitch" and 0 <= self.pitch < 128:
             raise ValueError("`pitch` must be in between 0 to 127.")
-        if 0 <= self.velocity < 128:
+        if attr == "velocity" and 0 <= self.velocity < 128:
             raise ValueError("`velocity` must be in between 0 to 127.")
+        return self
 
     def _adjust_time(self, func, attr):
         if attr == "time":
@@ -304,7 +292,7 @@ class Note(Base):
         elif attr == "duration":
             self.duration = func(self.duration)
 
-    def transpose(self, semitone: int):
+    def transpose(self, semitone: int) -> "Note":
         """Transpose the note by a number of semitones.
 
         Parameters
@@ -317,7 +305,7 @@ class Note(Base):
         self.pitch += semitone
         return self
 
-    def clip(self, lower: int = 0, upper: int = 127):
+    def clip(self, lower: int = 0, upper: int = 127) -> "Note":
         """Clip the velocity of the note.
 
         Parameters
@@ -395,24 +383,18 @@ class Chord(ComplexBase):
         """Setter for start time."""
         self.time = start
 
-    def validate(self, attr: Optional[str] = None):
-        """Raise proper errors if a certain attribute is invalid.
-
-        This will apply recursively to an attribute's attributes.
-
-        Parameters
-        ----------
-        attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
-
-        """
-        super().validate()
-        if self.duration < 0:
+    def _validate(self, attr: str):
+        super()._validate(attr)
+        if attr == "duration" and self.duration < 0:
             raise ValueError("`duration` must be nonnegative.")
-        for pitch in self.pitches:
-            if 0 <= pitch < 128:
-                raise ValueError("`pitch` must be in between 0 to 127.")
+        if attr == "pitches":
+            for pitch in self.pitches:
+                if 0 <= pitch < 128:
+                    raise ValueError(
+                        "`pitches` must be a list of integers between 0 to "
+                        "127."
+                    )
+        return self
 
     def _adjust_time(self, func, attr):
         if attr == "time":
@@ -420,7 +402,7 @@ class Chord(ComplexBase):
         elif attr == "duration":
             self.duration = func(self.duration)
 
-    def transpose(self, semitone: int):
+    def transpose(self, semitone: int) -> "Chord":
         """Transpose the notes by a number of semitones.
 
         Parameters
@@ -433,7 +415,7 @@ class Chord(ComplexBase):
         self.pitches += [pitch + semitone for pitch in self.pitches]
         return self
 
-    def clip(self, lower: int = 0, upper: int = 127):
+    def clip(self, lower: int = 0, upper: int = 127) -> "Chord":
         """Clip the velocity of the chord.
 
         Parameters
@@ -454,6 +436,10 @@ class Chord(ComplexBase):
 
 class Track(ComplexBase):
     """A container for music track.
+
+    Indexing a Track object gives the note of a certain index. That is,
+    `track[idx]` is equivalent to `track.notes[idx]`, while the latter is
+    recommended for readability.
 
     Attributes
     ----------
@@ -512,7 +498,13 @@ class Track(ComplexBase):
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
 
-    def validate(self, attr: Optional[str] = None):
+    def __getitem__(self, key: int) -> Note:
+        return self.notes[key]
+
+    def __setitem__(self, key: int, value: Note):
+        self.notes[key] = value
+
+    def validate(self, attr: Optional[str] = None) -> "Track":
         """Raise proper errors if a certain attribute is invalid.
 
         This will apply recursively to an attribute's attributes.
@@ -531,6 +523,7 @@ class Track(ComplexBase):
             raise TypeError("`is_drum` must not be None.")
         if self.program < 0 or self.program > 127:
             raise ValueError("`program` must be in between 0 to 127.")
+        return self
 
     def get_end_time(self, is_sorted: bool = False) -> int:
         """Return the time of the last event.
@@ -558,7 +551,7 @@ class Track(ComplexBase):
             _get_end_time(self.annotations),
         )
 
-    def clip(self, lower: int = 0, upper: int = 127):
+    def clip(self, lower: int = 0, upper: int = 127) -> "Track":
         """Clip the velocity of each note.
 
         Parameters
@@ -573,7 +566,7 @@ class Track(ComplexBase):
             note.clip(lower, upper)
         return self
 
-    def transpose(self, semitone: int):
+    def transpose(self, semitone: int) -> "Track":
         """Transpose the notes by a number of semitones.
 
         Parameters

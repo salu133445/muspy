@@ -49,6 +49,10 @@ class Music(ComplexBase):
     - :func:`muspy.from_object`: Convert from a :class:`pretty_midi.PrettyMIDI`
       or :class:`pypianoroll.Multitrack` object.
 
+    Indexing a Music object gives the track of a certain index. That is,
+    `music[idx]` is equivalent to `music.tracks[idx]`, while the latter is
+    recommended for readability.
+
     Attributes
     ----------
     metadata : :class:`muspy.Metadata` object
@@ -135,36 +139,11 @@ class Music(ComplexBase):
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
 
-    def remove_duplicate_changes(self) -> "Music":
-        """Remove duplicate key signature, time signature and tempo changes."""
-        tempos = self.tempos
-        self.tempos = [
-            next_tempo
-            for tempo, next_tempo in zip(tempos[:-1], tempos[1:])
-            if tempo.qpm != next_tempo.qpm
-        ]
-        self.tempos.insert(0, tempos[0])
+    def __getitem__(self, key: int) -> Track:
+        return self.tracks[key]
 
-        key_signs = self.key_signatures
-        self.key_signatures = [
-            next_key_sign
-            for key_sign, next_key_sign in zip(key_signs[:-1], key_signs[1:])
-            if key_sign.root != next_key_sign.root
-            or key_sign.mode != next_key_sign.mode
-        ]
-        self.key_signatures.insert(0, key_signs[0])
-
-        time_signs = self.time_signatures
-        self.time_signatures = [
-            next_time_sign
-            for time_sign, next_time_sign in zip(
-                time_signs[:-1], time_signs[1:]
-            )
-            if time_sign.numerator != next_time_sign.numerator
-            or time_sign.denominator != next_time_sign.denominator
-        ]
-        self.time_signatures.insert(0, time_signs[0])
-        return self
+    def __setitem__(self, key: int, value: Track):
+        self.tracks[key] = value
 
     def get_end_time(
         self, is_sorted: bool = False, realtime: bool = False
@@ -452,7 +431,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_score` for full documentation.
 
         """
-        return show(self, "score", **kwargs)
+        return show_score(self, **kwargs)
 
     def show_pianoroll(self, **kwargs: Any):
         """Show pianoroll visualization.
@@ -460,4 +439,4 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_pianoroll` for full documentation.
 
         """
-        return show(self, "pianoroll", **kwargs)
+        return show_pianoroll(self, **kwargs)
