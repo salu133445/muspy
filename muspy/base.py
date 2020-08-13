@@ -59,6 +59,7 @@ class Base:
     _attributes: Mapping[str, Any] = {}
     _optional_attributes: List[str] = []
     _list_attributes: List[str] = []
+    _sort_attributes: List[str] = []
 
     def _init(self, **kwargs):
         for key, value in kwargs.items():
@@ -349,8 +350,10 @@ class ComplexBase(Base):
             # pylint: disable=protected-access
             if issubclass(attr_cls, ComplexBase):
                 getattr(self, attr).sort()
-            elif "time" in attr_cls._attributes:
-                getattr(self, attr).sort(attrgetter("time"))
+            elif attr_cls._sort_attributes:
+                getattr(self, attr).sort(
+                    attrgetter(*attr_cls._sort_attributes)
+                )
 
     def sort(self, attr: Optional[str] = None):
         """Sort the time-stamped objects recursively."""

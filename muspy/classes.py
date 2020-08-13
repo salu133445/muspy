@@ -104,6 +104,7 @@ class Tempo(Base):
     """
 
     _attributes = OrderedDict([("time", int), ("qpm", (int, float))])
+    _sort_attributes = ["time"]
 
     def __init__(self, time: int, qpm: float):
         self.time = time
@@ -125,6 +126,7 @@ class KeySignature(Base):
     """
 
     _attributes = OrderedDict([("time", int), ("root", str), ("mode", str)])
+    _sort_attributes = ["time"]
 
     def __init__(self, time: int, root: str, mode: str):
         self.time = time
@@ -149,6 +151,7 @@ class TimeSignature(Base):
     _attributes = OrderedDict(
         [("time", int), ("numerator", int), ("denominator", int)]
     )
+    _sort_attributes = ["time"]
 
     def __init__(self, time: int, numerator: int, denominator: int):
         self.time = time
@@ -187,6 +190,7 @@ class Lyric(Base):
     """
 
     _attributes = OrderedDict([("time", int), ("lyric", str)])
+    _sort_attributes = ["time"]
 
     def __init__(self, time: int, lyric: str):
         self.time = time
@@ -211,6 +215,7 @@ class Annotation(Base):
         [("time", int), ("annotation", str)]
     )
     _optional_attributes = ["group"]
+    _sort_attributes = ["time"]
 
     def __init__(
         self, time: int, annotation: Any, group: Optional[str] = None
@@ -239,6 +244,7 @@ class Note(Base):
     _attributes = OrderedDict(
         [("time", int), ("duration", int), ("pitch", int), ("velocity", int)]
     )
+    _sort_attributes = ["time", "duration", "pitch"]
 
     def __init__(
         self,
@@ -350,6 +356,7 @@ class Chord(ComplexBase):
         [("time", int), ("duration", int), ("pitches", int), ("velocity", int)]
     )
     _list_attributes = ["pitches"]
+    _sort_attributes = ["time", "duration"]
 
     def __init__(
         self,
@@ -485,6 +492,7 @@ class Track(ComplexBase):
     )
     _optional_attributes = ["name", "notes", "chords", "lyrics", "annotations"]
     _list_attributes = ["notes", "chords", "lyrics", "annotations"]
+    _sort_attributes = ["is_drum", "program"]
 
     def __init__(
         self,
