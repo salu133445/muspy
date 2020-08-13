@@ -4,6 +4,32 @@ from inspect import isclass
 from operator import attrgetter
 from typing import Any, Callable, List, Mapping, Optional
 
+import yaml
+
+
+class _OrderedDumper(yaml.SafeDumper):
+    """A dumper that supports OrderedDict."""
+
+    def increase_indent(self, flow=False, indentless=False):
+        return super().increase_indent(flow, False)
+
+
+def _dict_representer(dumper, data):
+    return dumper.represent_mapping(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
+    )
+
+
+_OrderedDumper.add_representer(OrderedDict, _dict_representer)
+
+
+def _yaml_dump(data):
+    """Dump data to YAML, which supports OrderedDict.
+
+    Code adapted from https://stackoverflow.com/a/21912744.
+    """
+    return yaml.dump(data, Dumper=_OrderedDumper)
+
 
 def _get_type_string(attr_cls):
     """Return a string represeting acceptable type(s)."""
@@ -75,8 +101,10 @@ class Base:
             if attr in self._list_attributes:
                 if not value:
                     to_join.append(attr + "=[]")
-                elif len(value) > 1:
-                    to_join.append(attr + "=[" + repr(value[0]) + ", ...]")
+                elif len(value) > 3:
+                    to_join.append(
+                        attr + "=" + repr(value[:3])[:-1] + ", ...]"
+                    )
                 else:
                     to_join.append(attr + "=" + repr(value))
             else:
@@ -116,21 +144,34 @@ class Base:
                 kwargs[attr] = value
         return cls(**kwargs)
 
-    def to_ordered_dict(self) -> OrderedDict:
+    def to_ordered_dict(self, ignore_null: bool = True) -> OrderedDict:
         """Return the object as an OrderedDict."""
         ordered_dict: OrderedDict = OrderedDict()
         for attr, attr_cls in self._attributes.items():
             value = getattr(self, attr)
             if value is None:
-                ordered_dict[attr] = None
-            elif isclass(attr_cls) and issubclass(attr_cls, Base):
-                if attr in self._list_attributes:
+                if not ignore_null:
+                    ordered_dict[attr] = None
+            elif attr in self._list_attributes:
+                if not value and ignore_null:
+                    continue
+                if isclass(attr_cls) and issubclass(attr_cls, Base):
                     ordered_dict[attr] = [v.to_ordered_dict() for v in value]
                 else:
-                    ordered_dict[attr] = value.to_ordered_dict()
+                    ordered_dict[attr] = value
+            elif isclass(attr_cls) and issubclass(attr_cls, Base):
+                ordered_dict[attr] = value.to_ordered_dict()
             else:
                 ordered_dict[attr] = value
         return ordered_dict
+
+    def pretty_str(self):
+        """Return the content as a string in pretty YAML-like format."""
+        return _yaml_dump(self.to_ordered_dict())
+
+    def print(self):
+        """Print the content in a pretty YAML-like format."""
+        print(self.pretty_str())
 
     def _validate_attr_type(self, attr):
         attr_cls = self._attributes[attr]
