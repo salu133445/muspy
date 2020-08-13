@@ -4,40 +4,42 @@ metadata:
   schema_version: "0.0"
 
   # Song title
-  title: Fur Elise
+  title: Für Elise
   # Creators of the song
   creators:
     - Ludwig van Beethoven
-  # Copyright notice of the source file
+  # Copyright notice
   copyright: null
 
   # Name of the collection
   collection: Example dataset
   # Name of the source file
   source_filename: example.yaml
-  # Format of the source file {midi, musicxml, abc, null}
+  # Format of the source file (e.g., midi and musicxml)
   source_format: null
 
 # Time steps per quarter note
 resolution: 4
 
-# Tempo changes
+# Tempos
 tempos:
   - # Event time
     time: 0
     # Tempo in qpm (quarters per minute)
     qpm: 72
 
-# Key signature changes
+# Key signatures
 key_signatures:
   - # Event time
     time: 0
-    # Root: {A, B, C, D, E, F, G} with optional accidentals {#, b, ##, bb}
-    root: A
-    # Mode: {major, minor}
+    # Root pitch (0-11, 0 for C, 11 for B)
+    root: 9
+    # Mode ({major, minor, ionian, dorian, ...})
     mode: minor
+    # Root pitch ({A-G} with optional accidentals {#, b, ##, bb})
+    root_str: A
 
-# Time signature changes
+# Time signatures
 time_signatures:
   - # Event time
     time: 0
@@ -83,9 +85,9 @@ tracks:
         time: 0
         # Note duration
         duration: 2
-        # Note pitch
+        # Note pitch (0-127, 0 for C-1, 127 for G9)
         pitch: 76
-        # Note velocity
+        # Note velocity (0-127)
         velocity: 64
       - {time: 2, duration: 2, pitch: 75, velocity: 64}
       - {time: 4, duration: 2, pitch: 76, velocity: 64}

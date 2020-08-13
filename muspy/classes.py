@@ -127,20 +127,28 @@ class KeySignature(Base):
     ----------
     time : int
         Start time of the key signature, in time steps or seconds.
-    root : str
+    root : int
         Root of the key signature.
     mode : str
         Mode of the key signature.
+    root_str : str, optional
+        Root of the key signature as a string.
 
     """
 
-    _attributes = OrderedDict([("time", int), ("root", str), ("mode", str)])
+    _attributes = OrderedDict(
+        [("time", int), ("root", int), ("mode", str), ("root_str", str)]
+    )
+    _optional_attributes = ["root_str"]
     _sort_attributes = ["time"]
 
-    def __init__(self, time: int, root: str, mode: str):
+    def __init__(
+        self, time: int, root: int, mode: str, root_str: Optional[str] = None
+    ):
         self.time = time
         self.root = root
         self.mode = mode
+        self.root_str = root_str
 
 
 class TimeSignature(Base):
@@ -240,8 +248,15 @@ class Note(Base):
     """
 
     _attributes = OrderedDict(
-        [("time", int), ("duration", int), ("pitch", int), ("velocity", int)]
+        [
+            ("time", int),
+            ("duration", int),
+            ("pitch", int),
+            ("velocity", int),
+            ("pitch_str", str),
+        ]
     )
+    _optional_attributes = ["pitch_str"]
     _sort_attributes = ["time", "duration", "pitch"]
 
     def __init__(
@@ -250,11 +265,13 @@ class Note(Base):
         duration: int,
         pitch: int,
         velocity: int = DEFAULT_VELOCITY,
+        pitch_str: Optional[str] = None,
     ):
         self.time = time
         self.duration = duration
         self.pitch = pitch
         self.velocity = velocity
+        self.pitch_str = pitch_str
 
     @property
     def end(self):
@@ -341,9 +358,16 @@ class Chord(ComplexBase):
     """
 
     _attributes = OrderedDict(
-        [("time", int), ("duration", int), ("pitches", int), ("velocity", int)]
+        [
+            ("time", int),
+            ("duration", int),
+            ("pitches", int),
+            ("velocity", int),
+            ("pitch_str", str),
+        ]
     )
-    _list_attributes = ["pitches"]
+    _optional_attributes = ["pitch_str"]
+    _list_attributes = ["pitches", "pitches_str"]
     _sort_attributes = ["time", "duration"]
 
     def __init__(
@@ -352,16 +376,13 @@ class Chord(ComplexBase):
         duration: int,
         pitches: List[int],
         velocity: int = DEFAULT_VELOCITY,
+        pitches_str: Optional[List[int]] = None,
     ):
         self.time = time
         self.duration = duration
         self.pitches = pitches
         self.velocity = velocity
-
-    def __repr__(self):
-        return "Chord(time={}, duration={}, pitches={}, velocity={})".format(
-            self.time, self.duration, self.pitches, self.velocity,
-        )
+        self.pitches_str = pitches_str
 
     @property
     def end(self):

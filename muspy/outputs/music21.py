@@ -6,8 +6,10 @@ from music21.metadata import Metadata as M21MetaData
 from music21.note import Note as M21Note
 from music21.stream import Part, Score
 from music21.tempo import MetronomeMark
+from music21.key import Key
+from music21.meter import TimeSignature as M21TimeSignature
 
-from ..classes import Metadata, Tempo
+from ..classes import Metadata, Tempo, KeySignature, TimeSignature
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -25,6 +27,24 @@ def to_music21_metronome(tempo: Tempo) -> MetronomeMark:
     metronome = MetronomeMark(number=tempo.qpm)
     metronome.offset = tempo.time
     return metronome
+
+
+def to_music21_key(key_signature: KeySignature) -> Key:
+    """Return a KeySignature object as a music21 Key object."""
+    key = Key(tonic=PITCH_NAMES[key_signature.root], mode=key_signature.mode)
+    key.offset = key_signature.time
+    return key
+
+
+def to_music21_time_signature(
+    time_signature: TimeSignature,
+) -> M21TimeSignature:
+    """Return a TimeSignature object as a music21 TimeSignature object."""
+    m21_time_signature = M21TimeSignature(
+        "{}/{}".format(time_signature.numerator, time_signature.denominator)
+    )
+    m21_time_signature.offset = time_signature.time
+    return m21_time_signature
 
 
 def to_music21_metadata(metadata: Metadata) -> M21MetaData:
@@ -75,6 +95,23 @@ def to_music21(music: "Music") -> Score:
     # Metadata
     if music.metadata:
         score.append(to_music21_metadata(music.metadata))
+
+    # Meta part
+    metapart = Part()
+
+    # Add tempos
+    for tempo in music.tempos:
+        metapart.append(to_music21_metronome(tempo))
+
+    # Add time signatures
+    for time_signature in music.time_signatures:
+        metapart.append(to_music21_time_signature(time_signature))
+
+    # Add key signatures
+    for key_signature in music.key_signatures:
+        metapart.append(to_music21_key(key_signature))
+
+    score.append(metapart)
 
     # Tracks
     for track in music.tracks:

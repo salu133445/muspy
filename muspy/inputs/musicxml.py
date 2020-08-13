@@ -21,75 +21,83 @@ from ..classes import (
 from ..music import Music
 from ..schemas import get_musicxml_schema_path
 
-T = TypeVar("T")  # pylint: disable=invalid-name
+T = TypeVar("T")
 
-MAJOR_KEY_MAP = [
-    "Cbb",
-    "Gbb",
-    "Dbb",
-    "Abb",
-    "Ebb",
-    "Bbb",
-    "Fb",
-    "Cb",
-    "Gb",
-    "Db",
-    "Ab",
-    "Eb",
-    "Bb",
-    "F",
-    "C",
-    "G",
-    "D",
-    "A",
-    "E",
-    "B",
-    "F#",
-    "C#",
-    "G#",
-    "D#",
-    "A#",
-    "E#",
-    "B#",
-    "F##",
-    "C##",
+MAJOR_KEY_MAP: List[Tuple[int, str]] = [
+    (10, "Cbb"),
+    (5, "Gbb"),
+    (0, "Dbb"),
+    (7, "Abb"),
+    (2, "Ebb"),
+    (9, "Bbb"),
+    (4, "Fb"),
+    (11, "Cb"),
+    (6, "Gb"),
+    (1, "Db"),
+    (8, "Ab"),
+    (3, "Eb"),
+    (10, "Bb"),
+    (5, "F"),
+    (0, "C"),
+    (7, "G"),
+    (2, "D"),
+    (9, "A"),
+    (4, "E"),
+    (11, "B"),
+    (6, "F#"),
+    (1, "C#"),
+    (8, "G#"),
+    (3, "D#"),
+    (10, "A#"),
+    (5, "E#"),
+    (12, "B#"),
+    (7, "F##"),
+    (2, "C##"),
 ]
 
-MINOR_KEY_MAP = [
-    "Abb",
-    "Ebb",
-    "Bbb",
-    "Fb",
-    "Cb",
-    "Gb",
-    "Db",
-    "Ab",
-    "Eb",
-    "Bb",
-    "F",
-    "C",
-    "G",
-    "D",
-    "A",
-    "E",
-    "B",
-    "F#",
-    "C#",
-    "G#",
-    "D#",
-    "A#",
-    "E#",
-    "B#",
-    "F##",
-    "C##",
-    "G##",
-    "D##",
-    "A##",
+MINOR_KEY_MAP: List[Tuple[int, str]] = [
+    (7, "Abb"),
+    (2, "Ebb"),
+    (9, "Bbb"),
+    (4, "Fb"),
+    (11, "Cb"),
+    (6, "Gb"),
+    (1, "Db"),
+    (8, "Ab"),
+    (3, "Eb"),
+    (10, "Bb"),
+    (5, "F"),
+    (0, "C"),
+    (7, "G"),
+    (2, "D"),
+    (9, "A"),
+    (4, "E"),
+    (11, "B"),
+    (6, "F#"),
+    (1, "C#"),
+    (8, "G#"),
+    (3, "D#"),
+    (10, "A#"),
+    (5, "E#"),
+    (12, "B#"),
+    (7, "F##"),
+    (2, "C##"),
+    (9, "G##"),
+    (4, "D##"),
+    (11, "A##"),
 ]
 
-STEP_MAP = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+STEP_MAP: Dict[str, int] = {
+    "C": 0,
+    "D": 2,
+    "E": 4,
+    "F": 5,
+    "G": 7,
+    "A": 9,
+    "B": 11,
+}
 
-NOTE_TYPE_MAP = {
+NOTE_TYPE_MAP: Dict[str, float] = {
     "1024th": 0.00390625,
     "512th": 0.0078125,
     "256th": 0.015625,
@@ -210,23 +218,30 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
     return None
 
 
-def parse_key_elem(elem: Element, time) -> KeySignature:
-    """Return a key signature parsed from a key element."""
+def parse_key_elem(elem: Element) -> Tuple[int, str, str]:
+    """Return a (root, mode, root_str) tuple parsed from a key element."""
     fifths = int(get_required_text(elem, "fifths"))
     mode = get_text(elem, "mode", "major")
     if mode == "major":
-        root = MAJOR_KEY_MAP[fifths + 14]
+        root, root_str = MAJOR_KEY_MAP[fifths + 14]
     else:
-        root = MINOR_KEY_MAP[fifths + 14]
-    return KeySignature(time=time, root=root, mode=mode)
+        root, root_str = MINOR_KEY_MAP[fifths + 14]
+    return root, mode, root_str
 
 
-def parse_pitch_elem(elem: Element) -> int:
-    """Return a pitch parsed from a pitch element."""
-    step = STEP_MAP[get_required_text(elem, "step")]
+def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
+    """Return a (pitch, pitch_str) tuple parsed from a pitch element."""
+    step = get_required_text(elem, "step")
     octave = int(get_required_text(elem, "octave"))
     alter = int(get_text(elem, "alter", 0))
-    return 12 * (octave + 1) + step + alter
+    pitch = 12 * (octave + 1) + STEP_MAP[step] + alter
+    if alter > 0:
+        pitch_str = step + "#" * alter + str(octave)
+    elif alter < 0:
+        pitch_str = step + "b" * (-alter) + str(octave)
+    else:
+        pitch_str = step + str(octave)
+    return pitch, pitch_str
 
 
 def parse_part_elem(
@@ -310,8 +325,14 @@ def parse_part_elem(
                 # Key signatures
                 key_elem = elem.find("key")
                 if key_elem is not None:
+                    root, mode, root_str = parse_key_elem(key_elem)
                     key_signatures.append(
-                        parse_key_elem(key_elem, time + position)
+                        KeySignature(
+                            time=time + position,
+                            root=root,
+                            mode=mode,
+                            root_str=root_str,
+                        )
                     )
 
             # Sound element
@@ -338,7 +359,9 @@ def parse_part_elem(
                     # Tempo
                     tempo = sound_elem.get("tempo")
                     if tempo is not None:
-                        tempos.append(Tempo(time + position, float(tempo)))
+                        tempos.append(
+                            Tempo(time=time + position, qpm=float(tempo))
+                        )
                         tempo_set = True
 
                     # Dynamics
@@ -352,7 +375,7 @@ def parse_part_elem(
                     if metronome_elem is not None:
                         qpm = parse_metronome_elem(metronome_elem)
                         if qpm is not None:
-                            tempos.append(Tempo(time + position, qpm))
+                            tempos.append(Tempo(time=time + position, qpm=qpm))
 
             elif elem.tag == "note":
                 # TODO: Handle voice information
@@ -384,8 +407,9 @@ def parse_part_elem(
                     continue
 
                 # Compute pitch number
-
-                pitch = parse_pitch_elem(get_required(elem, "pitch"))
+                pitch, pitch_str = parse_pitch_elem(
+                    get_required(elem, "pitch")
+                )
                 pitch += 12 * transpose_octave + transpose_semitone
 
                 # Check if it is a tied note
@@ -422,7 +446,11 @@ def parse_part_elem(
                 else:
                     # Create a new note and append it to the note list
                     note = Note(
-                        time + position, duration * factor, pitch, velocity,
+                        time=time + position,
+                        duration=duration * factor,
+                        pitch=pitch,
+                        velocity=velocity,
+                        pitch_str=pitch_str,
                     )
                     notes[instrument_id].append(note)
 

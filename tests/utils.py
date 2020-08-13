@@ -15,7 +15,7 @@ def check_metadata(metadata, ext=None):
     """Check metadata."""
     assert metadata.schema_version == "0.0"
 
-    assert metadata.title == "Fur Elise"
+    assert metadata.title == "Für Elise"
     assert len(metadata.creators) == 1
     assert metadata.creators[0] == "Ludwig van Beethoven"
     assert metadata.copyright is None

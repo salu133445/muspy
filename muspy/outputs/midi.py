@@ -15,6 +15,8 @@ from ..classes import KeySignature, Lyric, Note, Tempo, TimeSignature, Track
 if TYPE_CHECKING:
     from ..music import Music
 
+PITCH_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+
 
 def to_delta_time(midi_track: MidiTrack):
     """Convert a mido MidiTrack object from absolute time to delta time.
@@ -57,7 +59,7 @@ def to_mido_key_signature(key_signature: KeySignature) -> MetaMessage:
     return MetaMessage(
         "key_signature",
         time=key_signature.time,
-        key=key_signature.root + suffix,
+        key=PITCH_NAMES[key_signature.root] + suffix,
     )
 
 

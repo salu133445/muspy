@@ -216,12 +216,12 @@ def parse_track(part: Part, resolution=DEFAULT_RESOLUTION) -> Track:
     else:
         is_drum = False
 
-    return Track(program=program, is_drum=program, notes=notes, chords=chords)
+    return Track(program=program, is_drum=is_drum, notes=notes, chords=chords)
 
 
 def from_music21_part(
     part: Part, resolution=DEFAULT_RESOLUTION
-) -> List[Track]:
+) -> Union[Track, List[Track]]:
     """Return track(s) parsed from a music21 Part object.
 
     Parameters
@@ -233,14 +233,16 @@ def from_music21_part(
 
     Returns
     -------
-    list of :class:`muspy.Track` object
+    :class:`muspy.Track` object or list of :class:`muspy.Track` object
         Parsed track(s).
 
     """
     instruments = partitionByInstrument(part)
-    if instruments:
-        return [parse_track(instrument) for instrument in instruments]
-    return [parse_track(part)]
+    if len(instruments) > 1:
+        return [
+            parse_track(instrument, resolution) for instrument in instruments
+        ]
+    return parse_track(part, resolution)
 
 
 def from_music21_opus(
@@ -299,7 +301,9 @@ def from_music21_score(score: Score, resolution=DEFAULT_RESOLUTION) -> Music:
     )
 
 
-def from_music21(stream: Stream, resolution=DEFAULT_RESOLUTION) -> Music:
+def from_music21(
+    stream: Stream, resolution=DEFAULT_RESOLUTION
+) -> Union[Music, List[Music], Track, List[Track]]:
     """Return a Music object converted from a music21 Stream object.
 
     Parameters
@@ -311,16 +315,16 @@ def from_music21(stream: Stream, resolution=DEFAULT_RESOLUTION) -> Music:
 
     Returns
     -------
-    :class:`muspy.Music` object
-        Converted Music object.
+    :class:`muspy.Music` object(s) or :class:`muspy.Track` object(s)
+        Converted Music object(s) or Track object(s).
 
     """
     if isinstance(stream, Opus):
         return from_music21_opus(stream, resolution)
-    elif isinstance(stream, Score):
-        return from_music21_score(stream, resolution)
+    elif isinstance(stream, Part):
+        return from_music21_part(stream, resolution)
     else:
-        return from_music21_stream(stream, resolution)
+        return from_music21_score(stream, resolution)
 
     tracks = []
     if isinstance(stream, Score):

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Union
 
 from mido import MidiFile, tempo2bpm
-from pretty_midi import Instrument, PrettyMIDI, key_number_to_key_name
+from pretty_midi import Instrument, PrettyMIDI
 
 from ..classes import (
     Annotation,
@@ -111,34 +111,46 @@ def read_midi_mido(
 
             # Tempo messages
             if msg.type == "set_tempo":
-                tempos.append(Tempo(time, tempo2bpm(msg.tempo)))
+                tempos.append(Tempo(time=time, qpm=tempo2bpm(msg.tempo)))
 
             # Key signature messages
             elif msg.type == "key_signature":
                 if msg.key.endswith("m"):
                     key_signatures.append(
-                        KeySignature(time, msg.key[:-1], "minor")
+                        KeySignature(
+                            time=time, root=msg.key[:-1], mode="minor"
+                        )
                     )
                 else:
-                    key_signatures.append(KeySignature(time, msg.key, "major"))
+                    key_signatures.append(
+                        KeySignature(time=time, root=msg.key, mode="major")
+                    )
 
             # Time signature messages
             elif msg.type == "time_signature":
                 time_signatures.append(
-                    TimeSignature(time, msg.numerator, msg.denominator)
+                    TimeSignature(
+                        time=time,
+                        numerator=msg.numerator,
+                        denominator=msg.denominator,
+                    )
                 )
 
             # Lyric messages
             elif msg.type == "lyrics":
-                lyrics.append(Lyric(time, msg.text))
+                lyrics.append(Lyric(time=time, lyric=msg.text))
 
             # Marker messages
             elif msg.type == "marker":
-                annotations.append(Annotation(time, msg.text, "marker"))
+                annotations.append(
+                    Annotation(time=time, annotation=msg.text, group="marker")
+                )
 
             # Text messages
             elif msg.type == "text":
-                annotations.append(Annotation(time, msg.text, "text"))
+                annotations.append(
+                    Annotation(time=time, annotation=msg.text, group="text")
+                )
 
             # Copyright messages
             elif msg.type == "copyright":
@@ -266,7 +278,8 @@ def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
     """
     key_signatures = []
     for key_signature in pm.key_signature_changes:
-        root, mode = key_number_to_key_name(key_signature.key_number).split()
+        is_minor, root = divmod(key_signature.key_number, 12)
+        mode = "minor" if is_minor else "major"
         key_signatures.append(KeySignature(key_signature.time, root, mode))
     return key_signatures
 
