@@ -10,10 +10,3 @@ Attributes Description                            Type Default
 time       Start time                             int
 lyric      Lyric (sentence, word, syllable, etc.) str
 ========== ====================================== ==== =======
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.Lyric
-    :noindex:

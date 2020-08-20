@@ -15,10 +15,3 @@ collection      Name of the collection    str
 source_filename Name of the source file   str
 source_format   Format of the source file str
 =============== ========================= =========== =======
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.Metadata
-    :noindex:

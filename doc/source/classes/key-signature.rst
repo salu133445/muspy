@@ -12,10 +12,3 @@ root       Root note as a number  int
 mode       Mode (e.g., "major")   str
 root_str   Root note as a string  int
 ========== ====================== ==== =======
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.KeySignature
-    :noindex:

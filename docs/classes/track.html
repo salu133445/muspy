@@ -91,25 +91,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">MusPy Classes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="music.html">Music Class</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Track Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metadata.html">Metadata Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tempo.html">Tempo Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="key-signature.html">KeySignature Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time-signature.html">TimeSignature Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lyric.html">Lyric Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="annotation.html">Annotation Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="note.html">Note Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chord.html">Chord Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#base-class">Base Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="index.html#complexbase-class">ComplexBase Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="index.html#detailed-documentation">Detailed Documentation</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="music.html">Music Class</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Track Class</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#detailed-documentation">Detailed Documentation</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="metadata.html">Metadata Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tempo.html">Tempo Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="key-signature.html">KeySignature Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="time-signature.html">TimeSignature Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="lyric.html">Lyric Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="annotation.html">Annotation Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="note.html">Note Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="chord.html">Chord Class</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../io.html">Data I/O</a></li>
@@ -241,108 +234,6 @@
 </tbody>
 </table>
 <p>(MIDI program number is based on General MIDI specification; see <a class="reference external" href="https://www.midi.org/specifications/item/gm-level-1-sound-set">here</a>.)</p>
-<div class="section" id="detailed-documentation">
-<h2>Detailed Documentation<a class="headerlink" href="#detailed-documentation" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chords</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>A container for music track.</p>
-<p>Indexing a Track object gives the note of a certain index. That is,
-<cite>track[idx]</cite> is equivalent to <cite>track.notes[idx]</cite>, while the latter is
-recommended for readability.</p>
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">program</code></dt>
-<dd><p>Program number according to General MIDI specification [1].
-Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
-Piano).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>int, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">is_drum</code></dt>
-<dd><p>A boolean indicating if it is a percussion track. Defaults to
-False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>bool, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">name</code></dt>
-<dd><p>Track name.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">notes</code></dt>
-<dd><p>Musical notes. Defaults to an empty list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Note" title="muspy.Note"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Note</span></code></a> objects, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">chords</code></dt>
-<dd><p>Chords. Defaults to an empty list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Chord" title="muspy.Chord"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Chord</span></code></a> objects, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">annotations</code></dt>
-<dd><p>Annotations. Defaults to an empty list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a> objects, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">lyrics</code></dt>
-<dd><p>Lyrics. Defaults to an empty list.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a> objects, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt>
-<code class="sig-name descname">[1] https</code></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>//www.midi.org/specifications/item/gm-level-1-sound-set</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 </div>
 
 

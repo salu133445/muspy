@@ -19,10 +19,3 @@ tracks          Music tracks           list of :class:`muspy.Track`         []
 =============== ====================== ==================================== =========================
 
 .. Hint:: An example of a MusPy Music object as a YAML file is available `here <../examples.html>`__.
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.Music
-    :noindex:

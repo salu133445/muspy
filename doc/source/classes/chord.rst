@@ -14,10 +14,3 @@ velocity   Chord velocity                    int (0-127)
 ========== ================================= =================== =======
 
 .. Hint:: :class:`muspy.Chord` has a property `end` with setter and getter implemented, which can be handy sometimes.
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.Chord
-    :noindex:

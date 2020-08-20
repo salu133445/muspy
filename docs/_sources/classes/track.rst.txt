@@ -17,10 +17,3 @@ annotations Annotations              list of :class:`muspy.Annotation` []
 =========== ======================== ================================= =======
 
 (MIDI program number is based on General MIDI specification; see `here <https://www.midi.org/specifications/item/gm-level-1-sound-set>`__.)
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.Track
-    :noindex:

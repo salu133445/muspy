@@ -6,6 +6,22 @@ MusPy provides several classes for working with symbolic music. Here is an illus
 
 .. image:: ../images/classes.svg
 
+Here is a list of the classes that MusPy provides for handling symbolic music.
+
+.. toctree::
+    :titlesonly:
+
+    music
+    track
+    metadata
+    tempo
+    key-signature
+    time-signature
+    lyric
+    annotation
+    note
+    chord
+
 
 Base Class
 ==========
@@ -29,32 +45,3 @@ MusPy classes that contains list attributes also inherit from the :class:`muspy.
 - :meth:`muspy.ComplexBase.remove_invalid`: remove invalid items from the lists
 - :meth:`muspy.ComplexBase.sort`: sort the lists
 - :meth:`muspy.ComplexBase.remove_duplicate`: remove duplicate items from the lists
-
-
-Detailed Documentation
-======================
-
-.. autoclass:: muspy.Base
-    :noindex:
-
-.. autoclass:: muspy.ComplexBase
-    :noindex:
-
-
-
-Contents
-========
-
-.. toctree::
-    :titlesonly:
-
-    music
-    track
-    metadata
-    tempo
-    key-signature
-    time-signature
-    lyric
-    annotation
-    note
-    chord
