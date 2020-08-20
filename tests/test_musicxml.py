@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 
 import muspy
-from muspy.inputs.musicxml import MAJOR_KEY_MAP, MINOR_KEY_MAP
+from muspy.inputs.musicxml import CIRCLE_OF_FIFTHS, MODE_CENTERS
 
 from .utils import (
     TEST_JSON_PATH,
@@ -156,11 +156,16 @@ def test_key_signatures():
 
     for i, key_signature in enumerate(music.key_signatures):
         if i % 2 == 0:
-            root, root_str = MAJOR_KEY_MAP[i // 2 + 3]
             assert key_signature.mode == "major"
         else:
-            root, root_str = MINOR_KEY_MAP[i // 2 + 3]
             assert key_signature.mode == "minor"
+
+    for i, key_signature in enumerate(music.key_signatures[:8]):
+        # TODO: Check root and root_str
+        fifths = None
+        root, root_str = CIRCLE_OF_FIFTHS[
+            MODE_CENTERS[key_signature.mode] + fifths
+        ]
         assert key_signature.root == root
         assert key_signature.root_str == root_str
 
@@ -185,6 +190,7 @@ def test_church_modes():
 
     for key_signature, answer in zip(music.key_signatures, modes):
         assert key_signature.mode == answer
+        # TODO: Check root and root_str
 
 
 def test_chords():

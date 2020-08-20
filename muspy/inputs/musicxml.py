@@ -23,13 +23,8 @@ from ..schemas import get_musicxml_schema_path
 
 T = TypeVar("T")
 
-MAJOR_KEY_MAP: List[Tuple[int, str]] = [
-    (10, "Cbb"),
-    (5, "Gbb"),
-    (0, "Dbb"),
-    (7, "Abb"),
-    (2, "Ebb"),
-    (9, "Bbb"),
+
+CIRCLE_OF_FIFTHS: List[Tuple[int, str]] = [
     (4, "Fb"),
     (11, "Cb"),
     (6, "Gb"),
@@ -37,55 +32,33 @@ MAJOR_KEY_MAP: List[Tuple[int, str]] = [
     (8, "Ab"),
     (3, "Eb"),
     (10, "Bb"),
-    (5, "F"),
-    (0, "C"),
-    (7, "G"),
-    (2, "D"),
-    (9, "A"),
-    (4, "E"),
-    (11, "B"),
+    (5, "F"),  # Lydian
+    (0, "C"),  # Major/Ionian
+    (7, "G"),  # Mixolydian
+    (2, "D"),  # Dorian
+    (9, "A"),  # Minor/Aeolian
+    (4, "E"),  # Phrygian
+    (11, "B"),  # Locrian
     (6, "F#"),
     (1, "C#"),
     (8, "G#"),
     (3, "D#"),
     (10, "A#"),
     (5, "E#"),
-    (12, "B#"),
-    (7, "F##"),
-    (2, "C##"),
+    (0, "B#"),
 ]
 
-MINOR_KEY_MAP: List[Tuple[int, str]] = [
-    (7, "Abb"),
-    (2, "Ebb"),
-    (9, "Bbb"),
-    (4, "Fb"),
-    (11, "Cb"),
-    (6, "Gb"),
-    (1, "Db"),
-    (8, "Ab"),
-    (3, "Eb"),
-    (10, "Bb"),
-    (5, "F"),
-    (0, "C"),
-    (7, "G"),
-    (2, "D"),
-    (9, "A"),
-    (4, "E"),
-    (11, "B"),
-    (6, "F#"),
-    (1, "C#"),
-    (8, "G#"),
-    (3, "D#"),
-    (10, "A#"),
-    (5, "E#"),
-    (12, "B#"),
-    (7, "F##"),
-    (2, "C##"),
-    (9, "G##"),
-    (4, "D##"),
-    (11, "A##"),
-]
+MODE_CENTERS = {
+    "major": 8,
+    "minor": 11,
+    "lydian": 7,
+    "ionian": 8,
+    "mixolydian": 9,
+    "dorian": 10,
+    "aeolian": 11,
+    "phrygian": 12,
+    "locrian": 13,
+}
 
 STEP_MAP: Dict[str, int] = {
     "C": 0,
@@ -218,15 +191,17 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
     return None
 
 
-def parse_key_elem(elem: Element) -> Tuple[int, str, str]:
+def parse_key_elem(elem: Element) -> Optional[Dict]:
     """Return a (root, mode, root_str) tuple parsed from a key element."""
-    fifths = int(get_required_text(elem, "fifths"))
     mode = get_text(elem, "mode", "major")
-    if mode == "major":
-        root, root_str = MAJOR_KEY_MAP[fifths + 14]
-    else:
-        root, root_str = MINOR_KEY_MAP[fifths + 14]
-    return root, mode, root_str
+    fifths = int(get_required_text(elem, "fifths"))
+    if mode is None:
+        return {"fifths": fifths}
+    idx = MODE_CENTERS[mode] + fifths
+    if idx < 0 or idx > 20:
+        return {"fifths": fifths, "mode": mode}
+    root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + fifths]
+    return {"root": root, "mode": mode, "fifths": fifths, "root_str": root_str}
 
 
 def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
@@ -325,15 +300,15 @@ def parse_part_elem(
                 # Key signatures
                 key_elem = elem.find("key")
                 if key_elem is not None:
-                    root, mode, root_str = parse_key_elem(key_elem)
-                    key_signatures.append(
-                        KeySignature(
+                    parsed_key = parse_key_elem(key_elem)
+                    if parsed_key is not None:
+                        key_signature = KeySignature(
                             time=time + position,
-                            root=root,
-                            mode=mode,
-                            root_str=root_str,
+                            root=parsed_key.get("root"),
+                            mode=parsed_key.get("mode"),
+                            root_str=parsed_key.get("root_str"),
                         )
-                    )
+                        key_signatures.append(key_signature)
 
             # Sound element
             elif elem.tag == "sound":

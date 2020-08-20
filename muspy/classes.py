@@ -131,23 +131,38 @@ class KeySignature(Base):
         Root of the key signature.
     mode : str
         Mode of the key signature.
+    fifths : int
+        Number of flats or sharps. Positive numbers for sharps and negative
+        numbers for flats.
     root_str : str, optional
         Root of the key signature as a string.
 
     """
 
     _attributes = OrderedDict(
-        [("time", int), ("root", int), ("mode", str), ("root_str", str)]
+        [
+            ("time", int),
+            ("root", int),
+            ("mode", str),
+            ("fifths", int),
+            ("root_str", str),
+        ]
     )
-    _optional_attributes = ["root_str"]
+    _optional_attributes = ["root", "mode", "fifths", "root_str"]
     _sort_attributes = ["time"]
 
     def __init__(
-        self, time: int, root: int, mode: str, root_str: Optional[str] = None
+        self,
+        time: int,
+        root: Optional[int] = None,
+        mode: Optional[str] = None,
+        fifths: Optional[int] = None,
+        root_str: Optional[str] = None,
     ):
         self.time = time
         self.root = root
         self.mode = mode
+        self.fifths = fifths
         self.root_str = root_str
 
 
