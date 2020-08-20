@@ -45,7 +45,7 @@ Contents
     getting_started
     example
     timing
-    classes
+    classes/index
     io
     datasets
     representations

@@ -32,17 +32,14 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     for track in music.tracks:
         pianoroll = np.zeros((length, 128))
         for note in track.notes:
-            pianoroll[
-                note.time : note.end + 1, note.pitch  # type:ignore
-            ] = note.velocity
-        tracks.append(
-            Track(
-                pianoroll,
-                track.program,
-                track.is_drum,
-                track.name if track.name is not None else "",
-            )
+            pianoroll[note.time : note.end, note.pitch] = note.velocity
+        track = Track(
+            pianoroll,
+            track.program,
+            track.is_drum,
+            track.name if track.name is not None else "",
         )
+        tracks.append(track)
 
     # Tempos
     last_tempo_time = max((tempo.time for tempo in music.tempos))
@@ -55,8 +52,8 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         position = tempo.time + 1
         qpm = tempo.qpm
 
-    if music.metadata and music.metadata.song:
-        name = music.metadata.song.title if name is not None else ""
+    if music.metadata is not None:
+        name = music.metadata.title if music.metadata.title is not None else ""
 
     return Multitrack(
         tracks=tracks,

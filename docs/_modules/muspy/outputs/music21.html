@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>muspy.outputs.music21 &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>muspy.outputs.music21</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for muspy.outputs.music21</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Music21 converter interface.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="k">import</span> <span class="n">Copyright</span><span class="p">,</span> <span class="n">Contributor</span>
+<span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="k">import</span> <span class="n">Metadata</span> <span class="k">as</span> <span class="n">M21MetaData</span>
+<span class="kn">from</span> <span class="nn">music21.note</span> <span class="k">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">M21Note</span>
+<span class="kn">from</span> <span class="nn">music21.stream</span> <span class="k">import</span> <span class="n">Part</span><span class="p">,</span> <span class="n">Score</span>
+<span class="kn">from</span> <span class="nn">music21.tempo</span> <span class="k">import</span> <span class="n">MetronomeMark</span>
+<span class="kn">from</span> <span class="nn">music21.key</span> <span class="k">import</span> <span class="n">Key</span>
+<span class="kn">from</span> <span class="nn">music21.meter</span> <span class="k">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">M21TimeSignature</span>
+
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">TimeSignature</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
+
+<span class="n">PITCH_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;C#&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;D#&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;F#&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;G#&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;A#&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_pitch_name</span><span class="p">(</span><span class="n">note_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="n">octave</span><span class="p">,</span> <span class="n">pitch_class</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">note_number</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">octave</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">to_music21_metronome</span><span class="p">(</span><span class="n">tempo</span><span class="p">:</span> <span class="n">Tempo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetronomeMark</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Tempo object as a music21 MetronomeMark object.&quot;&quot;&quot;</span>
+    <span class="n">metronome</span> <span class="o">=</span> <span class="n">MetronomeMark</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span>
+    <span class="n">metronome</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span>
+    <span class="k">return</span> <span class="n">metronome</span>
+
+
+<span class="k">def</span> <span class="nf">to_music21_key</span><span class="p">(</span><span class="n">key_signature</span><span class="p">:</span> <span class="n">KeySignature</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Key</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a KeySignature object as a music21 Key object.&quot;&quot;&quot;</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">tonic</span><span class="o">=</span><span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+    <span class="n">key</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span>
+    <span class="k">return</span> <span class="n">key</span>
+
+
+<span class="k">def</span> <span class="nf">to_music21_time_signature</span><span class="p">(</span>
+    <span class="n">time_signature</span><span class="p">:</span> <span class="n">TimeSignature</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M21TimeSignature</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a TimeSignature object as a music21 TimeSignature object.&quot;&quot;&quot;</span>
+    <span class="n">m21_time_signature</span> <span class="o">=</span> <span class="n">M21TimeSignature</span><span class="p">(</span>
+        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span> <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="n">m21_time_signature</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span>
+    <span class="k">return</span> <span class="n">m21_time_signature</span>
+
+
+<span class="k">def</span> <span class="nf">to_music21_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="n">Metadata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M21MetaData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Convert a Metadata object to a music21 Metadata object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        MusPy Music object to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    `music21.metadata.Metadata` object</span>
+<span class="sd">        Converted music21 Score object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="n">M21MetaData</span><span class="p">()</span>
+
+    <span class="c1"># Title is usually stored in movement-title</span>
+    <span class="c1"># See https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
+    <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
+        <span class="n">meta</span><span class="o">.</span><span class="n">movementName</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">title</span>
+
+    <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">copyright</span><span class="p">:</span>
+        <span class="n">meta</span><span class="o">.</span><span class="n">copyright</span> <span class="o">=</span> <span class="n">Copyright</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">copyright</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">creator</span> <span class="ow">in</span> <span class="n">metadata</span><span class="o">.</span><span class="n">creators</span><span class="p">:</span>
+        <span class="n">meta</span><span class="o">.</span><span class="n">addContributor</span><span class="p">(</span><span class="n">Contributor</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">creator</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">meta</span>
+
+
+<div class="viewcode-block" id="to_music21"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_music21">[docs]</a><span class="k">def</span> <span class="nf">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Score</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Convert a Music object to a music21 Score object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        MusPy Music object to be converted.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    `music21.stream.Score` object</span>
+<span class="sd">        Converted music21 Score object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a new score</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">Score</span><span class="p">()</span>
+
+    <span class="c1"># Metadata</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+        <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_metadata</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="p">))</span>
+
+    <span class="c1"># Tracks</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="c1"># Create a new part</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">Part</span><span class="p">()</span>
+        <span class="n">part</span><span class="o">.</span><span class="n">partName</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="c1"># Add tempos</span>
+        <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_metronome</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+
+        <span class="c1"># Add time signatures</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_time_signature</span><span class="p">(</span><span class="n">time_signature</span><span class="p">))</span>
+
+        <span class="c1"># Add key signatures</span>
+        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_key</span><span class="p">(</span><span class="n">key_signature</span><span class="p">))</span>
+
+        <span class="c1"># Add notes to part</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">m21_note</span> <span class="o">=</span> <span class="n">M21Note</span><span class="p">(</span><span class="n">_get_pitch_name</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
+            <span class="n">m21_note</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+            <span class="n">m21_note</span><span class="o">.</span><span class="n">quarterLength</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m21_note</span><span class="p">)</span>
+
+        <span class="c1"># Append the part to score</span>
+        <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">score</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright MusPy Developers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

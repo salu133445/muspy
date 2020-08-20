@@ -90,7 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../representations.html">Representations</a></li>
@@ -184,7 +184,7 @@
 <div class="section" id="core-classes">
 <h2>Core classes<a class="headerlink" href="#core-classes" title="Permalink to this headline">¶</a></h2>
 <p>These are the core classes of MusPy. All these objects inherit from
-the base class <code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Base</span></code>.</p>
+the base class <a class="reference internal" href="muspy.html#muspy.Base" title="muspy.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Base</span></code></a>.</p>
 <dl class="py class">
 <dt id="muspy.classes.Annotation">
 <em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Annotation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">annotation</span></em>, <em class="sig-param"><span class="n">group</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Annotation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Annotation" title="Permalink to this definition">¶</a></dt>
@@ -225,8 +225,96 @@ the base class <code class="xref py py-class docutils literal notranslate"><span
 </dd></dl>
 
 <dl class="py class">
+<dt id="muspy.classes.Chord">
+<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Chord</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">pitches</span></em>, <em class="sig-param"><span class="n">velocity</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">pitches_str</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Chord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Chord" title="Permalink to this definition">¶</a></dt>
+<dd><p>A container for chord.</p>
+<dl class="py attribute">
+<dt id="muspy.classes.Chord.time">
+<code class="sig-name descname">time</code><a class="headerlink" href="#muspy.classes.Chord.time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start time of the chord, in time steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.classes.Chord.duration">
+<code class="sig-name descname">duration</code><a class="headerlink" href="#muspy.classes.Chord.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Duration of the chord, in time steps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.classes.Chord.pitches">
+<code class="sig-name descname">pitches</code><a class="headerlink" href="#muspy.classes.Chord.pitches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note pitches, as MIDI note numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.classes.Chord.velocity">
+<code class="sig-name descname">velocity</code><a class="headerlink" href="#muspy.classes.Chord.velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chord velocity. Defaults to <cite>muspy.DEFAULT_VELOCITY</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.classes.Chord.clip">
+<code class="sig-name descname">clip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">upper</span><span class="o">=</span><span class="default_value">127</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Chord.clip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Chord.clip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clip the velocity of the chord.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower</strong> (<em>int</em><em>, </em><em>optional</em>) – Lower bound. Defaults to 0.</p></li>
+<li><p><strong>upper</strong> (<em>int</em><em>, </em><em>optional</em>) – Upper bound. Defaults to 127.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.classes.Chord.end">
+<em class="property">property </em><code class="sig-name descname">end</code><a class="headerlink" href="#muspy.classes.Chord.end" title="Permalink to this definition">¶</a></dt>
+<dd><p>End time of the chord.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.classes.Chord.start">
+<em class="property">property </em><code class="sig-name descname">start</code><a class="headerlink" href="#muspy.classes.Chord.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start time of the chord.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.classes.Chord.transpose">
+<code class="sig-name descname">transpose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">semitone</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Chord.transpose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Chord.transpose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transpose the notes by a number of semitones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>semitone</strong> (<em>int</em>) – The number of semitones to transpose the notes. A positive value
+raises the pitches, while a negative value lowers the pitches.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="muspy.classes.KeySignature">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">KeySignature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">mode</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#KeySignature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.KeySignature" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">KeySignature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">mode</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">fifths</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">root_str</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#KeySignature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.KeySignature" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for key signature.</p>
 <dl class="py attribute">
 <dt id="muspy.classes.KeySignature.time">
@@ -245,7 +333,7 @@ the base class <code class="xref py py-class docutils literal notranslate"><span
 <dd><p>Root of the key signature.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-odd"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -257,6 +345,29 @@ the base class <code class="xref py py-class docutils literal notranslate"><span
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.classes.KeySignature.fifths">
+<code class="sig-name descname">fifths</code><a class="headerlink" href="#muspy.classes.KeySignature.fifths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of flats or sharps. Positive numbers for sharps and negative
+numbers for flats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.classes.KeySignature.root_str">
+<code class="sig-name descname">root_str</code><a class="headerlink" href="#muspy.classes.KeySignature.root_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Root of the key signature as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str, optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -372,18 +483,11 @@ the base class <code class="xref py py-class docutils literal notranslate"><span
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="muspy.classes.Metadata.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Metadata.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Metadata.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise proper errors if a certain attribute is invalid.</p>
-<p>When <cite>attr</cite> is not given, check all attributes.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.classes.Note">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Note</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">pitch</span></em>, <em class="sig-param"><span class="n">velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Note"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Note" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Note</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">duration</span></em>, <em class="sig-param"><span class="n">pitch</span></em>, <em class="sig-param"><span class="n">velocity</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">pitch_str</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Note"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Note" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for note.</p>
 <dl class="py attribute">
 <dt id="muspy.classes.Note.time">
@@ -467,17 +571,11 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="muspy.classes.Note.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Note.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Note.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise proper errors if any attribute is invalid.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.classes.Tempo">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Tempo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">tempo</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Tempo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Tempo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Tempo</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time</span></em>, <em class="sig-param"><span class="n">qpm</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Tempo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Tempo" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for key signature.</p>
 <dl class="py attribute">
 <dt id="muspy.classes.Tempo.time">
@@ -491,8 +589,8 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.classes.Tempo.tempo">
-<code class="sig-name descname">tempo</code><a class="headerlink" href="#muspy.classes.Tempo.tempo" title="Permalink to this definition">¶</a></dt>
+<dt id="muspy.classes.Tempo.qpm">
+<code class="sig-name descname">qpm</code><a class="headerlink" href="#muspy.classes.Tempo.qpm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Tempo in qpm (quarters per minute).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -540,18 +638,15 @@ raises the pitch, while a negative value lowers the pitch.</p>
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt id="muspy.classes.TimeSignature.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#TimeSignature.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.TimeSignature.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise proper errors if any attribute is invalid.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class">
 <dt id="muspy.classes.Track">
 <em class="property">class </em><code class="sig-prename descclassname">muspy.classes.</code><code class="sig-name descname">Track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">notes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">chords</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Track" title="Permalink to this definition">¶</a></dt>
 <dd><p>A container for music track.</p>
+<p>Indexing a Track object gives the note of a certain index. That is,
+<cite>track[idx]</cite> is equivalent to <cite>track.notes[idx]</cite>, while the latter is
+recommended for readability.</p>
 <dl class="py attribute">
 <dt id="muspy.classes.Track.program">
 <code class="sig-name descname">program</code><a class="headerlink" href="#muspy.classes.Track.program" title="Permalink to this definition">¶</a></dt>
@@ -605,7 +700,7 @@ False.</p>
 <dd><p>Chords. Defaults to an empty list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of <code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Chord</span></code> objects, optional</p>
+<dd class="field-odd"><p>list of <a class="reference internal" href="muspy.html#muspy.Chord" title="muspy.Chord"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Chord</span></code></a> objects, optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -682,8 +777,15 @@ raises the pitches, while a negative value lowers the pitches.</p>
 
 <dl class="py method">
 <dt id="muspy.classes.Track.validate">
-<code class="sig-name descname">validate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Track.validate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Raise proper errors if any attribute is invalid.</p>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.validate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.classes.Track.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Raise proper errors if a certain attribute is invalid.</p>
+<p>This will apply recursively to an attribute’s attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>attr</strong> (<em>str</em>) – Attribute to validate. If None, validate all attributes. Defaults
+to None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

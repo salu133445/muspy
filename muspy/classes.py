@@ -16,6 +16,7 @@ DEFAULT_VELOCITY = 64
 
 __all__ = [
     "Annotation",
+    "Chord",
     "KeySignature",
     "Lyric",
     "Metadata",

@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -182,75 +182,56 @@
 <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">..schemas</span> <span class="k">import</span> <span class="n">get_musicxml_schema_path</span>
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
-<span class="n">MAJOR_KEY_MAP</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Cbb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Gbb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Dbb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Abb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Ebb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Bbb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Fb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Cb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Gb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Db&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Ab&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Eb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Bb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;F&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;G&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;D&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;A&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;E&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;F#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;G#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;D#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;A#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;E#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;B#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;F##&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C##&quot;</span><span class="p">,</span>
+
+<span class="n">CIRCLE_OF_FIFTHS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;Fb&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s2">&quot;Cb&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;Gb&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Db&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Ab&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Eb&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Bb&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">),</span>  <span class="c1"># Lydian</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span>  <span class="c1"># Major/Ionian</span>
+    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">),</span>  <span class="c1"># Mixolydian</span>
+    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">),</span>  <span class="c1"># Dorian</span>
+    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">),</span>  <span class="c1"># Minor/Aeolian</span>
+    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">),</span>  <span class="c1"># Phrygian</span>
+    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span>  <span class="c1"># Locrian</span>
+    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;F#&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C#&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;G#&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;D#&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;A#&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;E#&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;B#&quot;</span><span class="p">),</span>
 <span class="p">]</span>
 
-<span class="n">MINOR_KEY_MAP</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Abb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Ebb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Bbb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Fb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Cb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Gb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Db&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Ab&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Eb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Bb&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;F&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;G&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;D&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;A&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;E&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;B&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;F#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;G#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;D#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;A#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;E#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;B#&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;F##&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;C##&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;G##&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;D##&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;A##&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="n">MODE_CENTERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;major&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;minor&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="s2">&quot;lydian&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;ionian&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+    <span class="s2">&quot;mixolydian&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;dorian&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="s2">&quot;aeolian&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+    <span class="s2">&quot;phrygian&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="s2">&quot;locrian&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+<span class="p">}</span>
 
-<span class="n">STEP_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">}</span>
+<span class="n">STEP_MAP</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;C&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;D&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;E&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+    <span class="s2">&quot;F&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s2">&quot;G&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s2">&quot;A&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+<span class="p">}</span>
 
-<span class="n">NOTE_TYPE_MAP</span> <span class="o">=</span> <span class="p">{</span>
+<span class="n">NOTE_TYPE_MAP</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">&quot;1024th&quot;</span><span class="p">:</span> <span class="mf">0.00390625</span><span class="p">,</span>
     <span class="s2">&quot;512th&quot;</span><span class="p">:</span> <span class="mf">0.0078125</span><span class="p">,</span>
     <span class="s2">&quot;256th&quot;</span><span class="p">:</span> <span class="mf">0.015625</span><span class="p">,</span>
@@ -358,7 +339,8 @@
     <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span>
 
 
-<span class="k">def</span> <span class="nf">parse_metronome</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">parse_metronome_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a qpm value parsed from a metronome element.&quot;&quot;&quot;</span>
     <span class="n">beat_unit</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;beat-unit&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">beat_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">per_minute</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;per-minute&quot;</span><span class="p">)</span>
@@ -370,10 +352,38 @@
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">parse_part</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">parse_key_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a dictionary containing information parsed from a key element.&quot;&quot;&quot;</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
+    <span class="n">fifths</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;fifths&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;fifths&quot;</span><span class="p">:</span> <span class="n">fifths</span><span class="p">}</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">+</span> <span class="n">fifths</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;fifths&quot;</span><span class="p">:</span> <span class="n">fifths</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">}</span>
+    <span class="n">root</span><span class="p">,</span> <span class="n">root_str</span> <span class="o">=</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">[</span><span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">+</span> <span class="n">fifths</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="n">root</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">&quot;fifths&quot;</span><span class="p">:</span> <span class="n">fifths</span><span class="p">,</span> <span class="s2">&quot;root_str&quot;</span><span class="p">:</span> <span class="n">root_str</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">parse_pitch_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a (pitch, pitch_str) tuple parsed from a pitch element.&quot;&quot;&quot;</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">)</span>
+    <span class="n">octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;octave&quot;</span><span class="p">))</span>
+    <span class="n">alter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;alter&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">pitch</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">octave</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">STEP_MAP</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">+</span> <span class="n">alter</span>
+    <span class="k">if</span> <span class="n">alter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">*</span> <span class="n">alter</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">octave</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">alter</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="s2">&quot;b&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">alter</span><span class="p">)</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">octave</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">octave</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">pitch_str</span>
+
+
+<span class="k">def</span> <span class="nf">parse_part_elem</span><span class="p">(</span>
     <span class="n">part_elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">instrument_info</span><span class="p">:</span> <span class="nb">dict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a dictionary containing data parsed from a part.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return a dictionary containing data parsed from a part element.&quot;&quot;&quot;</span>
     <span class="c1"># Initialize lists and placeholders</span>
     <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -451,17 +461,15 @@
                 <span class="c1"># Key signatures</span>
                 <span class="n">key_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;key&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">key_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">fifths</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">key_elem</span><span class="p">,</span> <span class="s2">&quot;fifths&quot;</span><span class="p">))</span>
-                    <span class="n">mode</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">key_elem</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
-                    <span class="n">key_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                        <span class="n">KeySignature</span><span class="p">(</span>
+                    <span class="n">parsed_key</span> <span class="o">=</span> <span class="n">parse_key_elem</span><span class="p">(</span><span class="n">key_elem</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">parsed_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">key_signature</span> <span class="o">=</span> <span class="n">KeySignature</span><span class="p">(</span>
                             <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
-                            <span class="n">root</span><span class="o">=</span><span class="n">MAJOR_KEY_MAP</span><span class="p">[</span><span class="n">fifths</span> <span class="o">+</span> <span class="mi">14</span><span class="p">]</span>
-                            <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;major&quot;</span>
-                            <span class="k">else</span> <span class="n">MINOR_KEY_MAP</span><span class="p">[</span><span class="n">fifths</span> <span class="o">+</span> <span class="mi">14</span><span class="p">],</span>
-                            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                            <span class="n">root</span><span class="o">=</span><span class="n">parsed_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;root&quot;</span><span class="p">),</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="n">parsed_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mode&quot;</span><span class="p">),</span>
+                            <span class="n">root_str</span><span class="o">=</span><span class="n">parsed_key</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;root_str&quot;</span><span class="p">),</span>
                         <span class="p">)</span>
-                    <span class="p">)</span>
+                        <span class="n">key_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>
 
             <span class="c1"># Sound element</span>
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;sound&quot;</span><span class="p">:</span>
@@ -487,7 +495,9 @@
                     <span class="c1"># Tempo</span>
                     <span class="n">tempo</span> <span class="o">=</span> <span class="n">sound_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tempo&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">tempo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tempo</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">)))</span>
+                        <span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+                        <span class="p">)</span>
                         <span class="n">tempo_set</span> <span class="o">=</span> <span class="kc">True</span>
 
                     <span class="c1"># Dynamics</span>
@@ -499,9 +509,9 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">tempo_set</span><span class="p">:</span>
                     <span class="n">metronome_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;direction-type/metronome&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">metronome_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">qpm</span> <span class="o">=</span> <span class="n">parse_metronome</span><span class="p">(</span><span class="n">metronome_elem</span><span class="p">)</span>
+                        <span class="n">qpm</span> <span class="o">=</span> <span class="n">parse_metronome_elem</span><span class="p">(</span><span class="n">metronome_elem</span><span class="p">)</span>
                         <span class="k">if</span> <span class="n">qpm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tempo</span><span class="p">(</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span> <span class="n">qpm</span><span class="p">))</span>
+                            <span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="n">qpm</span><span class="p">))</span>
 
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;note&quot;</span><span class="p">:</span>
                 <span class="c1"># TODO: Handle voice information</span>
@@ -533,16 +543,10 @@
                     <span class="k">continue</span>
 
                 <span class="c1"># Compute pitch number</span>
-                <span class="n">pitch_elem</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">)</span>
-                <span class="n">step</span> <span class="o">=</span> <span class="n">STEP_MAP</span><span class="p">[</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">pitch_elem</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">)]</span>
-                <span class="n">octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">pitch_elem</span><span class="p">,</span> <span class="s2">&quot;octave&quot;</span><span class="p">))</span>
-                <span class="n">alter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_text</span><span class="p">(</span><span class="n">pitch_elem</span><span class="p">,</span> <span class="s2">&quot;alter&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-                <span class="n">pitch</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">octave</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">transpose_octave</span><span class="p">)</span>
-                    <span class="o">+</span> <span class="n">step</span>
-                    <span class="o">+</span> <span class="n">alter</span>
-                    <span class="o">+</span> <span class="n">transpose_semitone</span>
+                <span class="n">pitch</span><span class="p">,</span> <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">parse_pitch_elem</span><span class="p">(</span>
+                    <span class="n">get_required</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
+                <span class="n">pitch</span> <span class="o">+=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">transpose_octave</span> <span class="o">+</span> <span class="n">transpose_semitone</span>
 
                 <span class="c1"># Check if it is a tied note</span>
                 <span class="n">is_outgoing_tie</span> <span class="o">=</span> <span class="kc">False</span>
@@ -578,10 +582,11 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="c1"># Create a new note and append it to the note list</span>
                     <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-                        <span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
-                        <span class="n">duration</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span>
-                        <span class="n">pitch</span><span class="p">,</span>
-                        <span class="n">velocity</span><span class="p">,</span>
+                        <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
+                        <span class="n">duration</span><span class="o">=</span><span class="n">duration</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span>
+                        <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
+                        <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+                        <span class="n">pitch_str</span><span class="o">=</span><span class="n">pitch_str</span><span class="p">,</span>
                     <span class="p">)</span>
                     <span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
@@ -618,15 +623,11 @@
 
 <span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MusicXML file.&quot;&quot;&quot;</span>
-    <span class="c1"># Song title</span>
-    <span class="n">work_title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">movement_title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;movement-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">movement_title</span><span class="p">:</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">work_title</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">work_title</span><span class="p">:</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">movement_title</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">work_title</span> <span class="o">+</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span> <span class="n">movement_title</span>
+    <span class="c1"># Title is usually stored in movement-title</span>
+    <span class="c1"># See https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;movement-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Creators and copyrights</span>
     <span class="n">creators</span> <span class="o">=</span> <span class="p">[]</span>
@@ -650,6 +651,92 @@
     <span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_get_root</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return root of the element tree.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">compressed</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mxl&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">compressed</span><span class="p">:</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+
+    <span class="c1"># Find out the main MusicXML file in the compressed ZIP archive</span>
+    <span class="c1"># according to the official tutorial (see</span>
+    <span class="c1"># https://www.musicxml.com/tutorial/compressed-mxl-files/).</span>
+    <span class="n">zip_file</span> <span class="o">=</span> <span class="n">ZipFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s2">&quot;META-INF/container.xml&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span><span class="s2">&quot;Container file (&#39;container.xml&#39;) not found.&quot;</span><span class="p">)</span>
+    <span class="n">container</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;META-INF/container.xml&quot;</span><span class="p">))</span>
+    <span class="n">rootfile</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;rootfiles/rootfile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rootfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
+            <span class="s2">&quot;Element &#39;rootfile&#39; tag not found in the container file &quot;</span>
+            <span class="s2">&quot;(&#39;container.xml&#39;).&quot;</span>
+        <span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">rootfile</span><span class="p">,</span> <span class="s2">&quot;full-path&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_get_divisions</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of divisions.&quot;&quot;&quot;</span>
+    <span class="n">divisions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">division_elem</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part/measure/attributes/divisions&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">division_elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">float</span><span class="p">(</span><span class="n">division_elem</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
+                <span class="s2">&quot;Noninteger &#39;division&#39; values are not supported.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">divisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">division_elem</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">divisions</span>
+
+
+<span class="k">def</span> <span class="nf">parse_score_part_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return part information parsed from a score part element.&quot;&quot;&quot;</span>
+    <span class="c1"># Part ID</span>
+    <span class="n">part_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Part name</span>
+    <span class="n">part_name</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;part-name&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Instruments</span>
+    <span class="n">part_info</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">score_instrument_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;score-instrument&quot;</span><span class="p">):</span>
+        <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">score_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span>
+            <span class="n">score_instrument_elem</span><span class="p">,</span>
+            <span class="s2">&quot;instrument-name&quot;</span><span class="p">,</span>
+            <span class="n">part_name</span><span class="p">,</span>
+            <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">midi_instrument_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;midi-instrument&quot;</span><span class="p">):</span>
+        <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">instrument_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">part_info</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">instrument_id</span> <span class="o">==</span> <span class="n">part_id</span><span class="p">:</span>
+                <span class="n">instrument_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+                <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">part_name</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
+                    <span class="s2">&quot;ID of a &#39;midi-instrument&#39; element must be predefined &quot;</span>
+                    <span class="s2">&quot;in a &#39;score-instrument&#39; element.&quot;</span>
+                <span class="p">)</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="n">get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-program&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;is_drum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-channel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="mi">10</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">part_info</span><span class="p">:</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">part_name</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">part_info</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="k">if</span> <span class="s2">&quot;program&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="s2">&quot;is_drum&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">[</span><span class="s2">&quot;is_drum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">part_id</span><span class="p">,</span> <span class="n">part_info</span>
+
+
 <div class="viewcode-block" id="read_musicxml"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_musicxml">[docs]</a><span class="k">def</span> <span class="nf">read_musicxml</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
@@ -670,28 +757,8 @@
 <span class="sd">    Grace notes and unpitched notes are not supported.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">compressed</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mxl&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">compressed</span><span class="p">:</span>
-        <span class="c1"># Find out the main MusicXML file in the compressed ZIP archive</span>
-        <span class="c1"># according to the official tutorial (see</span>
-        <span class="c1"># https://www.musicxml.com/tutorial/compressed-mxl-files/).</span>
-        <span class="n">zip_file</span> <span class="o">=</span> <span class="n">ZipFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-        <span class="k">if</span> <span class="s2">&quot;META-INF/container.xml&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span><span class="s2">&quot;Container file (&#39;container.xml&#39;) not found.&quot;</span><span class="p">)</span>
-        <span class="n">container</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;META-INF/container.xml&quot;</span><span class="p">))</span>
-        <span class="n">rootfile</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;rootfiles/rootfile&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">rootfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
-                <span class="s2">&quot;Element &#39;rootfile&#39; tag not found in the container file &quot;</span>
-                <span class="s2">&quot;(&#39;container.xml&#39;).&quot;</span>
-            <span class="p">)</span>
-        <span class="n">filename</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">rootfile</span><span class="p">,</span> <span class="s2">&quot;full-path&quot;</span><span class="p">)</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+    <span class="c1"># Get element tree root</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_root</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">compressed</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;score-timewise&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MusicXML file with timewise type is not supported.&quot;</span><span class="p">)</span>
@@ -700,65 +767,18 @@
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
     <span class="c1"># Set resolution to the least common multiple of all divisions</span>
-    <span class="n">divisions</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">division_elem</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part/measure/attributes/divisions&quot;</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">division_elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">float</span><span class="p">(</span><span class="n">division_elem</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
-                <span class="s2">&quot;Noninteger &#39;division&#39; values are not supported.&quot;</span>
-            <span class="p">)</span>
-        <span class="n">divisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">division_elem</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
     <span class="c1"># TODO: Support custom resolution</span>
+    <span class="n">divisions</span> <span class="o">=</span> <span class="n">_get_divisions</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
     <span class="n">resolution</span> <span class="o">=</span> <span class="n">lcm</span><span class="p">(</span><span class="o">*</span><span class="n">divisions</span><span class="p">)</span> <span class="k">if</span> <span class="n">divisions</span> <span class="k">else</span> <span class="mi">1</span>
 
     <span class="c1"># Part information</span>
     <span class="n">part_info</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">part_elem</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part-list/score-part&quot;</span><span class="p">):</span>
-        <span class="c1"># Part ID</span>
-        <span class="n">part_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Part name</span>
-        <span class="n">part_name</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="s2">&quot;part-name&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># Instruments</span>
-        <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">score_instrument_elem</span> <span class="ow">in</span> <span class="n">part_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;score-instrument&quot;</span><span class="p">):</span>
-            <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">score_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
-            <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-            <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span>
-                <span class="n">score_instrument_elem</span><span class="p">,</span>
-                <span class="s2">&quot;instrument-name&quot;</span><span class="p">,</span>
-                <span class="n">part_name</span><span class="p">,</span>
-                <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">for</span> <span class="n">midi_instrument_elem</span> <span class="ow">in</span> <span class="n">part_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;midi-instrument&quot;</span><span class="p">):</span>
-            <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">instrument_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">instrument_id</span> <span class="o">==</span> <span class="n">part_id</span><span class="p">:</span>
-                    <span class="n">instrument_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-                    <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">part_name</span><span class="p">}</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
-                        <span class="s2">&quot;ID of a &#39;midi-instrument&#39; element must be predefined &quot;</span>
-                        <span class="s2">&quot;in a &#39;score-instrument&#39; element.&quot;</span>
-                    <span class="p">)</span>
-            <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-                <span class="n">get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-program&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;is_drum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="nb">int</span><span class="p">(</span><span class="n">get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-channel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="mi">10</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">]:</span>
-            <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">part_name</span><span class="p">}</span>
-        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="k">if</span> <span class="s2">&quot;program&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="n">value</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="s2">&quot;is_drum&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
-                <span class="n">value</span><span class="p">[</span><span class="s2">&quot;is_drum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">part_id</span><span class="p">,</span> <span class="n">info</span> <span class="o">=</span> <span class="n">parse_score_part_elem</span><span class="p">(</span><span class="n">part_elem</span><span class="p">)</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">info</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Music</span><span class="p">(</span><span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span> <span class="n">meta</span><span class="o">=</span><span class="n">meta_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Music</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
 
     <span class="c1"># Initialize lists</span>
     <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -774,33 +794,34 @@
             <span class="p">)</span>
         <span class="n">part_elem</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;part&quot;</span><span class="p">)</span>
         <span class="n">instrument_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;program&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;is_drum&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}}</span>
-        <span class="n">part</span> <span class="o">=</span> <span class="n">parse_part</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">instrument_info</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">parse_part_elem</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">instrument_info</span><span class="p">)</span>
 
-    <span class="c1"># Iterate over all parts and measures</span>
-    <span class="k">for</span> <span class="n">part_elem</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">):</span>
-        <span class="n">part_id</span> <span class="o">=</span> <span class="n">part_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
-        <span class="k">if</span> <span class="n">part_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Iterate over all parts and measures</span>
+        <span class="k">for</span> <span class="n">part_elem</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">):</span>
+            <span class="n">part_id</span> <span class="o">=</span> <span class="n">part_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">part_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">part_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">part_info</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">part_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">part_info</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">part_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">part_info</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">part_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">part_info</span><span class="p">:</span>
-            <span class="k">continue</span>
 
-        <span class="c1"># Parse part</span>
-        <span class="n">part</span> <span class="o">=</span> <span class="n">parse_part</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">])</span>
+            <span class="c1"># Parse part</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="n">parse_part_elem</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">])</span>
 
-        <span class="c1"># Extend lists</span>
-        <span class="n">tempos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">])</span>
-        <span class="n">key_signatures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">])</span>
-        <span class="n">time_signatures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">instrument_id</span><span class="p">,</span> <span class="n">notes</span> <span class="ow">in</span> <span class="n">part</span><span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">track</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span>
-                <span class="n">program</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;program&quot;</span><span class="p">],</span>
-                <span class="n">is_drum</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;is_drum&quot;</span><span class="p">],</span>
-                <span class="n">name</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
-                <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+            <span class="c1"># Extend lists</span>
+            <span class="n">tempos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">])</span>
+            <span class="n">key_signatures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">])</span>
+            <span class="n">time_signatures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">part</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">instrument_id</span><span class="p">,</span> <span class="n">notes</span> <span class="ow">in</span> <span class="n">part</span><span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">track</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span>
+                    <span class="n">program</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;program&quot;</span><span class="p">],</span>
+                    <span class="n">is_drum</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;is_drum&quot;</span><span class="p">],</span>
+                    <span class="n">name</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
 
     <span class="c1"># Sort tempos, key signatures and time signatures</span>
     <span class="n">tempos</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>

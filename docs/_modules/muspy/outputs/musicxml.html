@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -160,33 +160,51 @@
             
   <h1>Source code for muspy.outputs.musicxml</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;MusicXML output interface.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">music21.musicxml.archiveTools</span> <span class="k">import</span> <span class="n">compressXML</span>
+
 <span class="kn">from</span> <span class="nn">.music21</span> <span class="k">import</span> <span class="n">to_music21</span>
-<span class="kn">import</span> <span class="nn">music21</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="write_musicxml"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write_musicxml">[docs]</a><span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="write_musicxml"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write_musicxml">[docs]</a><span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">compressed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a Music object to a MusicXML file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        Music object to write.</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to write the MusicXML file.</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to write.</span>
+<span class="sd">    compressed : bool, optional</span>
+<span class="sd">        Whether to write to a compressed MusicXML file. If None, infer from</span>
+<span class="sd">        the extension of the filename (&#39;.xml&#39; and &#39;.musicxml&#39; for</span>
+<span class="sd">        an uncompressed file, &#39;.mxl&#39; for a compressed file).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">stream</span> <span class="o">=</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="n">musicxml_bytes</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">musicxml</span><span class="o">.</span><span class="n">m21ToXml</span><span class="o">.</span><span class="n">GeneralObjectExporter</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span>
-        <span class="n">stream</span>
-    <span class="p">)</span>
-    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">musicxml_bytes</span><span class="p">)</span>
-    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)):</span>
+            <span class="n">compressed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mxl&quot;</span><span class="p">):</span>
+            <span class="n">compressed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot infer file type from the extension.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">compressed</span><span class="p">:</span>
+        <span class="n">score</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.temp.xml&quot;</span><span class="p">)</span>
+        <span class="n">compressXML</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.temp.xml&quot;</span><span class="p">,</span> <span class="n">deleteOriginal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.temp.mxl&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">score</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

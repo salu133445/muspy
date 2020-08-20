@@ -12,13 +12,13 @@ Here is an example of a Music object in YAML format.
       creators:
         - Ludwig van Beethoven
       copyright: null
-      collection: collection
+      collection: Example collection
       source_filename: example.yaml
       source_format: null
     resolution: 4
     tempos:
       - time: 0
-        tempo: 120
+        qpm: 72
     key_signatures:
       - time: 0
         root: A
@@ -32,54 +32,54 @@ Here is an example of a Music object in YAML format.
       - 16
     lyrics:
       - time: 0
-        lyric: nothing but a lyric
+        lyric: Nothing but a lyric
     annotations:
       - time: 0
-        annotation: nothing but an annotation
+        annotation: Nothing but an annotation
     tracks:
       - program: 0
         is_drum: false
-        name: melody
+        name: Melody
         notes:
           - time: 0
             duration: 2
             pitch: 76
-            velocity: 127
+            velocity: 64
           - time: 2
             duration: 2
             pitch: 75
-            velocity: 127
+            velocity: 64
           - time: 4
             duration: 2
             pitch: 76
-            velocity: 127
+            velocity: 64
           - time: 6
             duration: 2
             pitch: 75
-            velocity: 127
+            velocity: 64
           - time: 8
             duration: 2
             pitch: 76
-            velocity: 127
+            velocity: 64
           - time: 10
             duration: 2
             pitch: 71
-            velocity: 127
+            velocity: 64
           - time: 12
             duration: 2
             pitch: 74
-            velocity: 127
+            velocity: 64
           - time: 14
             duration: 2
             pitch: 72
-            velocity: 127
+            velocity: 64
           - time: 16
             duration: 2
             pitch: 69
-            velocity: 127
+            velocity: 64
         lyrics:
           - time: 0
-            lyric: nothing but a lyric
+            lyric: Nothing but a lyric
         annotations:
           - time: 0
             annotation: nothing but an annotation

@@ -300,7 +300,7 @@ def get_accidentals(fifths: int) -> List[Optional[int]]:
 
 
 class ScorePlotter:
-    """A plotter for score visualization.
+    """A plotter that handles the score visualization.
 
     Attributes
     ----------
@@ -770,7 +770,7 @@ def show_score(
 
     Parameters
     ----------
-    music : Music
+    music : :class:`muspy.Music` object
         Music object to show.
     figsize : (float, float), optional
         Width and height in inches. Defaults to Matplotlib configuration.
@@ -785,7 +785,7 @@ def show_score(
 
     Returns
     -------
-    `muspy.ScorePlotter` object
+    :class:`muspy.ScorePlotter` object
         A ScorePlotter object that handles the score.
 
     """

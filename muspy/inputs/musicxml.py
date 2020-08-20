@@ -192,7 +192,7 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
 
 
 def parse_key_elem(elem: Element) -> Optional[Dict]:
-    """Return a (root, mode, root_str) tuple parsed from a key element."""
+    """Return a dictionary containing information parsed from a key element."""
     mode = get_text(elem, "mode", "major")
     fifths = int(get_required_text(elem, "fifths"))
     if mode is None:

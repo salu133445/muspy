@@ -29,7 +29,7 @@ def to_note_representation(music: "Music", min_step: int = 1) -> ndarray:
                 - L for the sequence (note) length
                 - D = 4 {
                     pitch: 0 - 127,
-                    start: start ticks,
+                    time: start ticks,
                     duration: duration ticks,
                     velocity: 0 - 100
                 }

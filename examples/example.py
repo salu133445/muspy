@@ -148,7 +148,7 @@ def get_dataset(key, root):
     if key == "hymnal_tune":
         return muspy.HymnalDataset(root)
     if key == "music21":
-        return muspy.MusicDataset(root)
+        return muspy.Music21Dataset()
     if key == "music21jsb":
         return muspy.Music21Dataset("bach")
     if key == "nmd":

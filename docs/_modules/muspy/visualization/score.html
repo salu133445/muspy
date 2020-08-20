@@ -88,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations.html">Representations</a></li>
@@ -159,17 +159,839 @@
            <div itemprop="articleBody">
             
   <h1>Source code for muspy.visualization.score</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Score visualization interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
+<span></span><span class="sd">&quot;&quot;&quot;Score visualization interface.</span>
+
+<span class="sd">Unicode encoding for musical symbols is based on Standard Music Font</span>
+<span class="sd">Layout (SMuFL) (see https://w3c.github.io/smufl/gitbook/).</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.artist</span> <span class="k">import</span> <span class="n">Artist</span>
+<span class="kn">from</span> <span class="nn">matplotlib.axes</span> <span class="k">import</span> <span class="n">Axes</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="k">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">matplotlib.font_manager</span> <span class="k">import</span> <span class="n">FontProperties</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="k">import</span> <span class="n">Line2D</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="k">import</span> <span class="n">Rectangle</span><span class="p">,</span> <span class="n">Arc</span>
+<span class="kn">from</span> <span class="nn">matplotlib.text</span> <span class="k">import</span> <span class="n">Text</span>
+
+<span class="kn">from</span> <span class="nn">..base</span> <span class="k">import</span> <span class="n">Base</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="show_score"><a class="viewcode-back" href="../../../visualization.html#muspy.show_score">[docs]</a><span class="k">def</span> <span class="nf">show_score</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Show score visualization.&quot;&quot;&quot;</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">to_music21</span><span class="p">()</span>
-    <span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+<span class="n">BRAVURA_PATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;external&quot;</span> <span class="o">/</span> <span class="s2">&quot;Bravura.otf&quot;</span>
+
+<span class="n">COMMON_NOTE_CODES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># double whole note</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># whole note</span>
+    <span class="mf">0.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># half note</span>
+    <span class="mf">0.25</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># quarter note</span>
+    <span class="mf">0.125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D7</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 8th note</span>
+    <span class="mf">0.0625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D9</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 16th note</span>
+    <span class="mf">0.03125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DB</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 32th note</span>
+    <span class="mf">0.015625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DD</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 64th note</span>
+    <span class="mf">0.0078125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DF</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 128th note</span>
+    <span class="mf">0.00390625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E1</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 256th note</span>
+    <span class="mf">0.001953125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E3</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 512th note</span>
+    <span class="mf">0.0009765625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 1024th note</span>
+    <span class="c1"># Dotted</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">1.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.75</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.1875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.09375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D9</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.046875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DB</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0234375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DD</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.01171875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DF</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.005859375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E1</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0029296875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.00146484375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="c1"># Double dotted</span>
+    <span class="mf">3.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">1.75</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.4375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.21875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.109375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D9</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0546875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DB</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.02734375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DD</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.013671875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1DF</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0068359375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E1</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.00341796875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.001708984375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<span class="n">COMMON_NOTE_CODES_ALT</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># double whole note</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># whole note</span>
+    <span class="mf">0.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># half note</span>
+    <span class="mf">0.25</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># quarter note</span>
+    <span class="mf">0.125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 8th note</span>
+    <span class="mf">0.0625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 16th note</span>
+    <span class="mf">0.03125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 32th note</span>
+    <span class="mf">0.015625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 64th note</span>
+    <span class="mf">0.0078125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 128th note</span>
+    <span class="mf">0.00390625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 256th note</span>
+    <span class="mf">0.001953125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 512th note</span>
+    <span class="mf">0.0009765625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 1024th note</span>
+    <span class="c1"># Dotted</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">1.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.75</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.1875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.09375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.046875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0234375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.01171875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.005859375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0029296875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.00146484375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="c1"># Double dotted</span>
+    <span class="mf">3.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">1.75</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.4375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.21875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.109375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0546875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.02734375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.013671875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0068359375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.00341796875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.001708984375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">COMMON_REST_CODES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE4E2</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># double whole rest</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE4E3</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># whole rest</span>
+    <span class="mf">0.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E4</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># half rest</span>
+    <span class="mf">0.25</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># quarter rest</span>
+    <span class="mf">0.125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E6</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 8th rest</span>
+    <span class="mf">0.0625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 16th rest</span>
+    <span class="mf">0.03125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E8</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 32th rest</span>
+    <span class="mf">0.015625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E9</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 64th rest</span>
+    <span class="mf">0.0078125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EA</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 128th rest</span>
+    <span class="mf">0.00390625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EB</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 256th rest</span>
+    <span class="mf">0.001953125</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EC</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 512th rest</span>
+    <span class="mf">0.0009765625</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1ED</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 1024th rest</span>
+    <span class="c1"># Dotted</span>
+    <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE4E2</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">1.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE4E3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.75</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E4</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.1875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E6</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.09375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.046875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E8</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0234375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E9</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.01171875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EA</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.005859375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EB</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0029296875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EC</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.00146484375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1ED</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="c1"># Double dotted</span>
+    <span class="mf">3.5</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE4E2</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">1.75</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE4E3</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E4</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.4375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.21875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E6</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.109375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0546875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E8</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.02734375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1E9</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.013671875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EA</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.0068359375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EB</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.00341796875</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1EC</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="mf">0.001708984375</span><span class="p">:</span> <span class="s2">&quot;</span><span class="se">\uE1ED</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2"> </span><span class="se">\uE1E7</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">NOTE_CODES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># double whole note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># whole note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># half note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># quarter note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D7</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 8th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D9</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 16th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1DB</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 32th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1DD</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 64th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1DF</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 128th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1E1</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 256th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1E3</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 512th note</span>
+    <span class="s2">&quot;</span><span class="se">\uE1E5</span><span class="s2">&quot;</span><span class="p">,</span>  <span class="c1"># 1024th note</span>
+<span class="p">]</span>
+
+<span class="n">NOTE_CODES_ALT</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D0</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D2</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D3</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_to_compound_note_codes</span><span class="p">(</span><span class="n">note_counts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">note_codes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">note_count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">note_counts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">note_count</span><span class="p">):</span>
+            <span class="n">note_codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NOTE_CODES</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">note_codes</span>
+
+
+<span class="k">def</span> <span class="nf">_to_compound_note_codes_alt</span><span class="p">(</span><span class="n">note_counts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="n">note_codes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">note_count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">note_counts</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">note_count</span><span class="p">):</span>
+            <span class="n">note_codes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">NOTE_CODES_ALT</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">note_codes</span>
+
+
+<span class="k">def</span> <span class="nf">_to_note_counts</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of counts of notes that sum to a note value.</span>
+
+<span class="sd">    For example, a note value of 1.75 will be decoposed into a whole note, a</span>
+<span class="sd">    half note and a quarter note, respectively. The return list is of</span>
+<span class="sd">    length 12, where the first value corresponds to the count of double</span>
+<span class="sd">    whole notes and the last value corresponds to the count of 1024th notes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">note_value</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">base2</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">note_value</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">12</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">base2</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">bit</span><span class="p">)</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">base2</span><span class="p">]</span>
+    <span class="n">first_bit</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">note_value</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">base2</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">remainder</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">first_bit</span><span class="p">)]</span>
+        <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">11</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">base2</span><span class="p">))</span>
+        <span class="o">+</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">bit</span><span class="p">)</span> <span class="k">for</span> <span class="n">bit</span> <span class="ow">in</span> <span class="n">base2</span><span class="p">]</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">to_note_codes</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a note value as a list of note codes.</span>
+
+<span class="sd">    For example, a note value of 1.75 will be decoposed into a whole note, a</span>
+<span class="sd">    half note and a quarter note, respectively.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">note_code</span> <span class="o">=</span> <span class="n">COMMON_NOTE_CODES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">note_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">note_code</span><span class="p">]</span>
+    <span class="n">note_counts</span> <span class="o">=</span> <span class="n">_to_note_counts</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_to_compound_note_codes</span><span class="p">(</span><span class="n">note_counts</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">to_note_codes_alt</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a note value as a list of note codes (with straight beams).</span>
+
+<span class="sd">    This is useful for making chords as all the notes comes with a straight</span>
+<span class="sd">    beam. For example, a note value of 1.75 will be decoposed into a whole</span>
+<span class="sd">    note, a half note and a quarter note, respectively.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">note_code</span> <span class="o">=</span> <span class="n">COMMON_NOTE_CODES_ALT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">note_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">note_code</span><span class="p">]</span>
+    <span class="n">note_counts</span> <span class="o">=</span> <span class="n">_to_note_counts</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_to_compound_note_codes_alt</span><span class="p">(</span><span class="n">note_counts</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_time_signature_code</span><span class="p">(</span><span class="n">number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a string for a time signature number.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">number</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">div</span><span class="p">,</span> <span class="n">mod</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">number</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">57472</span> <span class="o">+</span> <span class="n">div</span><span class="p">)</span> <span class="o">+</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">57472</span> <span class="o">+</span> <span class="n">mod</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">57472</span> <span class="o">+</span> <span class="n">number</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_pitch_classes</span><span class="p">(</span><span class="n">fifths</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a list indicating the root note of each pitch number.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fifths</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_accidentals</span><span class="p">(</span><span class="n">fifths</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a list indicating the accidentals and the pitch classes.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fifths</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">accidentals</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">fifths</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">sharps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">11</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">sharps</span><span class="p">[:</span><span class="n">fifths</span><span class="p">]:</span>
+                <span class="c1"># No accidental for the sharp note</span>
+                <span class="n">accidentals</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="c1"># Natural for the original note</span>
+                <span class="n">accidentals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">fifths</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">accidentals</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+            <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">flats</span> <span class="o">=</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">flats</span><span class="p">[:(</span><span class="o">-</span><span class="n">fifths</span><span class="p">)]:</span>
+            <span class="c1"># No accidental for the flat note</span>
+            <span class="n">accidentals</span><span class="p">[</span><span class="n">idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Natural for the original note</span>
+            <span class="n">accidentals</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">return</span> <span class="n">accidentals</span>
+
+
+<div class="viewcode-block" id="ScorePlotter"><a class="viewcode-back" href="../../../visualization.html#muspy.ScorePlotter">[docs]</a><span class="k">class</span> <span class="nc">ScorePlotter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A plotter that handles the score visualization.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fig : :class:`matplotlib.figure.Figure` object</span>
+<span class="sd">        Figure object to plot the score on.</span>
+<span class="sd">    axes : :class:`matplotlib.axes.Axes` object</span>
+<span class="sd">        Axes object to plot the score on.</span>
+<span class="sd">    resolution : int</span>
+<span class="sd">        Time steps per quarter note.</span>
+<span class="sd">    note_spacing : int, optional</span>
+<span class="sd">        Spacing of notes. Defaults to 4.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">fig</span><span class="p">:</span> <span class="n">Figure</span><span class="p">,</span>
+        <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">note_spacing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">fig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">=</span> <span class="n">note_spacing</span> <span class="k">if</span> <span class="n">note_spacing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">4</span>
+
+        <span class="c1"># Set the axes to 1:1 aspect ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Turn off the axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Initialize vertical boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Initialize lists to store created objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">staffs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Line2D</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bar_lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Line2D</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_bar_line</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clefs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_texts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_notes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Arc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Initialize baseline position</span>
+        <span class="c1"># (i.e., the y-coordinate of the first, lowest staff line)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Initialize horizontal position cursor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Variables for handling notes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_time</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_pos</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_y</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splits_max</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Variables for handling key signatures</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pitch_classes</span> <span class="o">=</span> <span class="n">get_pitch_classes</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accidentals</span> <span class="o">=</span> <span class="n">get_accidentals</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ScorePlotter.set_baseline"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.set_baseline">[docs]</a>    <span class="k">def</span> <span class="nf">set_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set baseline position (the y-coordinate of the first staff line).&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">4</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.adjust_fonts"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.adjust_fonts">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_fonts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adjust the fonts.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scale</span> <span class="o">=</span> <span class="mi">140</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">)</span>
+
+        <span class="c1"># Compute scaling factor</span>
+        <span class="n">ax_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+        <span class="n">scaling_factor</span> <span class="o">=</span> <span class="p">(</span><span class="n">ax_pos</span><span class="o">.</span><span class="n">y1</span> <span class="o">-</span> <span class="n">ax_pos</span><span class="o">.</span><span class="n">y0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">)</span>
+
+        <span class="c1"># Set font size for normal texts</span>
+        <span class="n">fontsize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">get_figheight</span><span class="p">()</span> <span class="o">*</span> <span class="n">scaling_factor</span> <span class="o">*</span> <span class="n">scale</span>
+        <span class="k">for</span> <span class="n">tempo_text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempo_texts</span><span class="p">:</span>
+            <span class="n">tempo_text</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">fontsize</span><span class="p">)</span>
+            <span class="n">tempo_text</span><span class="o">.</span><span class="n">set_fontfamily</span><span class="p">(</span><span class="s2">&quot;serif&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Set music font for tempo notes</span>
+        <span class="n">prop_small</span> <span class="o">=</span> <span class="n">FontProperties</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">BRAVURA_PATH</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tempo_note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tempo_notes</span><span class="p">:</span>
+            <span class="n">tempo_note</span><span class="o">.</span><span class="n">set_fontproperties</span><span class="p">(</span><span class="n">prop_small</span><span class="p">)</span>
+
+        <span class="c1"># Set music font for music texts</span>
+        <span class="n">prop</span> <span class="o">=</span> <span class="n">FontProperties</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="n">BRAVURA_PATH</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">fontsize</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span>
+            <span class="n">key_signature</span><span class="o">.</span><span class="n">set_fontproperties</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span>
+            <span class="n">time_signature</span><span class="o">.</span><span class="n">set_fontproperties</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">clef</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clefs</span><span class="p">:</span>
+            <span class="n">clef</span><span class="o">.</span><span class="n">set_fontproperties</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
+            <span class="n">note</span><span class="o">.</span><span class="n">set_fontproperties</span><span class="p">(</span><span class="n">prop</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.update_boundaries"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.update_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">update_boundaries</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">left</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">right</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">top</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update boundaries.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">right</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">right</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">right</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">bottom</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">top</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_staffs"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_staffs">[docs]</a>    <span class="k">def</span> <span class="nf">plot_staffs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Line2D</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Plot the staffs.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span>
+
+        <span class="n">staffs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">staff</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">],</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="n">y</span><span class="p">],</span>
+                <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+                <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">staff</span><span class="p">)</span>
+            <span class="n">staffs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">staff</span><span class="p">)</span>
+
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">start</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">bottom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">staffs</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_bar_line"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_bar_line">[docs]</a>    <span class="k">def</span> <span class="nf">plot_bar_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Line2D</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Plot a bar line.&quot;&quot;&quot;</span>
+        <span class="n">bar_line</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">bar_line</span><span class="p">)</span>
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Move position cursor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># Force the next note to be a new note</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">bar_line</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_final_bar_line"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_final_bar_line">[docs]</a>    <span class="k">def</span> <span class="nf">plot_final_bar_line</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Artist</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Plot an ending bar line.&quot;&quot;&quot;</span>
+        <span class="n">bar_line</span> <span class="o">=</span> <span class="n">Line2D</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">),</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">4</span><span class="p">),</span>
+            <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_line</span><span class="p">(</span><span class="n">bar_line</span><span class="p">)</span>
+        <span class="n">thick_bar_line</span> <span class="o">=</span> <span class="n">Rectangle</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">),</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">thick_bar_line</span><span class="p">)</span>
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># Move position cursor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">bar_line</span><span class="p">,</span> <span class="n">thick_bar_line</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_clef"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_clef">[docs]</a>    <span class="k">def</span> <span class="nf">plot_clef</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;treble&quot;</span><span class="p">,</span> <span class="n">octave</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Plot a clef.&quot;&quot;&quot;</span>
+        <span class="c1"># Treble clef</span>
+        <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;treble&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE050</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE053</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mf">3.5</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE052</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mf">3.5</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE054</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">7</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE051</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mi">7</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`octave` must be one of 0, ±1, ±2 for a treble clef.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># Update boundaries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span>
+                <span class="n">bottom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">6</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Alto clef</span>
+        <span class="k">elif</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;alto&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE05C</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE05D</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mf">6.5</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`octave` must be either 0 or -1 for an alto clef.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># Update boundaries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Bass clef</span>
+        <span class="k">elif</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;bass&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE062</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mi">6</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE065</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mf">2.5</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE064</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mf">9.5</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE066</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">elif</span> <span class="n">octave</span> <span class="o">==</span> <span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">clef</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE063</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span> <span class="o">=</span> <span class="mi">13</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;`octave` must be one of 0, ±1, ±2 for a bass clef.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># Update boundaries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span><span class="n">bottom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Append clef to the correpsonding attribute</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clefs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">clef</span><span class="p">)</span>
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="c1"># Move position cursor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="c1"># Force the next note to be a new note</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">clef</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_tempo"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_tempo">[docs]</a>    <span class="k">def</span> <span class="nf">plot_tempo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">qpm</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Artist</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Plot a tempo as a metronome mark.&quot;&quot;&quot;</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE1D5</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">qpm</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tempo_texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span>
+            <span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">4</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">note</span><span class="p">,</span> <span class="n">text</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_key_signature"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_key_signature">[docs]</a>    <span class="k">def</span> <span class="nf">plot_key_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot a key signature. Only major and minor keys are supported.&quot;&quot;&quot;</span></div>
+        <span class="c1"># self._accidentals = _get_accidentals(0)</span>
+        <span class="c1"># self._pitches = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]</span>
+        <span class="c1"># TODO: Support keys other than major and minor keys</span>
+
+<div class="viewcode-block" id="ScorePlotter.plot_time_signature"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_time_signature">[docs]</a>    <span class="k">def</span> <span class="nf">plot_time_signature</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">numerator</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">denominator</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Plot a time signature.&quot;&quot;&quot;</span>
+        <span class="n">numerator_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">get_time_signature_code</span><span class="p">(</span><span class="n">numerator</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">numerator_text</span><span class="p">)</span>
+        <span class="n">denominator_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">get_time_signature_code</span><span class="p">(</span><span class="n">denominator</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">denominator_text</span><span class="p">)</span>
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span>
+            <span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="n">bottom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">6</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="c1"># Move position cursor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+=</span> <span class="mi">4</span>
+        <span class="c1"># Force the next note to be a new note</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">numerator_text</span><span class="p">,</span> <span class="n">denominator_text</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_note"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_note">[docs]</a>    <span class="k">def</span> <span class="nf">plot_note</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">pitch</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">Arc</span><span class="p">]]]:</span>
+        <span class="sd">&quot;&quot;&quot;Plot a note.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_time</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;Note times must be sorted. Skipped unsorted one.&quot;</span><span class="p">,</span>
+                <span class="ne">RuntimeWarning</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># If force new note is set, reset all state variables</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_splits_max</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">4</span>
+
+        <span class="c1"># If not a chord, reset all state variables</span>
+        <span class="k">elif</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_time</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_pos</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_splits_max</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_splits_max</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">4</span>
+
+        <span class="c1"># If not a chord, set position back to last note</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_pos</span>
+
+        <span class="c1"># Compute note position</span>
+        <span class="n">octave</span><span class="p">,</span> <span class="n">pitch_class</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">pitch</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+        <span class="n">note_y</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pitch_classes</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="o">+</span> <span class="p">(</span><span class="n">octave</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span> <span class="o">*</span> <span class="mf">3.5</span>
+            <span class="o">-</span> <span class="mi">1</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_clef_offset</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Get note codes</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span>
+            <span class="ow">and</span> <span class="n">time</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_time</span>
+            <span class="ow">and</span> <span class="n">note_y</span> <span class="o">+</span> <span class="mf">3.5</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_y</span>
+        <span class="p">):</span>
+            <span class="n">note_codes</span> <span class="o">=</span> <span class="n">to_note_codes_alt</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="mf">0.25</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">note_codes</span> <span class="o">=</span> <span class="n">to_note_codes</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="mf">0.25</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+
+        <span class="c1"># Plot notes</span>
+        <span class="n">texts</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Text</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">ties</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Arc</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">note_codes</span><span class="p">):</span>
+            <span class="c1"># Note without an accidental</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accidentals</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span><span class="p">,</span> <span class="n">note_y</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+            <span class="c1"># Note with a sharp</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accidentals</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">note_y</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE262</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">code</span><span class="p">)</span>
+            <span class="c1"># Note with a flat</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accidentals</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">note_y</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE260</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">code</span><span class="p">)</span>
+            <span class="c1"># Note with a natural</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accidentals</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">note_y</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\uE261</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">code</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="c1"># Plot a slur if not the first note</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">x_center</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.7</span>
+                <span class="c1"># Upper half</span>
+                <span class="n">tie</span> <span class="o">=</span> <span class="n">Arc</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">x_center</span><span class="p">,</span> <span class="n">note_y</span> <span class="o">+</span> <span class="mf">1.8</span><span class="p">),</span>
+                    <span class="mf">1.4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span><span class="p">,</span>
+                    <span class="mf">1.4</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span><span class="p">,</span>
+                    <span class="n">theta1</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span>
+                    <span class="n">theta2</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">tie</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tie</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span>
+
+        <span class="c1"># Extend margins</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_splits_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_splits_max</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">note_codes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_note_y</span> <span class="o">=</span> <span class="n">note_y</span>
+
+        <span class="c1"># Plot ledger lines</span>
+        <span class="k">if</span> <span class="n">note_y</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">note_y</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">+</span> <span class="mf">1.7</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span> <span class="o">=</span> <span class="n">note_y</span>
+
+        <span class="k">elif</span> <span class="n">note_y</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">note_y</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">-</span> <span class="mf">0.4</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span> <span class="o">+</span> <span class="mf">1.7</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
+                    <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                    <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span> <span class="o">=</span> <span class="n">note_y</span>
+
+        <span class="c1"># Update boundaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_boundaries</span><span class="p">(</span>
+            <span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pos</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">note_spacing</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_last_note_pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">bottom</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="n">note_y</span> <span class="o">-</span> <span class="mf">2.5</span><span class="p">,</span>
+            <span class="n">top</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="n">note_y</span> <span class="o">+</span> <span class="mf">5.5</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_force_new_note</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="n">texts</span><span class="p">,</span> <span class="n">ties</span></div>
+
+<div class="viewcode-block" id="ScorePlotter.plot_object"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_object">[docs]</a>    <span class="k">def</span> <span class="nf">plot_object</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot an object.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Note</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_note</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">pitch</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_tempo</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_time_signature</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_key_signature</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="show_score"><a class="viewcode-back" href="../../../visualization.html#muspy.show_score">[docs]</a><span class="k">def</span> <span class="nf">show_score</span><span class="p">(</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">clef</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;treble&quot;</span><span class="p">,</span>
+    <span class="n">clef_octave</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">note_spacing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">font_scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScorePlotter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Show score visualization.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to show.</span>
+<span class="sd">    figsize : (float, float), optional</span>
+<span class="sd">        Width and height in inches. Defaults to Matplotlib configuration.</span>
+<span class="sd">    clef : str, {&#39;treble&#39;, &#39;alto&#39;, &#39;bass&#39;}</span>
+<span class="sd">        Clef type. Defaults to a treble clef.</span>
+<span class="sd">    clef_octave : int</span>
+<span class="sd">        Clef octave. Defaults to zero.</span>
+<span class="sd">    note_spacing : int, optional</span>
+<span class="sd">        Spacing of notes. Defaults to 4.</span>
+<span class="sd">    font_scale : float, optional</span>
+<span class="sd">        Font scaling factor for finetuning. Defaults to 140.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.ScorePlotter` object</span>
+<span class="sd">        A ScorePlotter object that handles the score.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Create a figure</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="n">figsize</span><span class="p">)</span>
+
+    <span class="c1"># Add a full-size axes (will be resized at the end)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># Create a score plotter</span>
+    <span class="n">plotter</span> <span class="o">=</span> <span class="n">ScorePlotter</span><span class="p">(</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span> <span class="n">note_spacing</span><span class="o">=</span><span class="n">note_spacing</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Begining bar line</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_bar_line</span><span class="p">()</span>
+
+    <span class="c1"># Clef</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_clef</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">clef</span><span class="p">,</span> <span class="n">octave</span><span class="o">=</span><span class="n">clef_octave</span><span class="p">)</span>
+
+    <span class="c1"># Tempos, key signatures, time signatures and notes</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span> <span class="o">+=</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span>
+    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="o">-</span><span class="n">x</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">duration</span><span class="p">))</span>
+
+    <span class="n">objects</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Base</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">objects</span> <span class="o">+=</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span>
+    <span class="n">objects</span> <span class="o">+=</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span>
+    <span class="n">objects</span> <span class="o">+=</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span>
+    <span class="n">objects</span> <span class="o">+=</span> <span class="n">notes</span>
+    <span class="n">objects</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objects</span><span class="p">:</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot_object</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="c1"># Final bar line</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_final_bar_line</span><span class="p">()</span>
+
+    <span class="c1"># Staff lines</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_staffs</span><span class="p">()</span>
+
+    <span class="c1"># Adjust fonts</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">adjust_fonts</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">font_scale</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">plotter</span></div>
 </pre></div>
 
            </div>

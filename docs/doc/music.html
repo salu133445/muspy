@@ -90,7 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../example.html">Example Music Object</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../classes.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../representations.html">Representations</a></li>
@@ -200,6 +200,9 @@ the attributes and their values as key-value pairs.</p></li>
 <li><p><a class="reference internal" href="muspy.html#muspy.from_object" title="muspy.from_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_object()</span></code></a>: Convert from a <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a>
 or <a class="reference external" href="https://salu133445.github.io/pypianoroll/multitrack.html#pypianoroll.Multitrack" title="(in pypianoroll v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> object.</p></li>
 </ul>
+<p>Indexing a Music object gives the track of a certain index. That is,
+<cite>music[idx]</cite> is equivalent to <cite>music.tracks[idx]</cite>, while the latter is
+recommended for readability.</p>
 <dl class="py attribute">
 <dt id="muspy.music.Music.metadata">
 <code class="sig-name descname">metadata</code><a class="headerlink" href="#muspy.music.Music.metadata" title="Permalink to this definition">¶</a></dt>
@@ -348,12 +351,6 @@ minute if no tempo information is available.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.music.Music.remove_duplicate_changes">
-<code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove duplicate key signature, time signature and tempo changes.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt id="muspy.music.Music.save">
 <code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.save"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.save" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save loselessly to a JSON or a YAML file.</p>
@@ -414,7 +411,7 @@ documentation.</p>
 <dt id="muspy.music.Music.to_music21">
 <code class="sig-name descname">to_music21</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_music21"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.to_music21" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return as a Stream object.</p>
-<p>Refer to <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_music21()</span></code> for full documentation.</p>
+<p>Refer to <a class="reference internal" href="muspy.html#muspy.to_music21" title="muspy.to_music21"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_music21()</span></code></a> for full documentation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -482,7 +479,7 @@ the pitches, while a negative value lowers the pitches.</p>
 
 <dl class="py method">
 <dt id="muspy.music.Music.write">
-<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.write" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write to a MIDI or a MusicXML file.</p>
 <p>Refer to <a class="reference internal" href="muspy.html#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a> for full documentation.</p>
 </dd></dl>

@@ -23,6 +23,7 @@ Features
 
 """
 from . import (
+    base,
     classes,
     core,
     datasets,
@@ -33,6 +34,7 @@ from . import (
     schemas,
     visualization,
 )
+from .base import *  # noqa: F401,F403
 from .classes import *  # noqa: F401,F403
 from .core import *  # noqa: F401,F403
 from .datasets import *  # noqa: F401,F403
@@ -46,6 +48,7 @@ from .visualization import *  # noqa: F401,F403
 
 __all__ = [
     "__version__",
+    "base",
     "classes",
     "core",
     "datasets",
@@ -56,6 +59,7 @@ __all__ = [
     "schemas",
     "visualization",
 ]
+__all__.extend(base.__all__)
 __all__.extend(classes.__all__)
 __all__.extend(core.__all__)
 __all__.extend(datasets.__all__)

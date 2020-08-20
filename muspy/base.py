@@ -6,6 +6,8 @@ from typing import Any, Callable, List, Mapping, Optional
 
 import yaml
 
+__all__ = ["Base", "ComplexBase"]
+
 
 class _OrderedDumper(yaml.SafeDumper):
     """A dumper that supports OrderedDict."""
@@ -330,6 +332,7 @@ class ComplexBase(Base):
     """A base class that supports operations on list attributes.
 
     The supported operations are
+
     - Method `remove_invalid`: Remove invalid items from list attributes.
     - Method `append`: Automatically append the object to the corresponding
       list. For example, if `track` is an instance of the
@@ -400,42 +403,6 @@ class ComplexBase(Base):
 
         return self
 
-    def _sort(self, attr):
-        if not getattr(self, attr):
-            return
-
-        attr_cls = self._attributes[attr]
-        if isclass(attr_cls) and issubclass(attr_cls, Base):
-            # pylint: disable=protected-access
-            if issubclass(attr_cls, ComplexBase):
-                getattr(self, attr).sort()
-            elif attr_cls._sort_attributes:
-                getattr(self, attr).sort(
-                    attrgetter(*attr_cls._sort_attributes)
-                )
-
-    def sort(self, attr: Optional[str] = None) -> "ComplexBase":
-        """Sort the time-stamped objects recursively.
-
-        This will apply recursively to an attribute's attributes.
-
-        Parameters
-        ----------
-        attr : str
-            Attribute to sort. If None, sort all attributes. Defaults to None.
-
-        """
-        if attr is not None and attr not in self._list_attributes:
-            raise TypeError("`{}` must be a list attribute.")
-
-        if attr is None:
-            for attribute in self._list_attributes:
-                self._sort(attribute)
-        else:
-            self._sort(attr)
-
-        return self
-
     def _remove_duplicate(self, attr):
         if not getattr(self, attr):
             return
@@ -469,5 +436,41 @@ class ComplexBase(Base):
                 self._remove_duplicate(attribute)
         else:
             self._remove_duplicate(attr)
+
+        return self
+
+    def _sort(self, attr):
+        if not getattr(self, attr):
+            return
+
+        attr_cls = self._attributes[attr]
+        if isclass(attr_cls) and issubclass(attr_cls, Base):
+            # pylint: disable=protected-access
+            if issubclass(attr_cls, ComplexBase):
+                getattr(self, attr).sort()
+            elif attr_cls._sort_attributes:
+                getattr(self, attr).sort(
+                    attrgetter(*attr_cls._sort_attributes)
+                )
+
+    def sort(self, attr: Optional[str] = None) -> "ComplexBase":
+        """Sort the time-stamped objects recursively.
+
+        This will apply recursively to an attribute's attributes.
+
+        Parameters
+        ----------
+        attr : str
+            Attribute to sort. If None, sort all attributes. Defaults to None.
+
+        """
+        if attr is not None and attr not in self._list_attributes:
+            raise TypeError("`{}` must be a list attribute.")
+
+        if attr is None:
+            for attribute in self._list_attributes:
+                self._sort(attribute)
+        else:
+            self._sort(attr)
 
         return self

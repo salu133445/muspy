@@ -2,7 +2,6 @@
 Getting Started
 ===============
 
-
 Examples
 ========
 
