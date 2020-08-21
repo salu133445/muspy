@@ -13,6 +13,12 @@ Features
 - Model evaluation tools for music generation systems, including audio rendering, score and piano-roll visualizations and objective metrics.
 
 
+Why MusPy
+---------
+
+A music generation pipeline usually consists of several steps: data collection, data preprocessing, model creation, model training and model evaluation. While some components need to be customized for each model, others can be shared across systems. For symbolic music generation in particular, a number of datasets, representations and metrics have been proposed in the literature. As a result, an easy-to-use toolkit that implements standard versions of such routines could save a great deal of time and effort and might lead to increased reproducibility.
+
+
 Installation
 ------------
 

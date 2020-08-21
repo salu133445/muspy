@@ -27,13 +27,27 @@ Here is an overview of the library.
 Why MusPy
 =========
 
-A music generation pipeline usually consists of several steps&mdash;data collection, data preprocessing, model creation, model training and model evaluation.
+A music generation pipeline usually consists of several steps: data collection, data preprocessing, model creation, model training and model evaluation.
 
 .. image:: images/pipeline.svg
     :align: center
     :width: 400px
 
 While some components need to be customized for each model, others can be shared across systems. For symbolic music generation in particular, a number of datasets, representations and metrics have been proposed in the literature. As a result, an easy-to-use toolkit that implements standard versions of such routines could save a great deal of time and effort and might lead to increased reproducibility.
+
+
+Installation
+============
+
+To install MusPy, please run `pip install muspy`. To build MusPy from source, please download the [source](https://github.com/salu133445/muspy/releases) and run `python setup.py install`.
+
+
+Citing
+======
+
+Please cite the following paper if you use MusPy in a published work:
+
+Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR), 2020.
 
 
 Contents
