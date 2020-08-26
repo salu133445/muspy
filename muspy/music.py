@@ -139,6 +139,9 @@ class Music(ComplexBase):
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
 
+    def __len__(self) -> int:
+        return len(self.tracks)
+
     def __getitem__(self, key: int) -> Track:
         return self.tracks[key]
 

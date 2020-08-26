@@ -23,7 +23,7 @@ from .utils import (
 def test_empty():
     music = muspy.read(TEST_MIDI_DIR / "empty.mid")
 
-    assert len(music.tracks) == 0
+    assert len(music) == 0
     assert music.metadata.source_format == "midi"
 
 
@@ -59,12 +59,10 @@ def test_multiple_copyrights():
 def test_pitches():
     music = muspy.read(TEST_MIDI_DIR / "pitches.mid")
 
-    assert len(music.tracks) == 1
+    assert len(music) == 1
 
-    notes = music.tracks[0].notes
-    assert len(notes) == 128
-
-    for i, note in enumerate(notes):
+    assert len(music[0].notes) == 128
+    for i, note in enumerate(music[0].notes):
         assert note.start == music.resolution * i
         assert note.duration == music.resolution
         assert note.pitch == i
@@ -73,10 +71,9 @@ def test_pitches():
 def test_durations():
     music = muspy.read(TEST_MIDI_DIR / "durations.mid")
 
-    assert len(music.tracks) == 1
+    assert len(music) == 1
 
-    notes = music.tracks[0].notes
-    assert len(notes) == 11
+    assert len(music[0].notes) == 11
 
     # Answers
     durations = [
@@ -93,7 +90,7 @@ def test_durations():
         0.03125,
     ]
 
-    for note, duration in zip(notes, durations):
+    for note, duration in zip(music[0].notes, durations):
         assert note.duration == music.resolution * duration
 
 
@@ -179,13 +176,12 @@ def test_key_signatures():
 def test_chords():
     music = muspy.read(TEST_MIDI_DIR / "chords.mid")
 
-    notes = music.tracks[0].notes
-    assert len(notes) == 12
+    assert len(music[0].notes) == 12
 
     # Answers
     pitches = [60, 64, 67]
 
-    for i, note in enumerate(notes):
+    for i, note in enumerate(music[0].notes):
         assert note.start == 2 * music.resolution * (i // 3)
         assert note.duration == music.resolution
         assert note.pitch == pitches[i % 3]
@@ -194,7 +190,7 @@ def test_chords():
 def test_single_track_multiple_channels():
     music = muspy.read(TEST_MIDI_DIR / "multichannel.mid")
 
-    assert len(music.tracks) == 4
+    assert len(music) == 4
 
     # Answers
     pitches = [60, 64, 67, 72]
@@ -208,7 +204,7 @@ def test_single_track_multiple_channels():
 def test_multitrack():
     music = muspy.read(TEST_MIDI_DIR / "multitrack.mid")
 
-    assert len(music.tracks) == 4
+    assert len(music) == 4
 
     # Answers
     pitches = [60, 64, 67, 72]
@@ -226,7 +222,7 @@ def test_realworld():
     assert music.metadata.source_filename == "fur-elise.mid"
     assert music.metadata.source_format == "midi"
 
-    assert len(music.tracks) == 2
+    assert len(music) == 2
 
     assert len(music.tempos) == 2
     assert round(music.tempos[0].qpm) == 72

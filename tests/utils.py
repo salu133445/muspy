@@ -96,5 +96,5 @@ def check_music(music, ext=None, resolution=4):
     check_annotations(music.annotations)
 
     check_tracks(music.tracks, resolution=resolution)
-    check_lyrics(music.tracks[0].lyrics)
-    check_annotations(music.tracks[0].annotations)
+    check_lyrics(music[0].lyrics)
+    check_annotations(music[0].annotations)
