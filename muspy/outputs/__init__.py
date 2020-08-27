@@ -2,9 +2,9 @@
 Output Interfaces
 =================
 
-This module provides output interfaces for common symbolic music formats,
-MusPy's native JSON and YAML formats, other symbolic music libraries and
-commonly-used representations in music generation.
+This module provides output interfaces for common symbolic music
+formats, MusPy's native JSON and YAML formats, other symbolic music
+libraries and commonly-used representations in music generation.
 
 """
 from .event import to_event_representation

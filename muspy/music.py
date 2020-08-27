@@ -27,7 +27,7 @@ from .classes import (
 from .outputs import save, to_object, to_representation, write
 from .visualization import show
 
-__all__ = ["Music"]
+__all__ = ["Music", "DEFAULT_RESOLUTION"]
 
 DEFAULT_RESOLUTION = 24
 
