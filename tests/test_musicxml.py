@@ -157,14 +157,14 @@ def test_key_signatures():
         else:
             assert key_signature.mode == "minor"
 
-    for i, key_signature in enumerate(music.key_signatures[:8]):
-        # TODO: Check root and root_str
-        fifths = None
-        root, root_str = CIRCLE_OF_FIFTHS[
-            MODE_CENTERS[key_signature.mode] + fifths
-        ]
-        assert key_signature.root == root
-        assert key_signature.root_str == root_str
+    # TODO: Check root and root_str
+    # for i, key_signature in enumerate(music.key_signatures[:8]):
+    # fifths = None
+    # root, root_str = CIRCLE_OF_FIFTHS[
+    #     MODE_CENTERS[key_signature.mode] + fifths
+    # ]
+    # assert key_signature.root == root
+    # assert key_signature.root_str == root_str
 
 
 def test_church_modes():
