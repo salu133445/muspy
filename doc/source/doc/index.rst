@@ -15,5 +15,6 @@ These are the detailed technical documentation.
     metrics
     music
     outputs
+    processors
     schemas
     visualization

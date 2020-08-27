@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.inputs.pianoroll &mdash; MusPy  documentation</title>
+  <title>muspy.inputs.pitch &mdash; MusPy  documentation</title>
   
 
   
@@ -143,7 +143,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.inputs.pianoroll</li>
+      <li>muspy.inputs.pitch</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -158,42 +158,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.inputs.pianoroll</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Pianoroll input interface.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.inputs.pitch</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Pitch-based representation input interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
-
-<span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Multitrack</span>
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="from_pypianoroll"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_pypianoroll">[docs]</a><span class="k">def</span> <span class="nf">from_pypianoroll</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">Multitrack</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a Pypianoroll Multitrack object.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`pypianoroll.Multitrack` object</span>
-<span class="sd">        Multitrack object to be converted.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-
-
-<div class="viewcode-block" id="from_pianoroll_representation"><a class="viewcode-back" href="../../../representations.html#muspy.inputs.from_pianoroll_representation">[docs]</a><span class="k">def</span> <span class="nf">from_pianoroll_representation</span><span class="p">(</span>
+<div class="viewcode-block" id="from_pitch_representation"><a class="viewcode-back" href="../../../representations.html#muspy.inputs.from_pitch_representation">[docs]</a><span class="k">def</span> <span class="nf">from_pitch_representation</span><span class="p">(</span>
     <span class="n">array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span>
     <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span>
     <span class="n">program</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">is_drum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">use_hold_state</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decode pitch-based representation into a Music object.</span>
@@ -201,9 +183,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    array : ndarray</span>
-<span class="sd">        Array in piano-roll representation to decode. Will be casted to</span>
-<span class="sd">        integer if not of integer type. If `encode_velocity` is True,</span>
-<span class="sd">        will be casted to boolean if not of boolean type.</span>
+<span class="sd">        Array in pitch-based representation to decode. Will be casted to</span>
+<span class="sd">        integer if not of integer type.</span>
 <span class="sd">    resolution : int</span>
 <span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
 <span class="sd">    program : int, optional</span>
@@ -213,8 +194,8 @@
 <span class="sd">    is_drum : bool, optional</span>
 <span class="sd">        A boolean indicating if it is a percussion track. Defaults to</span>
 <span class="sd">        False.</span>
-<span class="sd">    encode_velocity : bool</span>
-<span class="sd">        Whether to encode velocities. Defaults to True.</span>
+<span class="sd">    use_hold_state : bool</span>
+<span class="sd">        Whether to use a special state for holds. Defaults to False.</span>
 <span class="sd">    default_velocity : int</span>
 <span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
 
@@ -224,28 +205,60 @@
 <span class="sd">        Decoded Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">encode_velocity</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+    <span class="c1"># Cast the array to integer</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">encode_velocity</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
 
-    <span class="n">binarized</span> <span class="o">=</span> <span class="n">array</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">binarized</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
-        <span class="n">boundaries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">diff</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">note_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">note_idx</span><span class="p">]</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">note_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-                <span class="n">velocity</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+    <span class="c1"># Find the note boundaries</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">prepend</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">append</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">boundaries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">diff</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Decode pitches</span>
+    <span class="k">if</span> <span class="n">use_hold_state</span><span class="p">:</span>
+        <span class="n">is_awaiting_hold</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">boundaries</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="c1"># Skip rests</span>
+            <span class="k">if</span> <span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">==</span> <span class="mi">128</span><span class="p">:</span>
+                <span class="n">is_awaiting_hold</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Hold</span>
+            <span class="k">if</span> <span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">==</span> <span class="mi">129</span><span class="p">:</span>
+                <span class="c1"># Skip a hold that does not follow any pitch</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_awaiting_hold</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">notes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
+                <span class="n">is_awaiting_hold</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># Pitch</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">velocity</span> <span class="o">=</span> <span class="n">default_velocity</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                    <span class="n">duration</span><span class="o">=</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="n">pitch</span><span class="o">=</span><span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">],</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="n">default_velocity</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+                <span class="n">is_awaiting_hold</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">boundaries</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+            <span class="c1"># Skip rests</span>
+            <span class="k">if</span> <span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">]</span> <span class="o">==</span> <span class="mi">128</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Pitch</span>
             <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-                <span class="n">time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span>
+                <span class="n">pitch</span><span class="o">=</span><span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">],</span>
+                <span class="n">velocity</span><span class="o">=</span><span class="n">default_velocity</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
+    <span class="c1"># Sort the notes</span>
     <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
 
     <span class="c1"># Create the Track and Music objects</span>

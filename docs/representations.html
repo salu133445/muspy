@@ -94,10 +94,10 @@
 <li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Representations</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#event-representation">Event Representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#note-representation">Note Representation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#monotoken-representation">Monotoken Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pitch-based-representation">Pitch-based Representation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pianoroll-representation">Pianoroll Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#event-based-representation">Event-based Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#note-based-representation">Note-based Representation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
@@ -192,15 +192,15 @@ comparison of them.</p>
 <td><p>{0, 1, …, 129}</p></td>
 <td><p>128 note-ons, 1 hold, 1 rest (support only monophonic music)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Event-based</p></td>
-<td><p><em>T</em> x 1</p></td>
-<td><p>{0, 1, …, 387}</p></td>
-<td><p>128 note-ons, 128 note-offs, 100 tick shifts, 32 velocities</p></td>
-</tr>
-<tr class="row-even"><td><p>Piano-roll</p></td>
+<tr class="row-odd"><td><p>Piano-roll</p></td>
 <td><p><em>T</em> x 128</p></td>
 <td><p>{0, 1} or <em>R</em></p></td>
 <td><p>{0,1} for binary piano rolls; <em>R</em> for piano rolls with velocities</p></td>
+</tr>
+<tr class="row-even"><td><p>Event-based</p></td>
+<td><p><em>M</em> x 1</p></td>
+<td><p>{0, 1, …, 387}</p></td>
+<td><p>128 note-ons, 128 note-offs, 100 tick shifts, 32 velocities</p></td>
 </tr>
 <tr class="row-odd"><td><p>Note-based</p></td>
 <td><p><em>N</em> x 4</p></td>
@@ -209,274 +209,58 @@ comparison of them.</p>
 </tr>
 </tbody>
 </table>
-<p>Note that <em>T</em> and <em>N</em> denote the numbers of time steps and notes, respectively.</p>
-<div class="section" id="event-representation">
-<h2>Event Representation<a class="headerlink" href="#event-representation" title="Permalink to this headline">¶</a></h2>
+<p>Note that <em>T</em>, <em>M</em>, and <em>N</em> denote the numbers of time steps, events and notes, respectively.</p>
+<div class="section" id="pitch-based-representation">
+<h2>Pitch-based Representation<a class="headerlink" href="#pitch-based-representation" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object converted from an event-based representation.</p>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pitch_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_hold_state</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/pitch.html#to_pitch_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Encode a Music object into pitch-based representation.</p>
+<p>The pitch-based represetantion represents music as a sequence of pitch,
+rest and (optional) hold tokens. Only monophonic melodies are compatible
+with this representation. The output shape is T x 1, where T is the
+number of time steps. The values indicate whether the current time step
+is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in event-based representation to be converted.
-size: L * D:
-- L for the sequence (event) length
-- D = 1 {</p>
-<blockquote>
-<div><p>0-127: note-on event,
-128-255: note-off event,
-256-355(default):</p>
-<blockquote>
-<div><p>tick-shift event
-256 for one tick, 355 for 100 ticks
-the maximum number of tick-shift can be specified</p>
-</div></blockquote>
-<dl class="simple">
-<dt>356-388 (default):</dt><dd><p>velocity event
-the maximum number of quantized velocity can be specified</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-<p>e.g.
-[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]
--&gt;
-[C5 - - - E5 - - / G5 - - / /]</p>
-</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
-<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
-the maximum number of tick-shift (default = 100)</p></li>
-<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
-the maximum number of quantized velocity (default = 32, max = 128)</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
+<li><p><strong>use_hold_state</strong> (<em>bool</em>) – Whether to use a special state for holds. Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
+<dd class="field-even"><p>Encoded array in pitch-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray (np.uint8)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_pitch_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_hold_state</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/pitch.html#from_pitch_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Decode pitch-based representation into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in pitch-based representation to decode. Will be casted to
+integer if not of integer type.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>program</strong> (<em>int</em><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
+Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
+Piano).</p></li>
+<li><p><strong>is_drum</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
+False.</p></li>
+<li><p><strong>use_hold_state</strong> (<em>bool</em>) – Whether to use a special state for holds. Defaults to False.</p></li>
+<li><p><strong>default_velocity</strong> (<em>int</em>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Decoded Music object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object in event-based representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
-<li><p><strong>tick_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – tick-shift event dimensions
-the maximum number of tick-shift (default = 100)</p></li>
-<li><p><strong>velocity_dim</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – velocity event dimensions
-the maximum number of quantized velocity (default = 32, max = 128)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul>
-<li><p><strong>array</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Converted event-based representation.
-size: L * D:
-- L for the sequence (event) length
-- D = 1 {</p>
-<blockquote>
-<div><p>0-127: note-on event,
-128-255: note-off event,
-256-355(default):</p>
-<blockquote>
-<div><p>tick-shift event
-256 for one tick, 355 for 100 ticks
-the maximum number of tick-shift can be specified</p>
-</div></blockquote>
-<dl class="simple">
-<dt>356-388 (default):</dt><dd><p>velocity event
-the maximum number of quantized velocity can be specified</p>
-</dd>
-</dl>
-<p>}</p>
-</div></blockquote>
-</li>
-<li><p><em>e.g.</em></p></li>
-<li><p><em>[C5 - - - E5 - - / G5 - - / /]</em></p></li>
-<li><p><em>-&gt;</em></p></li>
-<li><p><em>[380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]</em></p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="note-representation">
-<h2>Note Representation<a class="headerlink" href="#note-representation" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object converted from a note-based representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in note-based representation to be converted.
-size: L * D:</p>
-<blockquote>
-<div><blockquote>
-<div><ul>
-<li><p>L for the sequence (note) length</p></li>
-<li><dl class="simple">
-<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
-start: start ticks,
-duration: duration ticks,
-velocity: 0 - 100</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>}</p>
-</div></blockquote>
-<p>e.g. [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
--&gt; [C5 - - - E5 - - / G5 - - / /]
-(assume velocity to be 100)</p>
-</div></blockquote>
-</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks (in notes) to be the basic unit (in data)
-(default = 1)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object in note-based representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>array</strong> – Converted note-based representation.
-size: L * D:</p>
-<blockquote>
-<div><blockquote>
-<div><ul class="simple">
-<li><p>L for the sequence (note) length</p></li>
-<li><dl class="simple">
-<dt>D = 4 {</dt><dd><p>pitch: 0 - 127,
-time: start ticks,
-duration: duration ticks,
-velocity: 0 - 100</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>}</p>
-</div></blockquote>
-<p>e.g.  [C5 - - - E5 - - / G5 - - / /]
--&gt; [[60, 0, 3, 100], [64, 3, 5, 100], [67, 6, 8, 100]]
-(assume velocity to be 100)</p>
-</div></blockquote>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="monotoken-representation">
-<h2>Monotoken Representation<a class="headerlink" href="#monotoken-representation" title="Permalink to this headline">¶</a></h2>
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/token.html#from_monotoken_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object converted from a monotoken-based representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in monotoken-based representation to be converted.
-size: L * D:</p>
-<blockquote>
-<div><ul>
-<li><p>L for the sequence length</p></li>
-<li><dl class="simple">
-<dt>D = 1 {</dt><dd><p>0-127: pitch onset
-128: hold state
-129: rest state</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>}</p>
-</div></blockquote>
-<p>e.g.
-[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]
--&gt;
-[C5 - - - E5 - - / G5 - - / /]</p>
-</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/token.html#to_monotoken_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object in monotoken-based representation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>array</strong> – Converted monotoken-based representation.
-size: L * D:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>L for the sequence length</p></li>
-<li><dl class="simple">
-<dt>D = 1 {</dt><dd><p>0-127: pitch onset
-128: hold state
-129: rest state</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>}</p>
-</div></blockquote>
-<p>e.g.</p>
-<p>[C5 - - - E5 - - / G5 - - / /]
--&gt;
-[60, 128, 128, 128, 64, 128, 128, 129, 67, 128, 128, 129, 129]</p>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -486,30 +270,48 @@ size: L * D:</p>
 <h2>Pianoroll Representation<a class="headerlink" href="#pianoroll-representation" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/pianoroll.html#from_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object converted from a pianoroll representation.</p>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Encode notes into piano-roll representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – <p>Data in pianoroll representation to be converted.
-size: L * D:</p>
-<blockquote>
-<div><ul>
-<li><p>L for the sequence (note) length</p></li>
-<li><dl class="simple">
-<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
+<li><p><strong>encode_velocity</strong> (<em>bool</em>) – Whether to encode velocities. If True, a binary-valued array will be
+return. Otherwise, an integer array will be return. Defaults to
+True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>music</strong> – Converted MusPy Music object. (Only Track - Note has the information)</p>
+<dd class="field-even"><p>Encoded array in piano-roll representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray (np.uint8 or np.bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/pianoroll.html#from_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Decode pitch-based representation into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in piano-roll representation to decode. Will be casted to
+integer if not of integer type. If <cite>encode_velocity</cite> is True,
+will be casted to boolean if not of boolean type.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>program</strong> (<em>int</em><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
+Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
+Piano).</p></li>
+<li><p><strong>is_drum</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
+False.</p></li>
+<li><p><strong>encode_velocity</strong> (<em>bool</em>) – Whether to encode velocities. Defaults to True.</p></li>
+<li><p><strong>default_velocity</strong> (<em>int</em>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Decoded Music object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
@@ -517,35 +319,141 @@ decide how many ticks to be the basic unit (default = 1)</p></li>
 </dl>
 </dd></dl>
 
+</div>
+<div class="section" id="event-based-representation">
+<h2>Event-based Representation<a class="headerlink" href="#event-based-representation" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">min_step</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">binarized</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compact</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Return a Music object in pianoroll representation.</p>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Encode a Music object into event-based representation.</p>
+<p>The event-based represetantion represents music as a sequence of events,
+including note-on, note-off, time-shift and velocity events. The output
+shape is M x 1, where M is the number of events. The values encode the
+events. The default configuration uses 0-127 to encode note-one events,
+128-255 for note-off events, 256-355 for time-shift events, and 356 to
+387 for velocity events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – MusPy Music object to be converted.</p></li>
-<li><p><strong>min_step</strong><strong>(</strong><strong>optional</strong><strong>)</strong> – minimum quantification step
-decide how many ticks to be the basic unit (default = 1)</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
+<li><p><strong>use_single_note_off_event</strong> (<em>bool</em>) – Whether to use a single note-off event for all the pitches. If True,
+the note-off event will close all active notes, which can lead to
+lossy conversion for polyphonic music. Defaults to False.</p></li>
+<li><p><strong>use_end_of_sequence_event</strong> (<em>bool</em>) – Whether to append an end-of-sequence event to the encoded sequence.
+Defaults to False.</p></li>
+<li><p><strong>force_velocity_event</strong> (<em>bool</em>) – Whether to add a velocity event before every note-on event. If
+False, velocity events are only used when the note velocity is
+changed (i.e., different from the previous one). Defaults to True.</p></li>
+<li><p><strong>max_time_shift</strong> (<em>int</em>) – Maximum time shift (in ticks) to be encoded as an separate event.
+Time shifts larger than <cite>max_time_shift</cite> will be decomposed into
+two or more time-shift events. Defaults to 100.</p></li>
+<li><p><strong>velocity_bins</strong> (<em>int</em>) – Number of velocity bins to use. Defaults to 32.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><p><strong>array</strong> – Converted pianoroll representation.
-size: L * D:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>L for the sequence (note) length</p></li>
-<li><dl class="simple">
-<dt>D = 128</dt><dd><p>the value in each dimension indicates the velocity</p>
-</dd>
-</dl>
-</li>
-</ul>
-</div></blockquote>
-</p>
+<dd class="field-even"><p>Encoded array in event-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a></p>
+<dd class="field-odd"><p>ndarray (np.uint16)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Decode event-based representation into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Will be casted to
+integer if not of integer type.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>program</strong> (<em>int</em><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
+Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
+Piano).</p></li>
+<li><p><strong>is_drum</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
+False.</p></li>
+<li><p><strong>use_single_note_off_event</strong> (<em>bool</em>) – Whether to use a single note-off event for all the pitches. If True,
+the note-off event will close all active notes, which can lead to
+lossy conversion for polyphonic music. Defaults to False.</p></li>
+<li><p><strong>use_end_of_sequence_event</strong> (<em>bool</em>) – Whether to append an end-of-sequence event to the encoded sequence.
+Defaults to False.</p></li>
+<li><p><strong>max_time_shift</strong> (<em>int</em>) – Maximum time shift (in ticks) to be encoded as an separate event.
+Time shifts larger than <cite>max_time_shift</cite> will be decomposed into
+two or more time-shift events. Defaults to 100.</p></li>
+<li><p><strong>velocity_bins</strong> (<em>int</em>) – Number of velocity bins to use. Defaults to 32.</p></li>
+<li><p><strong>default_velocity</strong> (<em>int</em>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Decoded Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="note-based-representation">
+<h2>Note-based Representation<a class="headerlink" href="#note-based-representation" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Encode a Music object into note-based representation.</p>
+<p>The note-based represetantion represents music as a sequence of (pitch,
+time, duration, velocity) tuples. For example, a note
+Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
+tuple (0, 4, 60, 64). The output shape is N * D, where N is the number
+of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise D is 3.
+The values of the second dimension represent pitch, time, duration and
+velocity (discarded when <cite>encode_velocity</cite> is False).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
+<li><p><strong>use_start_end</strong> (<em>bool</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
+‘time’ and ‘duration’. Defaults to False.</p></li>
+<li><p><strong>encode_velocity</strong> (<em>bool</em>) – Whether to encode note velocities. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Encoded array in note-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray (np.uint8)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Decode note-based representation into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in note-based representation to decode. Will be casted to
+integer if not of integer type.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>program</strong> (<em>int</em><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
+Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
+Piano).</p></li>
+<li><p><strong>is_drum</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
+False.</p></li>
+<li><p><strong>use_start_end</strong> (<em>bool</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
+‘time’ and ‘duration’. Defaults to False.</p></li>
+<li><p><strong>encode_velocity</strong> (<em>bool</em>) – Whether to encode note velocities. Defaults to True.</p></li>
+<li><p><strong>default_velocity</strong> (<em>int</em>) – Default velocity value to use when decoding if <cite>encode_velocity</cite> is
+False. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Decoded Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
 </dd>
 </dl>
 </dd></dl>

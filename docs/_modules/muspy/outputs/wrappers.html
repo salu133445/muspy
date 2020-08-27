@@ -174,7 +174,7 @@
 <span class="kn">from</span> <span class="nn">.musicxml</span> <span class="k">import</span> <span class="n">write_musicxml</span>
 <span class="kn">from</span> <span class="nn">.note</span> <span class="k">import</span> <span class="n">to_note_representation</span>
 <span class="kn">from</span> <span class="nn">.pianoroll</span> <span class="k">import</span> <span class="n">to_pianoroll_representation</span><span class="p">,</span> <span class="n">to_pypianoroll</span>
-<span class="kn">from</span> <span class="nn">.token</span> <span class="k">import</span> <span class="n">to_monotoken_representation</span><span class="p">,</span> <span class="n">to_polytoken_representation</span>
+<span class="kn">from</span> <span class="nn">.pitch</span> <span class="k">import</span> <span class="n">to_pitch_representation</span>
 <span class="kn">from</span> <span class="nn">.yaml</span> <span class="k">import</span> <span class="n">save_yaml</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -318,13 +318,10 @@
         <span class="k">return</span> <span class="n">to_note_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano-roll&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;monotoken&quot;</span><span class="p">,</span> <span class="s2">&quot;mono-token&quot;</span><span class="p">,</span> <span class="s2">&quot;monotoken-based&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_monotoken_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;polytoken&quot;</span><span class="p">,</span> <span class="s2">&quot;poly-token&quot;</span><span class="p">,</span> <span class="s2">&quot;polytoken-based&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_polytoken_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span>  <span class="s2">&quot;pitch-based&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">to_pitch_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`kind` must be one of &#39;event&#39;, &#39;note&#39;, &#39;pianoroll&#39;, &#39;monotoken&#39; and &quot;</span>
-        <span class="s2">&quot;&#39;polytoken&#39;.&quot;</span>
+        <span class="s2">&quot;`kind` must be one of &#39;event&#39;, &#39;note&#39;, &#39;pianoroll&#39; and &#39;pitch&#39;.&quot;</span>
     <span class="p">)</span></div>
 </pre></div>
 

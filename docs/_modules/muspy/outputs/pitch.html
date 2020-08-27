@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.outputs.note &mdash; MusPy  documentation</title>
+  <title>muspy.outputs.pitch &mdash; MusPy  documentation</title>
   
 
   
@@ -143,7 +143,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.outputs.note</li>
+      <li>muspy.outputs.pitch</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -158,8 +158,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.outputs.note</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Note-based representation output interface.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.outputs.pitch</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Pitch-based representation output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">attrgetter</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -170,33 +170,28 @@
     <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="to_note_representation"><a class="viewcode-back" href="../../../representations.html#muspy.to_note_representation">[docs]</a><span class="k">def</span> <span class="nf">to_note_representation</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_start_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<div class="viewcode-block" id="to_pitch_representation"><a class="viewcode-back" href="../../../representations.html#muspy.to_pitch_representation">[docs]</a><span class="k">def</span> <span class="nf">to_pitch_representation</span><span class="p">(</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_hold_state</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Encode a Music object into note-based representation.</span>
+    <span class="sd">&quot;&quot;&quot;Encode a Music object into pitch-based representation.</span>
 
-<span class="sd">    The note-based represetantion represents music as a sequence of (pitch,</span>
-<span class="sd">    time, duration, velocity) tuples. For example, a note</span>
-<span class="sd">    Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a</span>
-<span class="sd">    tuple (0, 4, 60, 64). The output shape is N * D, where N is the number</span>
-<span class="sd">    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.</span>
-<span class="sd">    The values of the second dimension represent pitch, time, duration and</span>
-<span class="sd">    velocity (discarded when `encode_velocity` is False).</span>
+<span class="sd">    The pitch-based represetantion represents music as a sequence of pitch,</span>
+<span class="sd">    rest and (optional) hold tokens. Only monophonic melodies are compatible</span>
+<span class="sd">    with this representation. The output shape is T x 1, where T is the</span>
+<span class="sd">    number of time steps. The values indicate whether the current time step</span>
+<span class="sd">    is a pitch (0-127), a rest (128) or (optionally) a hold (129).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to encode.</span>
-<span class="sd">    use_start_end : bool</span>
-<span class="sd">        Whether to use &#39;start&#39; and &#39;end&#39; to encode the timing rather than</span>
-<span class="sd">        &#39;time&#39; and &#39;duration&#39;. Defaults to False.</span>
-<span class="sd">    encode_velocity : bool</span>
-<span class="sd">        Whether to encode note velocities. Defaults to True.</span>
+<span class="sd">    use_hold_state : bool</span>
+<span class="sd">        Whether to use a special state for holds. Defaults to False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    ndarray (np.uint8)</span>
-<span class="sd">        Encoded array in note-based representation.</span>
+<span class="sd">        Encoded array in pitch-based representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Collect notes</span>
@@ -204,7 +199,7 @@
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
 
-    <span class="c1"># Raise an error if no notes is found</span>
+    <span class="c1"># Raise an error if no notes are found</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">notes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No notes found.&quot;</span><span class="p">)</span>
 
@@ -212,18 +207,20 @@
     <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
 
     <span class="c1"># Initialize the array</span>
-    <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+    <span class="n">length</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">))</span>
+    <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
-    <span class="c1"># Encode notes</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">note</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">notes</span><span class="p">):</span>
-        <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span>
-        <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="n">use_start_end</span> <span class="k">else</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
-        <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="k">if</span> <span class="n">use_start_end</span> <span class="k">else</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span>
-        <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+    <span class="c1"># Fill the array with rests</span>
+    <span class="k">if</span> <span class="n">use_hold_state</span><span class="p">:</span>
+        <span class="n">array</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
+
+    <span class="c1"># Encode note pitches</span>
+    <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">use_hold_state</span><span class="p">:</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">]</span> <span class="o">=</span> <span class="mi">129</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span>
 
     <span class="k">return</span> <span class="n">array</span></div>
 </pre></div>

@@ -188,7 +188,7 @@
 <span class="kn">from</span> <span class="nn">.outputs</span> <span class="k">import</span> <span class="n">save</span><span class="p">,</span> <span class="n">to_object</span><span class="p">,</span> <span class="n">to_representation</span><span class="p">,</span> <span class="n">write</span>
 <span class="kn">from</span> <span class="nn">.visualization</span> <span class="k">import</span> <span class="n">show</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Music&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="s2">&quot;DEFAULT_RESOLUTION&quot;</span><span class="p">]</span>
 
 <span class="n">DEFAULT_RESOLUTION</span> <span class="o">=</span> <span class="mi">24</span>
 
@@ -299,6 +299,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracks</span> <span class="k">if</span> <span class="n">tracks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>

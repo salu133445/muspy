@@ -17,41 +17,41 @@ Note-based     *N* x 4   *N* or *R*       List of (*pitch*, *time*, *duration*, 
 Note that *T*, *M*, and *N* denote the numbers of time steps, events and notes, respectively.
 
 
-Event Representation
-====================
+Pitch-based Representation
+==========================
 
-.. autofunction:: muspy.from_event_representation
+.. autofunction:: muspy.to_pitch_representation
     :noindex:
 
-.. autofunction:: muspy.to_event_representation
-    :noindex:
-
-
-Note Representation
-===================
-
-.. autofunction:: muspy.from_note_representation
-    :noindex:
-
-.. autofunction:: muspy.to_note_representation
-    :noindex:
-
-
-Monotoken Representation
-========================
-
-.. autofunction:: muspy.from_monotoken_representation
-    :noindex:
-
-.. autofunction:: muspy.to_monotoken_representation
+.. autofunction:: muspy.from_pitch_representation
     :noindex:
 
 
 Pianoroll Representation
 ========================
 
+.. autofunction:: muspy.to_pianoroll_representation
+    :noindex:
+
 .. autofunction:: muspy.from_pianoroll_representation
     :noindex:
 
-.. autofunction:: muspy.to_pianoroll_representation
+
+Event-based Representation
+==========================
+
+.. autofunction:: muspy.to_event_representation
+    :noindex:
+
+.. autofunction:: muspy.from_event_representation
+    :noindex:
+
+
+Note-based Representation
+=========================
+
+.. autofunction:: muspy.to_note_representation
+    :noindex:
+
+.. autofunction:: muspy.from_note_representation
     :noindex:

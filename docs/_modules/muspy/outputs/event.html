@@ -160,66 +160,126 @@
             
   <h1>Source code for muspy.outputs.event</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Event-based representation output interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">attrgetter</span><span class="p">,</span> <span class="n">itemgetter</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
-
-<span class="kn">from</span> <span class="nn">..processor</span> <span class="k">import</span> <span class="n">MidiEventProcessor</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
 
 
 <div class="viewcode-block" id="to_event_representation"><a class="viewcode-back" href="../../../representations.html#muspy.to_event_representation">[docs]</a><span class="k">def</span> <span class="nf">to_event_representation</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">min_step</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">use_single_note_off_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">use_end_of_sequence_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">force_velocity_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">max_time_shift</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">velocity_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object in event-based representation.</span>
+    <span class="sd">&quot;&quot;&quot;Encode a Music object into event-based representation.</span>
+
+<span class="sd">    The event-based represetantion represents music as a sequence of events,</span>
+<span class="sd">    including note-on, note-off, time-shift and velocity events. The output</span>
+<span class="sd">    shape is M x 1, where M is the number of events. The values encode the</span>
+<span class="sd">    events. The default configuration uses 0-127 to encode note-one events,</span>
+<span class="sd">    128-255 for note-off events, 256-355 for time-shift events, and 356 to</span>
+<span class="sd">    387 for velocity events.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music`</span>
-<span class="sd">        MusPy Music object to be converted.</span>
-<span class="sd">    min_step(optional):</span>
-<span class="sd">        minimum quantification step</span>
-<span class="sd">        decide how many ticks to be the basic unit (default = 1)</span>
-<span class="sd">    tick_dim(optional):</span>
-<span class="sd">        tick-shift event dimensions</span>
-<span class="sd">        the maximum number of tick-shift (default = 100)</span>
-<span class="sd">    velocity_dim(optional):</span>
-<span class="sd">        velocity event dimensions</span>
-<span class="sd">        the maximum number of quantized velocity (default = 32, max = 128)</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to encode.</span>
+<span class="sd">    use_single_note_off_event : bool</span>
+<span class="sd">        Whether to use a single note-off event for all the pitches. If True,</span>
+<span class="sd">        the note-off event will close all active notes, which can lead to</span>
+<span class="sd">        lossy conversion for polyphonic music. Defaults to False.</span>
+<span class="sd">    use_end_of_sequence_event : bool</span>
+<span class="sd">        Whether to append an end-of-sequence event to the encoded sequence.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">    force_velocity_event : bool</span>
+<span class="sd">        Whether to add a velocity event before every note-on event. If</span>
+<span class="sd">        False, velocity events are only used when the note velocity is</span>
+<span class="sd">        changed (i.e., different from the previous one). Defaults to True.</span>
+<span class="sd">    max_time_shift : int</span>
+<span class="sd">        Maximum time shift (in ticks) to be encoded as an separate event.</span>
+<span class="sd">        Time shifts larger than `max_time_shift` will be decomposed into</span>
+<span class="sd">        two or more time-shift events. Defaults to 100.</span>
+<span class="sd">    velocity_bins : int</span>
+<span class="sd">        Number of velocity bins to use. Defaults to 32.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    array : :class:`numpy.ndarray`</span>
-<span class="sd">        Converted event-based representation.</span>
-<span class="sd">        size: L * D:</span>
-<span class="sd">        - L for the sequence (event) length</span>
-<span class="sd">        - D = 1 {</span>
-<span class="sd">            0-127: note-on event,</span>
-<span class="sd">            128-255: note-off event,</span>
-<span class="sd">            256-355(default):</span>
-<span class="sd">                tick-shift event</span>
-<span class="sd">                256 for one tick, 355 for 100 ticks</span>
-<span class="sd">                the maximum number of tick-shift can be specified</span>
-<span class="sd">            356-388 (default):</span>
-<span class="sd">                velocity event</span>
-<span class="sd">                the maximum number of quantized velocity can be specified</span>
-<span class="sd">            }</span>
-<span class="sd">    e.g.</span>
-
-<span class="sd">    [C5 - - - E5 - - / G5 - - / /]</span>
-<span class="sd">    -&gt;</span>
-<span class="sd">    [380, 60, 259, 188, 64, 258, 192, 256, 67, 258, 195, 257]</span>
+<span class="sd">    ndarray (np.uint16)</span>
+<span class="sd">        Encoded array in event-based representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Collect notes</span>
     <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
-    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
-    <span class="n">processor</span> <span class="o">=</span> <span class="n">MidiEventProcessor</span><span class="p">(</span><span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">processor</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">notes</span><span class="p">))</span></div>
+
+    <span class="c1"># Raise an error if no notes is found</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">notes</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_end_of_sequence_event</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No notes found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Sort the notes</span>
+    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Compute offsets</span>
+    <span class="n">offset_note_on</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">offset_note_off</span> <span class="o">=</span> <span class="mi">128</span>
+    <span class="n">offset_time_shift</span> <span class="o">=</span> <span class="mi">129</span> <span class="k">if</span> <span class="n">use_single_note_off_event</span> <span class="k">else</span> <span class="mi">256</span>
+    <span class="n">offset_velocity</span> <span class="o">=</span> <span class="n">offset_time_shift</span> <span class="o">+</span> <span class="n">max_time_shift</span>
+    <span class="k">if</span> <span class="n">use_end_of_sequence_event</span><span class="p">:</span>
+        <span class="n">offset_eos</span> <span class="o">=</span> <span class="n">offset_velocity</span> <span class="o">+</span> <span class="n">velocity_bins</span>
+
+    <span class="c1"># Collect note-related events</span>
+    <span class="n">note_events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_velocity</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="c1"># Velocity event</span>
+        <span class="k">if</span> <span class="n">force_velocity_event</span> <span class="ow">or</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">!=</span> <span class="n">last_velocity</span><span class="p">:</span>
+            <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+                    <span class="n">offset_velocity</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">velocity_bins</span> <span class="o">/</span> <span class="mi">128</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">last_velocity</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+        <span class="c1"># Note on event</span>
+        <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">offset_note_on</span> <span class="o">+</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
+        <span class="c1"># Note off event</span>
+        <span class="k">if</span> <span class="n">use_single_note_off_event</span><span class="p">:</span>
+            <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">offset_note_off</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">offset_note_off</span> <span class="o">+</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
+
+    <span class="c1"># Sort events by time</span>
+    <span class="n">note_events</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Create a list for all events</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Initialize the time cursor</span>
+    <span class="n">time_cursor</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Iterate over note events</span>
+    <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">note_events</span><span class="p">:</span>
+        <span class="c1"># If event time is after the time cursor, append tick shift events</span>
+        <span class="k">if</span> <span class="n">time</span> <span class="o">&gt;</span> <span class="n">time_cursor</span><span class="p">:</span>
+            <span class="n">div</span><span class="p">,</span> <span class="n">mod</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">time_cursor</span><span class="p">,</span> <span class="n">max_time_shift</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">div</span><span class="p">):</span>
+                <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_time_shift</span> <span class="o">+</span> <span class="n">max_time_shift</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_time_shift</span> <span class="o">+</span> <span class="n">mod</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+            <span class="n">time_cursor</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+    <span class="c1"># Append the end-of-sequence event</span>
+    <span class="k">if</span> <span class="n">use_end_of_sequence_event</span><span class="p">:</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_eos</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
            </div>
