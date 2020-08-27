@@ -9,7 +9,7 @@ libraries and commonly-used representations in music generation.
 """
 from .event import to_event_representation
 from .json import save_json
-from .midi import to_pretty_midi, write_midi
+from .midi import to_mido, to_pretty_midi, write_midi
 from .music21 import to_music21
 from .musicxml import write_musicxml
 from .note import to_note_representation
@@ -23,6 +23,7 @@ __all__ = [
     "save_json",
     "save_yaml",
     "to_event_representation",
+    "to_mido",
     "to_music21",
     "to_note_representation",
     "to_object",

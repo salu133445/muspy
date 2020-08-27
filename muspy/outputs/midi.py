@@ -1,6 +1,6 @@
 """MIDI output interface."""
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Tuple, Union
+from typing import TYPE_CHECKING, Any, Optional, Tuple, Union
 
 import pretty_midi
 from pretty_midi import PrettyMIDI, Instrument
@@ -49,13 +49,17 @@ def to_mido_tempo(tempo: Tempo) -> MetaMessage:
     )
 
 
-def to_mido_key_signature(key_signature: KeySignature) -> MetaMessage:
+def to_mido_key_signature(
+    key_signature: KeySignature,
+) -> Optional[MetaMessage]:
     """Return a KeySignature object as a mido MetaMessage object.
 
     Timing is in absolute time, NOT in delta time.
 
     """
     suffix = "m" if key_signature.mode == "minor" else ""
+    if key_signature.root is None:
+        return None
     return MetaMessage(
         "key_signature",
         time=key_signature.time,
@@ -104,7 +108,9 @@ def to_mido_meta_track(music: "Music") -> MidiTrack:
 
     # Key signatures
     for key_signature in music.key_signatures:
-        meta_track.append(to_mido_key_signature(key_signature))
+        mido_key_signature = to_mido_key_signature(key_signature)
+        if mido_key_signature is not None:
+            meta_track.append(mido_key_signature)
 
     # Time signatures
     for time_signature in music.time_signatures:
@@ -246,6 +252,36 @@ def to_mido_track(
     return midi_track
 
 
+def to_mido(music: "Music", use_note_on_as_note_off: bool = True):
+    """Return a Music object as a MidiFile object.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to convert.
+    use_note_on_as_note_off : bool
+        Whether to use a note on message with zero velocity instead of a
+        note off message.
+
+    Returns
+    -------
+    :class:`mido.MidiFile`
+        Converted MidiFile object.
+
+    """
+    # Create a MIDI file object
+    midi = MidiFile(type=1, ticks_per_beat=music.resolution)
+
+    # Append meta track
+    midi.tracks.append(to_mido_meta_track(music))
+
+    # Iterate over music tracks
+    for track in music.tracks:
+        midi.tracks.append(to_mido_track(track, use_note_on_as_note_off))
+
+    return midi
+
+
 def write_midi_mido(
     path: Union[str, Path],
     music: "Music",
@@ -264,17 +300,7 @@ def write_midi_mido(
         note off message.
 
     """
-    # Create a MIDI file object
-    midi = MidiFile(type=1, ticks_per_beat=music.resolution)
-
-    # Append meta track
-    midi.tracks.append(to_mido_meta_track(music))
-
-    # Iterate over music tracks
-    for track in music.tracks:
-        midi.tracks.append(to_mido_track(track, use_note_on_as_note_off))
-
-    # Write to a MIDI file
+    midi = to_mido(music, use_note_on_as_note_off=use_note_on_as_note_off)
     midi.save(str(path))
 
 
@@ -333,7 +359,7 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
 
     Returns
     -------
-    pm : :class:`pretty_midi.PrettyMIDI`
+    :class:`pretty_midi.PrettyMIDI`
         Converted PrettyMIDI object.
 
     """

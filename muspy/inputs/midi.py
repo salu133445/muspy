@@ -28,15 +28,13 @@ def _is_drum(channel):
     return channel == 9
 
 
-def read_midi_mido(
-    path: Union[str, Path], duplicate_note_mode: str = "fifo"
-) -> Music:
-    """Read a MIDI file into a Music object using mido as backend.
+def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
+    """Return a Music object converted from a pretty_midi PrettyMIDI object.
 
     Parameters
     ----------
-    path : str or Path
-        Path to the MIDI file to read.
+    midi : :class:`mido.MidiFile` object
+        MidiFile object to convert.
     duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
         Policy for dealing with duplicate notes. When a note off message is
         presetned while there are multiple correspoding note on messages
@@ -66,9 +64,6 @@ def read_midi_mido(
             return tracks[t_idx][key]
         tracks[t_idx][key] = Track(program, _is_drum(channel))
         return tracks[t_idx][key]
-
-    # Read MIDI file with mido
-    midi = MidiFile(filename=str(path))
 
     # Raise MIDIError if the MIDI file is of Type 2 (i.e., asynchronous)
     if midi.type == 2:
@@ -246,7 +241,6 @@ def read_midi_mido(
     # Meta data
     metadata = Metadata(
         title=song_title,
-        source_filename=Path(path).name,
         source_format="midi",
         copyright=" ".join(copyrights) if copyrights else None,
     )
@@ -260,6 +254,37 @@ def read_midi_mido(
         lyrics=lyrics,
         tracks=music_tracks,
     )
+
+
+def read_midi_mido(
+    path: Union[str, Path], duplicate_note_mode: str = "fifo"
+) -> Music:
+    """Read a MIDI file into a Music object using mido as backend.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the MIDI file to read.
+    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
+        Policy for dealing with duplicate notes. When a note off message is
+        presetned while there are multiple correspoding note on messages
+        that have not yet been closed, we need a policy to decide which note
+        on messages to close. Defaults to 'fifo'.
+
+        - 'fifo' (first in first out): close the earliest note on
+        - 'lifo' (first in first out):close the latest note on
+        - 'close_all': close all note on messages
+
+    Returns
+    -------
+    :class:`muspy.Music` object
+        Converted Music object.
+
+    """
+    midi = MidiFile(filename=str(path))
+    music = from_mido(midi, duplicate_note_mode=duplicate_note_mode)
+    music.metadata.source_filename = Path(path).name
+    return music
 
 
 def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
@@ -374,7 +399,7 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
 
     Returns
     -------
-    :class:`muspy.KeySignature` object
+    :class:`muspy.Music` object
         Converted Music object.
 
     """
@@ -405,7 +430,9 @@ def read_midi_pretty_midi(path: Union[str, Path]) -> Music:
         Converted Music object.
 
     """
-    return from_pretty_midi(PrettyMIDI(str(path)))
+    music = from_pretty_midi(PrettyMIDI(str(path)))
+    music.metadata.source_filename = Path(path).name
+    return music
 
 
 def read_midi(

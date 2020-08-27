@@ -10,7 +10,7 @@ commonly-used representations in music generation.
 from .abc import read_abc, read_abc_string
 from .event import from_event_representation
 from .json import load_json
-from .midi import from_pretty_midi, read_midi, MIDIError
+from .midi import from_mido, from_pretty_midi, read_midi, MIDIError
 from .music21 import from_music21, from_music21_opus
 from .musicxml import read_musicxml, MusicXMLError
 from .note import from_note_representation
@@ -23,6 +23,7 @@ __all__ = [
     "MIDIError",
     "MusicXMLError",
     "from_event_representation",
+    "from_mido",
     "from_music21",
     "from_music21_opus",
     "from_note_representation",

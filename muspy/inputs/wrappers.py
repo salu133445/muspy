@@ -1,16 +1,20 @@
 """Wrappers for input interface."""
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, List, Optional, Union
 
+from mido import MidiFile
+from music21.stream import Stream
 from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
+from ..classes import Track
 from ..music import Music
 from .abc import read_abc
 from .event import from_event_representation
 from .json import load_json
-from .midi import from_pretty_midi, read_midi
+from .midi import from_mido, from_pretty_midi, read_midi
+from .music21 import from_music21
 from .musicxml import read_musicxml
 from .note import from_note_representation
 from .pianoroll import from_pianoroll_representation, from_pypianoroll
@@ -29,7 +33,7 @@ def load(
     Parameters
     ----------
     path : str or Path
-        Path to the file to be loaded.
+        Path to the file to load.
     kind : {'json', 'yaml'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
@@ -37,14 +41,14 @@ def load(
         Path to the schema file. If given, validate the loaded data by the
         schema.
     **kwargs : dict
-        Keyword arguments to be passed to the target function. See
+        Keyword arguments to pass to the target function. See
         :func:`muspy.load_json` or :func:`muspy.load_yaml` for available
         arguments.
 
     Returns
     -------
     :class:`muspy.Music` object
-        Loaded MusPy Music object.
+        Loaded Music object.
 
     See Also
     --------
@@ -75,7 +79,7 @@ def read(
     Parameters
     ----------
     path : str or Path
-        Path to the file to be read.
+        Path to the file to read.
     kind : {'midi', 'musicxml', 'abc'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
@@ -83,7 +87,7 @@ def read(
     Returns
     -------
     :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     See Also
     --------
@@ -112,56 +116,63 @@ def read(
     raise ValueError("`kind` must be one of 'midi', 'musicxml' and 'abc'.")
 
 
-def from_object(obj: Union[PrettyMIDI, Multitrack], **kwargs: Any) -> Music:
+def from_object(
+    obj: Union[Stream, MidiFile, PrettyMIDI, Multitrack], **kwargs: Any
+) -> Union[Music, List[Music], Track, List[Track]]:
     """Return a Music object converted from a Multitrack or PrettyMIDI object.
 
     Parameters
     ----------
-    obj : :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`
+    obj : `music21.Stream` or :class:`mido.MidiTrack` or
+    :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`
     object
-        Object to be converted.
+        Object to convert.
 
     Returns
     -------
     music : :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     """
+    if isinstance(obj, Stream):
+        return from_music21(obj, **kwargs)  # type: ignore
+    if isinstance(obj, MidiFile):
+        return from_mido(obj, **kwargs)  # type: ignore
     if isinstance(obj, PrettyMIDI):
         return from_pretty_midi(obj, **kwargs)  # type: ignore
     if isinstance(obj, Multitrack):
         return from_pypianoroll(obj, **kwargs)  # type: ignore
     raise TypeError(
-        "`obj` must be of type pretty_midi.PrettyMIDI or "
-        "pypianoroll.Multitrack."
+        "`obj` must be of type music21.Stream, mido.MidiFile, "
+        "pretty_midi.PrettyMIDI or pypianoroll.Multitrack."
     )
 
 
-def from_representation(data: ndarray, kind: str, **kwargs: Any) -> Music:
+def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
     """Update with the given representation.
 
     Parameters
     ----------
-    data : :class:`numpy.ndarray`
-        Data in a supported representation.
+    array : :class:`numpy.ndarray`
+        Array in a supported representation.
     kind : str
-        Data representation type. Supported values are 'event', 'note',
-        'pianoroll', 'monotoken' and 'polytoken'.
+        Data representation type. Supported values are 'pitch', 'pianoroll',
+        'event' and 'note'.
 
     Returns
     -------
     music : :class:`muspy.Music` object
-        Converted MusPy Music object.
+        Converted Music object.
 
     """
-    if kind.lower() in ("event", "event-based"):
-        return from_event_representation(data, **kwargs)
-    if kind.lower() in ("note", "note-based"):
-        return from_note_representation(data, **kwargs)
-    if kind.lower() in ("pianoroll", "piano-roll"):
-        return from_pianoroll_representation(data, **kwargs)
     if kind.lower() in ("pitch", "pitch-based"):
-        return from_pitch_representation(data, **kwargs)
+        return from_pitch_representation(array, **kwargs)
+    if kind.lower() in ("pianoroll", "piano-roll", "piano roll"):
+        return from_pianoroll_representation(array, **kwargs)
+    if kind.lower() in ("event", "event-based"):
+        return from_event_representation(daarrayta, **kwargs)
+    if kind.lower() in ("note", "note-based"):
+        return from_note_representation(array, **kwargs)
     raise ValueError(
-        "`kind` must be one of 'event', 'note', 'pianoroll' and 'pitch'."
+        "`kind` must be one of 'pitch', 'pianoroll', 'event' and 'note'."
     )
