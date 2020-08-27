@@ -70,6 +70,11 @@ class NoteRepresentationProcessor:
         ndarray (np.uint8)
             Encoded array in note-based representation.
 
+        See Also
+        --------
+        :func:`muspy.to_note_representation`: Convert a Music object into
+          note-based representation.
+
         """
         return to_note_representation(
             music,
@@ -90,6 +95,11 @@ class NoteRepresentationProcessor:
         -------
         :class:`muspy.Music` object
             Decoded Music object.
+
+        See Also
+        --------
+        :func:`muspy.from_note_representation`: Return a Music object
+          converted from note-based representation.
 
         """
         return from_note_representation(
@@ -163,6 +173,11 @@ class EventRepresentationProcessor:
         ndarray (np.uint16)
             Encoded array in event-based representation.
 
+        See Also
+        --------
+        :func:`muspy.to_event_representation`: Convert a Music object into
+          event-based representation.
+
         """
         return to_event_representation(
             music,
@@ -186,6 +201,11 @@ class EventRepresentationProcessor:
         -------
         :class:`muspy.Music` object
             Decoded Music object.
+
+        See Also
+        --------
+        :func:`muspy.from_event_representation`: Return a Music object
+          converted from event-based representation.
 
         """
         return from_event_representation(
@@ -235,6 +255,11 @@ class PitchRepresentationProcessor:
         ndarray (np.uint8)
             Encoded array in pitch-based representation.
 
+        See Also
+        --------
+        :func:`muspy.to_pitch_representation`: Convert a Music object into
+          pitch-based representation.
+
         """
         return to_pitch_representation(
             music, use_hold_state=self.use_hold_state
@@ -253,6 +278,11 @@ class PitchRepresentationProcessor:
         -------
         :class:`muspy.Music` object
             Decoded Music object.
+
+        See Also
+        --------
+        :func:`muspy.from_pitch_representation`: Return a Music object
+          converted from pitch-based representation.
 
         """
         return from_pitch_representation(
@@ -301,6 +331,11 @@ class PianoRollRepresentationProcessor:
         ndarray (np.uint8)
             Encoded array in piano-roll representation.
 
+        See Also
+        --------
+        :func:`muspy.to_pianoroll_representation`: Convert a Music object
+          into piano-roll representation.
+
         """
         return to_pianoroll_representation(
             music, encode_velocity=self.encode_velocity
@@ -320,6 +355,11 @@ class PianoRollRepresentationProcessor:
         -------
         :class:`muspy.Music` object
             Decoded Music object.
+
+        See Also
+        --------
+        :func:`muspy.from_pianoroll_representation`: Return a Music object
+          converted from piano-roll representation.
 
         """
         return from_pianoroll_representation(

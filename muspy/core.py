@@ -50,7 +50,7 @@ def adjust_time(obj: Union[Music, Track], func: Callable[[float], float]):
 
     See Also
     --------
-    :meth:`muspy.adjust_resolution`: Adjust the resolution and the timing of
+    :func:`muspy.adjust_resolution`: Adjust the resolution and the timing of
       time-stamped objects.
 
     Note

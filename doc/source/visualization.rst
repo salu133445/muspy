@@ -14,6 +14,9 @@ The pianoroll visualization is made possible with the `Pypianoroll <https://salu
     :align: center
     :width: 500px
 
+.. autofunction:: muspy.show_pianoroll
+    :noindex:
+
 
 Score Visualization
 ===================
@@ -23,13 +26,6 @@ The score visualization is made possible with the `Bravura <https://github.com/s
 .. image:: images/score.png
     :align: center
     :width: 500px
-
-
-Detailed documentation
-======================
-
-.. autofunction:: muspy.show_pianoroll
-    :noindex:
 
 .. autofunction:: muspy.show_score
     :noindex:

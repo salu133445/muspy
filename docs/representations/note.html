@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Note-based Representation &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Metrics" href="../metrics.html" />
+    <link rel="prev" title="Event-based Representation" href="event.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example.html">Example Music Object</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../io.html">Data I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Representations</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="pitch.html">Pitch-based Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pianoroll.html">Piano-roll Representation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event.html">Event-based Representation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Note-based Representation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Representations</a> &raquo;</li>
+        
+      <li>Note-based Representation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/representations/note.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="note-based-representation">
+<h1>Note-based Representation<a class="headerlink" href="#note-based-representation" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Encode a Music object into note-based representation.</p>
+<p>The note-based represetantion represents music as a sequence of (pitch,
+time, duration, velocity) tuples. For example, a note
+Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
+tuple (0, 4, 60, 64). The output shape is N * D, where N is the number
+of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise D is 3.
+The values of the second dimension represent pitch, time, duration and
+velocity (discarded when <cite>encode_velocity</cite> is False).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
+<li><p><strong>use_start_end</strong> (<em>bool</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
+‘time’ and ‘duration’. Defaults to False.</p></li>
+<li><p><strong>encode_velocity</strong> (<em>bool</em>) – Whether to encode note velocities. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Encoded array in note-based representation.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray (np.uint8)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Decode note-based representation into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in note-based representation to decode. Will be casted to
+integer if not of integer type.</p></li>
+<li><p><strong>resolution</strong> (<em>int</em>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>program</strong> (<em>int</em><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
+Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
+Piano).</p></li>
+<li><p><strong>is_drum</strong> (<em>bool</em><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
+False.</p></li>
+<li><p><strong>use_start_end</strong> (<em>bool</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
+‘time’ and ‘duration’. Defaults to False.</p></li>
+<li><p><strong>encode_velocity</strong> (<em>bool</em>) – Whether to encode note velocities. Defaults to True.</p></li>
+<li><p><strong>default_velocity</strong> (<em>int</em>) – Default velocity value to use when decoding if <cite>encode_velocity</cite> is
+False. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Decoded Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">NoteRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#NoteRepresentationProcessor"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Note-based representation processor.</p>
+<p>The note-based represetantion represents music as a sequence of (pitch,
+time, duration, velocity) tuples. For example, a note
+Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
+tuple (0, 4, 60, 64). The output shape is L * D, where L is the number
+of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise D is 3.
+The values of the second dimension represent pitch, time, duration and
+velocity (discarded when <cite>encode_velocity</cite> is False).</p>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">use_start_end</code></dt>
+<dd><p>Whether to use ‘start’ and ‘end’ to encode the timing rather than
+‘time’ and ‘duration’. Defaults to False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">encode_velocity</code></dt>
+<dd><p>Whether to encode note velocities. Defaults to True.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">default_velocity</code></dt>
+<dd><p>Default velocity value to use when decoding if <cite>encode_velocity</cite> is
+False. Defaults to 64.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../metrics.html" class="btn btn-neutral float-right" title="Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="event.html" class="btn btn-neutral float-left" title="Event-based Representation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright MusPy Developers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -62,7 +62,7 @@ Contents
     classes/index
     io
     datasets
-    representations
+    representations/index
     metrics
     visualization
     doc/index
