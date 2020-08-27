@@ -1,0 +1,329 @@
+"""Representation processors."""
+from numpy import ndarray
+
+from .inputs import (
+    from_event_representation,
+    from_note_representation,
+    from_pianoroll_representation,
+    from_pitch_representation,
+)
+from .music import Music
+from .outputs import (
+    to_event_representation,
+    to_note_representation,
+    to_pianoroll_representation,
+    to_pitch_representation,
+)
+
+__all__ = [
+    "NoteRepresentationProcessor",
+    "EventRepresentationProcessor",
+    "PianoRollRepresentationProcessor",
+    "PitchRepresentationProcessor",
+]
+
+
+class NoteRepresentationProcessor:
+    """Note-based representation processor.
+
+    The note-based represetantion represents music as a sequence of (pitch,
+    time, duration, velocity) tuples. For example, a note
+    Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
+    tuple (0, 4, 60, 64). The output shape is L * D, where L is the number
+    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.
+    The values of the second dimension represent pitch, time, duration and
+    velocity (discarded when `encode_velocity` is False).
+
+    Attributes
+    ----------
+    use_start_end : bool
+        Whether to use 'start' and 'end' to encode the timing rather than
+        'time' and 'duration'. Defaults to False.
+    encode_velocity : bool
+        Whether to encode note velocities. Defaults to True.
+    default_velocity : int
+        Default velocity value to use when decoding if `encode_velocity` is
+        False. Defaults to 64.
+
+    """
+
+    def __init__(
+        self,
+        use_start_end: bool = False,
+        encode_velocity: bool = True,
+        default_velocity: int = 64,
+    ):
+        self.use_start_end = use_start_end
+        self.encode_velocity = encode_velocity
+        self.default_velocity = default_velocity
+
+    def encode(self, music: Music) -> ndarray:
+        """Encode a Music object into note-based representation.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        ndarray (np.uint8)
+            Encoded array in note-based representation.
+
+        """
+        return to_note_representation(
+            music,
+            use_start_end=self.use_start_end,
+            encode_velocity=self.encode_velocity,
+        )
+
+    def decode(self, array: ndarray) -> Music:
+        """Decode note-based representation into a Music object.
+
+        Parameters
+        ----------
+        array : ndarray
+            Array in note-based representation to decode. Will be casted to
+            integer if not of integer type.
+
+        Returns
+        -------
+        :class:`muspy.Music` object
+            Decoded Music object.
+
+        """
+        return from_note_representation(
+            array,
+            use_start_end=self.use_start_end,
+            encode_velocity=self.encode_velocity,
+            default_velocity=self.default_velocity,
+        )
+
+
+class EventRepresentationProcessor:
+    """Event-based representation processor.
+
+    The event-based represetantion represents music as a sequence of events,
+    including note-on, note-off, time-shift and velocity events. The output
+    shape is M x 1, where M is the number of events. The values encode the
+    events. The default configuration uses 0-127 to encode note-one events,
+    128-255 for note-off events, 256-355 for time-shift events, and 356 to
+    387 for velocity events.
+
+    Attributes
+    ----------
+    use_single_note_off_event : bool
+        Whether to use a single note-off event for all the pitches. If True,
+        the note-off event will close all active notes, which can lead to
+        lossy conversion for polyphonic music. Defaults to False.
+    use_end_of_sequence_event : bool
+        Whether to append an end-of-sequence event to the encoded sequence.
+        Defaults to False.
+    force_velocity_event : bool
+        Whether to add a velocity event before every note-on event. If
+        False, velocity events are only used when the note velocity is
+        changed (i.e., different from the previous one). Defaults to True.
+    max_time_shift : int
+        Maximum time shift (in ticks) to be encoded as an separate event.
+        Time shifts larger than `max_time_shift` will be decomposed into
+        two or more time-shift events. Defaults to 100.
+    velocity_bins : int
+        Number of velocity bins to use. Defaults to 32.
+    default_velocity : int
+        Default velocity value to use when decoding. Defaults to 64.
+
+    """
+
+    def __init__(
+        self,
+        use_single_note_off_event: bool = False,
+        use_end_of_sequence_event: bool = False,
+        force_velocity_event: bool = True,
+        max_time_shift: int = 100,
+        velocity_bins: int = 32,
+        default_velocity: int = 64,
+    ):
+        self.use_single_note_off_event = use_single_note_off_event
+        self.use_end_of_sequence_event = use_end_of_sequence_event
+        self.force_velocity_event = force_velocity_event
+        self.max_time_shift = max_time_shift
+        self.velocity_bins = velocity_bins
+        self.default_velocity = default_velocity
+
+    def encode(self, music: Music) -> ndarray:
+        """Encode a Music object into event-based representation.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        ndarray (np.uint16)
+            Encoded array in event-based representation.
+
+        """
+        return to_event_representation(
+            music,
+            use_single_note_off_event=self.use_single_note_off_event,
+            use_end_of_sequence_event=self.use_end_of_sequence_event,
+            force_velocity_event=self.force_velocity_event,
+            max_time_shift=self.max_time_shift,
+            velocity_bins=self.velocity_bins,
+        )
+
+    def decode(self, array: ndarray) -> Music:
+        """Decode event-based representation into a Music object.
+
+        Parameters
+        ----------
+        array : ndarray
+            Array in event-based representation to decode. Will be casted to
+            integer if not of integer type.
+
+        Returns
+        -------
+        :class:`muspy.Music` object
+            Decoded Music object.
+
+        """
+        return from_event_representation(
+            array,
+            use_single_note_off_event=self.use_single_note_off_event,
+            use_end_of_sequence_event=self.use_end_of_sequence_event,
+            max_time_shift=self.max_time_shift,
+            velocity_bins=self.velocity_bins,
+            default_velocity=self.default_velocity,
+        )
+
+
+class PitchRepresentationProcessor:
+    """Pitch-based representation processor.
+
+    The pitch-based represetantion represents music as a sequence of pitch,
+    rest and (optional) hold tokens. Only monophonic melodies are compatible
+    with this representation. The output shape is T x 1, where T is the
+    number of time steps. The values indicate whether the current time step
+    is a pitch (0-127), a rest (128) or (optionally) a hold (129).
+
+    Attributes
+    ----------
+    use_hold_state : bool
+        Whether to use a special state for holds. Defaults to False.
+    default_velocity : int
+        Default velocity value to use when decoding. Defaults to 64.
+
+    """
+
+    def __init__(
+        self, use_hold_state: bool = False, default_velocity: int = 64,
+    ):
+        self.use_hold_state = use_hold_state
+        self.default_velocity = default_velocity
+
+    def encode(self, music: Music) -> ndarray:
+        """Encode a Music object into pitch-based representation.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        ndarray (np.uint8)
+            Encoded array in pitch-based representation.
+
+        """
+        return to_pitch_representation(
+            music, use_hold_state=self.use_hold_state
+        )
+
+    def decode(self, array: ndarray) -> Music:
+        """Decode pitch-based representation into a Music object.
+
+        Parameters
+        ----------
+        array : ndarray
+            Array in pitch-based representation to decode. Will be casted to
+            integer if not of integer type.
+
+        Returns
+        -------
+        :class:`muspy.Music` object
+            Decoded Music object.
+
+        """
+        return from_pitch_representation(
+            array,
+            use_hold_state=self.use_hold_state,
+            default_velocity=self.default_velocity,
+        )
+
+
+class PianoRollRepresentationProcessor:
+    """Piano-roll representation processor.
+
+    The piano-roll represetantion represents music as a time-pitch matrix,
+    where the columns are the time steps and the rows are the pitches. The
+    values indicate the presence of pitches at different time steps. The
+    output shape is T x 128, where T is the number of time steps.
+
+    Attributes
+    ----------
+    encode_velocity : bool
+        Whether to encode velocities. If True, a binary-valued array will be
+        return. Otherwise, an integer array will be return. Defaults to
+        True.
+    default_velocity : int
+        Default velocity value to use when decoding if `encode_velocity` is
+        False. Defaults to 64.
+
+    """
+
+    def __init__(
+        self, encode_velocity: bool = True, default_velocity: int = 64,
+    ):
+        self.encode_velocity = encode_velocity
+        self.default_velocity = default_velocity
+
+    def encode(self, music: Music) -> ndarray:
+        """Encode a Music object into piano-roll representation.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        ndarray (np.uint8)
+            Encoded array in piano-roll representation.
+
+        """
+        return to_pianoroll_representation(
+            music, encode_velocity=self.encode_velocity
+        )
+
+    def decode(self, array: ndarray) -> Music:
+        """Decode piano-roll representation into a Music object.
+
+        Parameters
+        ----------
+        array : ndarray
+            Array in piano-roll representation to decode. Will be casted to
+            integer if not of integer type. If `encode_velocity` is True,
+            will be casted to boolean if not of boolean type.
+
+        Returns
+        -------
+        :class:`muspy.Music` object
+            Decoded Music object.
+
+        """
+        return from_pianoroll_representation(
+            array,
+            encode_velocity=self.encode_velocity,
+            default_velocity=self.default_velocity,
+        )

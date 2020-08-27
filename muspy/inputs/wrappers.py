@@ -14,7 +14,7 @@ from .midi import from_pretty_midi, read_midi
 from .musicxml import read_musicxml
 from .note import from_note_representation
 from .pianoroll import from_pianoroll_representation, from_pypianoroll
-from .token import from_monotoken_representation, from_polytoken_representation
+from .pitch import from_pitch_representation
 from .yaml import load_yaml
 
 
@@ -160,11 +160,8 @@ def from_representation(data: ndarray, kind: str, **kwargs: Any) -> Music:
         return from_note_representation(data, **kwargs)
     if kind.lower() in ("pianoroll", "piano-roll"):
         return from_pianoroll_representation(data, **kwargs)
-    if kind.lower() in ("monotoken", "mono-token"):
-        return from_monotoken_representation(data, **kwargs)
-    if kind.lower() in ("polytoken", "poly-token"):
-        return from_polytoken_representation(data, **kwargs)
+    if kind.lower() in ("pitch", "pitch-based"):
+        return from_pitch_representation(data, **kwargs)
     raise ValueError(
-        "`kind` must be one of 'event', 'note', 'pianoroll', 'monotoken' and "
-        "'polytoken'."
+        "`kind` must be one of 'event', 'note', 'pianoroll' and 'pitch'."
     )

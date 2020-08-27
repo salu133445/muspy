@@ -1,4 +1,4 @@
-"""Test cases for representation processors."""
+"""Test cases for representations."""
 import numpy as np
 
 import muspy
@@ -6,13 +6,11 @@ import muspy
 from .utils import TEST_JSON_PATH
 
 
-def test_note_representation_processor():
+def test_note_representation():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.NoteRepresentationProcessor()
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_note_representation(music)
 
     assert encoded.shape == (9, 4)
     assert encoded.dtype == np.uint8
@@ -30,17 +28,15 @@ def test_note_representation_processor():
     assert np.all(encoded == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_note_representation(encoded)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_note_representation_start_end():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.NoteRepresentationProcessor(use_start_end=True)
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_note_representation(music, use_start_end=True)
 
     assert encoded.shape == (9, 4)
     assert encoded.dtype == np.uint8
@@ -58,17 +54,15 @@ def test_note_representation_start_end():
     assert np.all(encoded == np.array(answer, dtype=np.uint8,))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_note_representation(encoded, use_start_end=True)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_pitch_representation():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.PitchRepresentationProcessor()
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_pitch_representation(music)
 
     assert encoded.shape == (18, 1)
     assert encoded.dtype == np.uint8
@@ -93,20 +87,18 @@ def test_pitch_representation():
         69,
         69,
     ]
-    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8,))
+    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_pitch_representation(encoded)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_pitch_representation_hold_state():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.PitchRepresentationProcessor(use_hold_state=True)
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_pitch_representation(music, use_hold_state=True)
 
     assert encoded.shape == (18, 1)
     assert encoded.dtype == np.uint8
@@ -134,17 +126,15 @@ def test_pitch_representation_hold_state():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_pitch_representation(encoded, use_hold_state=True)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_event_representation():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.EventRepresentationProcessor()
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_event_representation(music)
 
     assert encoded.shape == (36, 1)
     assert encoded.dtype == np.uint16
@@ -190,8 +180,8 @@ def test_event_representation():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_event_representation(encoded)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_event_representation_force_velocity_event():
@@ -200,7 +190,7 @@ def test_event_representation_force_velocity_event():
     processor = muspy.EventRepresentationProcessor(force_velocity_event=False)
 
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_event_representation(music, force_velocity_event=False)
 
     assert encoded.shape == (28, 1)
     assert encoded.dtype == np.uint16
@@ -238,36 +228,34 @@ def test_event_representation_force_velocity_event():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_event_representation(encoded)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_event_representation_end_of_sequence_event():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.EventRepresentationProcessor(
-        use_end_of_sequence_event=True
-    )
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_event_representation(
+        music, use_end_of_sequence_event=True
+    )
 
     assert encoded.shape == (37, 1)
     assert encoded.dtype == np.uint16
     assert encoded[-1] == 388
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_event_representation(
+        encoded, use_end_of_sequence_event=True
+    )
+    assert decoded[0].notes == music[0].notes
 
 
 def test_pianoroll_representation():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.PianoRollRepresentationProcessor()
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_pianoroll_representation(music)
 
     assert encoded.shape == (19, 128)
     assert encoded.dtype == np.uint8
@@ -296,17 +284,15 @@ def test_pianoroll_representation():
     assert np.all(encoded.nonzero()[1] == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = processor.decode(encoded)
-    assert decoded == music[0].notes
+    decoded = muspy.from_pianoroll_representation(encoded)
+    assert decoded[0].notes == music[0].notes
 
 
 def test_pianoroll_representation_encode_velocity():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.PianoRollRepresentationProcessor(encode_velocity=False)
-
     # Encoding
-    encoded = processor.encode(music[0].notes)
+    encoded = muspy.to_pianoroll_representation(music, encode_velocity=False)
 
     assert encoded.shape == (19, 128)
     assert encoded.dtype == np.bool

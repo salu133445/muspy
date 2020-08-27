@@ -13,7 +13,7 @@ from .music21 import to_music21
 from .musicxml import write_musicxml
 from .note import to_note_representation
 from .pianoroll import to_pianoroll_representation, to_pypianoroll
-from .token import to_monotoken_representation, to_polytoken_representation
+from .pitch import to_pitch_representation
 from .yaml import save_yaml
 
 if TYPE_CHECKING:
@@ -157,11 +157,8 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
         return to_note_representation(music, **kwargs)
     if kind.lower() in ("pianoroll", "piano-roll"):
         return to_pianoroll_representation(music, **kwargs)
-    if kind.lower() in ("monotoken", "mono-token", "monotoken-based"):
-        return to_monotoken_representation(music, **kwargs)
-    if kind.lower() in ("polytoken", "poly-token", "polytoken-based"):
-        return to_polytoken_representation(music, **kwargs)
+    if kind.lower() in ("pitch",  "pitch-based"):
+        return to_pitch_representation(music, **kwargs)
     raise ValueError(
-        "`kind` must be one of 'event', 'note', 'pianoroll', 'monotoken' and "
-        "'polytoken'."
+        "`kind` must be one of 'event', 'note', 'pianoroll' and 'pitch'."
     )

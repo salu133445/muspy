@@ -15,7 +15,7 @@ from .music21 import from_music21, from_music21_opus
 from .musicxml import read_musicxml, MusicXMLError
 from .note import from_note_representation
 from .pianoroll import from_pianoroll_representation, from_pypianoroll
-from .token import from_monotoken_representation, from_polytoken_representation
+from .pitch import from_pitch_representation
 from .wrappers import from_object, from_representation, load, read
 from .yaml import load_yaml
 
@@ -23,13 +23,12 @@ __all__ = [
     "MIDIError",
     "MusicXMLError",
     "from_event_representation",
-    "from_monotoken_representation",
     "from_music21",
     "from_music21_opus",
     "from_note_representation",
     "from_object",
     "from_pianoroll_representation",
-    "from_polytoken_representation",
+    "from_pitch_representation",
     "from_pretty_midi",
     "from_pypianoroll",
     "from_representation",

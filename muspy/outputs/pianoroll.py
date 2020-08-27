@@ -1,11 +1,10 @@
 """Pianoroll output interface."""
+from operator import attrgetter
 from typing import TYPE_CHECKING
 
 import numpy as np
 from numpy import ndarray
 from pypianoroll import Multitrack, Track
-
-from ..processor import PianoRollProcessor
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -65,50 +64,52 @@ def to_pypianoroll(music: "Music") -> Multitrack:
 
 
 def to_pianoroll_representation(
-    music: "Music",
-    min_step: int = 1,
-    binarized: bool = False,
-    compact: bool = False,
+    music: "Music", encode_velocity: bool = True
 ) -> ndarray:
-    """Return a Music object in pianoroll representation.
+    """Encode notes into piano-roll representation.
 
     Parameters
     ----------
-    music : :class:`muspy.Music`
-        MusPy Music object to be converted.
-    min_step(optional):
-        minimum quantification step
-        decide how many ticks to be the basic unit (default = 1)
+    music : :class:`muspy.Music` object
+        Music object to encode.
+    encode_velocity : bool
+        Whether to encode velocities. If True, a binary-valued array will be
+        return. Otherwise, an integer array will be return. Defaults to
+        True.
 
     Returns
     -------
-    array : :class:`numpy.ndarray`
-        Converted pianoroll representation.
-        size: L * D:
-            - L for the sequence (note) length
-            - D = 128
-                the value in each dimension indicates the velocity
+    ndarray (np.uint8 or np.bool)
+        Encoded array in piano-roll representation.
 
     """
-    if compact and binarized:
-        raise ValueError("`compact` and `binarized` must not be both True.")
-
+    # Collect notes
     notes = []
     for track in music.tracks:
         notes.extend(track.notes)
-    notes.sort(key=lambda x: x.time)
 
-    if compact:
-        if min_step > 1:
-            raise NotImplementedError
-        if not notes:
-            return np.array([129], np.uint8)
-        length = max((note.end for note in notes))
-        compacted_pianoroll = np.empty(length, np.uint8)
-        compacted_pianoroll.fill(129)
-        for note in notes:
-            compacted_pianoroll[note.time : note.end - 1] = note.pitch
-        return compacted_pianoroll
+    # Raise an error if no notes are found
+    if not notes:
+        raise RuntimeError("No notes found.")
 
-    processor = PianoRollProcessor(min_step=min_step, binarized=binarized)
-    return processor.encode(notes)
+    # Sort the notes
+    notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
+
+    if not notes:
+        return np.zeros((1, 128), np.uint8)
+
+    # Initialize the array
+    length = max((note.end for note in notes))
+    if encode_velocity:
+        array = np.zeros((length + 1, 128), np.uint8)
+    else:
+        array = np.zeros((length + 1, 128), np.bool)
+
+    # Encode notes
+    for note in notes:
+        if encode_velocity:
+            array[note.time : note.end, note.pitch] = note.velocity
+        else:
+            array[note.time : note.end, note.pitch] = note.velocity > 0
+
+    return array
