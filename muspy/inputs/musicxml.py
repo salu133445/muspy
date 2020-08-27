@@ -460,7 +460,7 @@ def parse_part_elem(
     }
 
 
-def parse_metadata(root: Element, filename: str) -> Metadata:
+def parse_metadata(root: Element) -> Metadata:
     """Return a Metadata object parsed from a MusicXML file."""
     # Title is usually stored in movement-title
     # See https://www.musicxml.com/tutorial/file-structure/score-header-entity/
@@ -485,7 +485,6 @@ def parse_metadata(root: Element, filename: str) -> Metadata:
         title=title,
         creators=creators,
         copyright=" ".join(copyrights) if copyrights else None,
-        source_filename=filename,
         source_format="musicxml",
     )
 
@@ -603,7 +602,8 @@ def read_musicxml(
         raise ValueError("MusicXML file with timewise type is not supported.")
 
     # Meta data
-    metadata = parse_metadata(root, Path(path).name)
+    metadata = parse_metadata(root)
+    metadata.source_filename = Path(path).name
 
     # Set resolution to the least common multiple of all divisions
     # TODO: Support custom resolution
