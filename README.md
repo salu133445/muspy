@@ -36,4 +36,4 @@ Citing
 
 Please cite the following paper if you use MusPy in a published work:
 
-> Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in _Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)_, 2020.
+Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in _Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)_, 2020.

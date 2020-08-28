@@ -39,7 +39,7 @@ While some components need to be customized for each model, others can be shared
 Installation
 ============
 
-To install MusPy, please run `pip install muspy`. To build MusPy from source, please download the [source](https://github.com/salu133445/muspy/releases) and run `python setup.py install`.
+To install MusPy, please run ``pip install muspy``. To build MusPy from source, please download the [source](https://github.com/salu133445/muspy/releases) and run ``python setup.py install`.
 
 
 Citing
@@ -47,7 +47,7 @@ Citing
 
 Please cite the following paper if you use MusPy in a published work:
 
-Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR), 2020.
+Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in *Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)*, 2020.
 
 
 Contents

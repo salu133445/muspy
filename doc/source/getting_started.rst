@@ -6,7 +6,7 @@ Welcome to MusPy! We will go through some basic concepts in this tutorial.
 
 .. Hint:: Be sure you have MusPy installed. To install MusPy, please run `pip install muspy`.
 
-In the following example, we will use `this JSON file <examples/example.json>` as an example.
+In the following example, we will use `this JSON file <examples/example.json>`_ as an example.
 
 First of all, let's import the MusPy library. ::
 
@@ -66,13 +66,13 @@ Now here's what we got.
         annotations:
           - {time: 0, annotation: Nothing but an annotation}
 
-You can use dot notation to assess the data. For example, `music.metadata.title` returns the song title, and `music.tempos[0].qpm` returns the first tempo in qpm (quarter notes per minute). If you want a list of all the pitches, you can do ::
+You can use dot notation to assess the data. For example, ``music.metadata.title`` returns the song title, and ``music.tempos[0].qpm`` returns the first tempo in qpm (quarter notes per minute). If you want a list of all the pitches, you can do ::
 
     print([note.pitch for note in music.tracks[0].notes])
 
-Then you will get `[76, 75, 76, 75, 76, 71, 74, 72, 69]`.
+Then you will get ``[76, 75, 76, 75, 76, 71, 74, 72, 69]``.
 
-.. Hint:: `music[i]` is a shorthand for `music.tracks[i]`, and `len(music)` for `len(music.tracks)`.
+.. Hint:: ``music[i]`` is a shorthand for ``music.tracks[i]``, and ``len(music)`` for ``len(music.tracks)``.
 
 There's more MusPy offers. Here is an example of data preparation pipeline using MusPy.
 
