@@ -76,7 +76,7 @@ def download_url(
     Parameters
     ----------
     url : str
-        URL to the file to be downloaded.
+        URL to the file to download.
     path : str or Path
         Path to save the downloaded file.
     md5 : str, optional

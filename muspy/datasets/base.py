@@ -1,7 +1,7 @@
 """Base Dataset classes."""
 import warnings
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 import numpy as np
 from numpy.random import RandomState, permutation
@@ -32,6 +32,9 @@ try:
     HAS_JOBLIB = True
 except ImportError:
     HAS_JOBLIB = False
+
+RemoteDataset_ = TypeVar("RemoteDataset_", bound="RemoteDataset")
+FolderDataset_ = TypeVar("FolderDataset_", bound="FolderDataset")
 
 
 def read_split(filename: Union[str, Path]) -> Dict[str, List[int]]:
@@ -526,7 +529,7 @@ class RemoteDataset(Dataset):
                 return False
         return True
 
-    def download(self) -> "RemoteDataset":
+    def download(self: RemoteDataset_) -> RemoteDataset_:
         """Download the source datasets."""
         for source in self._sources.values():
             filename = self.root / source["filename"]
@@ -554,7 +557,7 @@ class RemoteDataset(Dataset):
                 download_url(source["url"], filename, md5)
         return self
 
-    def extract(self, cleanup: bool = False) -> "RemoteDataset":
+    def extract(self: RemoteDataset_, cleanup: bool = False) -> RemoteDataset_:
         """Extract the downloaded archive(s).
 
         Parameters
@@ -571,7 +574,9 @@ class RemoteDataset(Dataset):
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self
 
-    def download_and_extract(self, cleanup: bool = False) -> "RemoteDataset":
+    def download_and_extract(
+        self: RemoteDataset_, cleanup: bool = False
+    ) -> RemoteDataset_:
         """Extract the downloaded archives.
 
         This is equivalent to ``RemoteDataset.download().extract(cleanup)``.
@@ -869,7 +874,7 @@ class FolderDataset(Dataset):
             return False
         return True
 
-    def use_converted(self) -> "FolderDataset":
+    def use_converted(self: FolderDataset_) -> FolderDataset_:
         """Disable on-the-fly mode and use converted data."""
         if not self.converted_exists():
             raise RuntimeError(
@@ -885,7 +890,7 @@ class FolderDataset(Dataset):
         self._factory = self.load
         return self
 
-    def on_the_fly(self) -> "FolderDataset":
+    def on_the_fly(self: FolderDataset_) -> FolderDataset_:
         """Enable on-the-fly mode and convert the data on the fly."""
         if not self.raw_filenames:
             self.raw_filenames = sorted(
@@ -903,11 +908,11 @@ class FolderDataset(Dataset):
         return self
 
     def convert(
-        self,
+        self: FolderDataset_,
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = False,
-    ) -> "FolderDataset":
+    ) -> FolderDataset_:
         """Convert and save the Music objects.
 
         The converted files will be named by its index and saved to
@@ -1017,7 +1022,7 @@ class ABCFolderDataset(FolderDataset):
                     data.append(line)
         return read_abc_string("".join(data))[0]
 
-    def on_the_fly(self) -> "FolderDataset":
+    def on_the_fly(self: FolderDataset_) -> FolderDataset_:
         """Enable on-the-fly mode and convert the data on the fly."""
         if not self.raw_filenames:
             filenames = sorted(

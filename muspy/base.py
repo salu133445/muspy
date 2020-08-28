@@ -12,11 +12,14 @@ Classes
 from collections import OrderedDict
 from inspect import isclass
 from operator import attrgetter
-from typing import Any, Callable, List, Mapping, Optional
+from typing import Any, Callable, List, Mapping, Optional, Type, TypeVar
 
 import yaml
 
 __all__ = ["Base", "ComplexBase"]
+
+Base_ = TypeVar("Base_", bound="Base")
+ComplexBase_ = TypeVar("ComplexBase_", bound="ComplexBase")
 
 
 class _OrderedDumper(yaml.SafeDumper):
@@ -130,7 +133,7 @@ class Base:
         return True
 
     @classmethod
-    def from_dict(cls, dict_: Mapping) -> "Base":
+    def from_dict(cls: Type[Base_], dict_: Mapping) -> Base_:
         """Return an instance constructed from a dictionary.
 
         Parameters
@@ -209,7 +212,7 @@ class Base:
                 )
             )
 
-    def validate_type(self, attr: Optional[str] = None) -> "Base":
+    def validate_type(self: Base_, attr: Optional[str] = None) -> Base_:
         """Raise proper errors if a certain attribute is of wrong type.
 
         This will apply recursively to an attribute's attributes.
@@ -242,7 +245,7 @@ class Base:
             if attr == "time" and getattr(self, "time") < 0:
                 raise ValueError("`time` must be nonnegative.")
 
-    def validate(self, attr: Optional[str] = None) -> "Base":
+    def validate(self: Base_, attr: Optional[str] = None) -> Base_:
         """Raise proper errors if a certain attribute is invalid.
 
         This will apply recursively to an attribute's attributes.
@@ -314,8 +317,8 @@ class Base:
                     getattr(self, attr).adjust_time(func)
 
     def adjust_time(
-        self, func: Callable[[int], int], attr: Optional[str] = None
-    ) -> "Base":
+        self: Base_, func: Callable[[int], int], attr: Optional[str] = None
+    ) -> Base_:
         """Adjust the timing of time-stamped objects.
 
         This will apply recursively to an attribute's attributes.
@@ -370,7 +373,7 @@ class ComplexBase(Base):
             "Cannot find a list of type {}.".format(type(obj).__name__)
         )
 
-    def append(self, obj):
+    def append(self: ComplexBase_, obj) -> ComplexBase_:
         """Append an object to the correseponding list."""
         self._append(obj)
         return self
@@ -390,7 +393,9 @@ class ComplexBase(Base):
                     new_value.append(item)
         setattr(self, attr, new_value)
 
-    def remove_invalid(self, attr: Optional[str] = None) -> "ComplexBase":
+    def remove_invalid(
+        self: ComplexBase_, attr: Optional[str] = None
+    ) -> ComplexBase_:
         """Remove invalid items from list attributes, others left unchanged.
 
         This will apply recursively to an attribute's attributes.
@@ -428,7 +433,9 @@ class ComplexBase(Base):
                     new_value.append(next_item)
             setattr(self, attr, new_value)
 
-    def remove_duplicate(self, attr: Optional[str] = None) -> "ComplexBase":
+    def remove_duplicate(
+        self: ComplexBase_, attr: Optional[str] = None
+    ) -> ComplexBase_:
         """Remove duplicate items.
 
         Parameters
@@ -463,7 +470,7 @@ class ComplexBase(Base):
                     attrgetter(*attr_cls._sort_attributes)
                 )
 
-    def sort(self, attr: Optional[str] = None) -> "ComplexBase":
+    def sort(self: ComplexBase_, attr: Optional[str] = None) -> ComplexBase_:
         """Sort the time-stamped objects recursively.
 
         This will apply recursively to an attribute's attributes.
