@@ -353,6 +353,14 @@ class Music(ComplexBase):
         """
         return write(path, self, "musicxml", **kwargs)
 
+    def write_abc(self, path: Union[str, Path], **kwargs: Any):
+        """Write to an ABC file.
+
+        Refer to :func:`muspy.write_abc` for full documentation.
+
+        """
+        return write(path, self, "abc", **kwargs)
+
     def write_audio(self, path: Union[str, Path], **kwargs: Any):
         """Write to an audio file.
 

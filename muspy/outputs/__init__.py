@@ -21,11 +21,13 @@ Functions
 - to_pypianoroll
 - to_representation
 - write
+- write_abc
 - write_audio
 - write_midi
 - write_musicxml
 
 """
+from .abc import write_abc
 from .audio import synthesize, write_audio
 from .event import to_event_representation
 from .json import save_json
@@ -54,6 +56,7 @@ __all__ = [
     "to_representation",
     "synthesize",
     "write",
+    "write_abc",
     "write_audio",
     "write_midi",
     "write_musicxml",

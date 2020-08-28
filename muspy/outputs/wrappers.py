@@ -8,6 +8,7 @@ from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
+from .abc import write_abc
 from .audio import write_audio
 from .event import to_event_representation
 from .json import save_json
@@ -81,7 +82,7 @@ def write(
         Path to write the file.
     music : :class:`muspy.Music` object
         Music object to convert.
-    kind : {'midi', 'musicxml', 'wav'}, optional
+    kind : {'midi', 'musicxml', 'abc', 'audio'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
 
@@ -97,19 +98,24 @@ def write(
             str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml"))
         ):
             kind = "musicxml"
-        elif str(path).lower().endswith(".wav"):
-            kind = "wave"
+        elif str(path).lower().endswith(".abc"):
+            kind = "abc"
+        elif str(path).lower().endswith(("wav", "aiff", "flac", "oga")):
+            kind = "audio"
         else:
             raise ValueError(
-                "Got unsupported file format (expect MIDI, MusicXML or wave)."
+                "Got unsupported file format (expect MIDI, MusicXML, ABC, "
+                "WAV, AIFF, FLAC or OGA)."
             )
     if kind == "midi":
         return write_midi(path, music, **kwargs)
     if kind == "musicxml":
         return write_musicxml(path, music, **kwargs)
+    if kind == "abc":
+        return write_abc(path, music)
     if kind == "audio":
         return write_audio(path, music, **kwargs)
-    raise ValueError("`kind` must be either 'midi', 'musicxml' or 'audio'.")
+    raise ValueError("`kind` must be 'midi', 'musicxml', 'abc' or 'audio'.")
 
 
 def to_object(
