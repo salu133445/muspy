@@ -8,8 +8,6 @@ from typing import Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
-import xmlschema
-
 from ..classes import (
     KeySignature,
     Metadata,
@@ -119,12 +117,6 @@ def lcm(*args: int) -> int:
 
     """
     return reduce(_lcm, args)  # type: ignore
-
-
-def validate_musicxml(path: Union[str, Path]):
-    """Validate a file against the MusicXML schema; raise errors if invalid."""
-    schema = xmlschema.XMLSchema(get_musicxml_schema_path())
-    schema.validate(str(path))
 
 
 def get_text(

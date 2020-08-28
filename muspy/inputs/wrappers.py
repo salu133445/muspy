@@ -65,15 +65,15 @@ def load(
                 "Got unsupported file format (expect JSON or YAML)."
             )
     if kind == "json":
-        return load_json(path, schema_path, **kwargs)  # type: ignore
+        return load_json(path)
     if kind == "yaml":
-        return load_yaml(path, schema_path, **kwargs)  # type: ignore
+        return load_yaml(path)
     raise ValueError("`kind` must be either 'json' or 'yaml'.")
 
 
 def read(
     path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
-) -> Music:
+) -> Union[Music, List[Music]]:
     """Read a MIDI or a MusicXML file into a Music object.
 
     Parameters
@@ -86,8 +86,8 @@ def read(
 
     Returns
     -------
-    :class:`muspy.Music` object
-        Converted Music object.
+    :class:`muspy.Music` object or list of :class:`muspy.Music` objects
+        Converted Music object(s).
 
     See Also
     --------
@@ -108,11 +108,11 @@ def read(
                 "Got unsupported file format (expect MIDI or MusicXML)."
             )
     if kind == "midi":
-        return read_midi(path, **kwargs)  # type: ignore
+        return read_midi(path, **kwargs)
     if kind == "musicxml":
-        return read_musicxml(path, **kwargs)  # type: ignore
+        return read_musicxml(path, **kwargs)
     if kind == "abc":
-        return read_abc(path, **kwargs)  # type: ignore
+        return read_abc(path, **kwargs)
     raise ValueError("`kind` must be one of 'midi', 'musicxml' and 'abc'.")
 
 
@@ -135,13 +135,13 @@ def from_object(
 
     """
     if isinstance(obj, Stream):
-        return from_music21(obj, **kwargs)  # type: ignore
+        return from_music21(obj, **kwargs)
     if isinstance(obj, MidiFile):
-        return from_mido(obj, **kwargs)  # type: ignore
+        return from_mido(obj, **kwargs)
     if isinstance(obj, PrettyMIDI):
-        return from_pretty_midi(obj, **kwargs)  # type: ignore
+        return from_pretty_midi(obj)
     if isinstance(obj, Multitrack):
-        return from_pypianoroll(obj, **kwargs)  # type: ignore
+        return from_pypianoroll(obj)
     raise TypeError(
         "`obj` must be of type music21.Stream, mido.MidiFile, "
         "pretty_midi.PrettyMIDI or pypianoroll.Multitrack."
