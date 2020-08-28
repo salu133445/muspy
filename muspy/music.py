@@ -32,7 +32,7 @@ from .classes import (
     TimeSignature,
     Track,
 )
-from .outputs import save, to_object, to_representation, write
+from .outputs import save, synthesize, to_object, to_representation, write
 from .visualization import show
 
 __all__ = ["Music", "DEFAULT_RESOLUTION"]
@@ -156,10 +156,8 @@ class Music(ComplexBase):
     def __setitem__(self, key: int, value: Track):
         self.tracks[key] = value
 
-    def get_end_time(
-        self, is_sorted: bool = False, realtime: bool = False
-    ) -> int:
-        """Return the time of the last event in all tracks.
+    def get_end_time(self, is_sorted: bool = False) -> int:
+        """Return the end time, i.e., the time of the last event in all tracks.
 
         This includes tempos, key signatures, time signatures, notes offsets,
         lyrics and annotations.
@@ -168,13 +166,8 @@ class Music(ComplexBase):
         ----------
         is_sorted : bool
             Whether all the list attributes are sorted. Defaults to False.
-        realtime : bool
-            Whether to return the end time in real time. Assume 120 quarter per
-            minute if no tempo information is available.
 
         """
-        if realtime:
-            self.validate("tempos")
 
         def _get_end_time(list_):
             if not list_:
@@ -199,25 +192,40 @@ class Music(ComplexBase):
             track_end_time,
         )
 
-        if not realtime:
-            return end_time
+        return end_time
 
-        # If no tempo information is available, assume 120 quarter per minutes
+    def get_real_end_time(self, is_sorted: bool = False) -> float:
+        """Return the end time in realtime.
+
+        This includes tempos, key signatures, time signatures, notes offsets,
+        lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
+        tempo information is available.
+
+        Parameters
+        ----------
+        is_sorted : bool
+            Whether all the list attributes are sorted. Defaults to False.
+
+        """
+        # Get symbolic end time
+        end_time = self.get_end_time(is_sorted=is_sorted)
+
+        # If no tempo information is available, assume 120 qpm
         if not self.tempos:
             return 0.5 * end_time / self.resolution
 
-        # Compute the real time
+        # Compute the real end time
         position = 0.0
-        acc_time = 0.0
         qpm = 120.0
-        factor = 60.0 / self.resolution  # type: ignore
+        factor = 60.0 / self.resolution
+        real_end_time = 0.0
         for tempo in self.tempos:
-            acc_time += (tempo.time - position) * factor / qpm
+            real_end_time += (tempo.time - position) * factor / qpm
             position = tempo.time
             qpm = tempo.qpm
-        acc_time += (end_time - position) * factor / qpm
+        real_end_time += (end_time - position) * factor / qpm
 
-        return acc_time
+        return real_end_time
 
     def adjust_resolution(
         self, target: Optional[int] = None, factor: Optional[float] = None
@@ -345,6 +353,14 @@ class Music(ComplexBase):
         """
         return write(path, self, "musicxml", **kwargs)
 
+    def write_audio(self, path: Union[str, Path], **kwargs: Any):
+        """Write to an audio file.
+
+        Refer to :func:`muspy.write_audio` for full documentation.
+
+        """
+        return write(path, self, "audio", **kwargs)
+
     def to_object(self, target: str, **kwargs: Any):
         """Convert to a target class.
 
@@ -385,6 +401,24 @@ class Music(ComplexBase):
         """
         return to_representation(self, kind, **kwargs)
 
+    def to_pitch_representation(self, **kwargs: Any) -> ndarray:
+        """Return in pitch-based representation.
+
+        Refer to :func:`muspy.to_pitch_representation` for full
+        documentation.
+
+        """
+        return to_representation(self, "pitch", **kwargs)
+
+    def to_pianoroll_representation(self, **kwargs: Any) -> ndarray:
+        """Return in piano-roll representation.
+
+        Refer to :func:`muspy.to_pianoroll_representation` for full
+        documentation.
+
+        """
+        return to_representation(self, "piano-roll", **kwargs)
+
     def to_event_representation(self, **kwargs: Any) -> ndarray:
         """Return in event-based representation.
 
@@ -400,33 +434,6 @@ class Music(ComplexBase):
 
         """
         return to_representation(self, "note", **kwargs)
-
-    def to_pianoroll_representation(self, **kwargs: Any) -> ndarray:
-        """Return in pianoroll representation.
-
-        Refer to :func:`muspy.to_pianoroll_representation` for full
-        documentation.
-
-        """
-        return to_representation(self, "pianoroll", **kwargs)
-
-    def to_monotoken_representation(self, **kwargs: Any) -> ndarray:
-        """Return in monotoken-based representation.
-
-        Refer to :func:`muspy.to_monotoken_representation` for full
-        documentation.
-
-        """
-        return to_representation(self, "monotoken", **kwargs)
-
-    def to_polytoken_representation(self, **kwargs: Any) -> ndarray:
-        """Return in polytoken-based representation.
-
-        Refer to :func:`muspy.to_polytoken_representation` for full
-        documentation.
-
-        """
-        return to_representation(self, "polytoken", **kwargs)
 
     def show(self, kind: str, **kwargs: Any):
         """Show visualization.
@@ -450,4 +457,12 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_pianoroll` for full documentation.
 
         """
-        return show(self, "pianoroll", **kwargs)
+        return show(self, "piano-roll", **kwargs)
+
+    def synthesize(self, **kwargs) -> ndarray:
+        """Synthesize a Music object to raw audio.
+
+        Refer to :func:`muspy.synthesize` for full documentation.
+
+        """
+        return synthesize(self, **kwargs)

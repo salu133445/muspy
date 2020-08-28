@@ -8,6 +8,7 @@ from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
+from .audio import write_audio
 from .event import to_event_representation
 from .json import save_json
 from .midi import to_mido, to_pretty_midi, write_midi
@@ -80,7 +81,7 @@ def write(
         Path to write the file.
     music : :class:`muspy.Music` object
         Music object to convert.
-    kind : {'midi', 'musicxml'}, optional
+    kind : {'midi', 'musicxml', 'wav'}, optional
         Format to save. If None, infer the format from the extension of
         `path`.
 
@@ -96,15 +97,19 @@ def write(
             str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml"))
         ):
             kind = "musicxml"
+        elif str(path).lower().endswith(".wav"):
+            kind = "wave"
         else:
             raise ValueError(
-                "Got unsupported file format (expect MIDI or MusicXML)."
+                "Got unsupported file format (expect MIDI, MusicXML or wave)."
             )
     if kind == "midi":
         return write_midi(path, music, **kwargs)
     if kind == "musicxml":
         return write_musicxml(path, music, **kwargs)
-    raise ValueError("`kind` must be either 'midi' or 'musicxml'.")
+    if kind == "audio":
+        return write_audio(path, music, **kwargs)
+    raise ValueError("`kind` must be either 'midi', 'musicxml' or 'audio'.")
 
 
 def to_object(
@@ -148,7 +153,7 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
     ----------
     music : :class:`muspy.Music` object
         Music object to convert.
-    kind : str, {'pitch', 'pianoroll', 'event', 'note'}
+    kind : str, {'pitch', 'piano-roll', 'event', 'note'}
         Target representation.
 
     Returns
@@ -157,14 +162,14 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
         Converted representation.
 
     """
-    if kind.lower() in ("pianoroll", "piano-roll", "piano roll"):
-        return to_pianoroll_representation(music, **kwargs)
     if kind.lower() in ("pitch", "pitch-based"):
         return to_pitch_representation(music, **kwargs)
+    if kind.lower() in ("piano-roll", "pianoroll", "piano roll"):
+        return to_pianoroll_representation(music, **kwargs)
     if kind.lower() in ("event", "event-based"):
         return to_event_representation(music, **kwargs)
     if kind.lower() in ("note", "note-based"):
         return to_note_representation(music, **kwargs)
     raise ValueError(
-        "`kind` must be one of 'pitch', 'pianoroll', 'event' and 'note'."
+        "`kind` must be one of 'pitch', 'piano-roll', 'event' and 'note'."
     )

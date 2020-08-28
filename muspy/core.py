@@ -10,6 +10,7 @@ Functions
 - append
 - clip
 - get_end_time
+- get_real_end_time
 - remove_duplicate
 - sort
 - to_ordered_dict
@@ -29,6 +30,7 @@ __all__ = [
     "append",
     "clip",
     "get_end_time",
+    "get_real_end_time",
     "remove_duplicate",
     "sort",
     "to_ordered_dict",
@@ -44,7 +46,7 @@ def adjust_resolution(
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy music object to be adjusted.
+        MusPy music object to adjust.
     target : int, optional
         Target resolution.
     factor : int or float, optional
@@ -62,7 +64,7 @@ def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
     Parameters
     ----------
     obj : :class:`muspy.Music` or :class:`muspy.Track` object
-        Object to be adjusted.
+        Object to adjust.
     func : callable
         The function used to compute the new timing from the old timing,
         i.e., `new_time = func(old_time)`.
@@ -97,7 +99,7 @@ def append(obj1: ComplexBase, obj2) -> ComplexBase:
     ----------
     obj1 : :class:`muspy.Music`, :class:`muspy.Track` or
            :class:`muspy.Tempo` object
-        Object to which `obj2` to be append.
+        Object to which `obj2` to append.
     obj2 : MusPy objects (see below)
         Object to be appended to `obj1`.
 
@@ -114,7 +116,7 @@ def clip(
     ----------
     obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
           object
-        Object to be clipped.
+        Object to clipp.
     lower : int or float, optional
         Lower bound. Defaults to 0.
     upper : int or float, optional
@@ -125,18 +127,38 @@ def clip(
 
 
 def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
-    """Return the time of the last event.
+    """Return the end time, i.e., the time of the last event in all tracks.
+
+    This includes tempos, key signatures, time signatures, notes offsets,
+        lyrics and annotations.
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track` or
-          :class:`muspy.Timing` object
-        Object to be inspected.
+    obj : :class:`muspy.Music` or :class:`muspy.Track` object
+        Object to inspect.
     is_sorted : bool
         Whether all the list attributes are sorted. Defaults to False.
 
     """
     return obj.get_end_time(is_sorted=is_sorted)
+
+
+def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
+    """Return the end time in realtime.
+
+    This includes tempos, key signatures, time signatures, notes offsets,
+        lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
+        tempo information is available.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Object to inspect.
+    is_sorted : bool
+        Whether all the list attributes are sorted. Defaults to False.
+
+    """
+    return music.get_real_end_time(is_sorted=is_sorted)
 
 
 def remove_duplicate(obj: ComplexBase) -> ComplexBase:
@@ -145,7 +167,7 @@ def remove_duplicate(obj: ComplexBase) -> ComplexBase:
     Parameters
     ----------
     obj : :class:`muspy.Music` object
-        Object to be processed.
+        Object to process.
 
     """
     return obj.remove_duplicate()
@@ -195,7 +217,7 @@ def transpose(
     ----------
     obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
     object
-        Object to be transposed.
+        Object to transpose.
     semitone : int
         The number of semitones to transpose the notes. A positive value
         raises the pitches, while a negative value lowers the pitches.

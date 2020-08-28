@@ -25,6 +25,7 @@ Functions
 - write_musicxml
 
 """
+from .audio import synthesize, write_audio
 from .event import to_event_representation
 from .json import save_json
 from .midi import to_mido, to_pretty_midi, write_midi
@@ -50,7 +51,9 @@ __all__ = [
     "to_pretty_midi",
     "to_pypianoroll",
     "to_representation",
+    "synthesize",
     "write",
+    "write_audio",
     "write_midi",
     "write_musicxml",
 ]
