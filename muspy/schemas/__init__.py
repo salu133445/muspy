@@ -19,6 +19,9 @@ from .utils import (
     get_json_schema_path,
     get_musicxml_schema_path,
     get_yaml_schema_path,
+    validate_json,
+    validate_musicxml,
+    validate_yaml,
 )
 from .version import DEFAULT_SCHEMA_VERSION
 
@@ -27,4 +30,7 @@ __all__ = [
     "get_json_schema_path",
     "get_musicxml_schema_path",
     "get_yaml_schema_path",
+    "validate_json",
+    "validate_musicxml",
+    "validate_yaml",
 ]

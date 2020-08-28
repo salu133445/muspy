@@ -163,7 +163,7 @@ class Dataset:
 
         n_digits = len(str(len(self)))
 
-        print("Start converting and saving the dataset")
+        print("Start converting and saving the dataset.")
         if n_jobs == 1:
             count = 0
             for idx in tqdm(range(len(self))):  # type: ignore
@@ -541,14 +541,14 @@ class RemoteDataset(Dataset):
                     or filename.stat().st_size == source["size"]
                 ):
                     print(
-                        "Skipped existing source : {}.".format(
+                        "Skip existing source : {}.".format(
                             source["filename"]
                         )
                     )
                     continue
                 print("Source file is found but corrupted.")
 
-            print("Downloading source : {}".format(source["filename"]))
+            print("Start downloading source : {}.".format(source["filename"]))
             if source.get("google_drive_id") is not None:
                 download_google_drive_file(
                     source["google_drive_id"], filename, md5
@@ -569,7 +569,7 @@ class RemoteDataset(Dataset):
         for source in self._sources.values():
             filename = self.root / source["filename"]
             if source["archive"]:
-                print("Extracting archive : {}".format(source["filename"]))
+                print("Start extracting archive : {}.".format(source["filename"]))
                 extract_archive(filename, self.root, cleanup=cleanup)
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self
@@ -934,7 +934,7 @@ class FolderDataset(Dataset):
 
         """
         if self.converted_exists():
-            print("Skipped conversion as the target folder exists.")
+            print("Skip conversion as the target folder exists.")
             return self
         self.on_the_fly()
         self.converted_dir.mkdir(exist_ok=True)

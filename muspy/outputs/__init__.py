@@ -21,6 +21,7 @@ Functions
 - to_pypianoroll
 - to_representation
 - write
+- write_audio
 - write_midi
 - write_musicxml
 
