@@ -13,7 +13,7 @@ from .utils import (
 )
 
 
-def test_to_music21():
+def test_music21():
     music = muspy.load(TEST_JSON_PATH)
 
     score = muspy.to_music21(music)

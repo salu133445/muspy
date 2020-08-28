@@ -1,9 +1,10 @@
 """Test cases for MIDI I/O."""
+import tempfile
 from pathlib import Path
 
 import muspy
 
-from .utils import TEST_ABC_DIR
+from .utils import TEST_ABC_DIR, TEST_JSON_PATH
 
 
 def test_header():
@@ -179,3 +180,10 @@ def test_keys_and_modes():
 
     for key_signature, mode in zip(music.key_signatures, modes):
         assert key_signature.mode == mode
+
+
+def test_write():
+    music = muspy.load(TEST_JSON_PATH)
+
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.abc")
