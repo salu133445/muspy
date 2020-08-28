@@ -5,12 +5,12 @@ from setuptools import find_packages, setup
 
 
 def _get_long_description():
-    with open(Path(__file__).parent / "README.md", "r") as f:
+    with open(str(Path(__file__).parent / "README.md"), "r") as f:
         return f.read()
 
 
 def _get_version():
-    with open(Path(__file__).parent / "muspy" / "version.py", "r") as f:
+    with open(str(Path(__file__).parent / "muspy/version.py"), "r") as f:
         for line in f:
             if line.startswith("__version__"):
                 delimeter = '"' if '"' in line else "'"
@@ -32,6 +32,7 @@ setup(
         "Topic :: Multimedia :: Sound/Audio",
     ],
     install_requires=[
+        "PyYAML>=3.0",
         "matplotlib>=1.5",
         "mido>=1.0",
         "music21>=5.0",
