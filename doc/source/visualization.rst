@@ -5,10 +5,10 @@ Visualization
 MusPy supports two visualization tools. Both use Matplotlib as the backend for flexibility.
 
 
-Pianoroll Visualization
-=======================
+Piano-roll Visualization
+========================
 
-The pianoroll visualization is made possible with the `Pypianoroll <https://salu133445.github.io/pypianoroll/>`__ library.
+The piano-roll visualization is made possible with the `Pypianoroll <https://salu133445.github.io/pypianoroll/>`_ library.
 
 .. image:: images/pianoroll.png
     :align: center
@@ -21,7 +21,7 @@ The pianoroll visualization is made possible with the `Pypianoroll <https://salu
 Score Visualization
 ===================
 
-The score visualization is made possible with the `Bravura <https://github.com/steinbergmedia/bravura>`__ font.
+The score visualization is made possible with the `Bravura <https://github.com/steinbergmedia/bravura>`_ font.
 
 .. image:: images/score.png
     :align: center

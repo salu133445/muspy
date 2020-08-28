@@ -39,7 +39,7 @@ While some components need to be customized for each model, others can be shared
 Installation
 ============
 
-To install MusPy, please run ``pip install muspy``. To build MusPy from source, please download the [source](https://github.com/salu133445/muspy/releases) and run ``python setup.py install`.
+To install MusPy, please run ``pip install muspy``. To build MusPy from source, please download the `source <https://github.com/salu133445/muspy/releases>`_ and run ``python setup.py install``.
 
 
 Citing

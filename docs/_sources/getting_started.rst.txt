@@ -4,7 +4,7 @@ Getting Started
 
 Welcome to MusPy! We will go through some basic concepts in this tutorial.
 
-.. Hint:: Be sure you have MusPy installed. To install MusPy, please run `pip install muspy`.
+.. Hint:: Be sure you have MusPy installed. To install MusPy, please run ``pip install muspy``.
 
 In the following example, we will use `this JSON file <examples/example.json>`_ as an example.
 
