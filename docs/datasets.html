@@ -88,9 +88,8 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Datasets</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#iterating-over-a-muspy-dataset-object">Iterating over a MusPy Dataset object</a></li>
@@ -101,8 +100,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -172,10 +171,10 @@
   <div class="section" id="datasets">
 <h1>Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h1>
 <p>MusPy provides an easy-to-use dataset management system. Each supported dataset comes with a class inherited from the base MusPy Dataset class. MusPy also provides interfaces to PyTorch and TensorFlow for creating input pipelines for machine learning. Here is an example of preparing training data in the piano-roll representation from the NES Music Database using MusPy.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">muspy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">muspy</span>
 
 <span class="c1"># Download and extract the dataset</span>
-<span class="n">nes</span> <span class="o">=</span> <span class="n">muspy</span><span class="o">.</span><span class="n">NESMusicDatabase</span><span class="p">(</span><span class="s2">&quot;data/nes/&quot;</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">nes</span> <span class="o">=</span> <span class="n">muspy</span><span class="o">.</span><span class="n">NESMusicDatabase</span><span class="p">(</span><span class="s2">&quot;data/nes/&quot;</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
 <span class="c1"># Convert the dataset to MusPy Music objects</span>
 <span class="n">nes</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
@@ -416,7 +415,7 @@ following information of each source file.</p>
 <p>Here are the classes for local datasets.</p>
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#FolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/base.html#FolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A class of datasets containing files in a folder.</p>
 <p>Two modes are available for this dataset. When the on-the-fly mode is
 enabled, a data sample is converted to a music object on the fly when
@@ -481,7 +480,7 @@ a source file and return the converted Music object.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#MusicDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/base.html#MusicDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A local dataset containing MusPy JSON/YAML files in a folder.</p>
 <dl class="py attribute">
 <dt>
@@ -509,7 +508,7 @@ a source file and return the converted Music object.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">ABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#ABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">ABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/base.html#ABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A class of local datasets containing ABC files in a folder.</p>
 </dd></dl>
 
@@ -519,7 +518,7 @@ a source file and return the converted Music object.</p>
 <p>Here are the classes for remote datasets.</p>
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#RemoteFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/base.html#RemoteFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A class of remote datasets containing files in a folder.</p>
 <p>This class extended <a class="reference internal" href="doc/muspy.html#muspy.RemoteDataset" title="muspy.RemoteDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.RemoteDataset</span></code></a> and
 <a class="reference internal" href="doc/muspy.html#muspy.FolderDataset" title="muspy.FolderDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.FolderDataset</span></code></a>. Please refer to their documentation for
@@ -566,7 +565,7 @@ Defaults to False.</p></li>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#RemoteMusicDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/base.html#RemoteMusicDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A dataset containing MusPy JSON/YAML files in a folder.</p>
 <p>This class extended <a class="reference internal" href="doc/muspy.html#muspy.RemoteDataset" title="muspy.RemoteDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.RemoteDataset</span></code></a> and
 <a class="reference internal" href="doc/muspy.html#muspy.FolderDataset" title="muspy.FolderDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.FolderDataset</span></code></a>. Please refer to their documentation for
@@ -605,7 +604,7 @@ details.</p>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/datasets.html#RemoteABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/datasets/base.html#RemoteABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A class of remote datasets containing ABC files in a folder.</p>
 </dd></dl>
 

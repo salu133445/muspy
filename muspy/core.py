@@ -1,7 +1,25 @@
-"""Core functions that can be applied to a :class:`muspy.Music` object."""
+"""Functions for MusPy objects.
+
+This module defines functions that can be applied to a MusPy object.
+
+Functions
+---------
+
+- adjust_resolution
+- adjust_time
+- append
+- clip
+- get_end_time
+- remove_duplicate
+- sort
+- to_ordered_dict
+- transpos
+
+"""
 from collections import OrderedDict
 from typing import Callable, Optional, Union
 
+from .base import Base, ComplexBase
 from .classes import Note, Track
 from .music import Music
 
@@ -10,7 +28,8 @@ __all__ = [
     "adjust_time",
     "append",
     "clip",
-    "remove_duplicate_changes",
+    "get_end_time",
+    "remove_duplicate",
     "sort",
     "to_ordered_dict",
     "transpose",
@@ -19,7 +38,7 @@ __all__ = [
 
 def adjust_resolution(
     music: Music, target: Optional[int] = None, factor: Optional[float] = None
-):
+) -> Music:
     """Adjust resolution and update the timing of time-stamped objects.
 
     Parameters
@@ -37,7 +56,7 @@ def adjust_resolution(
     return music.adjust_resolution(target=target, factor=factor)
 
 
-def adjust_time(obj: Union[Music, Track], func: Callable[[float], float]):
+def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
     """Adjust the timing of time-stamped objects.
 
     Parameters
@@ -61,7 +80,7 @@ def adjust_time(obj: Union[Music, Track], func: Callable[[float], float]):
     return obj.adjust_time(func=func)
 
 
-def append(obj1: Union[Music, Track], obj2):
+def append(obj1: ComplexBase, obj2) -> ComplexBase:
     """Append an object to the correseponding list.
 
     - If `obj1` is of type :class:`muspy.Music`, `obj2` can be
@@ -88,7 +107,7 @@ def append(obj1: Union[Music, Track], obj2):
 
 def clip(
     obj: Union[Music, Track, Note], lower: int = 0, upper: int = 127,
-):
+) -> Union[Music, Track, Note]:
     """Clip the velocity of each note.
 
     Parameters
@@ -105,24 +124,7 @@ def clip(
     return obj.clip(lower=lower, upper=upper)
 
 
-def to_ordered_dict(music: Music) -> OrderedDict:
-    """Return an OrderedDict converted from a Music object.
-
-    Parameters
-    ----------
-    music : :class:`muspy.Music` object
-        MusPy music object to be converted.
-
-    Returns
-    -------
-    OrderedDict
-        Converted OrderedDict.
-
-    """
-    return music.to_ordered_dict()
-
-
-def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> float:
+def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
     """Return the time of the last event.
 
     Parameters
@@ -137,7 +139,7 @@ def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> float:
     return obj.get_end_time(is_sorted=is_sorted)
 
 
-def remove_duplicate_changes(obj: Union[Music]):
+def remove_duplicate(obj: ComplexBase) -> ComplexBase:
     """Remove duplicate change events.
 
     Parameters
@@ -146,10 +148,10 @@ def remove_duplicate_changes(obj: Union[Music]):
         Object to be processed.
 
     """
-    return obj.remove_duplicate_changes()
+    return obj.remove_duplicate()
 
 
-def sort(obj: Union[Music, Track]):
+def sort(obj: ComplexBase) -> ComplexBase:
     """Sort all the time-stamped objects with respect to event time.
 
     - If a :class:`muspy.Music` is given, this will sort key signatures,
@@ -160,14 +162,33 @@ def sort(obj: Union[Music, Track]):
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track` object
-        Object to be sorted.
+    obj : :class:`muspy.ComplexBase` object
+        Object to sort.
 
     """
     return obj.sort()
 
 
-def transpose(obj: Union[Music, Track, Note], semitone: int):
+def to_ordered_dict(obj: Base, ignore_null: bool = True) -> OrderedDict:
+    """Return an OrderedDict converted from a Music object.
+
+    Parameters
+    ----------
+    obj : :class:`muspy.Base` object
+        MusPy object to convert.
+
+    Returns
+    -------
+    OrderedDict
+        Converted OrderedDict.
+
+    """
+    return obj.to_ordered_dict(ignore_null)
+
+
+def transpose(
+    obj: Union[Music, Track, Note], semitone: int
+) -> Union[Music, Track, Note]:
     """Transpose all the notes by a number of semitones.
 
     Parameters

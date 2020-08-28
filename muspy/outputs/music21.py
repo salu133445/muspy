@@ -52,8 +52,8 @@ def to_music21_metadata(metadata: Metadata) -> M21MetaData:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+    metadata : :class:`muspy.Metadata` object
+        Metadata object to convert.
 
     Returns
     -------
@@ -81,7 +81,7 @@ def to_music21(music: "Music") -> Score:
     Parameters
     ----------
     music : :class:`muspy.Music` object
-        MusPy Music object to be converted.
+        Music object to convert.
 
     Returns
     -------

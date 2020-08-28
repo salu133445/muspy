@@ -162,7 +162,7 @@ def to_mido_note_on_note_off(
 
     Parameters
     ----------
-    note : :class:`muspy.Track` object
+    note : :class:`muspy.Note` object
         Note object to convert.
     channel : int
         Channel of the MIDI message.

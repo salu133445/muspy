@@ -1,4 +1,4 @@
-"""Pianoroll input interface."""
+"""Piano-roll input interface."""
 from operator import attrgetter
 
 import numpy as np
@@ -16,7 +16,7 @@ def from_pypianoroll(m: Multitrack) -> Music:
     Parameters
     ----------
     obj : :class:`pypianoroll.Multitrack` object
-        Multitrack object to be converted.
+        Multitrack object to convert.
 
     Returns
     -------

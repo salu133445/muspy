@@ -6,8 +6,7 @@ import requests
 
 from ..inputs import read_midi
 from ..music import Music
-from .base import DatasetInfo
-from .datasets import FolderDataset
+from .base import DatasetInfo, FolderDataset
 
 _NAME = "Hymnal Dataset"
 _DESCRIPTION = """\

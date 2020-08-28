@@ -86,14 +86,13 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -159,10 +158,28 @@
            <div itemprop="articleBody">
             
   <h1>Source code for muspy.core</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Core functions that can be applied to a :class:`muspy.Music` object.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Functions for MusPy objects.</span>
+
+<span class="sd">This module defines functions that can be applied to a MusPy object.</span>
+
+<span class="sd">Functions</span>
+<span class="sd">---------</span>
+
+<span class="sd">- adjust_resolution</span>
+<span class="sd">- adjust_time</span>
+<span class="sd">- append</span>
+<span class="sd">- clip</span>
+<span class="sd">- get_end_time</span>
+<span class="sd">- remove_duplicate</span>
+<span class="sd">- sort</span>
+<span class="sd">- to_ordered_dict</span>
+<span class="sd">- transpos</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">from</span> <span class="nn">.base</span> <span class="k">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.classes</span> <span class="k">import</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">.music</span> <span class="k">import</span> <span class="n">Music</span>
 
@@ -171,7 +188,8 @@
     <span class="s2">&quot;adjust_time&quot;</span><span class="p">,</span>
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
     <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;remove_duplicate_changes&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_end_time&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;remove_duplicate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sort&quot;</span><span class="p">,</span>
     <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">,</span>
     <span class="s2">&quot;transpose&quot;</span><span class="p">,</span>
@@ -180,7 +198,7 @@
 
 <div class="viewcode-block" id="adjust_resolution"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.adjust_resolution">[docs]</a><span class="k">def</span> <span class="nf">adjust_resolution</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Adjust resolution and update the timing of time-stamped objects.</span>
 
 <span class="sd">    Parameters</span>
@@ -198,7 +216,7 @@
     <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">adjust_resolution</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.adjust_time">[docs]</a><span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]):</span>
+<div class="viewcode-block" id="adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.adjust_time">[docs]</a><span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Base</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Base</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Adjust the timing of time-stamped objects.</span>
 
 <span class="sd">    Parameters</span>
@@ -222,7 +240,7 @@
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">func</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">obj1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">obj2</span><span class="p">):</span>
+<div class="viewcode-block" id="append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">obj1</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">,</span> <span class="n">obj2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
 
 <span class="sd">    - If `obj1` is of type :class:`muspy.Music`, `obj2` can be</span>
@@ -249,7 +267,7 @@
 
 <div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.clip">[docs]</a><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">],</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Clip the velocity of each note.</span>
 
 <span class="sd">    Parameters</span>
@@ -266,24 +284,7 @@
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">upper</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.to_ordered_dict">[docs]</a><span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return an OrderedDict converted from a Music object.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy music object to be converted.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    OrderedDict</span>
-<span class="sd">        Converted OrderedDict.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">()</span></div>
-
-
-<span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.get_end_time">[docs]</a><span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
 
 <span class="sd">    Parameters</span>
@@ -295,10 +296,10 @@
 <span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="remove_duplicate_changes"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.remove_duplicate_changes">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicate_changes</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">]):</span>
+<div class="viewcode-block" id="remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.remove_duplicate">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Remove duplicate change events.</span>
 
 <span class="sd">    Parameters</span>
@@ -307,10 +308,10 @@
 <span class="sd">        Object to be processed.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">remove_duplicate_changes</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">remove_duplicate</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">]):</span>
+<div class="viewcode-block" id="sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.sort">[docs]</a><span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Sort all the time-stamped objects with respect to event time.</span>
 
 <span class="sd">    - If a :class:`muspy.Music` is given, this will sort key signatures,</span>
@@ -321,14 +322,33 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` object</span>
-<span class="sd">        Object to be sorted.</span>
+<span class="sd">    obj : :class:`muspy.ComplexBase` object</span>
+<span class="sd">        Object to sort.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">],</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.to_ordered_dict">[docs]</a><span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ignore_null</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return an OrderedDict converted from a Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : :class:`muspy.Base` object</span>
+<span class="sd">        MusPy object to convert.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    OrderedDict</span>
+<span class="sd">        Converted OrderedDict.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">ignore_null</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">],</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">,</span> <span class="n">Note</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Transpose all the notes by a number of semitones.</span>
 
 <span class="sd">    Parameters</span>

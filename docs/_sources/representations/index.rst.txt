@@ -27,7 +27,7 @@ MusPy's representation module supports two types of two APIs---Functional API an
 
 
 .. toctree::
-    :titlesonly:
+    :hidden:
 
     pitch
     pianoroll

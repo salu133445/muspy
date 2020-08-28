@@ -1,9 +1,18 @@
-"""
-Schemas
-=======
+"""JSON, YAML and MusicXML schemas.
 
 This module provide functions for working with MusPy's JSON and YAML
 schemas and the MusicXML schema.
+
+Functions
+---------
+
+- get_json_schema_path
+- get_musicxml_schema_path
+- get_yaml_schema_path
+
+Variables
+---------
+- DEFAULT_SCHEMA_VERSION
 
 """
 from .utils import (

@@ -86,14 +86,13 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -189,15 +188,13 @@
     <span class="k">return</span> <span class="n">channel</span> <span class="o">==</span> <span class="mi">9</span>
 
 
-<span class="k">def</span> <span class="nf">read_midi_mido</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using mido as backend.</span>
+<div class="viewcode-block" id="from_mido"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_mido">[docs]</a><span class="k">def</span> <span class="nf">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a pretty_midi PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the MIDI file to read.</span>
+<span class="sd">    midi : :class:`mido.MidiFile` object</span>
+<span class="sd">        MidiFile object to convert.</span>
 <span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
 <span class="sd">        Policy for dealing with duplicate notes. When a note off message is</span>
 <span class="sd">        presetned while there are multiple correspoding note on messages</span>
@@ -227,9 +224,6 @@
             <span class="k">return</span> <span class="n">tracks</span><span class="p">[</span><span class="n">t_idx</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
         <span class="n">tracks</span><span class="p">[</span><span class="n">t_idx</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">_is_drum</span><span class="p">(</span><span class="n">channel</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tracks</span><span class="p">[</span><span class="n">t_idx</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
-
-    <span class="c1"># Read MIDI file with mido</span>
-    <span class="n">midi</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
     <span class="c1"># Raise MIDIError if the MIDI file is of Type 2 (i.e., asynchronous)</span>
     <span class="k">if</span> <span class="n">midi</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
@@ -407,7 +401,6 @@
     <span class="c1"># Meta data</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="n">Metadata</span><span class="p">(</span>
         <span class="n">title</span><span class="o">=</span><span class="n">song_title</span><span class="p">,</span>
-        <span class="n">source_filename</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
         <span class="n">source_format</span><span class="o">=</span><span class="s2">&quot;midi&quot;</span><span class="p">,</span>
         <span class="n">copyright</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">copyrights</span><span class="p">)</span> <span class="k">if</span> <span class="n">copyrights</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>
@@ -420,7 +413,38 @@
         <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="o">=</span><span class="n">lyrics</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">music_tracks</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">read_midi_mido</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using mido as backend.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to the MIDI file to read.</span>
+<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
+<span class="sd">        Policy for dealing with duplicate notes. When a note off message is</span>
+<span class="sd">        presetned while there are multiple correspoding note on messages</span>
+<span class="sd">        that have not yet been closed, we need a policy to decide which note</span>
+<span class="sd">        on messages to close. Defaults to &#39;fifo&#39;.</span>
+
+<span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
+<span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
+<span class="sd">        - &#39;close_all&#39;: close all note on messages</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">        Converted Music object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">midi</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="n">music</span> <span class="o">=</span> <span class="n">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="o">=</span><span class="n">duplicate_note_mode</span><span class="p">)</span>
+    <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="n">music</span>
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_key_signatures</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]:</span>
@@ -535,7 +559,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.KeySignature` object</span>
+<span class="sd">    :class:`muspy.Music` object</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -566,7 +590,9 @@
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">PrettyMIDI</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+    <span class="n">music</span> <span class="o">=</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">PrettyMIDI</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)))</span>
+    <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+    <span class="k">return</span> <span class="n">music</span>
 
 
 <div class="viewcode-block" id="read_midi"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_midi">[docs]</a><span class="k">def</span> <span class="nf">read_midi</span><span class="p">(</span>

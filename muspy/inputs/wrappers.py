@@ -1,4 +1,4 @@
-"""Wrappers for input interface."""
+"""Wrapper functions for input interface."""
 from pathlib import Path
 from typing import Any, List, Optional, Union
 
@@ -119,14 +119,14 @@ def read(
 def from_object(
     obj: Union[Stream, MidiFile, PrettyMIDI, Multitrack], **kwargs: Any
 ) -> Union[Music, List[Music], Track, List[Track]]:
-    """Return a Music object converted from a Multitrack or PrettyMIDI object.
+    """Return a Music object converted from an outside object.
 
     Parameters
     ----------
-    obj : `music21.Stream` or :class:`mido.MidiTrack` or
-    :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`
-    object
-        Object to convert.
+    obj
+        Object to convert. Supported objects are `music21.Stream`,
+        :class:`mido.MidiTrack`, :class:`pretty_midi.PrettyMIDI`, and
+        :class:`pypianoroll.Multitrack` objects.
 
     Returns
     -------
@@ -170,7 +170,7 @@ def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
     if kind.lower() in ("pianoroll", "piano-roll", "piano roll"):
         return from_pianoroll_representation(array, **kwargs)
     if kind.lower() in ("event", "event-based"):
-        return from_event_representation(daarrayta, **kwargs)
+        return from_event_representation(array, **kwargs)
     if kind.lower() in ("note", "note-based"):
         return from_note_representation(array, **kwargs)
     raise ValueError(

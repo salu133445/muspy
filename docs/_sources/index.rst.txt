@@ -57,12 +57,11 @@ Contents
     :maxdepth: 2
 
     getting_started
-    example
-    timing
     classes/index
+    timing
     io
     datasets
     representations/index
-    metrics
     visualization
+    metrics
     doc/index

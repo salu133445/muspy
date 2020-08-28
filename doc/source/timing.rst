@@ -4,10 +4,6 @@ Timing in MusPy
 
 In MusPy, the *metrical timing* is used. That is, time is stored in musically-meaningful unit (e.g., beats, quarter notes). For playback ability, additional resolution and tempo information is needed.
 
-
-Metrical Timing
-===============
-
 In a metrical timing system, the smallest unit of time is a factor of a beat, which depends on the time signatures and is set to a quarter note by default. We will refer to this smallest unit of time as a *time step*.
 
 Here is the formula relating the metrical and the absolute timing systems.

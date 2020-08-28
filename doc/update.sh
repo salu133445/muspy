@@ -20,3 +20,4 @@ rm -rf "$DIR/../docs/".[!.]*
 cp -r "$DIR/_build/html/"* "$DIR/../docs"
 cp -r "$DIR/_build/html/".[!.]* "$DIR/../docs"
 cp -r "$DIR/source/pdf/" "$DIR/../docs/"
+cp -r "$DIR/source/examples/" "$DIR/../docs/"

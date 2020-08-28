@@ -1,5 +1,5 @@
 """Essen Folk Song Database."""
-from .datasets import RemoteABCFolderDataset
+from .base import RemoteABCFolderDataset
 
 _NAME = "Essen Folk Song Database"
 _DESCRIPTION = """\

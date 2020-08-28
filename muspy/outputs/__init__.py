@@ -1,10 +1,28 @@
-"""
-Output Interfaces
-=================
+"""Output interfaces.
 
 This module provides output interfaces for common symbolic music
 formats, MusPy's native JSON and YAML formats, other symbolic music
 libraries and commonly-used representations in music generation.
+
+Functions
+---------
+
+- save
+- save_json
+- save_yaml
+- to_event_representation
+- to_mido
+- to_music21
+- to_note_representation
+- to_object
+- to_pianoroll_representation
+- to_pitch_representation
+- to_pretty_midi
+- to_pypianoroll
+- to_representation
+- write
+- write_midi
+- write_musicxml
 
 """
 from .event import to_event_representation

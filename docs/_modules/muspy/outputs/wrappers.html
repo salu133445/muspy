@@ -86,14 +86,13 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -159,17 +158,19 @@
            <div itemprop="articleBody">
             
   <h1>Source code for muspy.outputs.wrappers</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Wrappers for output interface.&quot;&quot;&quot;</span>
+<span></span><span class="sd">&quot;&quot;&quot;Wrapper functions for output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Any</span>
 
+<span class="kn">from</span> <span class="nn">mido</span> <span class="k">import</span> <span class="n">MidiFile</span>
+<span class="kn">from</span> <span class="nn">music21.stream</span> <span class="k">import</span> <span class="n">Stream</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Multitrack</span>
 
 <span class="kn">from</span> <span class="nn">.event</span> <span class="k">import</span> <span class="n">to_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="k">import</span> <span class="n">save_json</span>
-<span class="kn">from</span> <span class="nn">.midi</span> <span class="k">import</span> <span class="n">to_pretty_midi</span><span class="p">,</span> <span class="n">write_midi</span>
+<span class="kn">from</span> <span class="nn">.midi</span> <span class="k">import</span> <span class="n">to_mido</span><span class="p">,</span> <span class="n">to_pretty_midi</span><span class="p">,</span> <span class="n">write_midi</span>
 <span class="kn">from</span> <span class="nn">.music21</span> <span class="k">import</span> <span class="n">to_music21</span>
 <span class="kn">from</span> <span class="nn">.musicxml</span> <span class="k">import</span> <span class="n">write_musicxml</span>
 <span class="kn">from</span> <span class="nn">.note</span> <span class="k">import</span> <span class="n">to_note_representation</span>
@@ -194,7 +195,7 @@
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to save the file.</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy Music object to be saved.</span>
+<span class="sd">        Music object to save.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
 <span class="sd">        Format to save. If None, infer the format from the extension of</span>
 <span class="sd">        `path`.</span>
@@ -231,14 +232,14 @@
     <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write a MusPy Music object to a MIDI or a MusicXML file.</span>
+    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI or a MusicXML file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to write the file.</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy Music object to be converted.</span>
+<span class="sd">        Music object to convert.</span>
 <span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;}, optional</span>
 <span class="sd">        Format to save. If None, infer the format from the extension of</span>
 <span class="sd">        `path`.</span>
@@ -268,30 +269,35 @@
 
 <div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stream</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object as a PrettyMIDI or a Multitrack object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy Music object to be converted.</span>
-<span class="sd">    target : str, {&#39;music21&#39;, &#39;pretty_midi&#39;, &#39;pypianoroll&#39;}</span>
-<span class="sd">        Target class. Supported values are .</span>
+<span class="sd">        Music object to convert.</span>
+<span class="sd">    target : str, {&#39;music21&#39;, &#39;mido&#39;, &#39;pretty_midi&#39;, &#39;pypianoroll&#39;}</span>
+<span class="sd">        Target class.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    obj : :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`</span>
+<span class="sd">    `music21.Stream` or :class:`mido.MidiTrack` or</span>
+<span class="sd">    :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`</span>
+<span class="sd">    object</span>
 <span class="sd">        Converted object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;music21&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pretty_midi&quot;</span><span class="p">,</span> <span class="s2">&quot;prettymidi&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mido&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pretty_midi&quot;</span><span class="p">,</span> <span class="s2">&quot;prettymidi&quot;</span><span class="p">,</span> <span class="s2">&quot;pretty-midi&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pypianoroll&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">to_pypianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`target` must be one of &#39;music21&#39;, &#39;pretty_midi&#39; and &#39;pypianoroll&#39;.&quot;</span>
+        <span class="s2">&quot;`target` must be one of &#39;music21&#39;, &#39;mido&#39;, &#39;pretty_midi&#39; and &quot;</span>
+        <span class="s2">&quot;&#39;pypianoroll&#39;.&quot;</span>
     <span class="p">)</span></div>
 
 
@@ -301,27 +307,26 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy Music object to be converted.</span>
-<span class="sd">    kind : str</span>
-<span class="sd">        Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
-<span class="sd">        &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+<span class="sd">        Music object to convert.</span>
+<span class="sd">    kind : str, {&#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
+<span class="sd">        Target representation.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    array : :class:`numpy.ndarray`</span>
+<span class="sd">    array : ndarray</span>
 <span class="sd">        Converted representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano-roll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano roll&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch-based&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">to_pitch_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event-based&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">,</span> <span class="s2">&quot;note-based&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_note_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano-roll&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span>  <span class="s2">&quot;pitch-based&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_pitch_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`kind` must be one of &#39;event&#39;, &#39;note&#39;, &#39;pianoroll&#39; and &#39;pitch&#39;.&quot;</span>
+        <span class="s2">&quot;`kind` must be one of &#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39; and &#39;note&#39;.&quot;</span>
     <span class="p">)</span></div>
 </pre></div>
 

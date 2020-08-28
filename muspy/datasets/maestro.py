@@ -4,8 +4,7 @@ from typing import Union
 
 from ..inputs import read_midi
 from ..music import Music
-from .base import DatasetInfo
-from .datasets import RemoteFolderDataset
+from .base import DatasetInfo, RemoteFolderDataset
 
 _NAME = "MAESTRO Dataset"
 _DESCRIPTION = """\

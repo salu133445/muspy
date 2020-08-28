@@ -1,11 +1,10 @@
-"""Lakh MIDI Dataset."""
+"""Wikifonia Dataset."""
 from pathlib import Path
 from typing import Union
 
 from ..inputs import read_musicxml
 from ..music import Music
-from .base import DatasetInfo
-from .datasets import RemoteFolderDataset
+from .base import DatasetInfo, RemoteFolderDataset
 
 _NAME = "Wikifonia Dataset"
 _DESCRIPTION = """\

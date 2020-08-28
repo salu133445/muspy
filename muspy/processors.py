@@ -1,4 +1,16 @@
-"""Representation processors."""
+"""Representation processors.
+
+This module defines the processors for commonly used representations.
+
+Classes
+-------
+
+- NoteRepresentationProcessor
+- EventRepresentationProcessor
+- PianoRollRepresentationProcessor
+- PitchRepresentationProcessor
+
+"""
 from numpy import ndarray
 
 from .inputs import (

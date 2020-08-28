@@ -1,5 +1,5 @@
 """Nottingham Database."""
-from .datasets import RemoteABCFolderDataset
+from .base import RemoteABCFolderDataset
 
 _NAME = "Nottingham Database"
 _DESCRIPTION = """\

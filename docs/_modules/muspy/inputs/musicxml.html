@@ -86,14 +86,13 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -621,7 +620,7 @@
     <span class="p">}</span>
 
 
-<span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MusicXML file.&quot;&quot;&quot;</span>
     <span class="c1"># Title is usually stored in movement-title</span>
     <span class="c1"># See https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
@@ -646,7 +645,6 @@
         <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
         <span class="n">creators</span><span class="o">=</span><span class="n">creators</span><span class="p">,</span>
         <span class="n">copyright</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">copyrights</span><span class="p">)</span> <span class="k">if</span> <span class="n">copyrights</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">source_filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
         <span class="n">source_format</span><span class="o">=</span><span class="s2">&quot;musicxml&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -764,7 +762,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;MusicXML file with timewise type is not supported.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Meta data</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="n">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
 
     <span class="c1"># Set resolution to the least common multiple of all divisions</span>
     <span class="c1"># TODO: Support custom resolution</span>

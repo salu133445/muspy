@@ -1,4 +1,4 @@
-"""Wrappers for output interface."""
+"""Wrapper functions for output interface."""
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Union, Any
 
@@ -117,11 +117,11 @@ def to_object(
     music : :class:`muspy.Music` object
         Music object to convert.
     target : str, {'music21', 'mido', 'pretty_midi', 'pypianoroll'}
-        Target class. Supported values are .
+        Target class.
 
     Returns
     -------
-    obj : `music21.Stream` or :class:`mido.MidiTrack` or
+    `music21.Stream` or :class:`mido.MidiTrack` or
     :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`
     object
         Converted object.
@@ -130,7 +130,7 @@ def to_object(
     if target.lower() == "music21":
         return to_music21(music)
     if target.lower() == "mido":
-        return to_mido(music)
+        return to_mido(music, **kwargs)
     if target.lower() in ("pretty_midi", "prettymidi", "pretty-midi"):
         return to_pretty_midi(music)
     if target.lower() == "pypianoroll":
@@ -148,9 +148,8 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
     ----------
     music : :class:`muspy.Music` object
         Music object to convert.
-    kind : str
-        Target representation. Supported values are 'pitch', 'pianoroll',
-        'event' and 'note'.
+    kind : str, {'pitch', 'pianoroll', 'event', 'note'}
+        Target representation.
 
     Returns
     -------

@@ -71,6 +71,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
     "matplotlib": ("https://matplotlib.org/", None),
+    "mido": ("https://mido.readthedocs.io/en/latest/", None),
     "pretty_midi": ("https://craffel.github.io/pretty-midi/", None),
     "pypianoroll": ("https://salu133445.github.io/pypianoroll/", None),
 }

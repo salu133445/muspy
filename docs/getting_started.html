@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Example Music Object" href="example.html" />
+    <link rel="next" title="MusPy Classes" href="classes/index.html" />
     <link rel="prev" title="MusPy documentation" href="index.html" /> 
 </head>
 
@@ -87,18 +87,14 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/index.html">Technical Documentation</a></li>
 </ul>
 
@@ -167,13 +163,81 @@
             
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>Here is an example of data preparation pipeline using MusPy.</p>
-<a class="reference internal image-reference" href="_images/data_pipeline.svg"><img alt="_images/data_pipeline.svg" class="align-center" src="_images/data_pipeline.svg" width="400px" /></a>
-<p>Here is another example of result writing pipeline using MusPy.</p>
-<a class="reference internal image-reference" href="_images/write_pipeline.svg"><img alt="_images/write_pipeline.svg" class="align-center" src="_images/write_pipeline.svg" width="400px" /></a>
+<p>Welcome to MusPy! We will go through some basic concepts in this tutorial.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Be sure you have MusPy installed. To install MusPy, please run <cite>pip install muspy</cite>.</p>
 </div>
+<p>In the following example, we will use <cite>this JSON file &lt;examples/example.json&gt;</cite> as an example.</p>
+<p>First of all, let’s import the MusPy library.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">muspy</span>
+</pre></div>
+</div>
+<p>Now, let’s load the JSON file into a Music object.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">music</span> <span class="o">=</span> <span class="n">muspy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;example.json&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here’s what we got.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Music</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">schema_version</span><span class="o">=</span><span class="s1">&#39;0.0&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Für Elise&#39;</span><span class="p">,</span> <span class="n">creators</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Ludwig van Beethoven&#39;</span><span class="p">],</span> <span class="n">collection</span><span class="o">=</span><span class="s1">&#39;Example dataset&#39;</span><span class="p">,</span> <span class="n">source_filename</span><span class="o">=</span><span class="s1">&#39;example.json&#39;</span><span class="p">),</span> <span class="n">resolution</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">tempos</span><span class="o">=</span><span class="p">[</span><span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="mf">72.0</span><span class="p">)],</span> <span class="n">key_signatures</span><span class="o">=</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;minor&#39;</span><span class="p">)],</span> <span class="n">time_signatures</span><span class="o">=</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">numerator</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">denominator</span><span class="o">=</span><span class="mi">8</span><span class="p">)],</span> <span class="n">downbeats</span><span class="o">=</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">],</span> <span class="n">lyrics</span><span class="o">=</span><span class="p">[</span><span class="n">Lyric</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lyric</span><span class="o">=</span><span class="s1">&#39;Nothing but a lyric&#39;</span><span class="p">)],</span> <span class="n">annotations</span><span class="o">=</span><span class="p">[</span><span class="n">Annotation</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="s1">&#39;Nothing but an annotation&#39;</span><span class="p">)],</span> <span class="n">tracks</span><span class="o">=</span><span class="p">[</span><span class="n">Track</span><span class="p">(</span><span class="n">program</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">is_drum</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Melody&#39;</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="p">[</span><span class="n">Note</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="mi">76</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">64</span><span class="p">),</span> <span class="n">Note</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="mi">75</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">64</span><span class="p">),</span> <span class="n">Note</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="mi">76</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="mi">64</span><span class="p">),</span> <span class="o">...</span><span class="p">],</span> <span class="n">lyrics</span><span class="o">=</span><span class="p">[</span><span class="n">Lyric</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lyric</span><span class="o">=</span><span class="s1">&#39;Nothing but a lyric&#39;</span><span class="p">)],</span> <span class="n">annotations</span><span class="o">=</span><span class="p">[</span><span class="n">Annotation</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="s1">&#39;Nothing but an annotation&#39;</span><span class="p">)])])</span>
+</pre></div>
+</div>
+<p>Hard to read, isn’t it? Let’s print it beautifully.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">music</span><span class="o">.</span><span class="n">print</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Now here’s what we got.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">metadata</span><span class="p p-Indicator">:</span>
+  <span class="l l-Scalar l-Scalar-Plain">schema_version</span><span class="p p-Indicator">:</span> <span class="s">&#39;0.0&#39;</span>
+  <span class="l l-Scalar l-Scalar-Plain">title</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Für Elise</span>
+  <span class="l l-Scalar l-Scalar-Plain">creators</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="nv">Ludwig van Beethoven</span><span class="p p-Indicator">]</span>
+  <span class="l l-Scalar l-Scalar-Plain">collection</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Example dataset</span>
+  <span class="l l-Scalar l-Scalar-Plain">source_filename</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">example.json</span>
+<span class="l l-Scalar l-Scalar-Plain">resolution</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
+<span class="l l-Scalar l-Scalar-Plain">tempos</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">qpm</span><span class="p p-Indicator">:</span> <span class="nv">72.0</span><span class="p p-Indicator">}</span>
+<span class="l l-Scalar l-Scalar-Plain">key_signatures</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">root</span><span class="p p-Indicator">:</span> <span class="nv">9</span><span class="p p-Indicator">,</span> <span class="nv">mode</span><span class="p p-Indicator">:</span> <span class="nv">minor</span><span class="p p-Indicator">}</span>
+<span class="l l-Scalar l-Scalar-Plain">time_signatures</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">numerator</span><span class="p p-Indicator">:</span> <span class="nv">3</span><span class="p p-Indicator">,</span> <span class="nv">denominator</span><span class="p p-Indicator">:</span> <span class="nv">8</span><span class="p p-Indicator">}</span>
+<span class="l l-Scalar l-Scalar-Plain">downbeats</span><span class="p p-Indicator">:</span> <span class="p p-Indicator">[</span><span class="nv">4</span><span class="p p-Indicator">,</span> <span class="nv">16</span><span class="p p-Indicator">]</span>
+<span class="l l-Scalar l-Scalar-Plain">lyrics</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">lyric</span><span class="p p-Indicator">:</span> <span class="nv">Nothing but a lyric</span><span class="p p-Indicator">}</span>
+<span class="l l-Scalar l-Scalar-Plain">annotations</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">annotation</span><span class="p p-Indicator">:</span> <span class="nv">Nothing but an annotation</span><span class="p p-Indicator">}</span>
+<span class="l l-Scalar l-Scalar-Plain">tracks</span><span class="p p-Indicator">:</span>
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">program</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
+    <span class="l l-Scalar l-Scalar-Plain">is_drum</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">false</span>
+    <span class="l l-Scalar l-Scalar-Plain">name</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">Melody</span>
+    <span class="l l-Scalar l-Scalar-Plain">notes</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">76</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">75</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">4</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">76</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">6</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">75</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">8</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">76</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">10</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">71</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">12</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">74</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">14</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">72</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">16</span><span class="p p-Indicator">,</span> <span class="nv">duration</span><span class="p p-Indicator">:</span> <span class="nv">2</span><span class="p p-Indicator">,</span> <span class="nv">pitch</span><span class="p p-Indicator">:</span> <span class="nv">69</span><span class="p p-Indicator">,</span> <span class="nv">velocity</span><span class="p p-Indicator">:</span> <span class="nv">64</span><span class="p p-Indicator">}</span>
+    <span class="l l-Scalar l-Scalar-Plain">lyrics</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">lyric</span><span class="p p-Indicator">:</span> <span class="nv">Nothing but a lyric</span><span class="p p-Indicator">}</span>
+    <span class="l l-Scalar l-Scalar-Plain">annotations</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="p p-Indicator">{</span><span class="nv">time</span><span class="p p-Indicator">:</span> <span class="nv">0</span><span class="p p-Indicator">,</span> <span class="nv">annotation</span><span class="p p-Indicator">:</span> <span class="nv">Nothing but an annotation</span><span class="p p-Indicator">}</span>
+</pre></div>
+</div>
+<p>You can use dot notation to assess the data. For example, <cite>music.metadata.title</cite> returns the song title, and <cite>music.tempos[0].qpm</cite> returns the first tempo in qpm (quarter notes per minute). If you want a list of all the pitches, you can do</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">([</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">notes</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Then you will get <cite>[76, 75, 76, 75, 76, 71, 74, 72, 69]</cite>.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p><cite>music[i]</cite> is a shorthand for <cite>music.tracks[i]</cite>, and <cite>len(music)</cite> for <cite>len(music.tracks)</cite>.</p>
+</div>
+<p>There’s more MusPy offers. Here is an example of data preparation pipeline using MusPy.</p>
+<a class="reference internal image-reference" href="_images/data_pipeline.svg"><img alt="_images/data_pipeline.svg" class="align-center" src="_images/data_pipeline.svg" width="400px" /></a>
+<p>And here is another example of result writing pipeline using MusPy.</p>
+<a class="reference internal image-reference" href="_images/write_pipeline.svg"><img alt="_images/write_pipeline.svg" class="align-center" src="_images/write_pipeline.svg" width="400px" /></a>
 </div>
 
 
@@ -184,7 +248,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="example.html" class="btn btn-neutral float-right" title="Example Music Object" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="classes/index.html" class="btn btn-neutral float-right" title="MusPy Classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="MusPy documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

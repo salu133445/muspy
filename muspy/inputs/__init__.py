@@ -1,10 +1,37 @@
-"""
-Input Interfaces
-================
+"""Input interfaces.
 
 This module provides input interfaces for common symbolic music formats,
 MusPy's native JSON and YAML formats, other symbolic music libraries and
 commonly-used representations in music generation.
+
+Functions
+---------
+
+- from_event_representation
+- from_mido
+- from_music21
+- from_music21_opus
+- from_note_representation
+- from_object
+- from_pianoroll_representation
+- from_pitch_representation
+- from_pretty_midi
+- from_pypianoroll
+- from_representation
+- load
+- load_json
+- load_yaml
+- read
+- read_abc
+- read_abc_string
+- read_midi
+- read_musicxml
+
+Errors
+------
+
+- MIDIError
+- MusicXMLError
 
 """
 from .abc import read_abc, read_abc_string

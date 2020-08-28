@@ -1,9 +1,25 @@
-"""
-Core classes
-============
+"""Core classes.
 
-These are the core classes of MusPy. All these objects inherit from
-the base class :class:`muspy.Base`.
+This module defines the core classes of MusPy.
+
+Classes
+-------
+
+- Annotation
+- Chord
+- KeySignature
+- Lyric
+- Metadata
+- Note
+- Tempo
+- TimeSignature
+- Track
+
+
+Variables
+---------
+
+- DEFAULT_VELOCITY
 
 """
 from collections import OrderedDict
@@ -17,6 +33,7 @@ DEFAULT_VELOCITY = 64
 __all__ = [
     "Annotation",
     "Chord",
+    "DEFAULT_VELOCITY",
     "KeySignature",
     "Lyric",
     "Metadata",

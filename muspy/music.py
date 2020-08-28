@@ -1,8 +1,16 @@
-"""
-Music object
-============
+"""Music class.
 
-This is the core class of MusPy.
+This module defines the core class of MusPy---the Music class.
+
+Classes
+-------
+
+- Music
+
+Variables
+---------
+
+- DEFAULT_RESOLUTION
 
 """
 from collections import OrderedDict
@@ -150,7 +158,7 @@ class Music(ComplexBase):
 
     def get_end_time(
         self, is_sorted: bool = False, realtime: bool = False
-    ) -> float:
+    ) -> int:
         """Return the time of the last event in all tracks.
 
         This includes tempos, key signatures, time signatures, notes offsets,

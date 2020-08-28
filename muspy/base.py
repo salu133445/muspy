@@ -1,4 +1,14 @@
-"""Base classes."""
+"""Base classes.
+
+This module defines the bases classes for MusPy objects.
+
+Classes
+-------
+
+- Base
+- ComplexBase
+
+"""
 from collections import OrderedDict
 from inspect import isclass
 from operator import attrgetter
@@ -113,7 +123,7 @@ class Base:
                 to_join.append(attr + "=" + repr(value))
         return type(self).__name__ + "(" + ", ".join(to_join) + ")"
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         for attr in self._attributes:
             if getattr(self, attr) != getattr(other, attr):
                 return False
@@ -167,7 +177,7 @@ class Base:
                 ordered_dict[attr] = value
         return ordered_dict
 
-    def pretty_str(self):
+    def pretty_str(self) -> str:
         """Return the content as a string in pretty YAML-like format."""
         return _yaml_dump(self.to_ordered_dict())
 
@@ -175,7 +185,7 @@ class Base:
         """Print the content in a pretty YAML-like format."""
         print(self.pretty_str())
 
-    def _validate_attr_type(self, attr):
+    def _validate_attr_type(self, attr: str):
         attr_cls = self._attributes[attr]
         value = getattr(self, attr)
         if value is None:
@@ -287,7 +297,7 @@ class Base:
             return False
         return True
 
-    def _adjust_time(self, func, attr):
+    def _adjust_time(self, func: Callable[[int], int], attr: str):
         attr_cls = self._attributes[attr]
         if attr == "time":
             if "time" in self._list_attributes:
@@ -304,7 +314,7 @@ class Base:
                     getattr(self, attr).adjust_time(func)
 
     def adjust_time(
-        self, func: Callable, attr: Optional[str] = None
+        self, func: Callable[[int], int], attr: Optional[str] = None
     ) -> "Base":
         """Adjust the timing of time-stamped objects.
 
@@ -365,7 +375,7 @@ class ComplexBase(Base):
         self._append(obj)
         return self
 
-    def _remove_invalid(self, attr):
+    def _remove_invalid(self, attr: str):
         if not getattr(self, attr):
             return
         attr_cls = self._attributes[attr]
@@ -403,7 +413,7 @@ class ComplexBase(Base):
 
         return self
 
-    def _remove_duplicate(self, attr):
+    def _remove_duplicate(self, attr: str):
         if not getattr(self, attr):
             return
 
@@ -439,7 +449,7 @@ class ComplexBase(Base):
 
         return self
 
-    def _sort(self, attr):
+    def _sort(self, attr: str):
         if not getattr(self, attr):
             return
 

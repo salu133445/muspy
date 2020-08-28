@@ -1,4 +1,4 @@
-"""Dataset utilities."""
+"""Utility functions for dataset classes."""
 import gzip
 import hashlib
 import os

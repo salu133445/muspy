@@ -1,4 +1,4 @@
-"""Pianoroll output interface."""
+"""Piano-roll output interface."""
 from operator import attrgetter
 from typing import TYPE_CHECKING
 
@@ -16,7 +16,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     Parameters
     ----------
     music : :class:`muspy.Music`
-        MusPy Music object to be converted.
+        MusPy Music object to convert.
 
     Returns
     -------

@@ -1,4 +1,4 @@
-"""Schema path utilities."""
+"""Utility functions for working with schemas."""
 from pathlib import Path
 
 

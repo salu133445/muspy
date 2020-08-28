@@ -1,16 +1,43 @@
-"""
-Datasets
-========
+"""Dataset classes.
 
 This module provides an easy-to-use dataset management system. Each
 supported dataset in MusPy comes with a class inherited from the base
 MusPy Dataset class. It also provides interfaces to PyTorch and
 TensorFlow for creating input pipelines for machine learning.
 
+Base Classes
+------------
+
+- ABCFolderDataset
+- Dataset
+- DatasetInfo
+- FolderDataset
+- RemoteABCFolderDataset
+- RemoteDataset
+- RemoteFolderDataset
+- RemoteMusicDataset
+- MusicDataset
+
+Dataset Classes
+---------------
+- EssenFolkSongDatabase
+- HymnalDataset
+- HymnalTuneDataset
+- JSBChoralesDataset
+- LakhMIDIDataset
+- MAESTRODatasetV1
+- MAESTRODatasetV2
+- Music21Dataset
+- NESMusicDatabase
+- NottinghamDatabase
+- WikifoniaDataset
+
 """
 
-from .base import Dataset, DatasetInfo, RemoteDataset
-from .datasets import (
+from .base import (
+    Dataset,
+    DatasetInfo,
+    RemoteDataset,
     ABCFolderDataset,
     FolderDataset,
     MusicDataset,

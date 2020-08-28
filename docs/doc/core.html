@@ -88,18 +88,20 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../example.html">Example Music Object</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io.html">Data I/O</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../representations/index.html">Representations</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../metrics.html">Metrics</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Technical Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="muspy.html">muspy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="classes.html">muspy.classes</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">muspy.core</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">muspy.core</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="datasets.html">muspy.datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inputs.html">muspy.inputs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="metrics.html">muspy.metrics</a></li>
@@ -179,7 +181,21 @@
             
   <div class="section" id="module-muspy.core">
 <span id="muspy-core"></span><h1>muspy.core<a class="headerlink" href="#module-muspy.core" title="Permalink to this headline">¶</a></h1>
-<p>Core functions that can be applied to a <a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object.</p>
+<p>Functions for MusPy objects.</p>
+<p>This module defines functions that can be applied to a MusPy object.</p>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>adjust_resolution</p></li>
+<li><p>adjust_time</p></li>
+<li><p>append</p></li>
+<li><p>clip</p></li>
+<li><p>get_end_time</p></li>
+<li><p>remove_duplicate</p></li>
+<li><p>sort</p></li>
+<li><p>to_ordered_dict</p></li>
+<li><p>transpos</p></li>
+</ul>
 <dl class="py function">
 <dt id="muspy.core.adjust_resolution">
 <code class="sig-prename descclassname">muspy.core.</code><code class="sig-name descname">adjust_resolution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#adjust_resolution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.core.adjust_resolution" title="Permalink to this definition">¶</a></dt>
@@ -266,8 +282,23 @@ Object to be clipped.</p></li>
 </dd></dl>
 
 <dl class="py function">
-<dt id="muspy.core.remove_duplicate_changes">
-<code class="sig-prename descclassname">muspy.core.</code><code class="sig-name descname">remove_duplicate_changes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#remove_duplicate_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.core.remove_duplicate_changes" title="Permalink to this definition">¶</a></dt>
+<dt id="muspy.core.get_end_time">
+<code class="sig-prename descclassname">muspy.core.</code><code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.core.get_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the time of the last event.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>, <a class="reference internal" href="muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> or) – <code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Timing</span></code> object
+Object to be inspected.</p></li>
+<li><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.core.remove_duplicate">
+<code class="sig-prename descclassname">muspy.core.</code><code class="sig-name descname">remove_duplicate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#remove_duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.core.remove_duplicate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove duplicate change events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -289,18 +320,18 @@ annotations.</p></li>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>, <a class="reference internal" href="muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> object) – Object to be sorted.</p>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="muspy.html#muspy.ComplexBase" title="muspy.ComplexBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.ComplexBase</span></code></a> object) – Object to sort.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.core.to_ordered_dict">
-<code class="sig-prename descclassname">muspy.core.</code><code class="sig-name descname">to_ordered_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#to_ordered_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.core.to_ordered_dict" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.core.</code><code class="sig-name descname">to_ordered_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em>, <em class="sig-param"><span class="n">ignore_null</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/core.html#to_ordered_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.core.to_ordered_dict" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an OrderedDict converted from a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – MusPy music object to be converted.</p>
+<dd class="field-odd"><p><strong>obj</strong> (<a class="reference internal" href="muspy.html#muspy.Base" title="muspy.Base"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Base</span></code></a> object) – MusPy object to convert.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Converted OrderedDict.</p>
@@ -327,6 +358,7 @@ raises the pitches, while a negative value lowers the pitches.</p></li>
 </dl>
 </dd></dl>
 
+</div>
 </div>
 
 

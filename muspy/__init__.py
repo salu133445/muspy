@@ -1,6 +1,4 @@
-"""
-MusPy
-=====
+"""A toolkit for symbolic music generation
 
 MusPy is an open source Python library for symbolic music generation. It
 provides essential tools for developing a music generation system,

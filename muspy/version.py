@@ -1,2 +1,2 @@
-"""Version of the MusPy package."""
+"""MusPy library version."""
 __version__ = "0.0.0"

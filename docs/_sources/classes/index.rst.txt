@@ -2,14 +2,8 @@
 MusPy Classes
 =============
 
-MusPy provides several classes for working with symbolic music. Here is an illustration of the relations between different MusPy classes.
-
-.. image:: ../images/classes.svg
-
-Here is a list of the classes that MusPy provides for handling symbolic music.
-
 .. toctree::
-    :titlesonly:
+    :hidden:
 
     music
     track
@@ -21,6 +15,10 @@ Here is a list of the classes that MusPy provides for handling symbolic music.
     annotation
     note
     chord
+
+MusPy provides several classes for working with symbolic music. Here is an illustration of the relations between different MusPy classes.
+
+.. image:: ../images/classes.svg
 
 
 Base Class
