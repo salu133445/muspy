@@ -1,22 +1,81 @@
 """Piano-roll input interface."""
 from operator import attrgetter
+from typing import List
 
 import numpy as np
 from numpy import ndarray
 
 from pypianoroll import Multitrack
+from pypianoroll import Track as PypianorollTrack
 
-from ..classes import Note, Track
+from ..classes import Metadata, Note, Tempo, Track
 from ..music import DEFAULT_RESOLUTION, Music
 
 
-def from_pypianoroll(m: Multitrack) -> Music:
+def _pianoroll_to_notes(
+    array: ndarray, encode_velocity: bool, default_velocity: int
+) -> List[Note]:
+    binarized = array > 0
+    diff = np.diff(binarized, axis=0, prepend=0, append=0)
+    notes = []
+    for i in range(128):
+        boundaries = np.nonzero(diff[:, i])[0]
+        for note_idx in range(len(boundaries) // 2):
+            start = boundaries[2 * note_idx]
+            end = boundaries[2 * note_idx + 1]
+            if encode_velocity:
+                velocity = array[start, i]
+            else:
+                velocity = default_velocity
+            note = Note(
+                time=start, duration=end - start, pitch=i, velocity=velocity,
+            )
+            notes.append(note)
+
+    notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
+
+    return notes
+
+
+def parse_pypianoroll_track(
+    track: PypianorollTrack, default_velocity: int = 64
+) -> Track:
+    """Return a Track object parsed from a Pypianoroll Track object.
+
+    Parameters
+    ----------
+    track : :class:`pypianoroll.Track` object
+        Pypianoroll Track object to convert.
+    default_velocity : int
+        Default velocity value to use when decoding. Defaults to 64.
+
+    Returns
+    -------
+    :class:`muspy.Track` object
+        Converted track.
+
+    """
+    # Convert piano roll to notes
+    notes = _pianoroll_to_notes(
+        track.pianoroll, not track.is_binarized, default_velocity
+    )
+    return Track(
+        notes=notes,
+        name=track.name if track.name else None,
+        program=track.program,
+        is_drum=track.is_drum,
+    )
+
+
+def from_pypianoroll(m: Multitrack, default_velocity: int = 64) -> Music:
     """Return a Music object converted from a Pypianoroll Multitrack object.
 
     Parameters
     ----------
     obj : :class:`pypianoroll.Multitrack` object
         Multitrack object to convert.
+    default_velocity : int
+        Default velocity value to use when decoding. Defaults to 64.
 
     Returns
     -------
@@ -24,7 +83,19 @@ def from_pypianoroll(m: Multitrack) -> Music:
         Converted MusPy Music object.
 
     """
-    raise NotImplementedError
+    # Tempos
+    tempo_change_timings = np.diff(m.tempo, prepend=-1).nonzero()[0]
+    tempos = [Tempo(time, qpm=m.tempo[time]) for time in tempo_change_timings]
+    # Tracks
+    tracks = [
+        parse_pypianoroll_track(track, default_velocity) for track in m.tracks
+    ]
+    return Music(
+        resolution=m.beat_resolution,
+        metadata=Metadata(title=m.name) if m.name else None,
+        tempos=tempos,
+        tracks=tracks,
+    )
 
 
 def from_pianoroll_representation(
@@ -68,24 +139,8 @@ def from_pianoroll_representation(
     elif not encode_velocity and not np.issubdtype(array.dtype, np.bool):
         array = array.astype(np.bool)
 
-    binarized = array > 0
-    diff = np.diff(binarized, axis=0, prepend=0, append=0)
-    notes = []
-    for i in range(128):
-        boundaries = np.nonzero(diff[:, i])[0]
-        for note_idx in range(len(boundaries) // 2):
-            start = boundaries[2 * note_idx]
-            end = boundaries[2 * note_idx + 1]
-            if encode_velocity:
-                velocity = array[start, i]
-            else:
-                velocity = default_velocity
-            note = Note(
-                time=start, duration=end - start, pitch=i, velocity=velocity,
-            )
-            notes.append(note)
-
-    notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
+    # Convert piano roll to notes
+    notes = _pianoroll_to_notes(array, encode_velocity, default_velocity)
 
     # Create the Track and Music objects
     track = Track(program=program, is_drum=is_drum, notes=notes)

@@ -6,6 +6,7 @@ from typing import List, Union
 
 from mido import MidiFile, tempo2bpm
 from pretty_midi import Instrument, PrettyMIDI
+from pretty_midi import Note as PrettyMIDINote
 
 from ..classes import (
     Annotation,
@@ -288,7 +289,7 @@ def read_midi_mido(
 
 
 def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
-    """Return key signatures parsed from a PrettyMIDI object.
+    """Return KeySignature objects parsed from a PrettyMIDI object.
 
     Parameters
     ----------
@@ -310,7 +311,7 @@ def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
 
 
 def parse_pretty_midi_time_signatures(pm: PrettyMIDI) -> List[TimeSignature]:
-    """Return time signatures parsed from a PrettyMIDI object.
+    """Return TimeSignature obejcts parsed from a PrettyMIDI object.
 
     Parameters
     ----------
@@ -336,7 +337,7 @@ def parse_pretty_midi_time_signatures(pm: PrettyMIDI) -> List[TimeSignature]:
 
 
 def parse_pretty_midi_lyrics(pm: PrettyMIDI) -> List[Lyric]:
-    """Return lyrics parsed from a PrettyMIDI object.
+    """Return Lyric objects parsed from a PrettyMIDI object.
 
     Parameters
     ----------
@@ -352,8 +353,8 @@ def parse_pretty_midi_lyrics(pm: PrettyMIDI) -> List[Lyric]:
     return [Lyric(lyric.time, lyric.text) for lyric in pm.lyrics]
 
 
-def parse_pretty_midi_note(note: Note) -> Note:
-    """Return note parsed from a pretty_midi Note object.
+def parse_pretty_midi_note(note: PrettyMIDINote) -> Note:
+    """Return a Note object parsed from a pretty_midi Note object.
 
     Parameters
     ----------
@@ -370,7 +371,7 @@ def parse_pretty_midi_note(note: Note) -> Note:
 
 
 def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
-    """Return lyrics parsed from a pretty_midi Instrument object.
+    """Return a Track object parsed from a pretty_midi Instrument object.
 
     Parameters
     ----------

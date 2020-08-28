@@ -141,7 +141,7 @@ def from_object(
     if isinstance(obj, PrettyMIDI):
         return from_pretty_midi(obj)
     if isinstance(obj, Multitrack):
-        return from_pypianoroll(obj)
+        return from_pypianoroll(obj, **kwargs)
     raise TypeError(
         "`obj` must be of type music21.Stream, mido.MidiFile, "
         "pretty_midi.PrettyMIDI or pypianoroll.Multitrack."
