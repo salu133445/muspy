@@ -6,7 +6,7 @@ Layout (SMuFL) (see https://w3c.github.io/smufl/gitbook/).
 """
 from operator import attrgetter
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 import warnings
 
 import matplotlib.pyplot as plt
@@ -20,12 +20,11 @@ from matplotlib.text import Text
 
 from ..base import Base
 from ..classes import KeySignature, Note, Tempo, TimeSignature
+from ..external import get_bravura_font_path
 
 if TYPE_CHECKING:
     from ..music import Music
 
-
-BRAVURA_PATH = Path(__file__).parent.parent / "external" / "Bravura.otf"
 
 COMMON_NOTE_CODES = {
     2: "\uE1D0",  # double whole note
@@ -312,6 +311,12 @@ class ScorePlotter:
         Time steps per quarter note.
     note_spacing : int, optional
         Spacing of notes. Defaults to 4.
+    font_path : str or Path, optional
+        Path to the music font. Defaults to the path to the downloaded
+        Bravura font.
+    font_scale : float, optional
+        Font scaling factor for finetuning. Defaults to 140, optimized for
+        the Bravura font.
 
     """
 
@@ -321,11 +326,25 @@ class ScorePlotter:
         ax: Axes,
         resolution: int,
         note_spacing: Optional[int] = None,
+        font_path: Optional[Union[str, Path]] = None,
+        font_scale: Optional[float] = None,
     ):
         self.fig = fig
         self.ax = ax
         self.resolution = resolution
         self.note_spacing = note_spacing if note_spacing is not None else 4
+        if font_path is None:
+            self.font_path = get_bravura_font_path()
+        else:
+            self.font_path = Path(font_path)
+        self.font_scale = 140 if font_scale is None else font_scale
+
+        # Check if font path exists
+        if not self.font_path.exists():
+            raise RuntimeError(
+                "Music font not found. Please download it by "
+                "`muspy.download_bravura_font()`."
+            )
 
         # Set the axes to 1:1 aspect ratio
         self.ax.set_aspect("equal")
@@ -383,7 +402,7 @@ class ScorePlotter:
     def adjust_fonts(self, scale: Optional[float] = None):
         """Adjust the fonts."""
         if scale is None:
-            scale = 140
+            scale = self.font_scale
 
         self.ax.set_xlim(self.left, self.right)
         self.ax.set_ylim(self.bottom, self.top)
@@ -399,12 +418,12 @@ class ScorePlotter:
             tempo_text.set_fontfamily("serif")
 
         # Set music font for tempo notes
-        prop_small = FontProperties(fname=BRAVURA_PATH, size=fontsize)
+        prop_small = FontProperties(fname=self.font_path, size=fontsize)
         for tempo_note in self.tempo_notes:
             tempo_note.set_fontproperties(prop_small)
 
         # Set music font for music texts
-        prop = FontProperties(fname=BRAVURA_PATH, size=fontsize * 2)
+        prop = FontProperties(fname=self.font_path, size=fontsize * 2)
         for key_signature in self.key_signatures:
             key_signature.set_fontproperties(prop)
         for time_signature in self.time_signatures:
@@ -764,6 +783,7 @@ def show_score(
     clef: str = "treble",
     clef_octave: Optional[int] = 0,
     note_spacing: Optional[int] = None,
+    font_path: Optional[Union[str, Path]] = None,
     font_scale: Optional[float] = None,
 ) -> ScorePlotter:
     """Show score visualization.
@@ -780,8 +800,12 @@ def show_score(
         Clef octave. Defaults to zero.
     note_spacing : int, optional
         Spacing of notes. Defaults to 4.
+    font_path : str or Path, optional
+        Path to the music font. Defaults to the path to the built-in Bravura
+        font.
     font_scale : float, optional
-        Font scaling factor for finetuning. Defaults to 140.
+        Font scaling factor for finetuning. Defaults to 140, optimized for
+        the Bravura font.
 
     Returns
     -------
@@ -797,7 +821,12 @@ def show_score(
 
     # Create a score plotter
     plotter = ScorePlotter(
-        fig, ax, resolution=music.resolution, note_spacing=note_spacing
+        fig,
+        ax,
+        resolution=music.resolution,
+        note_spacing=note_spacing,
+        font_path=font_path,
+        font_scale=font_scale,
     )
 
     # Begining bar line

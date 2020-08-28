@@ -25,6 +25,7 @@ from . import (
     classes,
     core,
     datasets,
+    external,
     inputs,
     metrics,
     music,
@@ -37,6 +38,7 @@ from .base import *  # noqa: F401,F403
 from .classes import *  # noqa: F401,F403
 from .core import *  # noqa: F401,F403
 from .datasets import *  # noqa: F401,F403
+from .external import *  # noqa: F401,F403
 from .inputs import *  # noqa: F401,F403
 from .metrics import *  # noqa: F401,F403
 from .music import *  # noqa: F401,F403
@@ -52,6 +54,7 @@ __all__ = [
     "classes",
     "core",
     "datasets",
+    "external",
     "inputs",
     "metrics",
     "music",
@@ -64,6 +67,7 @@ __all__.extend(base.__all__)
 __all__.extend(classes.__all__)
 __all__.extend(core.__all__)
 __all__.extend(datasets.__all__)
+__all__.extend(external.__all__)
 __all__.extend(inputs.__all__)
 __all__.extend(metrics.__all__)
 __all__.extend(music.__all__)
