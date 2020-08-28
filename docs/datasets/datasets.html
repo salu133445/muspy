@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Metadata Class &mdash; MusPy  documentation</title>
+  <title>Supported Datasets &mdash; MusPy  documentation</title>
   
 
   
@@ -37,8 +37,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Tempo Class" href="tempo.html" />
-    <link rel="prev" title="Track Class" href="track.html" /> 
+    <link rel="next" title="Base Dataset Classes" href="base.html" />
+    <link rel="prev" title="Iterating over a MusPy Dataset object" href="iterator.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -88,23 +88,17 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="index.html">MusPy Classes</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="base.html">Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="music.html">Music Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="track.html">Track Class</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Metadata Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tempo.html">Tempo Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="key-signature.html">KeySignature Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="time-signature.html">TimeSignature Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lyric.html">Lyric Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="annotation.html">Annotation Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="note.html">Note Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="chord.html">Chord Class</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io/index.html">Input/Output Interfaces</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Datasets</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="iterator.html">Iterating over a MusPy Dataset object</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Supported Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="base.html">Base Dataset Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local.html">Local Dataset Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="remote.html">Remote Dataset Classes</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="../representations/index.html">Representations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../synthesis.html">Synthesis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
@@ -156,15 +150,15 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="index.html">MusPy Classes</a> &raquo;</li>
+          <li><a href="index.html">Datasets</a> &raquo;</li>
         
-      <li>Metadata Class</li>
+      <li>Supported Datasets</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/classes/metadata.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/datasets/datasets.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -177,61 +171,134 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="metadata-class">
-<h1>Metadata Class<a class="headerlink" href="#metadata-class" title="Permalink to this headline">¶</a></h1>
-<p>The <a class="reference internal" href="../doc/muspy.html#muspy.Metadata" title="muspy.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Metadata</span></code></a> class is a container for metadata.</p>
+  <div class="section" id="supported-datasets">
+<h1>Supported Datasets<a class="headerlink" href="#supported-datasets" title="Permalink to this headline">¶</a></h1>
+<p>Here is a list of the supported datasets.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 26%" />
-<col style="width: 43%" />
-<col style="width: 19%" />
-<col style="width: 12%" />
+<col style="width: 35%" />
+<col style="width: 10%" />
+<col style="width: 8%" />
+<col style="width: 9%" />
+<col style="width: 11%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 13%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>Attributes</p></th>
-<th class="head"><p>Description</p></th>
-<th class="head"><p>Type</p></th>
-<th class="head"><p>Default</p></th>
+<tr class="row-odd"><th class="head"><p>Dataset</p></th>
+<th class="head"><p>Format</p></th>
+<th class="head"><p>Hours</p></th>
+<th class="head"><p>Songs</p></th>
+<th class="head"><p>Genre</p></th>
+<th class="head"><p>Melody</p></th>
+<th class="head"><p>Chords</p></th>
+<th class="head"><p>Multitrack</p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p>schema_version</p></td>
-<td><p>Schema version</p></td>
-<td><p>str</p></td>
-<td><p>‘0.0’</p></td>
+<tr class="row-even"><td><p>Lakh MIDI Dataset</p></td>
+<td><p>MIDI</p></td>
+<td><p>&gt;5000</p></td>
+<td><p>174,533</p></td>
+<td><p>misc</p></td>
+<td><p>*</p></td>
+<td><p>*</p></td>
+<td><p>*</p></td>
 </tr>
-<tr class="row-odd"><td><p>title</p></td>
-<td><p>Song title</p></td>
-<td><p>str</p></td>
+<tr class="row-odd"><td><p>MAESTRO Dataset</p></td>
+<td><p>MIDI</p></td>
+<td><p>201.21</p></td>
+<td><p>1,282</p></td>
+<td><p>classical</p></td>
+<td></td>
+<td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>creators</p></td>
-<td><p>Creators(s) of the song</p></td>
-<td><p>list of str</p></td>
-<td><p>[]</p></td>
-</tr>
-<tr class="row-odd"><td><p>copyright</p></td>
-<td><p>Copyright notice</p></td>
-<td><p>str</p></td>
+<tr class="row-even"><td><p>Wikifonia Lead Sheet Dataset</p></td>
+<td><p>MusicXML</p></td>
+<td><p>198.40</p></td>
+<td><p>6,405</p></td>
+<td><p>misc</p></td>
+<td><p>O</p></td>
+<td><p>O</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>collection</p></td>
-<td><p>Name of the collection</p></td>
-<td><p>str</p></td>
+<tr class="row-odd"><td><p>Essen Folk Song Dataset</p></td>
+<td><p>ABC</p></td>
+<td><p>56.62</p></td>
+<td><p>9,034</p></td>
+<td><p>folk</p></td>
+<td><p>O</p></td>
+<td><p>O</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>source_filename</p></td>
-<td><p>Name of the source file</p></td>
-<td><p>str</p></td>
+<tr class="row-even"><td><p>NES Music Database</p></td>
+<td><p>MIDI</p></td>
+<td><p>46.11</p></td>
+<td><p>5,278</p></td>
+<td><p>game</p></td>
+<td><p>O</p></td>
+<td></td>
+<td><p>O</p></td>
+</tr>
+<tr class="row-odd"><td><p>Hymnal Tune Dataset</p></td>
+<td><p>MIDI</p></td>
+<td><p>18.74</p></td>
+<td><p>1,756</p></td>
+<td><p>hymn</p></td>
+<td><p>O</p></td>
+<td></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>source_format</p></td>
-<td><p>Format of the source file</p></td>
-<td><p>str</p></td>
+<tr class="row-even"><td><p>Hymnal Dataset</p></td>
+<td><p>MIDI</p></td>
+<td><p>17.50</p></td>
+<td><p>1,723</p></td>
+<td><p>hymn</p></td>
 <td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>music21’s Corpus</p></td>
+<td><p>misc</p></td>
+<td><p>16.86</p></td>
+<td><p>613</p></td>
+<td><p>misc</p></td>
+<td><p>*</p></td>
+<td></td>
+<td><p>*</p></td>
+</tr>
+<tr class="row-even"><td><p>Nottingham Database</p></td>
+<td><p>ABC</p></td>
+<td><p>10.54</p></td>
+<td><p>1,036</p></td>
+<td><p>folk</p></td>
+<td><p>O</p></td>
+<td><p>O</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>music21’s JSBach Corpus</p></td>
+<td><p>MusicXML</p></td>
+<td><p>3.46</p></td>
+<td><p>410</p></td>
+<td><p>classical</p></td>
+<td></td>
+<td></td>
+<td><p>O</p></td>
+</tr>
+<tr class="row-even"><td><p>JSBach Chorale Dataset</p></td>
+<td><p>MIDI</p></td>
+<td><p>3.21</p></td>
+<td><p>382</p></td>
+<td><p>classical</p></td>
+<td></td>
+<td></td>
+<td><p>O</p></td>
 </tr>
 </tbody>
 </table>
+<p>(Asterisk marks indicate partial support.)</p>
 </div>
 
 
@@ -242,10 +309,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="tempo.html" class="btn btn-neutral float-right" title="Tempo Class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="base.html" class="btn btn-neutral float-right" title="Base Dataset Classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="track.html" class="btn btn-neutral float-left" title="Track Class" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="iterator.html" class="btn btn-neutral float-left" title="Iterating over a MusPy Dataset object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -8,10 +8,9 @@ MusPy provides three type of data I/O interfaces.
 - MusPy's native JSON and YAML formats: ``muspy.load_*`` and ``muspy.save_*``
 - Other symbolic music libraries: ``muspy.from_*`` and ``muspy.to_*``
 
-Here is a list of the supported interfaces.
 
 .. toctree::
-    :titlesonly:
+    :hidden:
 
     midi
     musicxml
