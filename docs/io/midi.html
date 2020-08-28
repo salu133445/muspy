@@ -1,0 +1,284 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>MIDI I/O Interface &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="MusicXML Interface" href="musicxml.html" />
+    <link rel="prev" title="Input/Output Interfaces" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Input/Output Interfaces</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">MIDI I/O Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="musicxml.html">MusicXML Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="abc.html">ABC Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="json.html">JSON Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="yaml.html">JSON Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mido.html">Mido Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="music21.html">music21 Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pretty_midi.html">pretty_midi Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pypianoroll.html">Pypianoroll Interface</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../synthesis.html">Synthesis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Input/Output Interfaces</a> &raquo;</li>
+        
+      <li>MIDI I/O Interface</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/io/midi.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="midi-i-o-interface">
+<h1>MIDI I/O Interface<a class="headerlink" href="#midi-i-o-interface" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">read_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">backend</span><span class="o">=</span><span class="default_value">'mido'</span></em>, <em class="sig-param"><span class="n">duplicate_note_mode</span><span class="o">=</span><span class="default_value">'fifo'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/midi.html#read_midi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Read a MIDI file into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to the MIDI file to read.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em>) – Backend to use.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off message is
+presetned while there are multiple correspoding note on messages
+that have not yet been closed, we need a policy to decide which note
+on messages to close. Defaults to ‘fifo’. Only used when
+<cite>backend=’mido’</cite>.</p>
+<ul>
+<li><p>’fifo’ (first in first out): close the earliest note on</p></li>
+<li><p>’lifo’ (first in first out):close the latest note on</p></li>
+<li><p>’close_all’: close all note on messages</p></li>
+</ul>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Converted Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">backend</span><span class="o">=</span><span class="default_value">'mido'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/midi.html#write_midi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Write a Music object to a MIDI file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the MIDI file.</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to write.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em>) – Backend to use. Defaults to ‘mido’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="musicxml.html" class="btn btn-neutral float-right" title="MusicXML Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Input/Output Interfaces" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright MusPy Developers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

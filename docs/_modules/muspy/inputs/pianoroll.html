@@ -88,9 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
@@ -160,23 +161,82 @@
   <h1>Source code for muspy.inputs.pianoroll</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Piano-roll input interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="k">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
 
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Multitrack</span>
+<span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Track</span> <span class="k">as</span> <span class="n">PypianorollTrack</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="from_pypianoroll"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_pypianoroll">[docs]</a><span class="k">def</span> <span class="nf">from_pypianoroll</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">Multitrack</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_pianoroll_to_notes</span><span class="p">(</span>
+    <span class="n">array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]:</span>
+    <span class="n">binarized</span> <span class="o">=</span> <span class="n">array</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">binarized</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">boundaries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">diff</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">note_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">note_idx</span><span class="p">]</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">note_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
+                <span class="n">velocity</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">velocity</span> <span class="o">=</span> <span class="n">default_velocity</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+
+    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">notes</span>
+
+
+<span class="k">def</span> <span class="nf">parse_pypianoroll_track</span><span class="p">(</span>
+    <span class="n">track</span><span class="p">:</span> <span class="n">PypianorollTrack</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Track object parsed from a Pypianoroll Track object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    track : :class:`pypianoroll.Track` object</span>
+<span class="sd">        Pypianoroll Track object to convert.</span>
+<span class="sd">    default_velocity : int</span>
+<span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Track` object</span>
+<span class="sd">        Converted track.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Convert piano roll to notes</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="n">_pianoroll_to_notes</span><span class="p">(</span>
+        <span class="n">track</span><span class="o">.</span><span class="n">pianoroll</span><span class="p">,</span> <span class="ow">not</span> <span class="n">track</span><span class="o">.</span><span class="n">is_binarized</span><span class="p">,</span> <span class="n">default_velocity</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Track</span><span class="p">(</span>
+        <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">name</span> <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">program</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span>
+        <span class="n">is_drum</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="from_pypianoroll"><a class="viewcode-back" href="../../../io/pypianoroll.html#muspy.inputs.from_pypianoroll">[docs]</a><span class="k">def</span> <span class="nf">from_pypianoroll</span><span class="p">(</span><span class="n">m</span><span class="p">:</span> <span class="n">Multitrack</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object converted from a Pypianoroll Multitrack object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`pypianoroll.Multitrack` object</span>
 <span class="sd">        Multitrack object to convert.</span>
+<span class="sd">    default_velocity : int</span>
+<span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -184,7 +244,19 @@
 <span class="sd">        Converted MusPy Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+    <span class="c1"># Tempos</span>
+    <span class="n">tempo_change_timings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">tempo</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span><span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">tempo</span><span class="p">[</span><span class="n">time</span><span class="p">])</span> <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">tempo_change_timings</span><span class="p">]</span>
+    <span class="c1"># Tracks</span>
+    <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">parse_pypianoroll_track</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">tracks</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">beat_resolution</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">,</span>
+        <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="from_pianoroll_representation"><a class="viewcode-back" href="../../../representations/pianoroll.html#muspy.inputs.from_pianoroll_representation">[docs]</a><span class="k">def</span> <span class="nf">from_pianoroll_representation</span><span class="p">(</span>
@@ -228,24 +300,8 @@
     <span class="k">elif</span> <span class="ow">not</span> <span class="n">encode_velocity</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
         <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
 
-    <span class="n">binarized</span> <span class="o">=</span> <span class="n">array</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="n">diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">binarized</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
-        <span class="n">boundaries</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">diff</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">note_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
-            <span class="n">start</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">note_idx</span><span class="p">]</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="mi">2</span> <span class="o">*</span> <span class="n">note_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-                <span class="n">velocity</span> <span class="o">=</span> <span class="n">array</span><span class="p">[</span><span class="n">start</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">velocity</span> <span class="o">=</span> <span class="n">default_velocity</span>
-            <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-                <span class="n">time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
-
-    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
+    <span class="c1"># Convert piano roll to notes</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="n">_pianoroll_to_notes</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">encode_velocity</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">)</span>
 
     <span class="c1"># Create the Track and Music objects</span>
     <span class="n">track</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span><span class="n">program</span><span class="o">=</span><span class="n">program</span><span class="p">,</span> <span class="n">is_drum</span><span class="o">=</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">notes</span><span class="o">=</span><span class="n">notes</span><span class="p">)</span>

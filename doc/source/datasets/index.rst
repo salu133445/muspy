@@ -28,15 +28,15 @@ Iterating over a MusPy Dataset object
 Here is an illustration of the two internal processing modes for iterating over
 a MusPy Dataset object.
 
-.. image:: images/on_the_fly.svg
+.. image:: ../images/on_the_fly.svg
     :align: center
     :width: 475px
 
-.. image:: images/preconverted1.svg
+.. image:: ../images/preconverted1.svg
     :align: center
     :width: 500px
 
-.. image:: images/preconverted2.svg
+.. image:: ../images/preconverted2.svg
     :align: center
     :width: 475px
 
@@ -65,43 +65,9 @@ JSBach Chorale Dataset       MIDI       3.21     382 classical               O
 (Asterisk marks indicate partial support.)
 
 
-Base Dataset Classes
-====================
+.. toctree::
+    :hidden:
 
-Here are the two base classes for MusPy datasets.
-
-.. autoclass:: muspy.Dataset
-    :noindex:
-
-.. autoclass:: muspy.RemoteDataset
-    :noindex:
-
-
-Local Dataset Classes
-=====================
-
-Here are the classes for local datasets.
-
-.. autoclass:: muspy.FolderDataset
-    :noindex:
-
-.. autoclass:: muspy.MusicDataset
-    :noindex:
-
-.. autoclass:: muspy.ABCFolderDataset
-    :noindex:
-
-
-Remote Dataset Classes
-======================
-
-Here are the classes for remote datasets.
-
-.. autoclass:: muspy.RemoteFolderDataset
-    :noindex:
-
-.. autoclass:: muspy.RemoteMusicDataset
-    :noindex:
-
-.. autoclass:: muspy.RemoteABCFolderDataset
-    :noindex:
+    base
+    local
+    remote

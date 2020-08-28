@@ -88,9 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
@@ -168,6 +169,7 @@
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Multitrack</span>
 
+<span class="kn">from</span> <span class="nn">.abc</span> <span class="k">import</span> <span class="n">write_abc</span>
 <span class="kn">from</span> <span class="nn">.audio</span> <span class="k">import</span> <span class="n">write_audio</span>
 <span class="kn">from</span> <span class="nn">.event</span> <span class="k">import</span> <span class="n">to_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="k">import</span> <span class="n">save_json</span>
@@ -241,7 +243,7 @@
 <span class="sd">        Path to write the file.</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to convert.</span>
-<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;wav&#39;}, optional</span>
+<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;abc&#39;, &#39;audio&#39;}, optional</span>
 <span class="sd">        Format to save. If None, infer the format from the extension of</span>
 <span class="sd">        `path`.</span>
 
@@ -257,19 +259,24 @@
             <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">))</span>
         <span class="p">):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musicxml&quot;</span>
-        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.wav&quot;</span><span class="p">):</span>
-            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;wave&quot;</span>
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.abc&quot;</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;wav&quot;</span><span class="p">,</span> <span class="s2">&quot;aiff&quot;</span><span class="p">,</span> <span class="s2">&quot;flac&quot;</span><span class="p">,</span> <span class="s2">&quot;oga&quot;</span><span class="p">)):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;audio&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Got unsupported file format (expect MIDI, MusicXML or wave).&quot;</span>
+                <span class="s2">&quot;Got unsupported file format (expect MIDI, MusicXML, ABC, &quot;</span>
+                <span class="s2">&quot;WAV, AIFF, FLAC or OGA).&quot;</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;midi&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">write_abc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;audio&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_audio</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;midi&#39;, &#39;musicxml&#39; or &#39;audio&#39;.&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be &#39;midi&#39;, &#39;musicxml&#39;, &#39;abc&#39; or &#39;audio&#39;.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span>

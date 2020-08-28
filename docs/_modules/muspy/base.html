@@ -88,9 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../synthesis.html">Synthesis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
@@ -219,7 +220,7 @@
     <span class="k">return</span> <span class="n">attr_cls</span><span class="o">.</span><span class="vm">__name__</span>
 
 
-<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
+<div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;The base class of MusPy objects.</span>
 
 <span class="sd">    It provides the following features.</span>
@@ -292,7 +293,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-<div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Base_</span><span class="p">],</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
@@ -319,7 +320,7 @@
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_null</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ignore_null</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the object as an OrderedDict.&quot;&quot;&quot;</span>
         <span class="n">ordered_dict</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr_cls</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -340,11 +341,11 @@
                 <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
-<div class="viewcode-block" id="Base.pretty_str"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.pretty_str">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.pretty_str"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.pretty_str">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the content as a string in pretty YAML-like format.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_yaml_dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Print the content in a pretty YAML-like format.&quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">())</span></div>
 
@@ -372,7 +373,7 @@
                 <span class="p">)</span>
             <span class="p">)</span>
 
-<div class="viewcode-block" id="Base.validate_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.validate_type">[docs]</a>    <span class="k">def</span> <span class="nf">validate_type</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.validate_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.validate_type">[docs]</a>    <span class="k">def</span> <span class="nf">validate_type</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is of wrong type.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
@@ -405,7 +406,7 @@
             <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span> <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be nonnegative.&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is invalid.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
@@ -424,7 +425,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Base.is_type_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_type_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_type_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.is_type_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.is_type_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_type_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if a certain attribute is valid, otherwise False.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
@@ -442,7 +443,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if a certain attribute is valid, otherwise False.</span>
 
 <span class="sd">        This will recursively apply to an attribute&#39;s attributes.</span>
@@ -476,7 +477,7 @@
                 <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Base.adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.adjust_time">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span>
+<div class="viewcode-block" id="Base.adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.adjust_time">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Adjust the timing of time-stamped objects.</span>
@@ -501,7 +502,7 @@
         <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
-<div class="viewcode-block" id="ComplexBase"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase">[docs]</a><span class="k">class</span> <span class="nc">ComplexBase</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<div class="viewcode-block" id="ComplexBase"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.ComplexBase">[docs]</a><span class="k">class</span> <span class="nc">ComplexBase</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A base class that supports operations on list attributes.</span>
 
 <span class="sd">    The supported operations are</span>
@@ -533,7 +534,7 @@
             <span class="s2">&quot;Cannot find a list of type </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="ComplexBase.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBase_</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase_</span><span class="p">:</span>
+<div class="viewcode-block" id="ComplexBase.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.ComplexBase.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBase_</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -553,7 +554,7 @@
                     <span class="n">new_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ComplexBase.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span>
+<div class="viewcode-block" id="ComplexBase.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.ComplexBase.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBase_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove invalid items from list attributes, others left unchanged.</span>
@@ -593,7 +594,7 @@
                     <span class="n">new_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_item</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ComplexBase.remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span>
+<div class="viewcode-block" id="ComplexBase.remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.ComplexBase.remove_duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBase_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove duplicate items.</span>
@@ -630,7 +631,7 @@
                     <span class="n">attrgetter</span><span class="p">(</span><span class="o">*</span><span class="n">attr_cls</span><span class="o">.</span><span class="n">_sort_attributes</span><span class="p">)</span>
                 <span class="p">)</span>
 
-<div class="viewcode-block" id="ComplexBase.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBase_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase_</span><span class="p">:</span>
+<div class="viewcode-block" id="ComplexBase.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.ComplexBase.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBase_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase_</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Sort the time-stamped objects recursively.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>

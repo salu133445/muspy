@@ -88,9 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
@@ -166,6 +167,7 @@
 
 <span class="kn">from</span> <span class="nn">mido</span> <span class="k">import</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">tempo2bpm</span>
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">Instrument</span><span class="p">,</span> <span class="n">PrettyMIDI</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PrettyMIDINote</span>
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">Annotation</span><span class="p">,</span>
@@ -188,7 +190,7 @@
     <span class="k">return</span> <span class="n">channel</span> <span class="o">==</span> <span class="mi">9</span>
 
 
-<div class="viewcode-block" id="from_mido"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_mido">[docs]</a><span class="k">def</span> <span class="nf">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_mido"><a class="viewcode-back" href="../../../io/mido.html#muspy.inputs.from_mido">[docs]</a><span class="k">def</span> <span class="nf">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object converted from a pretty_midi PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
@@ -448,7 +450,7 @@
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_key_signatures</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return key signatures parsed from a PrettyMIDI object.</span>
+    <span class="sd">&quot;&quot;&quot;Return KeySignature objects parsed from a PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -470,7 +472,7 @@
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_time_signatures</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return time signatures parsed from a PrettyMIDI object.</span>
+    <span class="sd">&quot;&quot;&quot;Return TimeSignature obejcts parsed from a PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -496,7 +498,7 @@
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_lyrics</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return lyrics parsed from a PrettyMIDI object.</span>
+    <span class="sd">&quot;&quot;&quot;Return Lyric objects parsed from a PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -512,8 +514,8 @@
     <span class="k">return</span> <span class="p">[</span><span class="n">Lyric</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">pm</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">parse_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">Note</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return note parsed from a pretty_midi Note object.</span>
+<span class="k">def</span> <span class="nf">parse_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">PrettyMIDINote</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Note object parsed from a pretty_midi Note object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -530,7 +532,7 @@
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">:</span> <span class="n">Instrument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return lyrics parsed from a pretty_midi Instrument object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a Track object parsed from a pretty_midi Instrument object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -549,7 +551,7 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">pm</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object converted from a pretty_midi PrettyMIDI object.</span>
 
 <span class="sd">    Parameters</span>
@@ -595,7 +597,7 @@
     <span class="k">return</span> <span class="n">music</span>
 
 
-<div class="viewcode-block" id="read_midi"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read_midi">[docs]</a><span class="k">def</span> <span class="nf">read_midi</span><span class="p">(</span>
+<div class="viewcode-block" id="read_midi"><a class="viewcode-back" href="../../../io/midi.html#muspy.inputs.read_midi">[docs]</a><span class="k">def</span> <span class="nf">read_midi</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mido&quot;</span><span class="p">,</span>
     <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">,</span>

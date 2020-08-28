@@ -59,9 +59,10 @@ Contents
     getting_started
     classes/index
     timing
-    io
-    datasets
+    io/index
+    datasets/index
     representations/index
+    synthesis
     visualization
     metrics
     doc/index

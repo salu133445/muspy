@@ -88,9 +88,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
@@ -194,7 +195,7 @@
     <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;musicxml.xsd&quot;</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">validate_json</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="validate_json"><a class="viewcode-back" href="../../../doc/schemas.html#muspy.validate_json">[docs]</a><span class="k">def</span> <span class="nf">validate_json</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Validate a file against the JSON schema.</span>
 
 <span class="sd">    Parameters</span>
@@ -213,10 +214,10 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">get_json_schema_path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
+    <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">validate_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="validate_yaml"><a class="viewcode-back" href="../../../doc/schemas.html#muspy.validate_yaml">[docs]</a><span class="k">def</span> <span class="nf">validate_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Validate a file against the YAML schema.</span>
 
 <span class="sd">    Parameters</span>
@@ -232,10 +233,10 @@
         <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">yamale</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">yamale</span><span class="o">.</span><span class="n">make_schema</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">get_yaml_schema_path</span><span class="p">()))</span>
-    <span class="n">yamale</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">yamale</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">validate_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<div class="viewcode-block" id="validate_musicxml"><a class="viewcode-back" href="../../../doc/schemas.html#muspy.validate_musicxml">[docs]</a><span class="k">def</span> <span class="nf">validate_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Validate a file against the MusicXML schema.</span>
 
 <span class="sd">    Parameters</span>
@@ -250,7 +251,7 @@
             <span class="s2">&quot;validation. Please install it by `pip install xmlschema `.&quot;</span>
         <span class="p">)</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">xmlschema</span><span class="o">.</span><span class="n">XMLSchema</span><span class="p">(</span><span class="n">get_musicxml_schema_path</span><span class="p">())</span>
-    <span class="n">schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="n">schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>
 </pre></div>
 
            </div>

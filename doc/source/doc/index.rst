@@ -8,9 +8,11 @@ These are the detailed technical documentation.
     :titlesonly:
 
     muspy
+    base
     classes
     core
     datasets
+    external
     inputs
     metrics
     music

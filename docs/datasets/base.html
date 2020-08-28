@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Base Dataset Classes &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Local Dataset Classes" href="local.html" />
+    <link rel="prev" title="Datasets" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Datasets</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="index.html#iterating-over-a-muspy-dataset-object">Iterating over a MusPy Dataset object</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#supported-datasets">Supported Datasets</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Base Dataset Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local.html">Local Dataset Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="remote.html">Remote Dataset Classes</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../synthesis.html">Synthesis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="index.html">Datasets</a> &raquo;</li>
+        
+      <li>Base Dataset Classes</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/datasets/base.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="base-dataset-classes">
+<h1>Base Dataset Classes<a class="headerlink" href="#base-dataset-classes" title="Permalink to this headline">¶</a></h1>
+<p>Here are the two base classes for MusPy datasets.</p>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Dataset</code><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Base class for all MusPy datasets.</p>
+<p>To build a custom dataset, it should inherit this class and overide the
+methods <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__len__</span></code> as well as the class attribute
+<code class="docutils literal notranslate"><span class="pre">_info</span></code>. <code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> should return the <code class="docutils literal notranslate"><span class="pre">i</span></code>-th data sample as a
+<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object. <code class="docutils literal notranslate"><span class="pre">__len__</span></code> should return the size of the
+dataset. <code class="docutils literal notranslate"><span class="pre">_info</span></code> should be a <a class="reference internal" href="../doc/muspy.html#muspy.DatasetInfo" title="muspy.DatasetInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.DatasetInfo</span></code></a> instance
+containing the dataset information.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteDataset"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Base class for remote MusPy datasets.</p>
+<p>This class is extended from <a class="reference internal" href="../doc/muspy.html#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a> to support remote
+datasets. To build a custom dataset based on this class, please refer to
+<a class="reference internal" href="../doc/muspy.html#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a> for the docmentation of the methods
+<code class="docutils literal notranslate"><span class="pre">__getitem__</span></code> and <code class="docutils literal notranslate"><span class="pre">__len__</span></code>, and the class attribute <code class="docutils literal notranslate"><span class="pre">_info</span></code>. In
+addition, the class attribute <code class="docutils literal notranslate"><span class="pre">_sources</span></code> containing the URLs to the
+source files should be properly set (see Notes).</p>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">root</code></dt>
+<dd><p>Root directory of the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str or Path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>download_and_extract</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to download and extract the dataset. Defaults to False.</p></li>
+<li><p><strong>cleanup</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to remove the original archive(s). Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+<p>:raises RuntimeError:: If <code class="docutils literal notranslate"><span class="pre">download_and_extract</span></code> is False but file
+    <code class="docutils literal notranslate"><span class="pre">{root}/.muspy.success</span></code> does not exist (see below).</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Dataset.exists()</span></code> depends solely on a special file named
+<code class="docutils literal notranslate"><span class="pre">.muspy.success</span></code> in the folder <code class="docutils literal notranslate"><span class="pre">{root}/</span></code>, which serves as an
+indicator for the existence and integrity of the dataset. This file will
+automatically be created if the dataset is successfully downloaded and
+extracted by <code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Dataset.download_and_extract()</span></code>.</p>
+<p>If the dataset is downloaded manually, make sure to create the
+<code class="docutils literal notranslate"><span class="pre">.muspy.success</span></code> file in the folder <code class="docutils literal notranslate"><span class="pre">{root}/</span></code> to prevent errors.</p>
+</div>
+<p class="rubric">Notes</p>
+<p>The class attribute <code class="docutils literal notranslate"><span class="pre">_sources</span></code> is a dictionary containing the
+following information of each source file.</p>
+<ul class="simple">
+<li><p>filename (str): Name to save the file.</p></li>
+<li><p>url (str): URL to the file.</p></li>
+<li><p>archive (bool): Whether the file is an archive.</p></li>
+<li><p>md5 (str, optional): Expected MD5 checksum of the file.</p></li>
+</ul>
+<p>Here is an example.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;example.tar.gz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://www.example.com/example.tar.gz&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a></dt><dd><p>The base class for all MusPy datasets.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="local.html" class="btn btn-neutral float-right" title="Local Dataset Classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright MusPy Developers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
