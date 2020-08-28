@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>muspy.outputs.audio &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io.html">Data I/O</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>muspy.outputs.audio</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for muspy.outputs.audio</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Audio output interface.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
+
+<span class="kn">from</span> <span class="nn">..external</span> <span class="k">import</span> <span class="n">get_musescore_soundfont_path</span>
+<span class="kn">from</span> <span class="nn">.midi</span> <span class="k">import</span> <span class="n">write_midi</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
+
+
+<span class="k">def</span> <span class="nf">_check_soundfont</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">soundfont_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">soundfont_path</span> <span class="o">=</span> <span class="n">get_musescore_soundfont_path</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">soundfont_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">soundfont_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Soundfont not found. Please download it by &quot;</span>
+            <span class="s2">&quot;`muspy.download_musescore_soundfont()`.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">soundfont_path</span>
+
+
+<div class="viewcode-block" id="synthesize"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.synthesize">[docs]</a><span class="k">def</span> <span class="nf">synthesize</span><span class="p">(</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Synthesize a Music object to raw audio.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to write.</span>
+<span class="sd">    soundfont_path : str or Path, optional</span>
+<span class="sd">        Path to the soundfount file. Defaults to the path to the downloaded</span>
+<span class="sd">        MuseScore General soundfont.</span>
+<span class="sd">    rate : int</span>
+<span class="sd">        Sample rate (in samples per sec). Defaults to 44100.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ndarray, dtype=int16, shape=(?, 2)</span>
+<span class="sd">        Synthesized waveform.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check soundfont</span>
+    <span class="n">soundfont_path</span> <span class="o">=</span> <span class="n">_check_soundfont</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">)</span>
+
+    <span class="c1"># Create a temporary directory</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
+
+        <span class="c1"># Write the Music object to a temporary MIDI file</span>
+        <span class="n">midi_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;temp.mid&quot;</span>
+        <span class="n">write_midi</span><span class="p">(</span><span class="n">midi_path</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span>
+
+        <span class="c1"># Synthesize the MIDI file using fluidsynth</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;fluidsynth&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-T&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;raw&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-F-&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">),</span>
+                <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">),</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">midi_path</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Decode bytes to waveform</span>
+    <span class="n">waveform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">waveform</span></div>
+
+
+<div class="viewcode-block" id="write_audio"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write_audio">[docs]</a><span class="k">def</span> <span class="nf">write_audio</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
+    <span class="n">audio_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write a Music object to an audio file.</span>
+
+<span class="sd">    Supported formats include WAV, AIFF, FLAC and OGA.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to write the audio file.</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to write.</span>
+<span class="sd">    soundfont_path : str or Path, optional</span>
+<span class="sd">        Path to the soundfount file. Defaults to the path to the downloaded</span>
+<span class="sd">        MuseScore General soundfont.</span>
+<span class="sd">    rate : int</span>
+<span class="sd">        Sample rate (in samples per sec). Defaults to 44100.</span>
+<span class="sd">    audio_format : str, {&#39;wav&#39;, &#39;aiff&#39;, &#39;flac&#39;, &#39;oga&#39;}, optional</span>
+<span class="sd">        File format to write. If None, infer it from the extension.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">audio_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">audio_format</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+
+    <span class="c1"># Check soundfont</span>
+    <span class="n">soundfont_path</span> <span class="o">=</span> <span class="n">_check_soundfont</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">)</span>
+
+    <span class="c1"># Create a temporary directory</span>
+    <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">temp_dir</span><span class="p">:</span>
+
+        <span class="c1"># Write the Music object to a temporary MIDI file</span>
+        <span class="n">midi_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;temp.mid&quot;</span>
+        <span class="n">write_midi</span><span class="p">(</span><span class="n">midi_path</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span>
+
+        <span class="c1"># Synthesize the MIDI file using fluidsynth</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s2">&quot;fluidsynth&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-ni&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;-F&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
+                <span class="s2">&quot;-T&quot;</span><span class="p">,</span>
+                <span class="n">audio_format</span><span class="p">,</span>
+                <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">),</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">),</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">midi_path</span><span class="p">),</span>
+            <span class="p">],</span>
+            <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span>
+        <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright MusPy Developers
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

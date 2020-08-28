@@ -169,12 +169,26 @@
 
 
 <div class="viewcode-block" id="show"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.show">[docs]</a><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Show visualization.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;pianoroll&quot;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Show visualization.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Music object to convert.</span>
+<span class="sd">    kind : str, {&#39;piano-roll&#39;, &#39;score&#39;}</span>
+<span class="sd">        Target representation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array : ndarray</span>
+<span class="sd">        Converted representation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;piano-roll&quot;</span><span class="p">,</span> <span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano roll&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">show_pianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;score&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">show_score</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be one of &#39;pianoroll&#39; and &#39;score&#39;.&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be one of &#39;piano-roll&#39; and &#39;score&#39;.&quot;</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -34,7 +34,7 @@ def to_note_representation(
 
     Returns
     -------
-    ndarray (np.uint8)
+    ndarray, dtype=uint8, shape=(?, 3 or 4)
         Encoded array in note-based representation.
 
     """

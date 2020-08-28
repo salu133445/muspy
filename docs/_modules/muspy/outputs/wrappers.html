@@ -168,6 +168,7 @@
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Multitrack</span>
 
+<span class="kn">from</span> <span class="nn">.audio</span> <span class="k">import</span> <span class="n">write_audio</span>
 <span class="kn">from</span> <span class="nn">.event</span> <span class="k">import</span> <span class="n">to_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="k">import</span> <span class="n">save_json</span>
 <span class="kn">from</span> <span class="nn">.midi</span> <span class="k">import</span> <span class="n">to_mido</span><span class="p">,</span> <span class="n">to_pretty_midi</span><span class="p">,</span> <span class="n">write_midi</span>
@@ -240,7 +241,7 @@
 <span class="sd">        Path to write the file.</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to convert.</span>
-<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;}, optional</span>
+<span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;wav&#39;}, optional</span>
 <span class="sd">        Format to save. If None, infer the format from the extension of</span>
 <span class="sd">        `path`.</span>
 
@@ -256,15 +257,19 @@
             <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">))</span>
         <span class="p">):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musicxml&quot;</span>
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.wav&quot;</span><span class="p">):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;wave&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Got unsupported file format (expect MIDI or MusicXML).&quot;</span>
+                <span class="s2">&quot;Got unsupported file format (expect MIDI, MusicXML or wave).&quot;</span>
             <span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;midi&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;midi&#39; or &#39;musicxml&#39;.&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;audio&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">write_audio</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;midi&#39;, &#39;musicxml&#39; or &#39;audio&#39;.&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span>
@@ -308,7 +313,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to convert.</span>
-<span class="sd">    kind : str, {&#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
+<span class="sd">    kind : str, {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
 <span class="sd">        Target representation.</span>
 
 <span class="sd">    Returns</span>
@@ -317,16 +322,16 @@
 <span class="sd">        Converted representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano-roll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano roll&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch-based&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_pitch_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;piano-roll&quot;</span><span class="p">,</span> <span class="s2">&quot;pianoroll&quot;</span><span class="p">,</span> <span class="s2">&quot;piano roll&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;event-based&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">,</span> <span class="s2">&quot;note-based&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_note_representation</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`kind` must be one of &#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39; and &#39;note&#39;.&quot;</span>
+        <span class="s2">&quot;`kind` must be one of &#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39; and &#39;note&#39;.&quot;</span>
     <span class="p">)</span></div>
 </pre></div>
 

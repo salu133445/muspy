@@ -185,7 +185,7 @@
 <a class="reference internal image-reference" href="_images/score.png"><img alt="_images/score.png" class="align-center" src="_images/score.png" style="width: 500px;" /></a>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">show_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clef</span><span class="o">=</span><span class="default_value">'treble'</span></em>, <em class="sig-param"><span class="n">clef_octave</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">note_spacing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">font_scale</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/visualization/score.html#show_score"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">show_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">figsize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">clef</span><span class="o">=</span><span class="default_value">'treble'</span></em>, <em class="sig-param"><span class="n">clef_octave</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">note_spacing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">font_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">font_scale</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/visualization/score.html#show_score"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Show score visualization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -195,7 +195,10 @@
 <li><p><strong>clef</strong> (<em>str</em><em>, </em><em>{'treble'</em><em>, </em><em>'alto'</em><em>, </em><em>'bass'}</em>) – Clef type. Defaults to a treble clef.</p></li>
 <li><p><strong>clef_octave</strong> (<em>int</em>) – Clef octave. Defaults to zero.</p></li>
 <li><p><strong>note_spacing</strong> (<em>int</em><em>, </em><em>optional</em>) – Spacing of notes. Defaults to 4.</p></li>
-<li><p><strong>font_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Font scaling factor for finetuning. Defaults to 140.</p></li>
+<li><p><strong>font_path</strong> (<em>str</em><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the music font. Defaults to the path to the built-in Bravura
+font.</p></li>
+<li><p><strong>font_scale</strong> (<em>float</em><em>, </em><em>optional</em>) – Font scaling factor for finetuning. Defaults to 140, optimized for
+the Bravura font.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -209,7 +212,7 @@
 
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">ScorePlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">note_spacing</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/visualization/score.html#ScorePlotter"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">ScorePlotter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fig</span></em>, <em class="sig-param"><span class="n">ax</span></em>, <em class="sig-param"><span class="n">resolution</span></em>, <em class="sig-param"><span class="n">note_spacing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">font_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">font_scale</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/muspy/visualization/score.html#ScorePlotter"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>A plotter that handles the score visualization.</p>
 <dl class="py attribute">
 <dt>
@@ -251,6 +254,30 @@
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>int, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">font_path</code></dt>
+<dd><p>Path to the music font. Defaults to the path to the downloaded
+Bravura font.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str or Path, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">font_scale</code></dt>
+<dd><p>Font scaling factor for finetuning. Defaults to 140, optimized for
+the Bravura font.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float, optional</p>
 </dd>
 </dl>
 </dd></dl>

@@ -79,7 +79,7 @@ def to_pianoroll_representation(
 
     Returns
     -------
-    ndarray (np.uint8 or np.bool)
+    ndarray, dtype=uint8 or bool, shape=(?, 128)
         Encoded array in piano-roll representation.
 
     """

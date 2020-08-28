@@ -50,7 +50,7 @@ def to_event_representation(
 
     Returns
     -------
-    ndarray (np.uint16)
+    ndarray, dtype=uint16, shape=(?, 1)
         Encoded array in event-based representation.
 
     """

@@ -29,7 +29,7 @@ def to_pitch_representation(
 
     Returns
     -------
-    ndarray (np.uint8)
+    ndarray, dtype=uint8, shape=(?, 1)
         Encoded array in pitch-based representation.
 
     """

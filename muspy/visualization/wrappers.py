@@ -9,9 +9,23 @@ if TYPE_CHECKING:
 
 
 def show(music: "Music", kind: str, **kwargs: Any):
-    """Show visualization."""
-    if kind == "pianoroll":
+    """Show visualization.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to convert.
+    kind : str, {'piano-roll', 'score'}
+        Target representation.
+
+    Returns
+    -------
+    array : ndarray
+        Converted representation.
+
+    """
+    if kind.lower() in ("piano-roll", "pianoroll", "piano roll"):
         return show_pianoroll(music, **kwargs)
-    if kind == "score":
+    if kind.lower() == "score":
         return show_score(music, **kwargs)
-    raise ValueError("`kind` must be one of 'pianoroll' and 'score'.")
+    raise ValueError("`kind` must be one of 'piano-roll' and 'score'.")

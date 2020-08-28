@@ -170,6 +170,7 @@
 <span class="sd">- append</span>
 <span class="sd">- clip</span>
 <span class="sd">- get_end_time</span>
+<span class="sd">- get_real_end_time</span>
 <span class="sd">- remove_duplicate</span>
 <span class="sd">- sort</span>
 <span class="sd">- to_ordered_dict</span>
@@ -189,6 +190,7 @@
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
     <span class="s2">&quot;clip&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_end_time&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_real_end_time&quot;</span><span class="p">,</span>
     <span class="s2">&quot;remove_duplicate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sort&quot;</span><span class="p">,</span>
     <span class="s2">&quot;to_ordered_dict&quot;</span><span class="p">,</span>
@@ -204,7 +206,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy music object to be adjusted.</span>
+<span class="sd">        MusPy music object to adjust.</span>
 <span class="sd">    target : int, optional</span>
 <span class="sd">        Target resolution.</span>
 <span class="sd">    factor : int or float, optional</span>
@@ -222,7 +224,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track` object</span>
-<span class="sd">        Object to be adjusted.</span>
+<span class="sd">        Object to adjust.</span>
 <span class="sd">    func : callable</span>
 <span class="sd">        The function used to compute the new timing from the old timing,</span>
 <span class="sd">        i.e., `new_time = func(old_time)`.</span>
@@ -257,7 +259,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or</span>
 <span class="sd">           :class:`muspy.Tempo` object</span>
-<span class="sd">        Object to which `obj2` to be append.</span>
+<span class="sd">        Object to which `obj2` to append.</span>
 <span class="sd">    obj2 : MusPy objects (see below)</span>
 <span class="sd">        Object to be appended to `obj1`.</span>
 
@@ -274,7 +276,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`</span>
 <span class="sd">          object</span>
-<span class="sd">        Object to be clipped.</span>
+<span class="sd">        Object to clipp.</span>
 <span class="sd">    lower : int or float, optional</span>
 <span class="sd">        Lower bound. Defaults to 0.</span>
 <span class="sd">    upper : int or float, optional</span>
@@ -285,18 +287,38 @@
 
 
 <div class="viewcode-block" id="get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.get_end_time">[docs]</a><span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
+    <span class="sd">&quot;&quot;&quot;Return the end time, i.e., the time of the last event in all tracks.</span>
+
+<span class="sd">    This includes tempos, key signatures, time signatures, notes offsets,</span>
+<span class="sd">        lyrics and annotations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or</span>
-<span class="sd">          :class:`muspy.Timing` object</span>
-<span class="sd">        Object to be inspected.</span>
+<span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track` object</span>
+<span class="sd">        Object to inspect.</span>
 <span class="sd">    is_sorted : bool</span>
 <span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_real_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.get_real_end_time">[docs]</a><span class="k">def</span> <span class="nf">get_real_end_time</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the end time in realtime.</span>
+
+<span class="sd">    This includes tempos, key signatures, time signatures, notes offsets,</span>
+<span class="sd">        lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no</span>
+<span class="sd">        tempo information is available.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">        Object to inspect.</span>
+<span class="sd">    is_sorted : bool</span>
+<span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">get_real_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.core.remove_duplicate">[docs]</a><span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
@@ -305,7 +327,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Music` object</span>
-<span class="sd">        Object to be processed.</span>
+<span class="sd">        Object to process.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">remove_duplicate</span><span class="p">()</span></div>
@@ -355,7 +377,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`</span>
 <span class="sd">    object</span>
-<span class="sd">        Object to be transposed.</span>
+<span class="sd">        Object to transpose.</span>
 <span class="sd">    semitone : int</span>
 <span class="sd">        The number of semitones to transpose the notes. A positive value</span>
 <span class="sd">        raises the pitches, while a negative value lowers the pitches.</span>

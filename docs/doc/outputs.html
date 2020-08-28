@@ -260,6 +260,28 @@ example, in an Annotation object, which can store data of any type).</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.outputs.synthesize">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#synthesize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.synthesize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthesize a Music object to raw audio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to write.</p></li>
+<li><p><strong>soundfont_path</strong> (<em>str</em><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the downloaded
+MuseScore General soundfont.</p></li>
+<li><p><strong>rate</strong> (<em>int</em>) – Sample rate (in samples per sec). Defaults to 44100.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Synthesized waveform.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray, dtype=int16, shape=(?, 2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.outputs.to_event_representation">
 <code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode a Music object into event-based representation.</p>
@@ -291,7 +313,7 @@ two or more time-shift events. Defaults to 100.</p></li>
 <dd class="field-even"><p>Encoded array in event-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray (np.uint16)</p>
+<dd class="field-odd"><p>ndarray, dtype=uint16, shape=(?, 1)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -358,7 +380,7 @@ velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 <dd class="field-even"><p>Encoded array in note-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray (np.uint8)</p>
+<dd class="field-odd"><p>ndarray, dtype=uint8, shape=(?, 3 or 4)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -402,7 +424,7 @@ True.</p></li>
 <dd class="field-even"><p>Encoded array in piano-roll representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray (np.uint8 or np.bool)</p>
+<dd class="field-odd"><p>ndarray, dtype=uint8 or bool, shape=(?, 128)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -427,7 +449,7 @@ is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
 <dd class="field-even"><p>Encoded array in pitch-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray (np.uint8)</p>
+<dd class="field-odd"><p>ndarray, dtype=uint8, shape=(?, 1)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -475,7 +497,7 @@ is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
-<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>{'pitch'</em><em>, </em><em>'pianoroll'</em><em>, </em><em>'event'</em><em>, </em><em>'note'}</em>) – Target representation.</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em>, </em><em>{'pitch'</em><em>, </em><em>'piano-roll'</em><em>, </em><em>'event'</em><em>, </em><em>'note'}</em>) – Target representation.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -496,7 +518,7 @@ is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the file.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
-<li><p><strong>kind</strong> (<em>{'midi'</em><em>, </em><em>'musicxml'}</em><em>, </em><em>optional</em>) – Format to save. If None, infer the format from the extension of
+<li><p><strong>kind</strong> (<em>{'midi'</em><em>, </em><em>'musicxml'</em><em>, </em><em>'wav'}</em><em>, </em><em>optional</em>) – Format to save. If None, infer the format from the extension of
 <cite>path</cite>.</p></li>
 </ul>
 </dd>
@@ -508,6 +530,25 @@ is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
 </dd>
 </dl>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.write_audio">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">write_audio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em>, <em class="sig-param"><span class="n">audio_format</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#write_audio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.write_audio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a Music object to an audio file.</p>
+<p>Supported formats include WAV, AIFF, FLAC and OGA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em><em> or </em><em>Path</em>) – Path to write the audio file.</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to write.</p></li>
+<li><p><strong>soundfont_path</strong> (<em>str</em><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the downloaded
+MuseScore General soundfont.</p></li>
+<li><p><strong>rate</strong> (<em>int</em>) – Sample rate (in samples per sec). Defaults to 44100.</p></li>
+<li><p><strong>audio_format</strong> (<em>str</em><em>, </em><em>{'wav'</em><em>, </em><em>'aiff'</em><em>, </em><em>'flac'</em><em>, </em><em>'oga'}</em><em>, </em><em>optional</em>) – File format to write. If None, infer it from the extension.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

@@ -346,17 +346,27 @@ resolution.</p></li>
 
 <dl class="py method">
 <dt id="muspy.music.Music.get_end_time">
-<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">realtime</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.get_end_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the time of the last event in all tracks.</p>
+<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.get_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the end time, i.e., the time of the last event in all tracks.</p>
 <p>This includes tempos, key signatures, time signatures, notes offsets,
 lyrics and annotations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p></li>
-<li><p><strong>realtime</strong> (<em>bool</em>) – Whether to return the end time in real time. Assume 120 quarter per
-minute if no tempo information is available.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.music.Music.get_real_end_time">
+<code class="sig-name descname">get_real_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_real_end_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.get_real_end_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the end time in realtime.</p>
+<p>This includes tempos, key signatures, time signatures, notes offsets,
+lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
+tempo information is available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<em>bool</em>) – Whether all the list attributes are sorted. Defaults to False.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -404,18 +414,17 @@ minute if no tempo information is available.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="muspy.music.Music.synthesize">
+<code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.synthesize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.synthesize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthesize a Music object to raw audio.</p>
+<p>Refer to <a class="reference internal" href="muspy.html#muspy.synthesize" title="muspy.synthesize"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.synthesize()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="muspy.music.Music.to_event_representation">
 <code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return in event-based representation.</p>
 <p>Refer to <a class="reference internal" href="muspy.html#muspy.to_event_representation" title="muspy.to_event_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_event_representation()</span></code></a> for full documentation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="muspy.music.Music.to_monotoken_representation">
-<code class="sig-name descname">to_monotoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_monotoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.to_monotoken_representation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return in monotoken-based representation.</p>
-<p>Refer to <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_monotoken_representation()</span></code> for full
-documentation.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -442,16 +451,16 @@ documentation.</p>
 <dl class="py method">
 <dt id="muspy.music.Music.to_pianoroll_representation">
 <code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return in pianoroll representation.</p>
+<dd><p>Return in piano-roll representation.</p>
 <p>Refer to <a class="reference internal" href="muspy.html#muspy.to_pianoroll_representation" title="muspy.to_pianoroll_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pianoroll_representation()</span></code></a> for full
 documentation.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="muspy.music.Music.to_polytoken_representation">
-<code class="sig-name descname">to_polytoken_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_polytoken_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.to_polytoken_representation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return in polytoken-based representation.</p>
-<p>Refer to <code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_polytoken_representation()</span></code> for full
+<dt id="muspy.music.Music.to_pitch_representation">
+<code class="sig-name descname">to_pitch_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pitch_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.to_pitch_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return in pitch-based representation.</p>
+<p>Refer to <a class="reference internal" href="muspy.html#muspy.to_pitch_representation" title="muspy.to_pitch_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pitch_representation()</span></code></a> for full
 documentation.</p>
 </dd></dl>
 
@@ -493,6 +502,13 @@ the pitches, while a negative value lowers the pitches.</p>
 <code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write to a MIDI or a MusicXML file.</p>
 <p>Refer to <a class="reference internal" href="muspy.html#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.music.Music.write_audio">
+<code class="sig-name descname">write_audio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_audio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music.write_audio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write to an audio file.</p>
+<p>Refer to <a class="reference internal" href="muspy.html#muspy.write_audio" title="muspy.write_audio"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_audio()</span></code></a> for full documentation.</p>
 </dd></dl>
 
 <dl class="py method">
