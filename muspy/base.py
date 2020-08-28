@@ -30,7 +30,7 @@ def _yaml_dump(data):
 
     Code adapted from https://stackoverflow.com/a/21912744.
     """
-    return yaml.dump(data, Dumper=_OrderedDumper)
+    return yaml.dump(data, Dumper=_OrderedDumper, allow_unicode=True)
 
 
 def _get_type_string(attr_cls):
@@ -102,14 +102,14 @@ class Base:
             value = getattr(self, attr)
             if attr in self._list_attributes:
                 if not value:
-                    to_join.append(attr + "=[]")
-                elif len(value) > 3:
+                    continue
+                if len(value) > 3:
                     to_join.append(
                         attr + "=" + repr(value[:3])[:-1] + ", ...]"
                     )
                 else:
                     to_join.append(attr + "=" + repr(value))
-            else:
+            elif value is not None:
                 to_join.append(attr + "=" + repr(value))
         return type(self).__name__ + "(" + ", ".join(to_join) + ")"
 
@@ -151,16 +151,16 @@ class Base:
         ordered_dict: OrderedDict = OrderedDict()
         for attr, attr_cls in self._attributes.items():
             value = getattr(self, attr)
-            if value is None:
-                if not ignore_null:
-                    ordered_dict[attr] = None
-            elif attr in self._list_attributes:
+            if attr in self._list_attributes:
                 if not value and ignore_null:
                     continue
                 if isclass(attr_cls) and issubclass(attr_cls, Base):
                     ordered_dict[attr] = [v.to_ordered_dict() for v in value]
                 else:
                     ordered_dict[attr] = value
+            elif value is None:
+                if not ignore_null:
+                    ordered_dict[attr] = None
             elif isclass(attr_cls) and issubclass(attr_cls, Base):
                 ordered_dict[attr] = value.to_ordered_dict()
             else:
