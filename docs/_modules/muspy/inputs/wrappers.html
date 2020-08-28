@@ -160,27 +160,27 @@
             
   <h1>Source code for muspy.inputs.wrappers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Wrapper functions for input interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">from</span> <span class="nn">mido</span> <span class="k">import</span> <span class="n">MidiFile</span>
-<span class="kn">from</span> <span class="nn">music21.stream</span> <span class="k">import</span> <span class="n">Stream</span>
-<span class="kn">from</span> <span class="nn">numpy</span> <span class="k">import</span> <span class="n">ndarray</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">PrettyMIDI</span>
-<span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="k">import</span> <span class="n">Multitrack</span>
+<span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">MidiFile</span>
+<span class="kn">from</span> <span class="nn">music21.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
+<span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">Track</span>
-<span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
-<span class="kn">from</span> <span class="nn">.abc</span> <span class="k">import</span> <span class="n">read_abc</span>
-<span class="kn">from</span> <span class="nn">.event</span> <span class="k">import</span> <span class="n">from_event_representation</span>
-<span class="kn">from</span> <span class="nn">.json</span> <span class="k">import</span> <span class="n">load_json</span>
-<span class="kn">from</span> <span class="nn">.midi</span> <span class="k">import</span> <span class="n">from_mido</span><span class="p">,</span> <span class="n">from_pretty_midi</span><span class="p">,</span> <span class="n">read_midi</span>
-<span class="kn">from</span> <span class="nn">.music21</span> <span class="k">import</span> <span class="n">from_music21</span>
-<span class="kn">from</span> <span class="nn">.musicxml</span> <span class="k">import</span> <span class="n">read_musicxml</span>
-<span class="kn">from</span> <span class="nn">.note</span> <span class="k">import</span> <span class="n">from_note_representation</span>
-<span class="kn">from</span> <span class="nn">.pianoroll</span> <span class="k">import</span> <span class="n">from_pianoroll_representation</span><span class="p">,</span> <span class="n">from_pypianoroll</span>
-<span class="kn">from</span> <span class="nn">.pitch</span> <span class="k">import</span> <span class="n">from_pitch_representation</span>
-<span class="kn">from</span> <span class="nn">.yaml</span> <span class="k">import</span> <span class="n">load_yaml</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">.abc</span> <span class="kn">import</span> <span class="n">read_abc</span>
+<span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">from_event_representation</span>
+<span class="kn">from</span> <span class="nn">.json</span> <span class="kn">import</span> <span class="n">load_json</span>
+<span class="kn">from</span> <span class="nn">.midi</span> <span class="kn">import</span> <span class="n">from_mido</span><span class="p">,</span> <span class="n">from_pretty_midi</span><span class="p">,</span> <span class="n">read_midi</span>
+<span class="kn">from</span> <span class="nn">.music21</span> <span class="kn">import</span> <span class="n">from_music21</span>
+<span class="kn">from</span> <span class="nn">.musicxml</span> <span class="kn">import</span> <span class="n">read_musicxml</span>
+<span class="kn">from</span> <span class="nn">.note</span> <span class="kn">import</span> <span class="n">from_note_representation</span>
+<span class="kn">from</span> <span class="nn">.pianoroll</span> <span class="kn">import</span> <span class="n">from_pianoroll_representation</span><span class="p">,</span> <span class="n">from_pypianoroll</span>
+<span class="kn">from</span> <span class="nn">.pitch</span> <span class="kn">import</span> <span class="n">from_pitch_representation</span>
+<span class="kn">from</span> <span class="nn">.yaml</span> <span class="kn">import</span> <span class="n">load_yaml</span>
 
 
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>

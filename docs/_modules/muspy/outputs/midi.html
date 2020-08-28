@@ -160,21 +160,21 @@
             
   <h1>Source code for muspy.outputs.midi</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;MIDI output interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pretty_midi</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Instrument</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">KeySignature</span> <span class="k">as</span> <span class="n">PmKeySignature</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">PmTimeSignature</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PmNote</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="k">import</span> <span class="n">Lyric</span> <span class="k">as</span> <span class="n">PmLyric</span>
-<span class="kn">from</span> <span class="nn">mido</span> <span class="k">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MetaMessage</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">MidiTrack</span><span class="p">,</span> <span class="n">bpm2tempo</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Instrument</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">KeySignature</span> <span class="k">as</span> <span class="n">PmKeySignature</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">PmTimeSignature</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PmNote</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Lyric</span> <span class="k">as</span> <span class="n">PmLyric</span>
+<span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MetaMessage</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">MidiTrack</span><span class="p">,</span> <span class="n">bpm2tempo</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">,</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">,</span> <span class="n">Track</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
 <span class="n">PITCH_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;C#&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;D#&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;F#&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;G#&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;A#&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">]</span>
 

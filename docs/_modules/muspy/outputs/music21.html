@@ -160,20 +160,20 @@
             
   <h1>Source code for muspy.outputs.music21</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Music21 converter interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="k">import</span> <span class="n">Copyright</span><span class="p">,</span> <span class="n">Contributor</span>
-<span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="k">import</span> <span class="n">Metadata</span> <span class="k">as</span> <span class="n">M21MetaData</span>
-<span class="kn">from</span> <span class="nn">music21.note</span> <span class="k">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">M21Note</span>
-<span class="kn">from</span> <span class="nn">music21.stream</span> <span class="k">import</span> <span class="n">Part</span><span class="p">,</span> <span class="n">Score</span>
-<span class="kn">from</span> <span class="nn">music21.tempo</span> <span class="k">import</span> <span class="n">MetronomeMark</span>
-<span class="kn">from</span> <span class="nn">music21.key</span> <span class="k">import</span> <span class="n">Key</span>
-<span class="kn">from</span> <span class="nn">music21.meter</span> <span class="k">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">M21TimeSignature</span>
+<span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="kn">import</span> <span class="n">Copyright</span><span class="p">,</span> <span class="n">Contributor</span>
+<span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="kn">import</span> <span class="n">Metadata</span> <span class="k">as</span> <span class="n">M21MetaData</span>
+<span class="kn">from</span> <span class="nn">music21.note</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">M21Note</span>
+<span class="kn">from</span> <span class="nn">music21.stream</span> <span class="kn">import</span> <span class="n">Part</span><span class="p">,</span> <span class="n">Score</span>
+<span class="kn">from</span> <span class="nn">music21.tempo</span> <span class="kn">import</span> <span class="n">MetronomeMark</span>
+<span class="kn">from</span> <span class="nn">music21.key</span> <span class="kn">import</span> <span class="n">Key</span>
+<span class="kn">from</span> <span class="nn">music21.meter</span> <span class="kn">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">M21TimeSignature</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="k">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">TimeSignature</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">TimeSignature</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">..music</span> <span class="k">import</span> <span class="n">Music</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
 <span class="n">PITCH_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;C#&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;D#&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;F#&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;G#&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;A#&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">]</span>
 
