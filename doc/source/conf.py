@@ -20,8 +20,10 @@ import muspy
 # -- Project information -----------------------------------------------------
 
 project = "MusPy"
-copyright = "MusPy Developers"
-author = "MusPy Developers"
+copyright = "2020, Hao-Wen Dong"
+author = "Hao-Wen Dong"
+version = muspy.__version__
+release = muspy.__version__
 
 
 # -- General configuration ---------------------------------------------------
