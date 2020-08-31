@@ -105,7 +105,7 @@ def read(
             kind = "abc"
         else:
             raise ValueError(
-                "Got unsupported file format (expect MIDI or MusicXML)."
+                "Got unsupported file format (expect MIDI, MusicXML or ABC)."
             )
     if kind == "midi":
         return read_midi(path, **kwargs)

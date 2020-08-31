@@ -435,9 +435,8 @@
 <span class="sd">        factory : Callable, optional</span>
 <span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
 <span class="sd">            object, and the output is an array or a tensor.</span>
-<span class="sd">        representation : str, optional</span>
-<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
-<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+<span class="sd">        representation : {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}, optional</span>
+<span class="sd">            Target representation.</span>
 <span class="sd">        split_filename : str or Path, optional</span>
 <span class="sd">            If given and exists, path to the file to read the split from.</span>
 <span class="sd">            If None or not exists, path to save the split.</span>
@@ -509,9 +508,8 @@
 <span class="sd">        factory : Callable, optional</span>
 <span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
 <span class="sd">            object, and the output is an array or a tensor.</span>
-<span class="sd">        representation : str, optional</span>
-<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
-<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+<span class="sd">        representation : {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}, optional</span>
+<span class="sd">            Target representation.</span>
 <span class="sd">        split_filename : str or Path, optional</span>
 <span class="sd">            If given and exists, path to the file to read the split from.</span>
 <span class="sd">            If None or not exists, path to save the split.</span>
@@ -702,9 +700,7 @@
                     <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]</span>
                 <span class="p">):</span>
                     <span class="nb">print</span><span class="p">(</span>
-                        <span class="s2">&quot;Skip existing source : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
-                        <span class="p">)</span>
+                        <span class="s2">&quot;Skip existing source : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">])</span>
                     <span class="p">)</span>
                     <span class="k">continue</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Source file is found but corrupted.&quot;</span><span class="p">)</span>
@@ -730,7 +726,9 @@
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;archive&quot;</span><span class="p">]:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start extracting archive : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]))</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Start extracting archive : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">])</span>
+                <span class="p">)</span>
                 <span class="n">extract_archive</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">cleanup</span><span class="o">=</span><span class="n">cleanup</span><span class="p">)</span>
         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -805,9 +803,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        dataset : :class:`muspy.Dataset`</span>
 <span class="sd">            Dataset object to base on.</span>
-<span class="sd">        representation : str</span>
-<span class="sd">            Target representation. Supported values are &#39;event&#39;, &#39;note&#39;,</span>
-<span class="sd">            &#39;pianoroll&#39;, &#39;monotoken&#39; and &#39;polytoken&#39;.</span>
+<span class="sd">        representation : {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
+<span class="sd">            Target representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 

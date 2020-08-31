@@ -4,9 +4,10 @@ python:
   - 3.7
   - 3.8
 install:
-  - pip install -e .
   - pip install -e .[test]
 script:
   - pytest --cov="muspy/" tests/
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 notifications:
   email: false

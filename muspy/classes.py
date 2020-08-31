@@ -277,6 +277,8 @@ class Note(Base):
         Note pitch, as a MIDI note number.
     velocity : int, optional
         Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
+    pitch_str : str
+        Note pitch as a string, useful for distinguishing C# and Db.
 
     """
 
@@ -387,6 +389,8 @@ class Chord(ComplexBase):
         Note pitches, as MIDI note numbers.
     velocity : int, optional
         Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
+    pitches_str : list of str
+        Note pitches as strings, useful for distinguishing C# and Db.
 
     """
 
@@ -497,13 +501,11 @@ class Track(ComplexBase):
 
     Attributes
     ----------
-    program : int, optional
+    program : int, 0-127, optional
         Program number according to General MIDI specification [1].
-        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
-        Piano).
+        Defaults to 0 (Acoustic Grand Piano).
     is_drum : bool, optional
-        A boolean indicating if it is a percussion track. Defaults to
-        False.
+        Whether it is a percussion track. Defaults to False.
     name : str, optional
         Track name.
     notes : list of :class:`muspy.Note` objects, optional
@@ -515,6 +517,8 @@ class Track(ComplexBase):
     lyrics : list of :class:`muspy.Lyric` objects, optional
         Lyrics. Defaults to an empty list.
 
+    References
+    ----------
     [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
 
     """

@@ -181,7 +181,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    int</span>
-<span class="sd">        Number of unique pitch classes used.</span>
+<span class="sd">        Number of unique pitch used.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -421,10 +421,10 @@
 <div class="viewcode-block" id="polyphony_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.polyphony_rate">[docs]</a><span class="k">def</span> <span class="nf">polyphony_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Return the ratio of time steps where multiple pitches are on.</span>
 
-<span class="sd">    The polyphony is defined as the ratio of the number of time steps where</span>
-<span class="sd">    multiple pitches are on to the total number of time steps. Drum tracks</span>
-<span class="sd">    are ignored. Return NaN if song length is zero. This metric is used in</span>
-<span class="sd">    [1], where it is called *polyphonicity*.</span>
+<span class="sd">    The polyphony rate is defined as the ratio of the number of time steps</span>
+<span class="sd">    where multiple pitches are on to the total number of time steps. Drum</span>
+<span class="sd">    tracks are ignored. Return NaN if song length is zero. This metric is</span>
+<span class="sd">    used in [1], where it is called *polyphonicity*.</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        polyphony\_rate = \frac{</span>
@@ -464,15 +464,15 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">pianoroll</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">pianoroll</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_scale</span><span class="p">(</span><span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the scale mask of a specific key.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_get_scale</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the scale mask for a specific root.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;major&quot;</span><span class="p">:</span>
         <span class="n">c_scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;minor&quot;</span><span class="p">:</span>
         <span class="n">c_scale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="nb">bool</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`mode` must be either &#39;major&#39; or &#39;minor&#39;.&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">c_scale</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">c_scale</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="pitch_in_scale_rate"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_in_scale_rate">[docs]</a><span class="k">def</span> <span class="nf">pitch_in_scale_rate</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -491,7 +491,7 @@
 <span class="sd">        Music object to evaluate.</span>
 <span class="sd">    root : int</span>
 <span class="sd">        Root of the scale.</span>
-<span class="sd">    mode : int</span>
+<span class="sd">    mode : str, {&#39;major&#39;, &#39;minor&#39;}</span>
 <span class="sd">        Mode of the scale.</span>
 
 <span class="sd">    Returns</span>

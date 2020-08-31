@@ -1,6 +1,12 @@
 MusPy
 =====
 
+[![Travis](https://img.shields.io/travis/com/salu133445/muspy)](https://travis-ci.com/salu133445/muspy)
+[![Codecov](https://img.shields.io/codecov/c/github/salu133445/muspy)](https://codecov.io/gh/salu133445/muspy)
+[![GitHub license](https://img.shields.io/github/license/salu133445/muspy)](https://github.com/salu133445/muspy/blob/master/LICENSE)
+[![GitHub release](https://img.shields.io/github/v/release/salu133445/muspy)](https://github.com/salu133445/muspy/releases)
+
+
 MusPy is an open source Python library for symbolic music generation. It provides essential tools for developing a music generation system, including dataset management, data I/O, data preprocessing and model evaluation.
 
 

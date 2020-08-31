@@ -30,7 +30,7 @@ def _is_drum(channel):
 
 
 def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
-    """Return a Music object converted from a pretty_midi PrettyMIDI object.
+    """Return a Music object converted from a mido MidiFile object.
 
     Parameters
     ----------

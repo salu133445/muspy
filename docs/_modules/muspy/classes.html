@@ -438,6 +438,8 @@
 <span class="sd">        Note pitch, as a MIDI note number.</span>
 <span class="sd">    velocity : int, optional</span>
 <span class="sd">        Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.</span>
+<span class="sd">    pitch_str : str</span>
+<span class="sd">        Note pitch as a string, useful for distinguishing C# and Db.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -548,6 +550,8 @@
 <span class="sd">        Note pitches, as MIDI note numbers.</span>
 <span class="sd">    velocity : int, optional</span>
 <span class="sd">        Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.</span>
+<span class="sd">    pitches_str : list of str</span>
+<span class="sd">        Note pitches as strings, useful for distinguishing C# and Db.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -557,10 +561,10 @@
             <span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;pitches&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;pitch_str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;pitches_str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pitch_str&quot;</span><span class="p">]</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pitches_str&quot;</span><span class="p">]</span>
     <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pitches&quot;</span><span class="p">,</span> <span class="s2">&quot;pitches_str&quot;</span><span class="p">]</span>
     <span class="n">_sort_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">]</span>
 
@@ -658,13 +662,11 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    program : int, optional</span>
+<span class="sd">    program : int, 0-127, optional</span>
 <span class="sd">        Program number according to General MIDI specification [1].</span>
-<span class="sd">        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand</span>
-<span class="sd">        Piano).</span>
+<span class="sd">        Defaults to 0 (Acoustic Grand Piano).</span>
 <span class="sd">    is_drum : bool, optional</span>
-<span class="sd">        A boolean indicating if it is a percussion track. Defaults to</span>
-<span class="sd">        False.</span>
+<span class="sd">        Whether it is a percussion track. Defaults to False.</span>
 <span class="sd">    name : str, optional</span>
 <span class="sd">        Track name.</span>
 <span class="sd">    notes : list of :class:`muspy.Note` objects, optional</span>
@@ -676,6 +678,8 @@
 <span class="sd">    lyrics : list of :class:`muspy.Lyric` objects, optional</span>
 <span class="sd">        Lyrics. Defaults to an empty list.</span>
 
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
 <span class="sd">    [1] https://www.midi.org/specifications/item/gm-level-1-sound-set</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

@@ -161,7 +161,8 @@
   <h1>Source code for muspy.music</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Music class.</span>
 
-<span class="sd">This module defines the core class of MusPy---the Music class.</span>
+<span class="sd">This module defines the core class of MusPy---the Music class, a</span>
+<span class="sd">universal container for symbolic music.</span>
 
 <span class="sd">Classes</span>
 <span class="sd">-------</span>
@@ -204,23 +205,25 @@
 
 
 <div class="viewcode-block" id="Music"><a class="viewcode-back" href="../../doc/muspy.html#muspy.music.Music">[docs]</a><span class="k">class</span> <span class="nc">Music</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A simple yet universal container for symbolic music.</span>
+    <span class="sd">&quot;&quot;&quot;A universal container for symbolic music.</span>
 
-<span class="sd">    This is the core class of MusPy, which provides I/O interfaces for common</span>
-<span class="sd">    formats. A Music object can be constructed in the following ways.</span>
+<span class="sd">    This is the core class of MusPy. A Music object can be constructed in</span>
+<span class="sd">    the following ways.</span>
 
 <span class="sd">    - :meth:`muspy.Music`: Construct by setting values for attributes.</span>
 <span class="sd">    - :meth:`muspy.Music.from_dict`: Construct from a dictionary that stores</span>
 <span class="sd">      the attributes and their values as key-value pairs.</span>
-<span class="sd">    - :func:`muspy.read`: Read from a MIDI or a MusicXML file.</span>
+<span class="sd">    - :func:`muspy.read`: Read from a MIDI, a MusicXML or an ABC file.</span>
 <span class="sd">    - :func:`muspy.load`: Load from a JSON or a YAML file saved by</span>
-<span class="sd">      :func:`muspy.save` or :class:`muspy.Music.save`.</span>
-<span class="sd">    - :func:`muspy.from_object`: Convert from a :class:`pretty_midi.PrettyMIDI`</span>
-<span class="sd">      or :class:`pypianoroll.Multitrack` object.</span>
+<span class="sd">      :func:`muspy.save`.</span>
+<span class="sd">    - :func:`muspy.from_object`: Convert from a `music21.Stream`, a</span>
+<span class="sd">      :class:`mido.MidiFile`, a :class:`pretty_midi.PrettyMIDI` or a</span>
+<span class="sd">      :class:`pypianoroll.Multitrack` object.</span>
 
 <span class="sd">    Indexing a Music object gives the track of a certain index. That is,</span>
-<span class="sd">    `music[idx]` is equivalent to `music.tracks[idx]`, while the latter is</span>
-<span class="sd">    recommended for readability.</span>
+<span class="sd">    `music[idx]` is equivalent to `music.tracks[idx]`. Length of a Music</span>
+<span class="sd">    object is the number of tracks. That is, `len(music)`  is equivalent to</span>
+<span class="sd">    `len(music.tracks)`.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>

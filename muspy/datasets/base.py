@@ -274,9 +274,8 @@ class Dataset:
         factory : Callable, optional
             Function to be applied to the Music objects. The input is a Music
             object, and the output is an array or a tensor.
-        representation : str, optional
-            Target representation. Supported values are 'event', 'note',
-            'pianoroll', 'monotoken' and 'polytoken'.
+        representation : {'pitch', 'piano-roll', 'event', 'note'}, optional
+            Target representation.
         split_filename : str or Path, optional
             If given and exists, path to the file to read the split from.
             If None or not exists, path to save the split.
@@ -348,9 +347,8 @@ class Dataset:
         factory : Callable, optional
             Function to be applied to the Music objects. The input is a Music
             object, and the output is an array or a tensor.
-        representation : str, optional
-            Target representation. Supported values are 'event', 'note',
-            'pianoroll', 'monotoken' and 'polytoken'.
+        representation : {'pitch', 'piano-roll', 'event', 'note'}, optional
+            Target representation.
         split_filename : str or Path, optional
             If given and exists, path to the file to read the split from.
             If None or not exists, path to save the split.
@@ -541,9 +539,7 @@ class RemoteDataset(Dataset):
                     or filename.stat().st_size == source["size"]
                 ):
                     print(
-                        "Skip existing source : {}.".format(
-                            source["filename"]
-                        )
+                        "Skip existing source : {}.".format(source["filename"])
                     )
                     continue
                 print("Source file is found but corrupted.")
@@ -569,7 +565,9 @@ class RemoteDataset(Dataset):
         for source in self._sources.values():
             filename = self.root / source["filename"]
             if source["archive"]:
-                print("Start extracting archive : {}.".format(source["filename"]))
+                print(
+                    "Start extracting archive : {}.".format(source["filename"])
+                )
                 extract_archive(filename, self.root, cleanup=cleanup)
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self
@@ -644,9 +642,8 @@ if HAS_TORCH:
         ----------
         dataset : :class:`muspy.Dataset`
             Dataset object to base on.
-        representation : str
-            Target representation. Supported values are 'event', 'note',
-            'pianoroll', 'monotoken' and 'polytoken'.
+        representation : {'pitch', 'piano-roll', 'event', 'note'}
+            Target representation.
 
         """
 

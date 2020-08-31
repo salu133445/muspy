@@ -20,7 +20,7 @@ def n_pitches_used(music: Music) -> int:
     Returns
     -------
     int
-        Number of unique pitch classes used.
+        Number of unique pitch used.
 
     See Also
     --------
@@ -260,10 +260,10 @@ def polyphony(music: Music) -> float:
 def polyphony_rate(music: Music, threshold: int = 2) -> float:
     r"""Return the ratio of time steps where multiple pitches are on.
 
-    The polyphony is defined as the ratio of the number of time steps where
-    multiple pitches are on to the total number of time steps. Drum tracks
-    are ignored. Return NaN if song length is zero. This metric is used in
-    [1], where it is called *polyphonicity*.
+    The polyphony rate is defined as the ratio of the number of time steps
+    where multiple pitches are on to the total number of time steps. Drum
+    tracks are ignored. Return NaN if song length is zero. This metric is
+    used in [1], where it is called *polyphonicity*.
 
     .. math::
         polyphony\_rate = \frac{
@@ -303,15 +303,15 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
     return np.count_nonzero(pianoroll.sum(1) > threshold) / len(pianoroll)
 
 
-def _get_scale(key: int, mode: str) -> ndarray:
-    """Return the scale mask of a specific key."""
+def _get_scale(root: int, mode: str) -> ndarray:
+    """Return the scale mask for a specific root."""
     if mode == "major":
         c_scale = np.array([1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1], bool)
     elif mode == "minor":
         c_scale = np.array([1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0], bool)
     else:
         raise ValueError("`mode` must be either 'major' or 'minor'.")
-    return np.roll(c_scale, key)
+    return np.roll(c_scale, root)
 
 
 def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
@@ -330,7 +330,7 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
         Music object to evaluate.
     root : int
         Root of the scale.
-    mode : int
+    mode : str, {'major', 'minor'}
         Mode of the scale.
 
     Returns

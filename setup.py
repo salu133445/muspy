@@ -25,7 +25,7 @@ setup(
     version=VERSION,
     author="Hao-Wen Dong",
     author_email="salu.hwdong@gmail.com",
-    description="A toolkit for symbolic music generation.",
+    description="A toolkit for symbolic music generation",
     long_description=_get_long_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/salu133445/muspy",
@@ -67,7 +67,7 @@ setup(
             "sphinx-rtd-theme>=0.5",
             "sphinx>=3.0",
         ],
-        "test": ["pytest >= 5.0", "pytest-cov >= 2.0"],
+        "test": ["pytest>=5.0", "pytest-cov>=2.0"],
     },
     classifiers=[
         "Development Status :: 4 - Beta",

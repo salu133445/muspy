@@ -1,6 +1,7 @@
 """Music class.
 
-This module defines the core class of MusPy---the Music class.
+This module defines the core class of MusPy---the Music class, a
+universal container for symbolic music.
 
 Classes
 -------
@@ -43,23 +44,25 @@ DEFAULT_RESOLUTION = 24
 
 
 class Music(ComplexBase):
-    """A simple yet universal container for symbolic music.
+    """A universal container for symbolic music.
 
-    This is the core class of MusPy, which provides I/O interfaces for common
-    formats. A Music object can be constructed in the following ways.
+    This is the core class of MusPy. A Music object can be constructed in
+    the following ways.
 
     - :meth:`muspy.Music`: Construct by setting values for attributes.
     - :meth:`muspy.Music.from_dict`: Construct from a dictionary that stores
       the attributes and their values as key-value pairs.
-    - :func:`muspy.read`: Read from a MIDI or a MusicXML file.
+    - :func:`muspy.read`: Read from a MIDI, a MusicXML or an ABC file.
     - :func:`muspy.load`: Load from a JSON or a YAML file saved by
-      :func:`muspy.save` or :class:`muspy.Music.save`.
-    - :func:`muspy.from_object`: Convert from a :class:`pretty_midi.PrettyMIDI`
-      or :class:`pypianoroll.Multitrack` object.
+      :func:`muspy.save`.
+    - :func:`muspy.from_object`: Convert from a `music21.Stream`, a
+      :class:`mido.MidiFile`, a :class:`pretty_midi.PrettyMIDI` or a
+      :class:`pypianoroll.Multitrack` object.
 
     Indexing a Music object gives the track of a certain index. That is,
-    `music[idx]` is equivalent to `music.tracks[idx]`, while the latter is
-    recommended for readability.
+    `music[idx]` is equivalent to `music.tracks[idx]`. Length of a Music
+    object is the number of tracks. That is, `len(music)`  is equivalent to
+    `len(music.tracks)`.
 
     Attributes
     ----------

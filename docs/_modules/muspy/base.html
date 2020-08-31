@@ -263,12 +263,9 @@
     <span class="n">_list_attributes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">_sort_attributes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">def</span> <span class="nf">_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">to_join</span> <span class="o">=</span> <span class="p">[]</span>
@@ -342,11 +339,18 @@
         <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
 <div class="viewcode-block" id="Base.pretty_str"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.pretty_str">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the content as a string in pretty YAML-like format.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Return the stored data as a string in a beautiful YAML-like format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Stored data as a string in pretty YAML-like format.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_yaml_dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Print the content in a pretty YAML-like format.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Print the stored data in a beautiful YAML-like format.&quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">())</span></div>
 
     <span class="k">def</span> <span class="nf">_validate_attr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -374,7 +378,7 @@
             <span class="p">)</span>
 
 <div class="viewcode-block" id="Base.validate_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.validate_type">[docs]</a>    <span class="k">def</span> <span class="nf">validate_type</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is of wrong type.</span>
+        <span class="sd">&quot;&quot;&quot;Raise a proper error if a certain attribute is of wrong type.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
@@ -407,7 +411,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be nonnegative.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Base_</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Base_</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is invalid.</span>
+        <span class="sd">&quot;&quot;&quot;Raise a proper error if a certain attribute is invalid.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
@@ -426,7 +430,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Base.is_type_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.is_type_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_type_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if a certain attribute is valid, otherwise False.</span>
+        <span class="sd">&quot;&quot;&quot;Return True if an attribute is of a valid type, otherwise False.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
@@ -436,6 +440,11 @@
 <span class="sd">            Attribute to validate. If None, validate all attributes. Defaults</span>
 <span class="sd">            to None.</span>
 
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether an attribute is of valid type.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate_type</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
@@ -444,7 +453,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.base.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if a certain attribute is valid, otherwise False.</span>
+        <span class="sd">&quot;&quot;&quot;Return True if an attribute is valid, otherwise False.</span>
 
 <span class="sd">        This will recursively apply to an attribute&#39;s attributes.</span>
 
@@ -453,6 +462,11 @@
 <span class="sd">        attr : str</span>
 <span class="sd">            Attribute to validate. If None, validate all attributes. Defaults</span>
 <span class="sd">            to None.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether an attribute is valid.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>

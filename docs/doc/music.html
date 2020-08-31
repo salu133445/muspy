@@ -186,7 +186,8 @@
   <div class="section" id="module-muspy.music">
 <span id="muspy-music"></span><h1>muspy.music<a class="headerlink" href="#module-muspy.music" title="Permalink to this headline">¶</a></h1>
 <p>Music class.</p>
-<p>This module defines the core class of MusPy—the Music class.</p>
+<p>This module defines the core class of MusPy—the Music class, a
+universal container for symbolic music.</p>
 <div class="section" id="classes">
 <h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -201,22 +202,24 @@
 <dl class="py class">
 <dt id="muspy.music.Music">
 <em class="property">class </em><code class="sig-prename descclassname">muspy.music.</code><code class="sig-name descname">Music</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">downbeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tracks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.music.Music" title="Permalink to this definition">¶</a></dt>
-<dd><p>A simple yet universal container for symbolic music.</p>
-<p>This is the core class of MusPy, which provides I/O interfaces for common
-formats. A Music object can be constructed in the following ways.</p>
+<dd><p>A universal container for symbolic music.</p>
+<p>This is the core class of MusPy. A Music object can be constructed in
+the following ways.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music()</span></code></a>: Construct by setting values for attributes.</p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music.from_dict()</span></code>: Construct from a dictionary that stores
 the attributes and their values as key-value pairs.</p></li>
-<li><p><a class="reference internal" href="muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a>: Read from a MIDI or a MusicXML file.</p></li>
+<li><p><a class="reference internal" href="muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a>: Read from a MIDI, a MusicXML or an ABC file.</p></li>
 <li><p><a class="reference internal" href="muspy.html#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a>: Load from a JSON or a YAML file saved by
-<a class="reference internal" href="muspy.html#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a> or <a class="reference internal" href="muspy.html#muspy.Music.save" title="muspy.Music.save"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music.save</span></code></a>.</p></li>
-<li><p><a class="reference internal" href="muspy.html#muspy.from_object" title="muspy.from_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_object()</span></code></a>: Convert from a <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a>
-or <a class="reference external" href="https://salu133445.github.io/pypianoroll/multitrack.html#pypianoroll.Multitrack" title="(in pypianoroll v0.5.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> object.</p></li>
+<a class="reference internal" href="muspy.html#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="muspy.html#muspy.from_object" title="muspy.from_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_object()</span></code></a>: Convert from a <cite>music21.Stream</cite>, a
+<a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiFile" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiFile</span></code></a>, a <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> or a
+<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> object.</p></li>
 </ul>
 <p>Indexing a Music object gives the track of a certain index. That is,
-<cite>music[idx]</cite> is equivalent to <cite>music.tracks[idx]</cite>, while the latter is
-recommended for readability.</p>
+<cite>music[idx]</cite> is equivalent to <cite>music.tracks[idx]</cite>. Length of a Music
+object is the number of tracks. That is, <cite>len(music)</cite>  is equivalent to
+<cite>len(music.tracks)</cite>.</p>
 <dl class="py attribute">
 <dt id="muspy.music.Music.metadata">
 <code class="sig-name descname">metadata</code><a class="headerlink" href="#muspy.music.Music.metadata" title="Permalink to this definition">¶</a></dt>

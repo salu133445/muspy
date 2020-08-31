@@ -102,12 +102,9 @@ class Base:
     _list_attributes: List[str] = []
     _sort_attributes: List[str] = []
 
-    def _init(self, **kwargs):
+    def __init__(self, **kwargs):
         for key, value in kwargs.items():
             setattr(self, key, value)
-
-    def __init__(self, **kwargs):
-        self._init(**kwargs)
 
     def __repr__(self):
         to_join = []
@@ -181,11 +178,18 @@ class Base:
         return ordered_dict
 
     def pretty_str(self) -> str:
-        """Return the content as a string in pretty YAML-like format."""
+        """Return the stored data as a string in a beautiful YAML-like format.
+
+        Returns
+        -------
+        str
+            Stored data as a string in pretty YAML-like format.
+
+        """
         return _yaml_dump(self.to_ordered_dict())
 
     def print(self):
-        """Print the content in a pretty YAML-like format."""
+        """Print the stored data in a beautiful YAML-like format."""
         print(self.pretty_str())
 
     def _validate_attr_type(self, attr: str):
@@ -213,7 +217,7 @@ class Base:
             )
 
     def validate_type(self: Base_, attr: Optional[str] = None) -> Base_:
-        """Raise proper errors if a certain attribute is of wrong type.
+        """Raise a proper error if a certain attribute is of wrong type.
 
         This will apply recursively to an attribute's attributes.
 
@@ -246,7 +250,7 @@ class Base:
                 raise ValueError("`time` must be nonnegative.")
 
     def validate(self: Base_, attr: Optional[str] = None) -> Base_:
-        """Raise proper errors if a certain attribute is invalid.
+        """Raise a proper error if a certain attribute is invalid.
 
         This will apply recursively to an attribute's attributes.
 
@@ -265,7 +269,7 @@ class Base:
         return self
 
     def is_type_valid(self, attr: Optional[str] = None) -> bool:
-        """Return True if a certain attribute is valid, otherwise False.
+        """Return True if an attribute is of a valid type, otherwise False.
 
         This will apply recursively to an attribute's attributes.
 
@@ -275,6 +279,11 @@ class Base:
             Attribute to validate. If None, validate all attributes. Defaults
             to None.
 
+        Returns
+        -------
+        bool
+            Whether an attribute is of valid type.
+
         """
         try:
             self.validate_type(attr)
@@ -283,7 +292,7 @@ class Base:
         return True
 
     def is_valid(self, attr: Optional[str] = None) -> bool:
-        """Return True if a certain attribute is valid, otherwise False.
+        """Return True if an attribute is valid, otherwise False.
 
         This will recursively apply to an attribute's attributes.
 
@@ -292,6 +301,11 @@ class Base:
         attr : str
             Attribute to validate. If None, validate all attributes. Defaults
             to None.
+
+        Returns
+        -------
+        bool
+            Whether an attribute is valid.
 
         """
         try:

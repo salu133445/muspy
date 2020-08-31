@@ -2,22 +2,29 @@
 MusPy documentation
 ===================
 
-MusPy is a Python library for symbolic music generation.
+.. image:: https://img.shields.io/travis/com/salu133445/muspy
+    :target: https://travis-ci.com/salu133445/muspy
+    :alt: Travis
+.. image:: https://img.shields.io/codecov/c/github/salu133445/muspy
+    :target: https://codecov.io/gh/salu133445/muspy
+    :alt: Codecov
+.. image:: https://img.shields.io/github/license/salu133445/muspy
+    :target: https://github.com/salu133445/muspy/blob/master/LICENSE
+    :alt: GitHub license
+.. image:: https://img.shields.io/github/v/release/salu133445/muspy
+    :target: https://github.com/salu133445/muspy/releases
+    :alt: GitHub release
+
+MusPy is an open source Python library for symbolic music generation. It provides essential tools for developing a music generation system, including dataset management, data I/O, data preprocessing and model evaluation.
 
 
 Features
 ========
 
-- Dataset management system for commonly used datasets with interfaces
-  to PyTorch and TensorFlow.
-- Data I/O for common symbolic music formats (e.g., MIDI, MusicXML and
-  ABC) and interfaces to other symbolic music libraries (e.g., music21,
-  mido, pretty_midi and Pypianoroll).
-- Implementations of common music representations for music generation,
-  including the pitch-based, the event-based, the piano-roll and the
-  note-based representations.
-- Model evaluation tools for music generation systems, including audio
-  rendering, score and piano-roll visualizations and objective metrics.
+- Dataset management system for commonly used datasets with interfaces to PyTorch and TensorFlow.
+- Data I/O for common symbolic music formats (e.g., MIDI, MusicXML and ABC) and interfaces to other symbolic music libraries (e.g., music21, mido, pretty_midi and Pypianoroll).
+- Implementations of common music representations for music generation, including the pitch-based, the event-based, the piano-roll and the note-based representations.
+- Model evaluation tools for music generation systems, including audio rendering, score and piano-roll visualizations and objective metrics.
 
 Here is an overview of the library.
 
@@ -40,6 +47,12 @@ Installation
 ============
 
 To install MusPy, please run ``pip install muspy``. To build MusPy from source, please download the `source <https://github.com/salu133445/muspy/releases>`_ and run ``python setup.py install``.
+
+
+Documentation
+=============
+
+Documentation is available `here <https://salu133445.github.io/muspy>`_ and as docstrings with the code.
 
 
 Citing
