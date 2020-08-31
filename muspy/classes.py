@@ -396,10 +396,10 @@ class Chord(ComplexBase):
             ("duration", int),
             ("pitches", int),
             ("velocity", int),
-            ("pitch_str", str),
+            ("pitches_str", str),
         ]
     )
-    _optional_attributes = ["pitch_str"]
+    _optional_attributes = ["pitches_str"]
     _list_attributes = ["pitches", "pitches_str"]
     _sort_attributes = ["time", "duration"]
 
