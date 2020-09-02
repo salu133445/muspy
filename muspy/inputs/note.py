@@ -27,7 +27,7 @@ def from_note_representation(
     resolution : int
         Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
-        Program number according to General MIDI specification [1].
+        Program number according to General MIDI specification [1]_.
         Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
         Piano).
     is_drum : bool, optional
@@ -46,6 +46,10 @@ def from_note_representation(
     -------
     :class:`muspy.Music` object
         Decoded Music object.
+
+    References
+    ----------
+    .. [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
 
     """
     if not np.issubdtype(array.dtype, np.integer):

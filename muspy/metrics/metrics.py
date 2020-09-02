@@ -112,7 +112,8 @@ def empty_beat_rate(music: Music) -> float:
 
     The empty-beat rate is defined as the ratio of the number of empty beats
     (where no note is played) to the total number of beats. Return NaN if
-    song length is zero. This metric is also implemented in Pypianoroll [1].
+    song length is zero. This metric is also implemented in Pypianoroll
+    [1]_.
 
     .. math:: empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}
 
@@ -132,7 +133,7 @@ def empty_beat_rate(music: Music) -> float:
 
     References
     ----------
-    1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
+    .. [1] Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
        Source Python Package for Handling Multitrack Pianorolls,” in
        Late-Breaking Demos of the 18th International Society for Music
        Information Retrieval Conference (ISMIR), 2018.
@@ -162,7 +163,7 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
     The empty-measure rate is defined as the ratio of the number of empty
     measures (where no note is played) to the total number of measures. Note
     that this metric only works for songs with a constant time signature.
-    Return NaN if song length is zero. This metric is used in [1].
+    Return NaN if song length is zero. This metric is used in [1]_.
 
     .. math:: empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}
 
@@ -184,7 +185,7 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
 
     References
     ----------
-    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+    .. [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
        "MuseGAN: Multi-track sequential generative adversarial networks for
        symbolic music generation and accompaniment," in Proceedings of the
        32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
@@ -263,7 +264,7 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
     The polyphony rate is defined as the ratio of the number of time steps
     where multiple pitches are on to the total number of time steps. Drum
     tracks are ignored. Return NaN if song length is zero. This metric is
-    used in [1], where it is called *polyphonicity*.
+    used in [1]_, where it is called *polyphonicity*.
 
     .. math::
         polyphony\_rate = \frac{
@@ -291,7 +292,7 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
 
     References
     ----------
-    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+    .. [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
        "MuseGAN: Multi-track sequential generative adversarial networks for
        symbolic music generation and accompaniment," in Proceedings of the
        32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
@@ -319,7 +320,7 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
 
     The pitch-in-scale rate is defined as the ratio of the number of notes
     in a certain scale to the total number of notes. Drum tracks are
-    ignored. Return NaN if no note is found. This metric is used in [1].
+    ignored. Return NaN if no note is found. This metric is used in [1]_.
 
     .. math::
         pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}
@@ -344,7 +345,7 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
 
     References
     ----------
-    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+    .. [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
        "MuseGAN: Multi-track sequential generative adversarial networks for
        symbolic music generation and accompaniment," in Proceedings of the
        32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
@@ -370,7 +371,7 @@ def scale_consistency(music: Music) -> float:
 
     The scale consistency is defined as the largest pitch-in-scale rate over
     all major and minor scales. Drum tracks are ignored. Return NaN if no
-    note is found. This metric is used in [1].
+    note is found. This metric is used in [1]_.
 
     .. math::
         scale\_consistency = \max_{root, mode}{
@@ -393,7 +394,7 @@ def scale_consistency(music: Music) -> float:
 
     References
     ----------
-    1. Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks with
+    .. [1] Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks with
        adversarial training," in NeuIPS Workshop on Constructive Machine
        Learning, 2016.
 
@@ -432,7 +433,7 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
     The drum-in-pattern rate is defined as the ratio of the number of
     notes in a certain scale to the total number of notes. Only drum tracks
     are considered. Return NaN if no drum note is found. This metric is used
-    in [1].
+    in [1]_.
 
     .. math::
         drum\_in\_pattern\_rate = \frac{
@@ -457,7 +458,7 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
 
     References
     ----------
-    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+    .. [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
        "MuseGAN: Multi-track sequential generative adversarial networks for
        symbolic music generation and accompaniment," in Proceedings of the
        32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
@@ -563,7 +564,7 @@ def pitch_class_entropy(music: Music) -> float:
 
     The pitch class entropy is defined as the Shannon entropy of the
     normalized note pitch class histogram. Drum tracks are ignored. Return
-    NaN if no note is found. This metric is used in [1].
+    NaN if no note is found. This metric is used in [1]_.
 
     .. math::
         pitch\_class\_entropy = -\sum_{i = 0}^{11}{
@@ -586,7 +587,7 @@ def pitch_class_entropy(music: Music) -> float:
 
     References
     ----------
-    1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
+    .. [1] Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
        Society for Music Information Retrieval Conference, 2020.
@@ -620,7 +621,7 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
     onset, otherwise a zero), and :math:`d(G, G')` is the hamming distance
     between two vectors :math:`G` and :math:`G'`. Note that this metric only
     works for songs with a constant time signature. Return NaN if the number
-    of measures is less than two. This metric is used in [1].
+    of measures is less than two. This metric is used in [1]_.
 
     Parameters
     ----------
@@ -636,7 +637,7 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
 
     References
     ----------
-    1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
+    .. [1] Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
        Society for Music Information Retrieval Conference, 2020.
