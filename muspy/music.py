@@ -59,11 +59,6 @@ class Music(ComplexBase):
       :class:`mido.MidiFile`, a :class:`pretty_midi.PrettyMIDI` or a
       :class:`pypianoroll.Multitrack` object.
 
-    Indexing a Music object gives the track of a certain index. That is,
-    `music[idx]` is equivalent to `music.tracks[idx]`. Length of a Music
-    object is the number of tracks. That is, `len(music)`  is equivalent to
-    `len(music.tracks)`.
-
     Attributes
     ----------
     metadata : :class:`muspy.Metadata` object
@@ -84,6 +79,13 @@ class Music(ComplexBase):
         Annotations.
     tracks : list of :class:`muspy.Track`
         Music tracks.
+
+    Tip
+    ---
+    Indexing a Music object gives the track of a certain index. That is,
+    `music[idx]` is equivalent to `music.tracks[idx]`. Length of a Music
+    object is the number of tracks. That is, `len(music)`  is equivalent to
+    `len(music.tracks)`.
 
     """
 

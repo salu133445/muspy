@@ -18,8 +18,8 @@ import yaml
 
 __all__ = ["Base", "ComplexBase"]
 
-Base_ = TypeVar("Base_", bound="Base")
-ComplexBase_ = TypeVar("ComplexBase_", bound="ComplexBase")
+BaseType = TypeVar("BaseType", bound="Base")
+ComplexBaseType = TypeVar("ComplexBaseType", bound="ComplexBase")
 
 
 class _OrderedDumper(yaml.SafeDumper):
@@ -46,54 +46,59 @@ def _yaml_dump(data):
     return yaml.dump(data, Dumper=_OrderedDumper, allow_unicode=True)
 
 
-def _get_type_string(attr_cls):
+def _get_type_string(attr_type):
     """Return a string represeting acceptable type(s)."""
-    if isinstance(attr_cls, (list, tuple)):
-        if len(attr_cls) > 1:
+    if isinstance(attr_type, (list, tuple)):
+        if len(attr_type) > 1:
             return (
-                ", ".join([x.__name__ for x in attr_cls[:-1]])
+                ", ".join([x.__name__ for x in attr_type[:-1]])
                 + " or "
-                + attr_cls[-1].__name__
+                + attr_type[-1].__name__
             )
-        return attr_cls[0].__name__
-    return attr_cls.__name__
+        return attr_type[0].__name__
+    return attr_type.__name__
 
 
 class Base:
-    """The base class of MusPy objects.
+    """The base class for MusPy classes.
 
-    It provides the following features.
+    This is the base class for MusPy classes. It provides two handy I/O
+    methods---`from_dict` and `to_ordered_dict`. It also provides intuitive
+    `__repr__` as well as methods `pretty_str` and `print` for beautifully
+    printing the content.
 
-    - Intuitive and meaningful `__repr__` in the form of
-      `class_name(attr_1=value_1, attr_2=value_2,...)`.
-    - Method `from_dict`: Instantiate an object whose attributes and the
-      the corresponding values are given as a dictionary.
-    - Method `to_ordered_dict`: Returns the object as an OrderedDict.
-    - Method `validate_type`: Raise TypeError if any attribute of the object
-      is of the wrong type according to `_attributes` (see Notes).
-    - Method `validate`: Raise TypeError or ValueError if any attribute of
-      the object is of the wrong type according to `_attributes` (see
-      Notes) or having an invalid value.
-    - Method `is_valid_type`: Return True if each attribute of the object is
-      of the correct type according to `_attributes` (see Notes).
-    - Method `is_valid`: Return True if each attribute of the object is
-      of the correct type according to `_attributes` (see Notes) and having
-      a valid value.
-    - Method `adjust_time`: Adjust the timing of time-stamped objects. For
-      example, if `tempo` is an instance of the :class:`muspy.Tempo` class
-      and `func` is a callable, then calling `tempo.adjust_time(func)` leads
-      to `tempo.time = func(tempo.time)`.
+    Hint
+    ----
+    To implement a new class in MusPy, please inherit from this class and
+    set the following class variables properly.
 
-    Notes
-    -----
-    This is the base class for MusPy objects. To add a new class, please
-    inherit from this class and set the following class variables properly.
+    - `_attributes`: An OrderedDict with attribute names as keys and their
+      types as values.
+    - `_optional_attributes`: A list of optional attribute names.
+    - `_list_attributes`: A list of attributes that are lists.
+    - `_sort_attributes`: A list of attributes used when being sorted,
+      which will be passed to operator.attrgetter.
 
-    - `_attributes`: An OrderedDict with all the attributes (both required
-      and optional ones) of the object as keys and their types as values.
-    - `_optional_attributes`: A list containing optional attributes. An
-      attribute in this list is allowed to be None.
-    - _list_attributes: A list containing attributes that are lists.
+    Take :class:`muspy.Note` for example.
+
+    ```
+    _attributes = OrderedDict(
+        [
+            ("time", int),
+            ("duration", int),
+            ("pitch", int),
+            ("velocity", int),
+            ("pitch_str", str),
+        ]
+    )
+    _optional_attributes = ["pitch_str"]
+    _sort_attributes = ["time", "duration", "pitch"]
+    ```
+
+    See Also
+    --------
+    :class:`muspy.ComplexBase`: A base class that supports advanced
+      operations on list attributes.
 
     """
 
@@ -130,48 +135,72 @@ class Base:
         return True
 
     @classmethod
-    def from_dict(cls: Type[Base_], dict_: Mapping) -> Base_:
+    def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
         """Return an instance constructed from a dictionary.
+
+        Instantiate an object whose attributes and the corresponding values
+        are given as a dictionary.
 
         Parameters
         ----------
-        dict_ : dict
+        dict_ : dict or mapping
             A dictionary that stores the attributes and their values as
-            key-value pairs.
+            key-value pairs, e.g., `{"attr1": value1, "attr2": value2}`.
+
+        Returns
+        -------
+        Constructed object.
 
         """
         kwargs = {}
-        for attr, attr_cls in cls._attributes.items():
+        for attr, attr_type in cls._attributes.items():
             value = dict_.get(attr)
             if value is None:
                 if attr in cls._optional_attributes:
                     continue
                 raise TypeError("`{}` must not be None.".format(attr))
-            if isclass(attr_cls) and issubclass(attr_cls, Base):
+            if isclass(attr_type) and issubclass(attr_type, Base):
                 if attr in cls._list_attributes:
-                    kwargs[attr] = [attr_cls.from_dict(v) for v in value]
+                    kwargs[attr] = [attr_type.from_dict(v) for v in value]
                 else:
-                    kwargs[attr] = attr_cls.from_dict(value)
+                    kwargs[attr] = attr_type.from_dict(value)
             else:
                 kwargs[attr] = value
         return cls(**kwargs)
 
-    def to_ordered_dict(self, ignore_null: bool = True) -> OrderedDict:
-        """Return the object as an OrderedDict."""
+    def to_ordered_dict(self, skip_none: bool = True) -> OrderedDict:
+        """Return the object as an OrderedDict.
+
+        Return an ordered dictionary that stores the attributes and their
+        values as key-value pairs.
+
+        Parameters
+        ----------
+        skip_none : bool
+            Whether to skip attributes with value None or those that are
+            empty lists.
+
+        Returns
+        -------
+        OrderedDict
+            A dictionary that stores the attributes and their values as
+            key-value pairs, e.g., `{"attr1": value1, "attr2": value2}`.
+
+        """
         ordered_dict: OrderedDict = OrderedDict()
-        for attr, attr_cls in self._attributes.items():
+        for attr, attr_type in self._attributes.items():
             value = getattr(self, attr)
             if attr in self._list_attributes:
-                if not value and ignore_null:
+                if not value and skip_none:
                     continue
-                if isclass(attr_cls) and issubclass(attr_cls, Base):
+                if isclass(attr_type) and issubclass(attr_type, Base):
                     ordered_dict[attr] = [v.to_ordered_dict() for v in value]
                 else:
                     ordered_dict[attr] = value
             elif value is None:
-                if not ignore_null:
+                if not skip_none:
                     ordered_dict[attr] = None
-            elif isclass(attr_cls) and issubclass(attr_cls, Base):
+            elif isclass(attr_type) and issubclass(attr_type, Base):
                 ordered_dict[attr] = value.to_ordered_dict()
             else:
                 ordered_dict[attr] = value
@@ -185,15 +214,27 @@ class Base:
         str
             Stored data as a string in pretty YAML-like format.
 
+        See Also
+        --------
+        :meth:`muspy.Base.print`: Print the stored data in a beautiful
+          YAML-like format.
+
         """
         return _yaml_dump(self.to_ordered_dict())
 
     def print(self):
-        """Print the stored data in a beautiful YAML-like format."""
+        """Print the stored data in a beautiful YAML-like format.
+
+        See Also
+        --------
+        :meth:`muspy.Base.pretty_str`: Return the stored data as a string in a
+          beautiful YAML-like format.
+
+        """
         print(self.pretty_str())
 
     def _validate_attr_type(self, attr: str):
-        attr_cls = self._attributes[attr]
+        attr_type = self._attributes[attr]
         value = getattr(self, attr)
         if value is None:
             if attr in self._optional_attributes:
@@ -202,30 +243,40 @@ class Base:
         if attr in self._list_attributes:
             if not isinstance(value, list):
                 raise TypeError("`{}` must be a list.".format(attr))
-            for v in value:
-                if not isinstance(v, attr_cls):
+            for item in value:
+                if not isinstance(item, attr_type):
                     raise TypeError(
                         "`{}` must be a list of type {}.".format(
-                            attr, _get_type_string(attr_cls)
+                            attr, _get_type_string(attr_type)
                         )
                     )
-        elif not isinstance(value, attr_cls):
+        elif not isinstance(value, attr_type):
             raise TypeError(
                 "`{}` must be of type {}.".format(
-                    attr, _get_type_string(attr_cls)
+                    attr, _get_type_string(attr_type)
                 )
             )
 
-    def validate_type(self: Base_, attr: Optional[str] = None) -> Base_:
-        """Raise a proper error if a certain attribute is of wrong type.
+    def validate_type(self: BaseType, attr: Optional[str] = None) -> BaseType:
+        """Raise an error if a certain attribute has an invalid type.
 
         This will apply recursively to an attribute's attributes.
 
         Parameters
         ----------
         attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
+            Attribute to validate. Defaults to validate all attributes.
+
+        Returns
+        -------
+        The object itself.
+
+        See Also
+        --------
+        :meth:`muspy.Base.is_valid_type`: Return True if an attribute has a
+          valid type, otherwise False.
+        :meth:`muspy.Base.validate`: Raise an error if a certain attribute has
+          an invalid type or value.
 
         """
         if attr is None:
@@ -236,8 +287,8 @@ class Base:
         return self
 
     def _validate(self, attr: str):
-        attr_cls = self._attributes[attr]
-        if isclass(attr_cls) and issubclass(attr_cls, Base):
+        attr_type = self._attributes[attr]
+        if isclass(attr_type) and issubclass(attr_type, Base):
             if attr in self._list_attributes:
                 if getattr(self, attr):
                     for item in getattr(self, attr):
@@ -249,16 +300,26 @@ class Base:
             if attr == "time" and getattr(self, "time") < 0:
                 raise ValueError("`time` must be nonnegative.")
 
-    def validate(self: Base_, attr: Optional[str] = None) -> Base_:
-        """Raise a proper error if a certain attribute is invalid.
+    def validate(self: BaseType, attr: Optional[str] = None) -> BaseType:
+        """Raise an error if a certain attribute has an invalid type or value.
 
         This will apply recursively to an attribute's attributes.
 
         Parameters
         ----------
         attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
+            Attribute to validate. Defaults to validate all attributes.
+
+        Returns
+        -------
+        The object itself.
+
+        See Also
+        --------
+        :meth:`muspy.Base.is_valid`: Return True if an attribute is valid,
+          otherwise False.
+        :meth:`muspy.Base.validate_type`: Raise an error if a certain attribute
+          has an invalid type.
 
         """
         if attr is None:
@@ -268,21 +329,27 @@ class Base:
             self._validate(attr)
         return self
 
-    def is_type_valid(self, attr: Optional[str] = None) -> bool:
-        """Return True if an attribute is of a valid type, otherwise False.
+    def is_valid_type(self, attr: Optional[str] = None) -> bool:
+        """Return True if an attribute has a valid type, otherwise False.
 
         This will apply recursively to an attribute's attributes.
 
         Parameters
         ----------
         attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
+            Attribute to validate. Defaults to validate all attributes.
 
         Returns
         -------
         bool
-            Whether an attribute is of valid type.
+            Whether the attribute has a valid type.
+
+        See Also
+        --------
+        :meth:`muspy.Base.validate_type`: Raise an error if a certain attribute
+          has an invalid type.
+        :meth:`muspy.Base.is_valid`: Return True if an attribute is valid,
+          otherwise False.
 
         """
         try:
@@ -299,13 +366,19 @@ class Base:
         Parameters
         ----------
         attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
+            Attribute to validate. Defaults to validate all attributes.
 
         Returns
         -------
         bool
-            Whether an attribute is valid.
+            Whether the attribute has a valid type and value.
+
+        See Also
+        --------
+        :meth:`muspy.Base.validate`: Raise an error if a certain attribute
+          has an invalid type or value.
+        :meth:`muspy.Base.is_valid_type`: Return True if an attribute has a
+          valid type, otherwise False.
 
         """
         try:
@@ -315,7 +388,7 @@ class Base:
         return True
 
     def _adjust_time(self, func: Callable[[int], int], attr: str):
-        attr_cls = self._attributes[attr]
+        attr_type = self._attributes[attr]
         if attr == "time":
             if "time" in self._list_attributes:
                 new_list = [func(item) for item in getattr(self, "time")]
@@ -323,7 +396,7 @@ class Base:
             else:
                 setattr(self, "time", func(getattr(self, attr)))
         else:
-            if isclass(attr_cls) and issubclass(attr_cls, Base):
+            if isclass(attr_type) and issubclass(attr_type, Base):
                 if attr in self._list_attributes:
                     for item in getattr(self, attr):
                         item.adjust_time(func)
@@ -331,8 +404,8 @@ class Base:
                     getattr(self, attr).adjust_time(func)
 
     def adjust_time(
-        self: Base_, func: Callable[[int], int], attr: Optional[str] = None
-    ) -> Base_:
+        self: BaseType, func: Callable[[int], int], attr: Optional[str] = None
+    ) -> BaseType:
         """Adjust the timing of time-stamped objects.
 
         This will apply recursively to an attribute's attributes.
@@ -346,6 +419,10 @@ class Base:
             Attribute to adjust. If None, adjust all attributes. Defaults to
             None.
 
+        Returns
+        -------
+        The object itself.
+
         """
         if attr is None:
             for attribute in self._attributes:
@@ -356,100 +433,125 @@ class Base:
 
 
 class ComplexBase(Base):
-    """A base class that supports operations on list attributes.
+    """A base class that supports advanced operations on list attributes.
 
-    The supported operations are
+    This class extend the Base class with advanced operations on list
+    attributes, including `append`, `remove_invalid`, `remove_duplicate` and
+    `sort`.
 
-    - Method `remove_invalid`: Remove invalid items from list attributes.
-    - Method `append`: Automatically append the object to the corresponding
-      list. For example, if `track` is an instance of the
-      :class:`muspy.Track` class and `note` is an instance of the
-      :class:`muspy.Note` class, then calling `track.append(note)` leads to
-      `track.notes.append(note)`.
-    - Method `sort`: Sort the time-stamped objects with respect to the
-      `time` attribute. For example, if `track` is an instance of the
-      :class:`muspy.Track` class, then calling `track.sort()` leads to
-      `track.notes.sort(lambda x: x.time)`.
+    See Also
+    --------
+    :class:`muspy.Base`: The base class for MusPy classes.
 
     """
 
     def _append(self, obj):
         for attr in self._list_attributes:
-            attr_cls = self._attributes[attr]
-            if isinstance(obj, attr_cls):
-                if isclass(attr_cls) and issubclass(attr_cls, Base):
+            attr_type = self._attributes[attr]
+            if isinstance(obj, attr_type):
+                if isclass(attr_type) and issubclass(attr_type, Base):
                     if getattr(self, attr) is None:
                         setattr(self, attr, [obj])
                     else:
                         getattr(self, attr).append(obj)
                     return
         raise TypeError(
-            "Cannot find a list of type {}.".format(type(obj).__name__)
+            "Cannot find a list attribute for type {}.".format(
+                type(obj).__name__
+            )
         )
 
-    def append(self: ComplexBase_, obj) -> ComplexBase_:
-        """Append an object to the correseponding list."""
+    def append(self: ComplexBaseType, obj) -> ComplexBaseType:
+        """Append an object to the correseponding list.
+
+        This will automatically determine the list attributes to append
+        based on the type of the object.
+
+        Parameters
+        ----------
+        obj
+            Object to append.
+
+        """
         self._append(obj)
         return self
 
-    def _remove_invalid(self, attr: str):
+    def _remove_invalid(self, attr: str, recursive: bool):
+        # Skip it if empty
         if not getattr(self, attr):
             return
-        attr_cls = self._attributes[attr]
-        new_value = []
-        if isclass(attr_cls) and issubclass(attr_cls, Base):
-            for item in getattr(self, attr):
-                if item.is_valid():
-                    new_value.append(item)
+
+        # Replace the old lis with a new list of only valid items
+        attr_type = self._attributes[attr]
+        value = getattr(self, attr)
+        is_class = isclass(attr_type)
+        if is_class and issubclass(attr_type, Base):
+            new_value = [item for item in value if item.is_valid()]
         else:
-            for item in getattr(self, attr):
-                if isinstance(item, self._attributes[attr]):
-                    new_value.append(item)
+            new_value = [item for item in value if isinstance(item, attr_type)]
         setattr(self, attr, new_value)
 
-    def remove_invalid(
-        self: ComplexBase_, attr: Optional[str] = None
-    ) -> ComplexBase_:
-        """Remove invalid items from list attributes, others left unchanged.
+        # Apply recursively
+        if recursive and is_class and issubclass(attr_type, ComplexBase):
+            for value in getattr(self, attr):
+                value.remove_invalid(recursive=recursive)
 
-        This will apply recursively to an attribute's attributes.
+    def remove_invalid(
+        self: ComplexBaseType,
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> ComplexBaseType:
+        """Remove invalid items from list attributes, others left unchanged.
 
         Parameters
         ----------
         attr : str
-            Attribute to check. If None, check all attributes. Defaults to
-            None.
+            Attribute to validate. Defaults to validate all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        The object itself.
 
         """
-        if attr is not None and attr not in self._list_attributes:
-            raise TypeError("`{}` must be a list attribute.")
-
         if attr is None:
             for attribute in self._list_attributes:
-                self._remove_invalid(attribute)
+                self._remove_invalid(attribute, recursive)
+        elif attr in self._list_attributes:
+            self._remove_invalid(attr, recursive)
         else:
-            self._remove_invalid(attr)
-
+            raise TypeError("`{}` must be a list attribute.")
         return self
 
-    def _remove_duplicate(self, attr: str):
+    def _remove_duplicate(self, attr: str, recursive: bool):
+        # Skip it if empty
         if not getattr(self, attr):
             return
 
-        attr_cls = self._attributes[attr]
-        if isclass(attr_cls) and issubclass(attr_cls, ComplexBase):
-            getattr(self, attr).remove_duplicate()
-        else:
-            value = getattr(self, attr)
-            new_value = [value[0]]
-            for item, next_item in zip(value[:-1], value[1:]):
-                if item != next_item:
-                    new_value.append(next_item)
-            setattr(self, attr, new_value)
+        # Replace the old lis with a new list without duplicates
+        attr_type = self._attributes[attr]
+        value = getattr(self, attr)
+        new_value = [value[0]]
+        for item, next_item in zip(value[:-1], value[1:]):
+            if item != next_item:
+                new_value.append(next_item)
+        setattr(self, attr, new_value)
+
+        # Apply recursively
+        if (
+            recursive
+            and isclass(attr_type)
+            and issubclass(attr_type, ComplexBase)
+        ):
+            for value in getattr(self, attr):
+                value.sort(recursive=recursive)
 
     def remove_duplicate(
-        self: ComplexBase_, attr: Optional[str] = None
-    ) -> ComplexBase_:
+        self: ComplexBaseType,
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> ComplexBaseType:
         """Remove duplicate items.
 
         Parameters
@@ -457,51 +559,65 @@ class ComplexBase(Base):
         attr : str
             Attribute to check. If None, check all attributes. Defaults to
             None.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        The object itself.
 
         """
-        if attr is not None and attr not in self._list_attributes:
-            raise TypeError("`{}` must be a list attribute.")
-
         if attr is None:
             for attribute in self._list_attributes:
-                self._remove_duplicate(attribute)
+                self._remove_duplicate(attribute, recursive)
+        elif attr in self._list_attributes:
+            self._remove_duplicate(attr, recursive)
         else:
-            self._remove_duplicate(attr)
-
+            raise TypeError("`{}` must be a list attribute.")
         return self
 
-    def _sort(self, attr: str):
+    def _sort(self, attr: str, recursive: bool):
+        # Skip it if empty
         if not getattr(self, attr):
             return
 
-        attr_cls = self._attributes[attr]
-        if isclass(attr_cls) and issubclass(attr_cls, Base):
+        # Sort the list
+        attr_type = self._attributes[attr]
+        if isclass(attr_type) and issubclass(attr_type, Base):
             # pylint: disable=protected-access
-            if issubclass(attr_cls, ComplexBase):
-                getattr(self, attr).sort()
-            elif attr_cls._sort_attributes:
+            if attr_type._sort_attributes:
                 getattr(self, attr).sort(
-                    attrgetter(*attr_cls._sort_attributes)
+                    key=attrgetter(*attr_type._sort_attributes)
                 )
+            # Apply recursively
+            if recursive and issubclass(attr_type, ComplexBase):
+                for value in getattr(self, attr):
+                    value.sort(recursive=recursive)
 
-    def sort(self: ComplexBase_, attr: Optional[str] = None) -> ComplexBase_:
-        """Sort the time-stamped objects recursively.
-
-        This will apply recursively to an attribute's attributes.
+    def sort(
+        self: ComplexBaseType,
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> ComplexBaseType:
+        """Sort a list attribute.
 
         Parameters
         ----------
         attr : str
             Attribute to sort. If None, sort all attributes. Defaults to None.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        The object itself.
 
         """
-        if attr is not None and attr not in self._list_attributes:
-            raise TypeError("`{}` must be a list attribute.")
-
         if attr is None:
             for attribute in self._list_attributes:
-                self._sort(attribute)
+                self._sort(attribute, recursive)
+        elif attr in self._list_attributes:
+            self._sort(attr, recursive)
         else:
-            self._sort(attr)
-
+            raise TypeError("`{}` must be a list attribute.")
         return self

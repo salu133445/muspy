@@ -116,7 +116,7 @@ def clip(
     ----------
     obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
           object
-        Object to clipp.
+        Object to clip.
     lower : int or float, optional
         Lower bound. Defaults to 0.
     upper : int or float, optional
