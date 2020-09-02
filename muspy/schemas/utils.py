@@ -5,16 +5,22 @@ from typing import Union
 
 try:
     import jsonschema
+
+    _HAS_JSONSCHEMA = True
 except ImportError:
     _HAS_JSONSCHEMA = False
 
 try:
     import xmlschema
+
+    _HAS_XMLSCHEMA = True
 except ImportError:
     _HAS_XMLSCHEMA = False
 
 try:
     import yamale
+
+    _HAS_YAMALE = True
 except ImportError:
     _HAS_YAMALE = False
 
@@ -51,7 +57,7 @@ def validate_json(path: Union[str, Path]):
 
     with open(str(path)) as f:
         data = json.load(f)
-    with open(str(get_json_schema_path)) as f:
+    with open(str(get_json_schema_path())) as f:
         schema = json.load(f)
     jsonschema.validate(data, schema)
 
