@@ -267,7 +267,7 @@ class Base:
 
         Returns
         -------
-        The object itself.
+        Object itself.
 
         See Also
         --------
@@ -310,7 +310,7 @@ class Base:
 
         Returns
         -------
-        The object itself.
+        Object itself.
 
         See Also
         --------
@@ -419,7 +419,7 @@ class Base:
 
         Returns
         -------
-        The object itself.
+        Object itself.
 
         """
         if attr is None:
@@ -510,7 +510,7 @@ class ComplexBase(Base):
 
         Returns
         -------
-        The object itself.
+        Object itself.
 
         """
         if attr is None:
@@ -562,7 +562,7 @@ class ComplexBase(Base):
 
         Returns
         -------
-        The object itself.
+        Object itself.
 
         """
         if attr is None:
@@ -608,7 +608,7 @@ class ComplexBase(Base):
 
         Returns
         -------
-        The object itself.
+        Object itself.
 
         """
         if attr is None:

@@ -247,6 +247,10 @@ class Music(ComplexBase):
             of 2 double the resolution, and a factor of 0.5 halve the
             resolution.
 
+        Returns
+        -------
+        Object itself.
+
         """
         if self.resolution is None:
             raise TypeError("`resolution` must not be None.")
@@ -287,6 +291,10 @@ class Music(ComplexBase):
         upper : int, optional
             Upper bound. Defaults to 127.
 
+        Returns
+        -------
+        Object itself.
+
         """
         for track in self.tracks:
             track.clip(lower, upper)
@@ -300,6 +308,10 @@ class Music(ComplexBase):
         semitone : int
             Number of semitones to transpose the notes. A positive value raises
             the pitches, while a negative value lowers the pitches.
+
+        Returns
+        -------
+        Object itself.
 
         """
         for track in self.tracks:

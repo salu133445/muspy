@@ -689,7 +689,13 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDataset_</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Download the source datasets.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Download the source datasets.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="n">md5</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;md5&quot;</span><span class="p">)</span>
@@ -722,6 +728,10 @@
 <span class="sd">        cleanup : bool, optional</span>
 <span class="sd">            Whether to remove the original archive. Defaults to False.</span>
 
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
@@ -744,6 +754,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        cleanup : bool, optional</span>
 <span class="sd">            Whether to remove the original archive. Defaults to False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">cleanup</span><span class="p">)</span></div></div>
@@ -1033,7 +1047,13 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="FolderDataset.use_converted"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.use_converted">[docs]</a>    <span class="k">def</span> <span class="nf">use_converted</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Disable on-the-fly mode and use converted data.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Disable on-the-fly mode and use converted data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">&quot;Converted data not found. Run `convert()` to convert &quot;</span>
@@ -1049,7 +1069,13 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="FolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
                 <span class="p">(</span>
@@ -1089,6 +1115,10 @@
 <span class="sd">            Whether to ignore errors and skip failed conversions. This can be</span>
 <span class="sd">            helpful if some of the source files is known to be corrupted.</span>
 <span class="sd">            Defaults to False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">():</span>
@@ -1181,7 +1211,13 @@
         <span class="k">return</span> <span class="n">read_abc_string</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ABCFolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">:</span>
             <span class="n">filenames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
                 <span class="p">(</span>

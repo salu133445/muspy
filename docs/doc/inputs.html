@@ -373,12 +373,9 @@ False. Defaults to 64.</p></li>
 <dd><p>Return a Music object converted from an outside object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>obj</strong> (<em>Union</em><em>[</em><em>music21.stream.Stream</em><em>, </em><em>mido.midifiles.midifiles.MidiFile</em><em>, </em><em>pretty_midi.pretty_midi.PrettyMIDI</em><em>, </em><em>pypianoroll.multitrack.Multitrack</em><em>]</em>) – Object to convert. Supported objects are <cite>music21.Stream</cite>,
+<dd class="field-odd"><p><strong>obj</strong> – Object to convert. Supported objects are <cite>music21.Stream</cite>,
 <a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiTrack" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiTrack</span></code></a>, <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a>, and
-<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> objects.</p></li>
-<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
-</ul>
+<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> objects.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><strong>music</strong> – Converted Music object.</p>
@@ -476,7 +473,6 @@ False.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>obj</strong> (<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> object) – Multitrack object to convert.</p></li>
 <li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
-<li><p><strong>m</strong> (<em>pypianoroll.multitrack.Multitrack</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -498,7 +494,6 @@ False.</p></li>
 <li><p><strong>array</strong> (<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v1.19)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>) – Array in a supported representation.</p></li>
 <li><p><strong>kind</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Data representation type. Supported values are ‘pitch’, ‘pianoroll’,
 ‘event’ and ‘note’.</p></li>
-<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -525,7 +520,6 @@ schema.</p></li>
 <li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) – Keyword arguments to pass to the target function. See
 <a class="reference internal" href="muspy.html#muspy.load_json" title="muspy.load_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_json()</span></code></a> or <a class="reference internal" href="muspy.html#muspy.load_yaml" title="muspy.load_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_yaml()</span></code></a> for available
 arguments.</p></li>
-<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -588,7 +582,6 @@ arguments.</p></li>
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the file to read.</p></li>
 <li><p><strong>kind</strong> (<em>{'midi'</em><em>, </em><em>'musicxml'</em><em>, </em><em>'abc'}</em><em>, </em><em>optional</em>) – Format to save. If None, infer the format from the extension of
 <cite>path</cite>.</p></li>
-<li><p><strong>kwargs</strong> (<em>Any</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -686,10 +679,7 @@ on messages to close. Defaults to ‘fifo’. Only used when
 <dd><p>Read a MusicXML file into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the MusicXML file to read.</p></li>
-<li><p><strong>compressed</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>]</em>) – </p></li>
-</ul>
+<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the MusicXML file to read.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Converted Music object.</p>

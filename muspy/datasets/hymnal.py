@@ -51,7 +51,13 @@ class HymnalDataset(FolderDataset):
         return read_midi(self.root / filename)
 
     def download(self) -> "FolderDataset":
-        """Download the source datasets."""
+        """Download the source datasets.
+
+        Returns
+        -------
+        Object itself.
+
+        """
         # Maximum consecutive trials allowed to fail
         tolerance = 10
 
@@ -145,7 +151,13 @@ class HymnalTuneDataset(FolderDataset):
         return read_midi(self.root / filename)
 
     def download(self) -> "FolderDataset":
-        """Download the source datasets."""
+        """Download the source datasets.
+
+        Returns
+        -------
+        Object itself.
+
+        """
         # Maximum consecutive trials allowed to fail
         tolerance = 10
 

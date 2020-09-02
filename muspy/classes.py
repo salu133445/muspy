@@ -351,6 +351,10 @@ class Note(Base):
             The number of semitones to transpose the note. A positive value
             raises the pitch, while a negative value lowers the pitch.
 
+        Returns
+        -------
+        Object itself.
+
         """
         self.pitch += semitone
         return self
@@ -364,6 +368,10 @@ class Note(Base):
             Lower bound. Defaults to 0.
         upper : int, optional
             Upper bound. Defaults to 127.
+
+        Returns
+        -------
+        Object itself.
 
         """
         assert upper >= lower, "`upper` must be greater than `lower`."
@@ -465,8 +473,12 @@ class Chord(Base):
         Parameters
         ----------
         semitone : int
-            The number of semitones to transpose the notes. A positive value
-            raises the pitches, while a negative value lowers the pitches.
+            Number of semitones to transpose the notes. A positive value raises
+            the pitches, while a negative value lowers the pitches.
+
+        Returns
+        -------
+        Object itself.
 
         """
         self.pitches += [pitch + semitone for pitch in self.pitches]
@@ -481,6 +493,10 @@ class Chord(Base):
             Lower bound. Defaults to 0.
         upper : int, optional
             Upper bound. Defaults to 127.
+
+        Returns
+        -------
+        Object itself.
 
         """
         assert upper >= lower, "`upper` must be greater than `lower`."
@@ -628,6 +644,10 @@ class Track(ComplexBase):
         upper : int, optional
             Upper bound. Defaults to 127.
 
+        Returns
+        -------
+        Object itself.
+
         """
         for note in self.notes:
             note.clip(lower, upper)
@@ -641,6 +661,10 @@ class Track(ComplexBase):
         semitone : int
             The number of semitones to transpose the notes. A positive value
             raises the pitches, while a negative value lowers the pitches.
+
+        Returns
+        -------
+        Object itself.
 
         """
         for note in self.notes:

@@ -201,15 +201,6 @@ tuple (0, 4, 60, 64). The output shape is L * D, where L is the number
 of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise D is 3.
 The values of the second dimension represent pitch, time, duration and
 velocity (discarded when <cite>encode_velocity</cite> is False).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt id="muspy.processors.NoteRepresentationProcessor.use_start_end">
 <code class="sig-name descname">use_start_end</code><a class="headerlink" href="#muspy.processors.NoteRepresentationProcessor.use_start_end" title="Permalink to this definition">¶</a></dt>
@@ -306,18 +297,6 @@ shape is M x 1, where M is the number of events. The values encode the
 events. The default configuration uses 0-127 to encode note-one events,
 128-255 for note-off events, 256-355 for time-shift events, and 356 to
 387 for velocity events.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>force_velocity_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt id="muspy.processors.EventRepresentationProcessor.use_single_note_off_event">
 <code class="sig-name descname">use_single_note_off_event</code><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor.use_single_note_off_event" title="Permalink to this definition">¶</a></dt>
@@ -450,14 +429,6 @@ integer if not of integer type.</p>
 where the columns are the time steps and the rows are the pitches. The
 values indicate the presence of pitches at different time steps. The
 output shape is T x 128, where T is the number of time steps.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt id="muspy.processors.PianoRollRepresentationProcessor.encode_velocity">
 <code class="sig-name descname">encode_velocity</code><a class="headerlink" href="#muspy.processors.PianoRollRepresentationProcessor.encode_velocity" title="Permalink to this definition">¶</a></dt>
@@ -544,14 +515,6 @@ rest and (optional) hold tokens. Only monophonic melodies are compatible
 with this representation. The output shape is T x 1, where T is the
 number of time steps. The values indicate whether the current time step
 is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>use_hold_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – </p></li>
-<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – </p></li>
-</ul>
-</dd>
-</dl>
 <dl class="py attribute">
 <dt id="muspy.processors.PitchRepresentationProcessor.use_hold_state">
 <code class="sig-name descname">use_hold_state</code><a class="headerlink" href="#muspy.processors.PitchRepresentationProcessor.use_hold_state" title="Permalink to this definition">¶</a></dt>

@@ -528,7 +528,13 @@ class RemoteDataset(Dataset):
         return True
 
     def download(self: RemoteDataset_) -> RemoteDataset_:
-        """Download the source datasets."""
+        """Download the source datasets.
+
+        Returns
+        -------
+        Object itself.
+
+        """
         for source in self._sources.values():
             filename = self.root / source["filename"]
             md5 = source.get("md5")
@@ -561,6 +567,10 @@ class RemoteDataset(Dataset):
         cleanup : bool, optional
             Whether to remove the original archive. Defaults to False.
 
+        Returns
+        -------
+        Object itself.
+
         """
         for source in self._sources.values():
             filename = self.root / source["filename"]
@@ -583,6 +593,10 @@ class RemoteDataset(Dataset):
         ----------
         cleanup : bool, optional
             Whether to remove the original archive. Defaults to False.
+
+        Returns
+        -------
+        Object itself.
 
         """
         return self.download().extract(cleanup)
@@ -872,7 +886,13 @@ class FolderDataset(Dataset):
         return True
 
     def use_converted(self: FolderDataset_) -> FolderDataset_:
-        """Disable on-the-fly mode and use converted data."""
+        """Disable on-the-fly mode and use converted data.
+
+        Returns
+        -------
+        Object itself.
+
+        """
         if not self.converted_exists():
             raise RuntimeError(
                 "Converted data not found. Run `convert()` to convert "
@@ -888,7 +908,13 @@ class FolderDataset(Dataset):
         return self
 
     def on_the_fly(self: FolderDataset_) -> FolderDataset_:
-        """Enable on-the-fly mode and convert the data on the fly."""
+        """Enable on-the-fly mode and convert the data on the fly.
+
+        Returns
+        -------
+        Object itself.
+
+        """
         if not self.raw_filenames:
             self.raw_filenames = sorted(
                 (
@@ -928,6 +954,10 @@ class FolderDataset(Dataset):
             Whether to ignore errors and skip failed conversions. This can be
             helpful if some of the source files is known to be corrupted.
             Defaults to False.
+
+        Returns
+        -------
+        Object itself.
 
         """
         if self.converted_exists():
@@ -1020,7 +1050,13 @@ class ABCFolderDataset(FolderDataset):
         return read_abc_string("".join(data))[0]
 
     def on_the_fly(self: FolderDataset_) -> FolderDataset_:
-        """Enable on-the-fly mode and convert the data on the fly."""
+        """Enable on-the-fly mode and convert the data on the fly.
+
+        Returns
+        -------
+        Object itself.
+
+        """
         if not self.raw_filenames:
             filenames = sorted(
                 (

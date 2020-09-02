@@ -65,7 +65,7 @@ html_static_path = []  # '_static'
 
 # -- Extension configurations -------------------------------------------------
 autoclass_content = "both"
-autodoc_typehints = "description"
+autodoc_typehints = "none"
 autodoc_default_options = {
     "members": True,
     "member-order": "bysource",
