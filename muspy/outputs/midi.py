@@ -10,7 +10,15 @@ from pretty_midi import Note as PmNote
 from pretty_midi import Lyric as PmLyric
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 
-from ..classes import KeySignature, Lyric, Note, Tempo, TimeSignature, Track
+from ..classes import (
+    DEFAULT_VELOCITY,
+    KeySignature,
+    Lyric,
+    Note,
+    Tempo,
+    TimeSignature,
+    Track,
+)
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -168,7 +176,7 @@ def to_mido_note_on_note_off(
         Channel of the MIDI message.
     use_note_on_as_note_off : bool
         Whether to use a note on message with zero velocity instead of a
-        note off message.
+        note off message. Defaults to True.
 
     Returns
     -------
@@ -178,11 +186,12 @@ def to_mido_note_on_note_off(
         Converted mido Message object for note off.
 
     """
+    velocity = note.velocity if note.velocity is not None else DEFAULT_VELOCITY
     note_on_msg = Message(
         "note_on",
         time=note.time,
         note=note.pitch,
-        velocity=note.velocity,
+        velocity=velocity,
         channel=channel,
     )
     if use_note_on_as_note_off:
@@ -198,7 +207,7 @@ def to_mido_note_on_note_off(
             "note_off",
             time=note.end,
             note=note.pitch,
-            velocity=note.velocity,
+            velocity=velocity,
             channel=channel,
         )
 
@@ -321,9 +330,9 @@ def to_pretty_midi_time_signature(
 ) -> PmTimeSignature:
     """Return a KeySignature object as a pretty_midi TimeSignature object."""
     return PmTimeSignature(
-        time_signature.numerator,
-        time_signature.denominator,
-        time_signature.time,
+        numerator=time_signature.numerator,
+        denominator=time_signature.denominator,
+        time=time_signature.time,
     )
 
 
@@ -334,13 +343,16 @@ def to_pretty_midi_lyric(lyric: Lyric) -> PmLyric:
 
 def to_pretty_midi_note(note: Note) -> PmNote:
     """Return a Note object as a pretty_midi Note object."""
-    return PmNote(note.velocity, note.pitch, note.time, note.end)
+    velocity = note.velocity if note.velocity is not None else DEFAULT_VELOCITY
+    return PmNote(
+        velocity=velocity, pitch=note.pitch, start=note.time, end=note.end
+    )
 
 
 def to_pretty_midi_instrument(track: Track) -> Instrument:
     """Return a Track object as a pretty_midi Instrument object."""
-    instrument = pretty_midi.Instrument(
-        track.program, track.is_drum, track.name
+    instrument = Instrument(
+        program=track.program, is_drum=track.is_drum, name=track.name
     )
     for note in track.notes:
         instrument.notes.append(to_pretty_midi_note(note))
@@ -363,7 +375,8 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
         Converted PrettyMIDI object.
 
     """
-    pm = pretty_midi.PrettyMIDI()
+    # Create an PrettyMIDI instance
+    pm = PrettyMIDI()
 
     # Key signatures
     for key_signature in music.key_signatures:
@@ -384,6 +397,8 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
     # Tracks
     for track in music.tracks:
         pm.instruments.append(to_pretty_midi_instrument(track))
+
+    # TODO: Adjust timings
 
     return pm
 

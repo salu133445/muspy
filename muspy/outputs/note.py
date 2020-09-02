@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from numpy import ndarray
 
+from ..classes import DEFAULT_VELOCITY
+
 if TYPE_CHECKING:
     from ..music import Music
 
@@ -62,6 +64,9 @@ def to_note_representation(
         array[i, 1] = note.start if use_start_end else note.time
         array[i, 2] = note.end if use_start_end else note.duration
         if encode_velocity:
-            array[i, 3] = note.velocity
+            if note.velocity is not None:
+                array[i, 3] = note.velocity
+            else:
+                array[i, 3] = DEFAULT_VELOCITY
 
     return array

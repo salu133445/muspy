@@ -6,6 +6,8 @@ import numpy as np
 from numpy import ndarray
 from pypianoroll import Multitrack, Track
 
+from ..classes import DEFAULT_VELOCITY
+
 if TYPE_CHECKING:
     from ..music import Music
 
@@ -31,7 +33,10 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     for track in music.tracks:
         pianoroll = np.zeros((length, 128))
         for note in track.notes:
-            pianoroll[note.time : note.end, note.pitch] = note.velocity
+            if note.velocity is not None:
+                pianoroll[note.time : note.end, note.pitch] = note.velocity
+            else:
+                pianoroll[note.time : note.end, note.pitch] = DEFAULT_VELOCITY
         track = Track(
             pianoroll,
             track.program,
@@ -107,9 +112,14 @@ def to_pianoroll_representation(
 
     # Encode notes
     for note in notes:
-        if encode_velocity:
-            array[note.time : note.end, note.pitch] = note.velocity
+        if note.velocity is not None:
+            if encode_velocity:
+                array[note.time : note.end, note.pitch] = note.velocity
+            else:
+                array[note.time : note.end, note.pitch] = note.velocity > 0
+        elif encode_velocity:
+            array[note.time : note.end, note.pitch] = DEFAULT_VELOCITY
         else:
-            array[note.time : note.end, note.pitch] = note.velocity > 0
+            array[note.time : note.end, note.pitch] = True
 
     return array

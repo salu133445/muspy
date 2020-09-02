@@ -46,7 +46,7 @@ __all__ = [
 # pylint: disable=super-init-not-called
 
 
-class Metadata(ComplexBase):
+class Metadata(Base):
     """A container for metadata.
 
     Attributes
@@ -291,7 +291,7 @@ class Note(Base):
             ("pitch_str", str),
         ]
     )
-    _optional_attributes = ["pitch_str"]
+    _optional_attributes = ["velocity", "pitch_str"]
     _sort_attributes = ["time", "duration", "pitch"]
 
     def __init__(
@@ -299,13 +299,13 @@ class Note(Base):
         time: int,
         duration: int,
         pitch: int,
-        velocity: int = DEFAULT_VELOCITY,
+        velocity: Optional[int] = None,
         pitch_str: Optional[str] = None,
     ):
         self.time = time
         self.duration = duration
         self.pitch = pitch
-        self.velocity = velocity
+        self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
         self.pitch_str = pitch_str
 
     @property
@@ -332,9 +332,9 @@ class Note(Base):
         super()._validate(attr)
         if attr == "duration" and self.duration < 0:
             raise ValueError("`duration` must be nonnegative.")
-        if attr == "pitch" and 0 <= self.pitch < 128:
+        if attr == "pitch" and (self.pitch < 0 or self.pitch > 127):
             raise ValueError("`pitch` must be in between 0 to 127.")
-        if attr == "velocity" and 0 <= self.velocity < 128:
+        if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
         return self
 
@@ -376,7 +376,7 @@ class Note(Base):
         return self
 
 
-class Chord(ComplexBase):
+class Chord(Base):
     """A container for chord.
 
     Attributes
@@ -403,7 +403,7 @@ class Chord(ComplexBase):
             ("pitches_str", str),
         ]
     )
-    _optional_attributes = ["pitches_str"]
+    _optional_attributes = ["velocity", "pitches_str"]
     _list_attributes = ["pitches", "pitches_str"]
     _sort_attributes = ["time", "duration"]
 
@@ -412,13 +412,13 @@ class Chord(ComplexBase):
         time: int,
         duration: int,
         pitches: List[int],
-        velocity: int = DEFAULT_VELOCITY,
+        velocity: Optional[int] = None,
         pitches_str: Optional[List[int]] = None,
     ):
         self.time = time
         self.duration = duration
         self.pitches = pitches
-        self.velocity = velocity
+        self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
         self.pitches_str = pitches_str
 
     @property
@@ -447,11 +447,13 @@ class Chord(ComplexBase):
             raise ValueError("`duration` must be nonnegative.")
         if attr == "pitches":
             for pitch in self.pitches:
-                if 0 <= pitch < 128:
+                if pitch < 0 or pitch > 127:
                     raise ValueError(
                         "`pitches` must be a list of integers between 0 to "
                         "127."
                     )
+        if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
+            raise ValueError("`velocity` must be in between 0 to 127.")
         return self
 
     def _adjust_time(self, func, attr):
@@ -502,7 +504,7 @@ class Track(ComplexBase):
     Attributes
     ----------
     program : int, 0-127, optional
-        Program number according to General MIDI specification [1].
+        Program number according to General MIDI specification [1]_.
         Defaults to 0 (Acoustic Grand Piano).
     is_drum : bool, optional
         Whether it is a percussion track. Defaults to False.
@@ -517,9 +519,16 @@ class Track(ComplexBase):
     lyrics : list of :class:`muspy.Lyric` objects, optional
         Lyrics. Defaults to an empty list.
 
+    Tip
+    ---
+    Indexing a Track object gives the note of a certain index. That is,
+    `track[idx]` is equivalent to `track.notes[idx]`. Length of a Track
+    object is the number of notes. That is, `len(track)`  is equivalent to
+    `len(track.notes)`.
+
     References
     ----------
-    [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
+    .. [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
 
     """
 
@@ -555,6 +564,9 @@ class Track(ComplexBase):
         self.chords = chords if chords is not None else []
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
+
+    def __len__(self) -> int:
+        return len(self.notes)
 
     def __getitem__(self, key: int) -> Note:
         return self.notes[key]
