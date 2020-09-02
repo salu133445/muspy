@@ -65,9 +65,13 @@ html_static_path = []  # '_static'
 
 # -- Extension configurations -------------------------------------------------
 autoclass_content = "both"
-autodoc_typehints = "none"
-autodoc_default_flags = ["members"]
+autodoc_typehints = "description"
+autodoc_default_options = {
+    "members": True,
+    "member-order": "bysource",
+}
 intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
     "matplotlib": ("https://matplotlib.org/", None),
