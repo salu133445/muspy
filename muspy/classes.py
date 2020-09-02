@@ -135,7 +135,6 @@ class Tempo(Base):
         super()._validate(attr)
         if attr == "qpm" and self.qpm <= 0:
             raise ValueError("`qpm` must be positive.")
-        return self
 
 
 class KeySignature(Base):
@@ -336,7 +335,6 @@ class Note(Base):
             raise ValueError("`pitch` must be in between 0 to 127.")
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
-        return self
 
     def _adjust_time(self, func, attr):
         if attr == "time":
@@ -454,7 +452,6 @@ class Chord(Base):
                     )
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
-        return self
 
     def _adjust_time(self, func, attr):
         if attr == "time":
