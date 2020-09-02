@@ -171,7 +171,15 @@
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Lyric</span> <span class="k">as</span> <span class="n">PmLyric</span>
 <span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MetaMessage</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">MidiTrack</span><span class="p">,</span> <span class="n">bpm2tempo</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">,</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span>
+    <span class="n">KeySignature</span><span class="p">,</span>
+    <span class="n">Lyric</span><span class="p">,</span>
+    <span class="n">Note</span><span class="p">,</span>
+    <span class="n">Tempo</span><span class="p">,</span>
+    <span class="n">TimeSignature</span><span class="p">,</span>
+    <span class="n">Track</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
@@ -329,7 +337,7 @@
 <span class="sd">        Channel of the MIDI message.</span>
 <span class="sd">    use_note_on_as_note_off : bool</span>
 <span class="sd">        Whether to use a note on message with zero velocity instead of a</span>
-<span class="sd">        note off message.</span>
+<span class="sd">        note off message. Defaults to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -339,11 +347,12 @@
 <span class="sd">        Converted mido Message object for note off.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_VELOCITY</span>
     <span class="n">note_on_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
         <span class="s2">&quot;note_on&quot;</span><span class="p">,</span>
         <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
         <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span>
-        <span class="n">velocity</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+        <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
         <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">use_note_on_as_note_off</span><span class="p">:</span>
@@ -359,7 +368,7 @@
             <span class="s2">&quot;note_off&quot;</span><span class="p">,</span>
             <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
             <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span>
-            <span class="n">velocity</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span>
+            <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
             <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -482,9 +491,9 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PmTimeSignature</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a KeySignature object as a pretty_midi TimeSignature object.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PmTimeSignature</span><span class="p">(</span>
-        <span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
-        <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
-        <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+        <span class="n">numerator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+        <span class="n">denominator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+        <span class="n">time</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
     <span class="p">)</span>
 
 
@@ -495,13 +504,16 @@
 
 <span class="k">def</span> <span class="nf">to_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">Note</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PmNote</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Note object as a pretty_midi Note object.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">PmNote</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">)</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_VELOCITY</span>
+    <span class="k">return</span> <span class="n">PmNote</span><span class="p">(</span>
+        <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">end</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">to_pretty_midi_instrument</span><span class="p">(</span><span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Instrument</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Track object as a pretty_midi Instrument object.&quot;&quot;&quot;</span>
-    <span class="n">instrument</span> <span class="o">=</span> <span class="n">pretty_midi</span><span class="o">.</span><span class="n">Instrument</span><span class="p">(</span>
-        <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">instrument</span> <span class="o">=</span> <span class="n">Instrument</span><span class="p">(</span>
+        <span class="n">program</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">is_drum</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">name</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
         <span class="n">instrument</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">))</span>
@@ -524,7 +536,8 @@
 <span class="sd">        Converted PrettyMIDI object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pm</span> <span class="o">=</span> <span class="n">pretty_midi</span><span class="o">.</span><span class="n">PrettyMIDI</span><span class="p">()</span>
+    <span class="c1"># Create an PrettyMIDI instance</span>
+    <span class="n">pm</span> <span class="o">=</span> <span class="n">PrettyMIDI</span><span class="p">()</span>
 
     <span class="c1"># Key signatures</span>
     <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span>
@@ -545,6 +558,8 @@
     <span class="c1"># Tracks</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="n">pm</span><span class="o">.</span><span class="n">instruments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pretty_midi_instrument</span><span class="p">(</span><span class="n">track</span><span class="p">))</span>
+
+    <span class="c1"># TODO: Adjust timings</span>
 
     <span class="k">return</span> <span class="n">pm</span></div>
 

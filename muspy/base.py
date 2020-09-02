@@ -79,21 +79,19 @@ class Base:
     - `_sort_attributes`: A list of attributes used when being sorted,
       which will be passed to operator.attrgetter.
 
-    Take :class:`muspy.Note` for example.
+    Take :class:`muspy.Note` for example.::
 
-    ```
-    _attributes = OrderedDict(
-        [
-            ("time", int),
-            ("duration", int),
-            ("pitch", int),
-            ("velocity", int),
-            ("pitch_str", str),
-        ]
-    )
-    _optional_attributes = ["pitch_str"]
-    _sort_attributes = ["time", "duration", "pitch"]
-    ```
+        _attributes = OrderedDict(
+            [
+                ("time", int),
+                ("duration", int),
+                ("pitch", int),
+                ("velocity", int),
+                ("pitch_str", str),
+            ]
+        )
+        _optional_attributes = ["pitch_str"]
+        _sort_attributes = ["time", "duration", "pitch"]
 
     See Also
     --------

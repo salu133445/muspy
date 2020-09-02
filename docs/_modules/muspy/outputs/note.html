@@ -166,6 +166,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
@@ -223,7 +225,10 @@
         <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">start</span> <span class="k">if</span> <span class="n">use_start_end</span> <span class="k">else</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
         <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span> <span class="k">if</span> <span class="n">use_start_end</span> <span class="k">else</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span>
         <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-            <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+            <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span>
 
     <span class="k">return</span> <span class="n">array</span></div>
 </pre></div>

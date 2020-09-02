@@ -167,6 +167,8 @@
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span><span class="p">,</span> <span class="n">Track</span>
 
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span>
+
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
@@ -192,7 +194,10 @@
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
         <span class="n">pianoroll</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length</span><span class="p">,</span> <span class="mi">128</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+            <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pianoroll</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span>
         <span class="n">track</span> <span class="o">=</span> <span class="n">Track</span><span class="p">(</span>
             <span class="n">pianoroll</span><span class="p">,</span>
             <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span>
@@ -268,10 +273,15 @@
 
     <span class="c1"># Encode notes</span>
     <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+        <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
+                <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="k">elif</span> <span class="n">encode_velocity</span><span class="p">:</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="n">array</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="p">:</span> <span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="n">array</span></div>
 </pre></div>

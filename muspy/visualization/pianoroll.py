@@ -1,4 +1,4 @@
-"""Pianoroll visualization interface."""
+"""Piano-roll visualization interface."""
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:

@@ -50,14 +50,10 @@ from .visualization import *  # noqa: F401,F403
 
 __all__ = [
     "__version__",
-    "base",
-    "classes",
-    "core",
     "datasets",
     "external",
     "inputs",
     "metrics",
-    "music",
     "outputs",
     "processors",
     "schemas",
