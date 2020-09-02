@@ -33,8 +33,8 @@ try:
 except ImportError:
     HAS_JOBLIB = False
 
-RemoteDataset_ = TypeVar("RemoteDataset_", bound="RemoteDataset")
-FolderDataset_ = TypeVar("FolderDataset_", bound="FolderDataset")
+RemoteDatasetType = TypeVar("RemoteDatasetType", bound="RemoteDataset")
+FolderDatasetType = TypeVar("FolderDatasetType", bound="FolderDataset")
 
 
 def read_split(filename: Union[str, Path]) -> Dict[str, List[int]]:
@@ -108,7 +108,7 @@ class Dataset:
         root: Union[str, Path],
         kind: Optional[str] = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
     ):
         """Save all the music objects to a directory.
 
@@ -527,7 +527,7 @@ class RemoteDataset(Dataset):
                 return False
         return True
 
-    def download(self: RemoteDataset_) -> RemoteDataset_:
+    def download(self: RemoteDatasetType) -> RemoteDatasetType:
         """Download the source datasets.
 
         Returns
@@ -559,7 +559,9 @@ class RemoteDataset(Dataset):
                 download_url(source["url"], filename, md5)
         return self
 
-    def extract(self: RemoteDataset_, cleanup: bool = False) -> RemoteDataset_:
+    def extract(
+        self: RemoteDatasetType, cleanup: bool = False
+    ) -> RemoteDatasetType:
         """Extract the downloaded archive(s).
 
         Parameters
@@ -583,8 +585,8 @@ class RemoteDataset(Dataset):
         return self
 
     def download_and_extract(
-        self: RemoteDataset_, cleanup: bool = False
-    ) -> RemoteDataset_:
+        self: RemoteDatasetType, cleanup: bool = False
+    ) -> RemoteDatasetType:
         """Extract the downloaded archives.
 
         This is equivalent to ``RemoteDataset.download().extract(cleanup)``.
@@ -778,7 +780,7 @@ class FolderDataset(Dataset):
     ignore_exceptions : bool, optional
         Whether to ignore errors and skip failed conversions. This can be
         helpful if some of the source files is known to be corrupted.
-        Defaults to False.
+        Defaults to True.
     use_converted : bool, optional
         Force to disable on-the-fly mode and use stored converted data
 
@@ -820,7 +822,7 @@ class FolderDataset(Dataset):
         convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
     ):
         self.root = Path(root).expanduser().resolve()
@@ -885,7 +887,7 @@ class FolderDataset(Dataset):
             return False
         return True
 
-    def use_converted(self: FolderDataset_) -> FolderDataset_:
+    def use_converted(self: FolderDatasetType) -> FolderDatasetType:
         """Disable on-the-fly mode and use converted data.
 
         Returns
@@ -907,7 +909,7 @@ class FolderDataset(Dataset):
         self._factory = self.load
         return self
 
-    def on_the_fly(self: FolderDataset_) -> FolderDataset_:
+    def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
         """Enable on-the-fly mode and convert the data on the fly.
 
         Returns
@@ -931,11 +933,11 @@ class FolderDataset(Dataset):
         return self
 
     def convert(
-        self: FolderDataset_,
+        self: FolderDatasetType,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
-    ) -> FolderDataset_:
+        ignore_exceptions: bool = True,
+    ) -> FolderDatasetType:
         """Convert and save the Music objects.
 
         The converted files will be named by its index and saved to
@@ -953,7 +955,7 @@ class FolderDataset(Dataset):
         ignore_exceptions : bool, optional
             Whether to ignore errors and skip failed conversions. This can be
             helpful if some of the source files is known to be corrupted.
-            Defaults to False.
+            Defaults to True.
 
         Returns
         -------
@@ -1001,7 +1003,7 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
     ignore_exceptions : bool, optional
         Whether to ignore errors and skip failed conversions. This can be
         helpful if some of the source files is known to be corrupted.
-        Defaults to False.
+        Defaults to True.
     use_converted : bool, optional
         Force to disable on-the-fly mode and use stored converted data
 
@@ -1021,7 +1023,7 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
         convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
     ):
         RemoteDataset.__init__(self, root, download_and_extract, cleanup)
@@ -1049,7 +1051,7 @@ class ABCFolderDataset(FolderDataset):
                     data.append(line)
         return read_abc_string("".join(data))[0]
 
-    def on_the_fly(self: FolderDataset_) -> FolderDataset_:
+    def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
         """Enable on-the-fly mode and convert the data on the fly.
 
         Returns
@@ -1103,7 +1105,7 @@ class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):
         convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
     ):
         RemoteDataset.__init__(self, root, download_and_extract, cleanup)

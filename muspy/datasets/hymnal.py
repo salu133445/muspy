@@ -29,7 +29,7 @@ class HymnalDataset(FolderDataset):
         convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
     ):
 
@@ -129,7 +129,7 @@ class HymnalTuneDataset(FolderDataset):
         convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
     ):
 

@@ -76,7 +76,7 @@ class Music21Dataset(Dataset):
         root: Union[str, Path],
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = False,
+        ignore_exceptions: bool = True,
     ) -> "MusicDataset":
         """Convert and save the Music objects; return a MusicDataset instance.
 
@@ -92,7 +92,7 @@ class Music21Dataset(Dataset):
         ignore_exceptions : bool, optional
             Whether to ignore errors and skip failed conversions. This can be
             helpful if some of the source files is known to be corrupted.
-            Defaults to False.
+            Defaults to True.
 
         """
         self.save(root, kind, n_jobs, ignore_exceptions)
