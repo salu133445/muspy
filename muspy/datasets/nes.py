@@ -39,6 +39,7 @@ class NESMusicDatabase(RemoteFolderDataset):
             ),
             "archive": True,
             "size": 12922275,
+            "md5": "3f3e8ab4f660dd1b19350e5a8a91f3e6",
             "sha256": (
                 "37610e2ca5fe70359c85170cf1f4982596783bb304c59d9c439f68c24ff4e"
                 "e93"

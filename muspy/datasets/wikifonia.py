@@ -23,7 +23,9 @@ class WikifoniaDataset(RemoteFolderDataset):
             "url": "http://www.synthzone.com/files/Wikifonia/Wikifonia.zip",
             "archive": True,
             "size": 35727800,
-            "md5": None,
+            "md5": "d26e22562e67eb7d37535e96cc5eebba",
+            "sha256": "e7bce509462a73cee175308b6a3cdafa9effd6e8958b3ce03b4edb2"
+            "93cc6b691",
         }
     }
     _extension = "mxl"

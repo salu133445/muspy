@@ -34,7 +34,9 @@ class LakhMIDIDataset(RemoteFolderDataset):
             "url": "http://hog.ee.columbia.edu/craffel/lmd/lmd_full.tar.gz",
             "archive": True,
             "size": 35727800,
-            "md5": None,
+            "md5": "2536ce3fd2cede53ddaa264f731859ab",
+            "sha256": "6fcfe2ac49ca08f3f214cec86ab138d4fc4dabcd7f27f491a838dae"
+            "6db45a12b",
         }
     }
     _extension = "mid"
@@ -53,7 +55,9 @@ class LakhMIDIMatchedDataset(RemoteFolderDataset):
             "filename": "lmd_matched.tar.gz",
             "url": "http://hog.ee.columbia.edu/craffel/lmd/lmd_matched.tar.gz",
             "archive": True,
-            "md5": None,
+            "md5": "fb80d01c22020295bb3eeef31f1aa63a",
+            "sha256": "621ff830aed771f469e5bfa13dc12a33c6ed69090adeda63d0b5c47"
+            "783af0191",
         }
     }
     _extension = "mid"
@@ -73,7 +77,9 @@ class LakhMIDIAlignedDataset(RemoteFolderDataset):
             "url": "http://hog.ee.columbia.edu/craffel/lmd/lmd_aligned.tar.gz",
             "archive": True,
             "size": 1407072670,
-            "md5": None,
+            "md5": "d36ca9159966d81d97e1e37d10ed4584",
+            "sha256": "2bf5400e82eba73204644946515489b68811e1e656b0cfd854efc14"
+            "377f6e53b",
         }
     }
     _extension = "mid"

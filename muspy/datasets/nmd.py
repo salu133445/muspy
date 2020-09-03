@@ -22,6 +22,8 @@ class NottinghamDatabase(RemoteABCFolderDataset):
             ),
             "archive": True,
             "size": 142934,
-            "md5": None,
+            "md5": "f55c354aaf08bcb6e9b2b3b8d52e4df3",
+            "sha256": "f79a4bffe78b16d630d4d69f9c62775a7aa246d0973c4d8714ab6c5"
+            "139ff5a3b",
         }
     }

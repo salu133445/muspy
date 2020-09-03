@@ -39,7 +39,9 @@ class JSBChoralesDataset(RemoteFolderDataset):
             ),
             "archive": True,
             "size": 215242,
-            "md5": None,
+            "md5": "2fb72faf2659e82e9de08b16f2cca1e9",
+            "sha256": "69924294546a71620c06374085cd6b0300665ea215e2f854f65a119"
+            "29f1e723c",
         }
     }
     _extension = "mid"
