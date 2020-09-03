@@ -1,7 +1,18 @@
 """Base Dataset classes."""
+import json
 import warnings
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+    Union,
+)
 
 import numpy as np
 from numpy.random import RandomState, permutation
@@ -37,18 +48,6 @@ RemoteDatasetType = TypeVar("RemoteDatasetType", bound="RemoteDataset")
 FolderDatasetType = TypeVar("FolderDatasetType", bound="FolderDataset")
 
 
-def read_split(filename: Union[str, Path]) -> Dict[str, List[int]]:
-    """Read a train-test-validation split from file."""
-    indices = {}
-    with open(str(filename)) as f:
-        for line in f:
-            if line.startswith("#"):
-                continue
-            key, value = line.split(":")
-            indices[key] = [int(idx) for idx in value.split(",")]
-    return indices
-
-
 class DatasetInfo:
     """A container for dataset information."""
 
@@ -57,20 +56,20 @@ class DatasetInfo:
         name: Optional[str] = None,
         description: Optional[str] = None,
         homepage: Optional[str] = None,
-        citation: Optional[str] = None,
+        license: Optional[str] = None,
     ):
+        # pylint: disable=redefined-builtin
         self.name = name
         self.description = description
         self.homepage = homepage
-        self.citation = citation
+        self.license = license
 
     def __repr__(self):
-        return (
-            "DatasetInfo(\n  name={},\n  description={},\n  homepage={},\n  "
-            "citation={})".format(
-                self.name, self.description, self.homepage, self.citation
-            )
-        )
+        to_join = []
+        for attr in ("name", "description", "homepage", "license"):
+            if getattr(self, attr) is not None:
+                to_join.append(attr + "=" + repr(getattr(self, attr)))
+        return "DatasetInfo(" + ", ".join(to_join) + ")"
 
 
 class Dataset:
@@ -86,6 +85,7 @@ class Dataset:
     """
 
     _info: DatasetInfo = DatasetInfo()
+    _citation: str = ""
 
     def __getitem__(self, index) -> Music:
         raise NotImplementedError
@@ -96,12 +96,12 @@ class Dataset:
     @classmethod
     def info(cls):
         """Return the dataset infomation."""
-        print(cls._info)
+        return cls._info
 
     @classmethod
-    def cite(cls):
+    def citation(cls):
         """Print the citation infomation."""
-        print(cls._info.citation)
+        return cls._citation
 
     def save(
         self,
@@ -137,10 +137,6 @@ class Dataset:
         """
         if kind not in ("json", "yaml"):
             raise TypeError("`kind` must be either 'json' or 'yaml'.")
-        if not isinstance(n_jobs, int):
-            raise TypeError("`n_jobs` must be an integer.")
-        if n_jobs < 0:
-            raise ValueError("`n_jobs` must be positive.")
 
         root = Path(root).expanduser().resolve()
         if not root.exists():
@@ -188,7 +184,7 @@ class Dataset:
     def split(
         self,
         filename: Optional[Union[str, Path]] = None,
-        splits: Optional[Union[float, List[float]]] = None,
+        splits: Optional[Sequence[float]] = None,
         random_state: Any = None,
     ) -> Dict[str, List[int]]:
         """Return the dataset as a PyTorch dataset.
@@ -211,7 +207,8 @@ class Dataset:
 
         """
         if filename is not None and Path(filename).is_file():
-            return read_split(filename)
+            with open(str(filename)) as f:
+                return json.load(f)
 
         if not isinstance(splits, (float, list, tuple)):
             raise TypeError("`splits` must be of type float, list or tuple.")
@@ -247,14 +244,9 @@ class Dataset:
             indices[names[idx]] = rand_indices[start_idx:end_idx]
 
         if filename is not None:
+            indices_ = {key: value.tolist() for key, value in indices.items()}
             with open(str(filename), "w") as f:
-                f.write("# {}\n".format(splits))
-                for key, value in indices.items():
-                    f.write(
-                        "{}: {}\n".format(
-                            key, ", ".join(str(idx) for idx in value)
-                        )
-                    )
+                f.write(json.dumps(indices_))
 
         return indices
 
@@ -263,7 +255,7 @@ class Dataset:
         factory: Optional[Callable] = None,
         representation: Optional[str] = None,
         split_filename: Optional[Union[str, Path]] = None,
-        splits: Optional[Union[float, List[float]]] = None,
+        splits: Optional[Sequence[float]] = None,
         random_state: Any = None,
         **kwargs: Any
     ) -> Union["TorchDataset", Dict[str, "TorchDataset"]]:
@@ -336,7 +328,7 @@ class Dataset:
         factory: Optional[Callable] = None,
         representation: Optional[str] = None,
         split_filename: Optional[Union[str, Path]] = None,
-        splits: Optional[Union[float, List[float]]] = None,
+        splits: Optional[Sequence[float]] = None,
         random_state: Any = None,
         **kwargs: Any
     ) -> Union["TFDataset", Dict[str, "TFDataset"]]:
@@ -619,7 +611,7 @@ if HAS_TORCH:
             dataset: Dataset,
             factory: Callable,
             subset: str = "Full",
-            indices: Optional[List[int]] = None,
+            indices: Optional[Sequence[int]] = None,
         ):
             self.dataset = dataset
             self.factory = factory
@@ -663,7 +655,7 @@ if HAS_TORCH:
             dataset: Dataset,
             representation: str,
             subset: str = "Full",
-            indices: Optional[List[int]] = None,
+            indices: Optional[Sequence[int]] = None,
             **kwargs: Any
         ):
             self.representation = representation

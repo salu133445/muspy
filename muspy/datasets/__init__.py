@@ -24,7 +24,9 @@ Dataset Classes
 - HymnalDataset
 - HymnalTuneDataset
 - JSBChoralesDataset
+- LakhMIDIAlignedDataset
 - LakhMIDIDataset
+- LakhMIDIMatchedDataset
 - MAESTRODatasetV1
 - MAESTRODatasetV2
 - Music21Dataset
@@ -48,7 +50,11 @@ from .base import (
 from .essen import EssenFolkSongDatabase
 from .hymnal import HymnalDataset, HymnalTuneDataset
 from .jsb import JSBChoralesDataset
-from .lmd import LakhMIDIDataset
+from .lmd import (
+    LakhMIDIAlignedDataset,
+    LakhMIDIDataset,
+    LakhMIDIMatchedDataset,
+)
 from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
 from .music21 import Music21Dataset
 from .nes import NESMusicDatabase
@@ -64,7 +70,9 @@ __all__ = [
     "HymnalDataset",
     "HymnalTuneDataset",
     "JSBChoralesDataset",
+    "LakhMIDIAlignedDataset",
     "LakhMIDIDataset",
+    "LakhMIDIMatchedDataset",
     "MAESTRODatasetV1",
     "MAESTRODatasetV2",
     "Music21Dataset",
