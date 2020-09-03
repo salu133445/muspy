@@ -17,7 +17,6 @@ from ..classes import (
     Track,
 )
 from ..music import Music
-from ..schemas import get_musicxml_schema_path
 
 T = TypeVar("T")
 
