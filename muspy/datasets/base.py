@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from ..inputs import load, read_abc_string
 from ..music import Music
-from .utils import download_google_drive_file, download_url, extract_archive
+from .utils import download_url, extract_archive
 
 try:
     from torch.utils.data import Dataset as TorchDataset
@@ -551,12 +551,7 @@ class RemoteDataset(Dataset):
                 print("Source file is found but corrupted.")
 
             print("Start downloading source : {}.".format(source["filename"]))
-            if source.get("google_drive_id") is not None:
-                download_google_drive_file(
-                    source["google_drive_id"], filename, md5
-                )
-            else:
-                download_url(source["url"], filename, md5)
+            download_url(source["url"], filename, md5)
         return self
 
     def extract(

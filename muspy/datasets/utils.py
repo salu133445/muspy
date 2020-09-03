@@ -10,7 +10,6 @@ import zipfile
 from pathlib import Path
 from typing import Optional, Union
 
-import requests
 from tqdm import tqdm
 
 # TODO: Add SHA checksum supports
@@ -104,40 +103,6 @@ def _save_response_content(response, destination, chunk_size=32768):
                 f.write(chunk)
                 progress += len(chunk)
                 pbar.update(progress - pbar.n)
-
-
-def download_google_drive_file(
-    file_id: str, path: Union[str, Path], md5: Optional[str] = None,
-):
-    """Download a file from Google Drive.
-
-    Parameters
-    ----------
-    file_id : str
-        ID of the the file to be downloaded.
-    path : str or Path
-        Path to save the downloaded file.
-    md5 : str, optional
-        Expected MD5 checksum of the downloaded file. If None, do not check.
-
-    Note
-    ----
-    Code is adapted from https://stackoverflow.com/a/39225039.
-
-    """
-    session = requests.Session()
-    url = "https://docs.google.com/uc?export=download"
-    response = session.get(url, params={"id": file_id}, stream=True)
-
-    token = _get_confirm_token(response)
-    if token:
-        params = {"id": file_id, "confirm": token}
-        response = session.get(url, params=params, stream=True)
-
-    _save_response_content(response, str(path))
-
-    if md5 is not None and not check_md5(path, md5):
-        raise RuntimeError("Downloaded file is corrupted.")
 
 
 def extract_archive(

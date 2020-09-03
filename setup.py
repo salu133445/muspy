@@ -45,19 +45,15 @@ setup(
     packages=find_packages(include=["muspy", "muspy.*"], exclude=["tests"]),
     install_requires=[
         "PyYAML>=3.0",
+        "joblib>=0.15",
         "matplotlib>=1.5",
         "mido>=1.0",
         "music21>=5.0",
         "pretty-midi>=0.2",
         "pypianoroll>=0.5",
-        "requests>=2.0",
         "tqdm>=4.0",
     ],
     extras_require={
-        "schemas": ["jsonschema>=3.0", "xmlschema>=1.0", "yamale>=2.0"],
-        "joblib": ["joblib>=0.15"],
-        "tensorflow": ["tensorflow-gpu>=2.0"],
-        "torch": ["torch>=1.0"],
         "dev": [
             "black>=19.0",
             "flake8-docstrings>=1.5",
@@ -67,6 +63,8 @@ setup(
             "sphinx-rtd-theme>=0.5",
             "sphinx>=3.0",
         ],
+        "optional": ["tensorflow-gpu>=2.0", "torch>=1.0"],
+        "schema": ["jsonschema>=3.0", "xmlschema>=1.0", "yamale>=2.0"],
         "test": ["pytest>=5.0", "pytest-cov>=2.0"],
     },
     classifiers=[
