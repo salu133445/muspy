@@ -1,5 +1,5 @@
 """Nottingham Database."""
-from .base import RemoteABCFolderDataset
+from .base import DatasetInfo, RemoteABCFolderDataset
 
 _NAME = "Nottingham Database"
 _DESCRIPTION = """\
@@ -14,6 +14,7 @@ _HOMEPAGE = "https://ifdo.ca/~seymour/nottingham/nottingham.html"
 class NottinghamDatabase(RemoteABCFolderDataset):
     """Nottingham Database."""
 
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
     _sources = {
         "nmd": {
             "filename": "nottingham_database.zip",

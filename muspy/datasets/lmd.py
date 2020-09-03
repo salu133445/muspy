@@ -15,6 +15,7 @@ symbolic (using the MIDI files alone) and audio content-based (using \
 information extracted from the MIDI files as annotations for the matched \
 audio files)."""
 _HOMEPAGE = "https://colinraffel.com/projects/lmd/"
+_LICENSE = "Creative Commons Attribution 4.0 International License (CC-By 4.0)"
 _CITATION = """\
 @phdthesis{raffel2016learning
   title={Learning-Based Methods for Comparing Sequences, with Applications\
@@ -27,7 +28,8 @@ to Audio-to-{MIDI} Alignment and Matching},
 class LakhMIDIDataset(RemoteFolderDataset):
     """Lakh MIDI Dataset."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
     _sources = {
         "lmd_full": {
             "filename": "lmd_full.tar.gz",
@@ -49,7 +51,8 @@ class LakhMIDIDataset(RemoteFolderDataset):
 class LakhMIDIMatchedDataset(RemoteFolderDataset):
     """Lakh MIDI Dataset - matched subset."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
     _sources = {
         "lmd_matched": {
             "filename": "lmd_matched.tar.gz",
@@ -70,7 +73,8 @@ class LakhMIDIMatchedDataset(RemoteFolderDataset):
 class LakhMIDIAlignedDataset(RemoteFolderDataset):
     """Lakh MIDI Dataset - aligned subset."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
     _sources = {
         "lmd_aligned": {
             "filename": "lmd_aligned.tar.gz",

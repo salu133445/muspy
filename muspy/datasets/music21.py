@@ -6,7 +6,7 @@ from music21 import corpus
 
 from ..inputs import read
 from ..music import Music
-from .base import Dataset, MusicDataset
+from .base import Dataset, DatasetInfo, MusicDataset
 
 _NAME = "Music21 Corpus Dataset"
 _DESCRIPTION = """Dataset automatically created from a music21 corpus."""
@@ -40,6 +40,8 @@ class Music21Dataset(Dataset):
 
     """
 
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
+    _citation = _CITATION
     _extensions = (
         ".mid",
         ".midi",

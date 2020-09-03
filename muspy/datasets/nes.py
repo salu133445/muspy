@@ -16,6 +16,7 @@ learning techniques. The synthesizer is typically programmed in assembly, but \
 we parse the assembly into straightforward formats that are more suitable for \
 machine learning."""
 _HOMEPAGE = "https://github.com/chrisdonahue/nesmdb"
+_LICENSE = "MIT License"
 _CITATION = """\
 @inproceedings{donahue2018nesmdb,
   title={The {NES} Music Database: A multi-instrumental dataset with \
@@ -30,7 +31,8 @@ Information Retrieval Conference (ISMIR)},
 class NESMusicDatabase(RemoteFolderDataset):
     """NES Music Database."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
     _sources = {
         "nes": {
             "filename": "nesmdb_midi.tar.gz",

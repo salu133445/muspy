@@ -30,7 +30,8 @@ Learning (ICML)},
 class JSBChoralesDataset(RemoteFolderDataset):
     """Johann Sebastian Bach Chorales Dataset."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
+    _citation = _CITATION
     _sources = {
         "jsb": {
             "filename": "JSB Chorales.zip",

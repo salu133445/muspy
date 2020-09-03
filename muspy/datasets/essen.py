@@ -1,5 +1,5 @@
 """Essen Folk Song Database."""
-from .base import RemoteABCFolderDataset
+from .base import DatasetInfo, RemoteABCFolderDataset
 
 _NAME = "Essen Folk Song Database"
 _DESCRIPTION = """\
@@ -16,6 +16,7 @@ _HOMEPAGE = "https://ifdo.ca/~seymour/runabc/esac/esacdatabase.html"
 class EssenFolkSongDatabase(RemoteABCFolderDataset):
     """Essen Folk Song Database."""
 
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
     _sources = {
         "essen": {
             "filename": "esac.zip",

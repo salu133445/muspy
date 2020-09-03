@@ -12,6 +12,8 @@ MAESTRO (MIDI and Audio Edited for Synchronous TRacks and Organization) is a \
 dataset composed of over 200 hours of virtuosic piano performances captured \
 with fine alignment (~3 ms) between note labels and audio waveforms."""
 _HOMEPAGE = "https://magenta.tensorflow.org/datasets/maestro"
+_LICENSE = "Creative Commons Attribution Non-Commercial Share-Alike 4.0 \
+(CC BY-NC-SA 4.0)"
 _CITATION = """\
 @inproceedings{hawthorne2018enabling,
   title={Enabling Factorized Piano Music Modeling and Generation with the \
@@ -29,7 +31,8 @@ Representations (ICLR)},
 class MAESTRODatasetV1(RemoteFolderDataset):
     """MAESTRO Dataset (MIDI only)."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
     _sources = {
         "maestro": {
             "filename": "maestro-v2.0.0-midi.zip",
@@ -54,7 +57,8 @@ class MAESTRODatasetV1(RemoteFolderDataset):
 class MAESTRODatasetV2(RemoteFolderDataset):
     """MAESTRO Dataset (MIDI only)."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _CITATION)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
     _sources = {
         "maestro": {
             "filename": "maestro-v2.0.0-midi.zip",
