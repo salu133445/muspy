@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 
 import muspy
-from muspy import Music21Dataset, NottinghamDatabase
+from muspy import MusicDataset, Music21Dataset, NottinghamDatabase
 
 
 def test_music21():
@@ -15,6 +15,9 @@ def test_convert():
     dataset = Music21Dataset("demos")
     temp_dir = Path(tempfile.mkdtemp())
     dataset.convert(temp_dir)
+
+    folder_dataset = MusicDataset(temp_dir)
+    folder_dataset[0]
 
 
 def test_split():

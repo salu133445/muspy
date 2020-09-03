@@ -75,7 +75,9 @@ def check_tracks(tracks, resolution=4):
 
     notes = tracks[0].notes
     assert len(notes) == 9
-    for note, pitch in zip(notes, [76, 75, 76, 75, 76, 71, 74, 72, 69]):
+    pitches = (76, 75, 76, 75, 76, 71, 74, 72, 69)
+    for i, (note, pitch) in enumerate(zip(notes, pitches)):
+        assert note.time == i * resolution // 2
         assert note.pitch == pitch
         assert note.duration == resolution // 2
         assert note.velocity == 64

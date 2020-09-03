@@ -1,4 +1,4 @@
-"""Test cases for base class."""
+"""Test cases for MusPy classes."""
 from muspy import Note, Track
 
 

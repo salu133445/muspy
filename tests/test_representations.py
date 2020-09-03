@@ -10,7 +10,7 @@ def test_note_representation():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_note_representation(music)
+    encoded = muspy.to_representation(music, "note")
 
     assert encoded.shape == (9, 4)
     assert encoded.dtype == np.uint8
@@ -28,7 +28,7 @@ def test_note_representation():
     assert np.all(encoded == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = muspy.from_note_representation(encoded)
+    decoded = muspy.from_representation(encoded, "note")
     assert decoded[0].notes == music[0].notes
 
 
@@ -36,7 +36,7 @@ def test_note_representation_start_end():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_note_representation(music, use_start_end=True)
+    encoded = muspy.to_representation(music, "note", use_start_end=True)
 
     assert encoded.shape == (9, 4)
     assert encoded.dtype == np.uint8
@@ -54,7 +54,7 @@ def test_note_representation_start_end():
     assert np.all(encoded == np.array(answer, dtype=np.uint8,))
 
     # Decoding
-    decoded = muspy.from_note_representation(encoded, use_start_end=True)
+    decoded = muspy.from_representation(encoded, "note", use_start_end=True)
     assert decoded[0].notes == music[0].notes
 
 
@@ -62,7 +62,7 @@ def test_pitch_representation():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_pitch_representation(music)
+    encoded = muspy.to_representation(music, "pitch")
 
     assert encoded.shape == (18, 1)
     assert encoded.dtype == np.uint8
@@ -90,7 +90,7 @@ def test_pitch_representation():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = muspy.from_pitch_representation(encoded)
+    decoded = muspy.from_representation(encoded, "pitch")
     assert decoded[0].notes == music[0].notes
 
 
@@ -98,7 +98,7 @@ def test_pitch_representation_hold_state():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_pitch_representation(music, use_hold_state=True)
+    encoded = muspy.to_representation(music, "pitch", use_hold_state=True)
 
     assert encoded.shape == (18, 1)
     assert encoded.dtype == np.uint8
@@ -126,7 +126,7 @@ def test_pitch_representation_hold_state():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = muspy.from_pitch_representation(encoded, use_hold_state=True)
+    decoded = muspy.from_representation(encoded, "pitch", use_hold_state=True)
     assert decoded[0].notes == music[0].notes
 
 
@@ -134,7 +134,7 @@ def test_event_representation():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_event_representation(music)
+    encoded = muspy.to_representation(music, "event")
 
     assert encoded.shape == (36, 1)
     assert encoded.dtype == np.uint16
@@ -180,17 +180,15 @@ def test_event_representation():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
 
     # Decoding
-    decoded = muspy.from_event_representation(encoded)
+    decoded = muspy.from_representation(encoded, "event")
     assert decoded[0].notes == music[0].notes
 
 
 def test_event_representation_force_velocity_event():
     music = muspy.load(TEST_JSON_PATH)
 
-    processor = muspy.EventRepresentationProcessor(force_velocity_event=False)
-
     # Encoding
-    encoded = muspy.to_event_representation(music, force_velocity_event=False)
+    encoded = muspy.to_representation(music, "event", force_velocity_event=False)
 
     assert encoded.shape == (28, 1)
     assert encoded.dtype == np.uint16
@@ -228,7 +226,7 @@ def test_event_representation_force_velocity_event():
     assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
 
     # Decoding
-    decoded = muspy.from_event_representation(encoded)
+    decoded = muspy.from_event_representation(encoded, "event")
     assert decoded[0].notes == music[0].notes
 
 
@@ -236,8 +234,8 @@ def test_event_representation_end_of_sequence_event():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_event_representation(
-        music, use_end_of_sequence_event=True
+    encoded = muspy.to_representation(
+        music, "event",use_end_of_sequence_event=True
     )
 
     assert encoded.shape == (37, 1)
@@ -245,8 +243,8 @@ def test_event_representation_end_of_sequence_event():
     assert encoded[-1] == 388
 
     # Decoding
-    decoded = muspy.from_event_representation(
-        encoded, use_end_of_sequence_event=True
+    decoded = muspy.from_representation(
+        encoded, "event", use_end_of_sequence_event=True
     )
     assert decoded[0].notes == music[0].notes
 
@@ -255,7 +253,7 @@ def test_pianoroll_representation():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_pianoroll_representation(music)
+    encoded = muspy.to_representation(music, "pianoroll")
 
     assert encoded.shape == (19, 128)
     assert encoded.dtype == np.uint8
@@ -284,7 +282,7 @@ def test_pianoroll_representation():
     assert np.all(encoded.nonzero()[1] == np.array(answer, dtype=np.uint8))
 
     # Decoding
-    decoded = muspy.from_pianoroll_representation(encoded)
+    decoded = muspy.from_representation(encoded, "pianoroll")
     assert decoded[0].notes == music[0].notes
 
 
@@ -292,7 +290,7 @@ def test_pianoroll_representation_encode_velocity():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_pianoroll_representation(music, encode_velocity=False)
+    encoded = muspy.to_representation(music, "pianoroll", encode_velocity=False)
 
     assert encoded.shape == (19, 128)
     assert encoded.dtype == np.bool

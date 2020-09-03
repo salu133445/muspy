@@ -16,8 +16,8 @@ from .utils import (
 def test_music21():
     music = muspy.load(TEST_JSON_PATH)
 
-    score = muspy.to_music21(music)
-    loaded = muspy.from_music21(score)
+    score = muspy.to_object(music, "music21")
+    loaded = muspy.from_object(score)
 
     assert loaded.metadata.title == "Für Elise"
     assert loaded.resolution == 24
