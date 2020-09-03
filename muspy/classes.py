@@ -72,7 +72,7 @@ class Metadata(Base):
         [
             ("schema_version", str),
             ("title", str),
-            ("creators", list),
+            ("creators", str),
             ("copyright", str),
             ("collection", str),
             ("source_filename", str),
@@ -211,7 +211,7 @@ class TimeSignature(Base):
         super()._validate(attr)
         if attr == "numerator" and self.numerator < 1:
             raise ValueError("`numerator` must be positive.")
-        if attr == "numerator" and self.denominator < 1:
+        if attr == "denominator" and self.denominator < 1:
             raise ValueError("`denominator` must be positive.")
 
 

@@ -96,7 +96,7 @@ class Music(ComplexBase):
             ("tempos", Tempo),
             ("key_signatures", KeySignature),
             ("time_signatures", TimeSignature),
-            ("downbeats", list),
+            ("downbeats", int),
             ("lyrics", Lyric),
             ("annotations", Annotation),
             ("tracks", Track),
