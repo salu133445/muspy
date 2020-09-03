@@ -52,9 +52,8 @@ def validate_json(path: Union[str, Path]):
     if not _HAS_JSONSCHEMA:
         raise RuntimeError(
             "The jsonschema library is required for JSON schema validation. "
-            "Please install it by `pip install jsonschema`."
+            "You could install it by `pip install muspy[schema]`."
         )
-
     with open(str(path)) as f:
         data = json.load(f)
     with open(str(get_json_schema_path())) as f:
@@ -74,7 +73,7 @@ def validate_yaml(path: Union[str, Path]):
     if not _HAS_YAMALE:
         raise RuntimeError(
             "The Yamale library is required for YAML schema validation. "
-            "Please install it by `pip install yamale`."
+            "You could install it by `pip install muspy[schema]`."
         )
     data = yamale.make_data(str(path))
     schema = yamale.make_schema(str(get_yaml_schema_path()))
@@ -93,7 +92,7 @@ def validate_musicxml(path: Union[str, Path]):
     if not _HAS_XMLSCHEMA:
         raise RuntimeError(
             "The xmlschema library is required for MusicXML schema "
-            "validation. Please install it by `pip install xmlschema `."
+            "validation. You could install it by `pip install muspy[schema]`."
         )
     schema = xmlschema.XMLSchema(get_musicxml_schema_path())
     schema.validate(str(path))
