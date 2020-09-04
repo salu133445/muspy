@@ -23,10 +23,7 @@ from .yaml import load_yaml
 
 
 def load(
-    path: Union[str, Path],
-    kind: Optional[str] = None,
-    schema_path: Optional[Union[str, Path]] = None,
-    **kwargs: Any
+    path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
 ) -> Music:
     """Return a Music object loaded from a JSON or a YAML file.
 
@@ -35,11 +32,7 @@ def load(
     path : str or Path
         Path to the file to load.
     kind : {'json', 'yaml'}, optional
-        Format to save. If None, infer the format from the extension of
-        `path`.
-    schema_path : str or Path, optional
-        Path to the schema file. If given, validate the loaded data by the
-        schema.
+        the extension.
     **kwargs : dict
         Keyword arguments to pass to the target function. See
         :func:`muspy.load_json` or :func:`muspy.load_yaml` for available
