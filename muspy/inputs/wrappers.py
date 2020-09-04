@@ -32,6 +32,7 @@ def load(
     path : str or Path
         Path to the file to load.
     kind : {'json', 'yaml'}, optional
+        Format to save (case-insensitive). Defaults to infer the format from
         the extension.
     **kwargs : dict
         Keyword arguments to pass to the target function. See
@@ -45,7 +46,7 @@ def load(
 
     See Also
     --------
-    :func:`muspy.read`: Read from other formats such as MIDI and MusicXML.
+    :func:`muspy.read` : Read from other formats such as MIDI and MusicXML.
 
     """
     if kind is None:
@@ -74,8 +75,8 @@ def read(
     path : str or Path
         Path to the file to read.
     kind : {'midi', 'musicxml', 'abc'}, optional
-        Format to save. If None, infer the format from the extension of
-        `path`.
+        Format to save (case-insensitive). Defaults to infer the format from
+        the extension.
 
     Returns
     -------
@@ -84,15 +85,13 @@ def read(
 
     See Also
     --------
-    :func:`muspy.load`: Load from a JSON or a YAML file.
+    :func:`muspy.load` : Load from a JSON or a YAML file.
 
     """
     if kind is None:
         if str(path).lower().endswith((".mid", ".midi")):
             kind = "midi"
-        elif (
-            str(path).lower().endswith((".mxl", ".xml", ".mxml", ".musicxml"))
-        ):
+        elif str(path).lower().endswith((".mxl", ".xml", ".musicxml")):
             kind = "musicxml"
         elif str(path).lower().endswith(".abc"):
             kind = "abc"
@@ -148,9 +147,8 @@ def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
     ----------
     array : :class:`numpy.ndarray`
         Array in a supported representation.
-    kind : str
-        Data representation type. Supported values are 'pitch', 'pianoroll',
-        'event' and 'note'.
+    kind : str, {'pitch', 'pianoroll', 'event', 'note'}
+        Data representation type (case-insensitive).
 
     Returns
     -------

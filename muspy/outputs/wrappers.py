@@ -39,12 +39,12 @@ def save(
     music : :class:`muspy.Music` object
         Music object to save.
     kind : {'json', 'yaml'}, optional
-        Format to save. If None, infer the format from the extension of
-        `path`.
+        Format to save (case-insensitive). Defaults to infer the format from
+        the extension.
 
     See Also
     --------
-    :func:`muspy.write`: Write to other formats such as MIDI and MusicXML.
+    :func:`muspy.write` : Write to other formats such as MIDI and MusicXML.
 
     Notes
     -----
@@ -83,12 +83,12 @@ def write(
     music : :class:`muspy.Music` object
         Music object to convert.
     kind : {'midi', 'musicxml', 'abc', 'audio'}, optional
-        Format to save. If None, infer the format from the extension of
-        `path`.
+        Format to save (case-insensitive). Defaults to infer the format from
+        the extension.
 
     See Also
     --------
-    :func:`muspy.save`: Losslessly save to a JSON or a YAML file.
+    :func:`muspy.save` : Losslessly save to a JSON or a YAML file.
 
     """
     if kind is None:
@@ -128,7 +128,7 @@ def to_object(
     music : :class:`muspy.Music` object
         Music object to convert.
     target : str, {'music21', 'mido', 'pretty_midi', 'pypianoroll'}
-        Target class.
+        Target class (case-insensitive).
 
     Returns
     -------
@@ -160,7 +160,7 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
     music : :class:`muspy.Music` object
         Music object to convert.
     kind : str, {'pitch', 'piano-roll', 'event', 'note'}
-        Target representation.
+        Target representation (case-insensitive).
 
     Returns
     -------

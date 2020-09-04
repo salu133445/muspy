@@ -24,7 +24,7 @@ def n_pitches_used(music: Music) -> int:
 
     See Also
     --------
-    :func:`muspy.n_pitch_class_used`: Compute the number of unique pitch
+    :func:`muspy.n_pitch_class_used` : Compute the number of unique pitch
       classes used.
 
     """
@@ -57,7 +57,8 @@ def n_pitch_classes_used(music: Music) -> int:
 
     See Also
     --------
-    :func:`muspy.n_pitches_used`: Compute the number of unique pitches used.
+    :func:`muspy.n_pitches_used` : Compute the number of unique pitches
+      used.
 
     """
     count = 0
@@ -129,7 +130,7 @@ def empty_beat_rate(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.empty_measure_rate`: Compute the ratio of empty measures.
+    :func:`muspy.empty_measure_rate` : Compute the ratio of empty measures.
 
     References
     ----------
@@ -181,7 +182,7 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
 
     See Also
     --------
-    :func:`muspy.empty_beat_rate`: Compute the ratio of empty beats.
+    :func:`muspy.empty_beat_rate` : Compute the ratio of empty beats.
 
     References
     ----------
@@ -247,7 +248,7 @@ def polyphony(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.polyphony_rate`: Compute the ratio of time steps where
+    :func:`muspy.polyphony_rate` : Compute the ratio of time steps where
       multiple pitches are on.
 
     """
@@ -287,7 +288,7 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
 
     See Also
     --------
-    :func:`muspy.polyphony`: Compute the average number of pitches being
+    :func:`muspy.polyphony` : Compute the average number of pitches being
       played at the same time.
 
     References
@@ -341,7 +342,8 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
 
     See Also
     --------
-    :func:`muspy.scale_consistency`: Compute the largest pitch-in-class rate.
+    :func:`muspy.scale_consistency` : Compute the largest pitch-in-class
+      rate.
 
     References
     ----------
@@ -389,7 +391,7 @@ def scale_consistency(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_in_scale_rate`: Compute the ratio of pitches in a
+    :func:`muspy.pitch_in_scale_rate` : Compute the ratio of pitches in a
       certain musical scale.
 
     References
@@ -453,7 +455,7 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
 
     See Also
     --------
-    :func:`muspy.drum_pattern_consistency`: Compute the largest
+    :func:`muspy.drum_pattern_consistency` : Compute the largest
       drum-in-pattern rate.
 
     References
@@ -502,8 +504,8 @@ def drum_pattern_consistency(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.drum_in_pattern_rate`: Compute the ratio of drum notes in a
-      certain drum pattern.
+    :func:`muspy.drum_in_pattern_rate` : Compute the ratio of drum notes in
+      a certain drum pattern.
 
     """
     drum_in_duple_pattern_rate = drum_in_pattern_rate(music, "duple")
@@ -542,8 +544,8 @@ def pitch_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_class_entropy`: Compute the entropy of the normalized
-      pitch class histogram.
+    :func:`muspy.pitch_class_entropy` : Compute the entropy of the
+      normalized pitch class histogram.
 
     """
     counter = np.zeros(128)
@@ -582,8 +584,8 @@ def pitch_class_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_entropy`: Compute the entropy of the normalized pitch
-      histogram.
+    :func:`muspy.pitch_entropy` : Compute the entropy of the normalized
+      pitch histogram.
 
     References
     ----------

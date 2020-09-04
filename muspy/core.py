@@ -71,8 +71,8 @@ def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
 
     See Also
     --------
-    :func:`muspy.adjust_resolution`: Adjust the resolution and the timing of
-      time-stamped objects.
+    :func:`muspy.adjust_resolution` : Adjust the resolution and the timing
+      of time-stamped objects.
 
     Note
     ----

@@ -95,7 +95,7 @@ class Base:
 
     See Also
     --------
-    :class:`muspy.ComplexBase`: A base class that supports advanced
+    :class:`muspy.ComplexBase` : A base class that supports advanced
       operations on list attributes.
 
     """
@@ -214,7 +214,7 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.print`: Print the stored data in a beautiful
+        :meth:`muspy.Base.print` : Print the stored data in a beautiful
           YAML-like format.
 
         """
@@ -225,7 +225,7 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.pretty_str`: Return the stored data as a string in a
+        :meth:`muspy.Base.pretty_str` : Return the stored data as a string in a
           beautiful YAML-like format.
 
         """
@@ -271,9 +271,9 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.is_valid_type`: Return True if an attribute has a
+        :meth:`muspy.Base.is_valid_type` : Return True if an attribute has a
           valid type, otherwise False.
-        :meth:`muspy.Base.validate`: Raise an error if a certain attribute has
+        :meth:`muspy.Base.validate` : Raise an error if a certain attribute has
           an invalid type or value.
 
         """
@@ -314,10 +314,10 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.is_valid`: Return True if an attribute is valid,
+        :meth:`muspy.Base.is_valid` : Return True if an attribute is valid,
           otherwise False.
-        :meth:`muspy.Base.validate_type`: Raise an error if a certain attribute
-          has an invalid type.
+        :meth:`muspy.Base.validate_type` : Raise an error if a certain
+          attribute has an invalid type.
 
         """
         if attr is None:
@@ -344,9 +344,9 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.validate_type`: Raise an error if a certain attribute
-          has an invalid type.
-        :meth:`muspy.Base.is_valid`: Return True if an attribute is valid,
+        :meth:`muspy.Base.validate_type` : Raise an error if a certain
+          attribute has an invalid type.
+        :meth:`muspy.Base.is_valid` : Return True if an attribute is valid,
           otherwise False.
 
         """
@@ -373,9 +373,9 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.validate`: Raise an error if a certain attribute
+        :meth:`muspy.Base.validate` : Raise an error if a certain attribute
           has an invalid type or value.
-        :meth:`muspy.Base.is_valid_type`: Return True if an attribute has a
+        :meth:`muspy.Base.is_valid_type` : Return True if an attribute has a
           valid type, otherwise False.
 
         """
@@ -439,7 +439,7 @@ class ComplexBase(Base):
 
     See Also
     --------
-    :class:`muspy.Base`: The base class for MusPy classes.
+    :class:`muspy.Base` : The base class for MusPy classes.
 
     """
 

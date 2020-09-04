@@ -84,7 +84,7 @@ class NoteRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_note_representation`: Convert a Music object into
+        :func:`muspy.to_note_representation` : Convert a Music object into
           note-based representation.
 
         """
@@ -110,7 +110,7 @@ class NoteRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_note_representation`: Return a Music object
+        :func:`muspy.from_note_representation` : Return a Music object
           converted from note-based representation.
 
         """
@@ -187,7 +187,7 @@ class EventRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_event_representation`: Convert a Music object into
+        :func:`muspy.to_event_representation` : Convert a Music object into
           event-based representation.
 
         """
@@ -216,7 +216,7 @@ class EventRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_event_representation`: Return a Music object
+        :func:`muspy.from_event_representation` : Return a Music object
           converted from event-based representation.
 
         """
@@ -269,7 +269,7 @@ class PitchRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_pitch_representation`: Convert a Music object into
+        :func:`muspy.to_pitch_representation` : Convert a Music object into
           pitch-based representation.
 
         """
@@ -293,7 +293,7 @@ class PitchRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_pitch_representation`: Return a Music object
+        :func:`muspy.from_pitch_representation` : Return a Music object
           converted from pitch-based representation.
 
         """
@@ -345,7 +345,7 @@ class PianoRollRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_pianoroll_representation`: Convert a Music object
+        :func:`muspy.to_pianoroll_representation` : Convert a Music object
           into piano-roll representation.
 
         """
@@ -370,7 +370,7 @@ class PianoRollRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_pianoroll_representation`: Return a Music object
+        :func:`muspy.from_pianoroll_representation` : Return a Music object
           converted from piano-roll representation.
 
         """
