@@ -60,6 +60,7 @@ from .music21 import Music21Dataset
 from .nes import NESMusicDatabase
 from .nmd import NottinghamDatabase
 from .wikifonia import WikifoniaDataset
+from .wrapper import list_datasets, get_dataset
 
 __all__ = [
     "ABCFolderDataset",
@@ -84,4 +85,6 @@ __all__ = [
     "RemoteFolderDataset",
     "RemoteMusicDataset",
     "WikifoniaDataset",
+    "get_dataset",
+    "list_datasets",
 ]

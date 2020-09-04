@@ -1,9 +1,56 @@
 """Test cases for dataset module."""
+import pytest
 import tempfile
 from pathlib import Path
 
 import muspy
-from muspy import MusicDataset, Music21Dataset, NottinghamDatabase
+from muspy import (
+    MusicDataset,
+    EssenFolkSongDatabase,
+    HymnalDataset,
+    HymnalTuneDataset,
+    JSBChoralesDataset,
+    LakhMIDIAlignedDataset,
+    LakhMIDIDataset,
+    LakhMIDIMatchedDataset,
+    MAESTRODatasetV1,
+    MAESTRODatasetV2,
+    Music21Dataset,
+    NESMusicDatabase,
+    NottinghamDatabase,
+    WikifoniaDataset,
+    get_dataset,
+    list_datasets,
+)
+
+
+def test_get_dataset():
+    answers = [
+        ("essen", EssenFolkSongDatabase),
+        ("hymnal", HymnalDataset),
+        ("hymnal-tune", HymnalTuneDataset),
+        ("jsb", JSBChoralesDataset),
+        ("lmd", LakhMIDIDataset),
+        ("lmd-full", LakhMIDIDataset),
+        ("lmd-matched", LakhMIDIMatchedDataset),
+        ("lmd-aligned", LakhMIDIAlignedDataset),
+        ("maestro", MAESTRODatasetV2),
+        ("maestro-v2", MAESTRODatasetV2),
+        ("maestro-v1", MAESTRODatasetV1),
+        ("music21", Music21Dataset),
+        ("nes", NESMusicDatabase),
+        ("nmd", NottinghamDatabase),
+        ("wikifonia", WikifoniaDataset),
+    ]
+    for key, dataset in answers:
+        assert get_dataset(key) == dataset
+
+    with pytest.raises(ValueError):
+        get_dataset("_")
+
+
+def test_list_datasets():
+    assert len(list_datasets()) == 13
 
 
 def test_music21():
