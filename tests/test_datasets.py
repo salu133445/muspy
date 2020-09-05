@@ -1,11 +1,11 @@
 """Test cases for dataset module."""
-import pytest
 import tempfile
 from pathlib import Path
 
+import pytest
+
 import muspy
 from muspy import (
-    MusicDataset,
     EssenFolkSongDatabase,
     HymnalDataset,
     HymnalTuneDataset,
@@ -16,6 +16,7 @@ from muspy import (
     MAESTRODatasetV1,
     MAESTRODatasetV2,
     Music21Dataset,
+    MusicDataset,
     NESMusicDatabase,
     NottinghamDatabase,
     WikifoniaDataset,
@@ -75,20 +76,11 @@ def test_split():
 
 def test_to_pytorch_dataset():
     dataset = Music21Dataset("demos")
-    temp_dir = Path(tempfile.mkdtemp())
     pytorch_dataset = dataset.to_pytorch_dataset(representation="pitch")
     pytorch_dataset[0]
 
 
 def test_to_tensorflow_dataset():
     dataset = Music21Dataset("demos")
-    temp_dir = Path(tempfile.mkdtemp())
     tensorflow_dataset = dataset.to_tensorflow_dataset(representation="pitch")
     tensorflow_dataset.take(1)
-
-
-def test_nmd():
-    temp_dir = Path(tempfile.mkdtemp())
-
-    dataset = NottinghamDatabase(temp_dir, download_and_extract=True)
-    dataset[0]
