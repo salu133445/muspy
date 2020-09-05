@@ -63,8 +63,8 @@ html_static_path = []  # '_static'
 # -- Extension configurations -------------------------------------------------
 autoclass_content = "both"
 autodoc_typehints = "none"
+autodoc_default_flags = ["members"]
 autodoc_default_options = {
-    "members": True,
     "member-order": "bysource",
 }
 intersphinx_mapping = {
