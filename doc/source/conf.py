@@ -20,6 +20,7 @@ import sphinx_rtd_theme
 
 sys.path.insert(0, os.path.abspath(os.path.join("..", "..")))
 
+master_doc = "index"
 
 # -- Project information -----------------------------------------------------
 
