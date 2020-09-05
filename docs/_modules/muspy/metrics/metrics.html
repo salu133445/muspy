@@ -185,7 +185,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.n_pitch_class_used`: Compute the number of unique pitch</span>
+<span class="sd">    :func:`muspy.n_pitch_class_used` : Compute the number of unique pitch</span>
 <span class="sd">      classes used.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -218,7 +218,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.n_pitches_used`: Compute the number of unique pitches used.</span>
+<span class="sd">    :func:`muspy.n_pitches_used` : Compute the number of unique pitches</span>
+<span class="sd">      used.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -290,7 +291,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.empty_measure_rate`: Compute the ratio of empty measures.</span>
+<span class="sd">    :func:`muspy.empty_measure_rate` : Compute the ratio of empty measures.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -342,7 +343,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.empty_beat_rate`: Compute the ratio of empty beats.</span>
+<span class="sd">    :func:`muspy.empty_beat_rate` : Compute the ratio of empty beats.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -408,7 +409,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.polyphony_rate`: Compute the ratio of time steps where</span>
+<span class="sd">    :func:`muspy.polyphony_rate` : Compute the ratio of time steps where</span>
 <span class="sd">      multiple pitches are on.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -448,7 +449,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.polyphony`: Compute the average number of pitches being</span>
+<span class="sd">    :func:`muspy.polyphony` : Compute the average number of pitches being</span>
 <span class="sd">      played at the same time.</span>
 
 <span class="sd">    References</span>
@@ -502,7 +503,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.scale_consistency`: Compute the largest pitch-in-class rate.</span>
+<span class="sd">    :func:`muspy.scale_consistency` : Compute the largest pitch-in-class</span>
+<span class="sd">      rate.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -550,7 +552,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.pitch_in_scale_rate`: Compute the ratio of pitches in a</span>
+<span class="sd">    :func:`muspy.pitch_in_scale_rate` : Compute the ratio of pitches in a</span>
 <span class="sd">      certain musical scale.</span>
 
 <span class="sd">    References</span>
@@ -614,7 +616,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.drum_pattern_consistency`: Compute the largest</span>
+<span class="sd">    :func:`muspy.drum_pattern_consistency` : Compute the largest</span>
 <span class="sd">      drum-in-pattern rate.</span>
 
 <span class="sd">    References</span>
@@ -663,8 +665,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.drum_in_pattern_rate`: Compute the ratio of drum notes in a</span>
-<span class="sd">      certain drum pattern.</span>
+<span class="sd">    :func:`muspy.drum_in_pattern_rate` : Compute the ratio of drum notes in</span>
+<span class="sd">      a certain drum pattern.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">drum_in_duple_pattern_rate</span> <span class="o">=</span> <span class="n">drum_in_pattern_rate</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="s2">&quot;duple&quot;</span><span class="p">)</span>
@@ -678,7 +680,8 @@
 
 
 <span class="k">def</span> <span class="nf">_entropy</span><span class="p">(</span><span class="n">prob</span><span class="p">):</span>
-    <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">prob</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">prob</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">prob</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">prob</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="pitch_entropy"><a class="viewcode-back" href="../../../metrics.html#muspy.metrics.pitch_entropy">[docs]</a><span class="k">def</span> <span class="nf">pitch_entropy</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -703,8 +706,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.pitch_class_entropy`: Compute the entropy of the normalized</span>
-<span class="sd">      pitch class histogram.</span>
+<span class="sd">    :func:`muspy.pitch_class_entropy` : Compute the entropy of the</span>
+<span class="sd">      normalized pitch class histogram.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">counter</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">128</span><span class="p">)</span>
@@ -743,8 +746,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.pitch_entropy`: Compute the entropy of the normalized pitch</span>
-<span class="sd">      histogram.</span>
+<span class="sd">    :func:`muspy.pitch_entropy` : Compute the entropy of the normalized</span>
+<span class="sd">      pitch histogram.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>

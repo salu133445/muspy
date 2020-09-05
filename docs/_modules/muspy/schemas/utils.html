@@ -166,16 +166,22 @@
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">jsonschema</span>
+
+    <span class="n">_HAS_JSONSCHEMA</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_HAS_JSONSCHEMA</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">xmlschema</span>
+
+    <span class="n">_HAS_XMLSCHEMA</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_HAS_XMLSCHEMA</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">yamale</span>
+
+    <span class="n">_HAS_YAMALE</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">_HAS_YAMALE</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -207,12 +213,11 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_HAS_JSONSCHEMA</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">&quot;The jsonschema library is required for JSON schema validation. &quot;</span>
-            <span class="s2">&quot;Please install it by `pip install jsonschema`.&quot;</span>
+            <span class="s2">&quot;You could install it by `pip install muspy[schema]`.&quot;</span>
         <span class="p">)</span>
-
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">get_json_schema_path</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">get_json_schema_path</span><span class="p">()))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">schema</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">jsonschema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span></div>
 
@@ -229,7 +234,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_HAS_YAMALE</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">&quot;The Yamale library is required for YAML schema validation. &quot;</span>
-            <span class="s2">&quot;Please install it by `pip install yamale`.&quot;</span>
+            <span class="s2">&quot;You could install it by `pip install muspy[schema]`.&quot;</span>
         <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">yamale</span><span class="o">.</span><span class="n">make_data</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">yamale</span><span class="o">.</span><span class="n">make_schema</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">get_yaml_schema_path</span><span class="p">()))</span>
@@ -248,7 +253,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">_HAS_XMLSCHEMA</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
             <span class="s2">&quot;The xmlschema library is required for MusicXML schema &quot;</span>
-            <span class="s2">&quot;validation. Please install it by `pip install xmlschema `.&quot;</span>
+            <span class="s2">&quot;validation. You could install it by `pip install muspy[schema]`.&quot;</span>
         <span class="p">)</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">xmlschema</span><span class="o">.</span><span class="n">XMLSchema</span><span class="p">(</span><span class="n">get_musicxml_schema_path</span><span class="p">())</span>
     <span class="n">schema</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span></div>

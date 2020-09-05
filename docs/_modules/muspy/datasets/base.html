@@ -160,9 +160,20 @@
             
   <h1>Source code for muspy.datasets.base</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Base Dataset classes.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">permutation</span>
@@ -170,7 +181,7 @@
 
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">read_abc_string</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">download_google_drive_file</span><span class="p">,</span> <span class="n">download_url</span><span class="p">,</span> <span class="n">extract_archive</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">download_url</span><span class="p">,</span> <span class="n">extract_archive</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span> <span class="k">as</span> <span class="n">TorchDataset</span>
@@ -194,20 +205,8 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">HAS_JOBLIB</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="n">RemoteDataset_</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RemoteDataset_&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;RemoteDataset&quot;</span><span class="p">)</span>
-<span class="n">FolderDataset_</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;FolderDataset_&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;FolderDataset&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">read_split</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Read a train-test-validation split from file.&quot;&quot;&quot;</span>
-    <span class="n">indices</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
-            <span class="n">indices</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
-    <span class="k">return</span> <span class="n">indices</span>
+<span class="n">RemoteDatasetType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RemoteDatasetType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;RemoteDataset&quot;</span><span class="p">)</span>
+<span class="n">FolderDatasetType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;FolderDatasetType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;FolderDataset&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DatasetInfo"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.DatasetInfo">[docs]</a><span class="k">class</span> <span class="nc">DatasetInfo</span><span class="p">:</span>
@@ -218,20 +217,20 @@
         <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">homepage</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">citation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">license</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">homepage</span> <span class="o">=</span> <span class="n">homepage</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">citation</span> <span class="o">=</span> <span class="n">citation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">license</span> <span class="o">=</span> <span class="n">license</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="s2">&quot;DatasetInfo(</span><span class="se">\n</span><span class="s2">  name=</span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">  description=</span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">  homepage=</span><span class="si">{}</span><span class="s2">,</span><span class="se">\n</span><span class="s2">  &quot;</span>
-            <span class="s2">&quot;citation=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">homepage</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">citation</span>
-            <span class="p">)</span>
-        <span class="p">)</span></div>
+        <span class="n">to_join</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;homepage&quot;</span><span class="p">,</span> <span class="s2">&quot;license&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">to_join</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="s2">&quot;DatasetInfo(&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">to_join</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span></div>
 
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
@@ -247,6 +246,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_info</span><span class="p">:</span> <span class="n">DatasetInfo</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">()</span>
+    <span class="n">_citation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
@@ -257,19 +257,19 @@
 <div class="viewcode-block" id="Dataset.info"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.info">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the dataset infomation.&quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_info</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_info</span></div>
 
-<div class="viewcode-block" id="Dataset.cite"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.cite">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">cite</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+<div class="viewcode-block" id="Dataset.citation"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.citation">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">citation</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Print the citation infomation.&quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_info</span><span class="o">.</span><span class="n">citation</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_citation</span></div>
 
 <div class="viewcode-block" id="Dataset.save"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save all the music objects to a directory.</span>
 
@@ -298,10 +298,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;json&#39; or &#39;yaml&#39;.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`n_jobs` must be an integer.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n_jobs</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`n_jobs` must be positive.&quot;</span><span class="p">)</span>
 
         <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -349,7 +345,7 @@
 <div class="viewcode-block" id="Dataset.split"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
         <span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
@@ -372,7 +368,8 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">read_split</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">splits</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`splits` must be of type float, list or tuple.&quot;</span><span class="p">)</span>
@@ -408,14 +405,9 @@
             <span class="n">indices</span><span class="p">[</span><span class="n">names</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span> <span class="o">=</span> <span class="n">rand_indices</span><span class="p">[</span><span class="n">start_idx</span><span class="p">:</span><span class="n">end_idx</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">indices_</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;# </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">splits</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indices</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
-                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                            <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="n">value</span><span class="p">)</span>
-                        <span class="p">)</span>
-                    <span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">indices_</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">indices</span></div>
 
@@ -424,7 +416,7 @@
         <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">representation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">split_filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;TorchDataset&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TorchDataset&quot;</span><span class="p">]]:</span>
@@ -497,7 +489,7 @@
         <span class="n">factory</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">representation</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">split_filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">splits</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;TFDataset&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TFDataset&quot;</span><span class="p">]]:</span>
@@ -688,7 +680,7 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="RemoteDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDataset_</span><span class="p">:</span>
+<div class="viewcode-block" id="RemoteDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Download the source datasets.</span>
 
 <span class="sd">        Returns</span>
@@ -712,15 +704,12 @@
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Source file is found but corrupted.&quot;</span><span class="p">)</span>
 
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Start downloading source : </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]))</span>
-            <span class="k">if</span> <span class="n">source</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;google_drive_id&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">download_google_drive_file</span><span class="p">(</span>
-                    <span class="n">source</span><span class="p">[</span><span class="s2">&quot;google_drive_id&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="p">,</span> <span class="n">md5</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">download_url</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="p">,</span> <span class="n">md5</span><span class="p">)</span>
+            <span class="n">download_url</span><span class="p">(</span><span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">],</span> <span class="n">filename</span><span class="p">,</span> <span class="n">md5</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="RemoteDataset.extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDataset_</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDataset_</span><span class="p">:</span>
+<div class="viewcode-block" id="RemoteDataset.extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Extract the downloaded archive(s).</span>
 
 <span class="sd">        Parameters</span>
@@ -744,8 +733,8 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.download_and_extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download_and_extract">[docs]</a>    <span class="k">def</span> <span class="nf">download_and_extract</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDataset_</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDataset_</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Extract the downloaded archives.</span>
 
 <span class="sd">        This is equivalent to ``RemoteDataset.download().extract(cleanup)``.</span>
@@ -783,7 +772,7 @@
             <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
             <span class="n">factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span>
             <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Full&quot;</span><span class="p">,</span>
-            <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
@@ -827,7 +816,7 @@
             <span class="n">dataset</span><span class="p">:</span> <span class="n">Dataset</span><span class="p">,</span>
             <span class="n">representation</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Full&quot;</span><span class="p">,</span>
-            <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">indices</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
         <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">representation</span> <span class="o">=</span> <span class="n">representation</span>
@@ -939,7 +928,7 @@
 <span class="sd">    ignore_exceptions : bool, optional</span>
 <span class="sd">        Whether to ignore errors and skip failed conversions. This can be</span>
 <span class="sd">        helpful if some of the source files is known to be corrupted.</span>
-<span class="sd">        Defaults to False.</span>
+<span class="sd">        Defaults to True.</span>
 <span class="sd">    use_converted : bool, optional</span>
 <span class="sd">        Force to disable on-the-fly mode and use stored converted data</span>
 
@@ -981,7 +970,7 @@
         <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -1046,7 +1035,7 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="FolderDataset.use_converted"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.use_converted">[docs]</a>    <span class="k">def</span> <span class="nf">use_converted</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
+<div class="viewcode-block" id="FolderDataset.use_converted"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.use_converted">[docs]</a>    <span class="k">def</span> <span class="nf">use_converted</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Disable on-the-fly mode and use converted data.</span>
 
 <span class="sd">        Returns</span>
@@ -1068,7 +1057,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="FolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
+<div class="viewcode-block" id="FolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
 
 <span class="sd">        Returns</span>
@@ -1092,11 +1081,11 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="FolderDataset.convert"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Convert and save the Music objects.</span>
 
 <span class="sd">        The converted files will be named by its index and saved to</span>
@@ -1114,7 +1103,7 @@
 <span class="sd">        ignore_exceptions : bool, optional</span>
 <span class="sd">            Whether to ignore errors and skip failed conversions. This can be</span>
 <span class="sd">            helpful if some of the source files is known to be corrupted.</span>
-<span class="sd">            Defaults to False.</span>
+<span class="sd">            Defaults to True.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1162,7 +1151,7 @@
 <span class="sd">    ignore_exceptions : bool, optional</span>
 <span class="sd">        Whether to ignore errors and skip failed conversions. This can be</span>
 <span class="sd">        helpful if some of the source files is known to be corrupted.</span>
-<span class="sd">        Defaults to False.</span>
+<span class="sd">        Defaults to True.</span>
 <span class="sd">    use_converted : bool, optional</span>
 <span class="sd">        Force to disable on-the-fly mode and use stored converted data</span>
 
@@ -1182,7 +1171,7 @@
         <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">RemoteDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>
@@ -1210,7 +1199,7 @@
                     <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">read_abc_string</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="ABCFolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDataset_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDataset_</span><span class="p">:</span>
+<div class="viewcode-block" id="ABCFolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
 
 <span class="sd">        Returns</span>
@@ -1264,7 +1253,7 @@
         <span class="n">convert</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">use_converted</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">RemoteDataset</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">download_and_extract</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">)</span>

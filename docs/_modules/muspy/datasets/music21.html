@@ -167,7 +167,7 @@
 
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
-<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">MusicDataset</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Dataset</span><span class="p">,</span> <span class="n">DatasetInfo</span><span class="p">,</span> <span class="n">MusicDataset</span>
 
 <span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Music21 Corpus Dataset&quot;</span>
 <span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;Dataset automatically created from a music21 corpus.&quot;&quot;&quot;</span>
@@ -201,6 +201,8 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">)</span>
+    <span class="n">_citation</span> <span class="o">=</span> <span class="n">_CITATION</span>
     <span class="n">_extensions</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;.mid&quot;</span><span class="p">,</span>
         <span class="s2">&quot;.midi&quot;</span><span class="p">,</span>
@@ -237,7 +239,7 @@
         <span class="n">root</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;MusicDataset&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Convert and save the Music objects; return a MusicDataset instance.</span>
 
@@ -253,7 +255,7 @@
 <span class="sd">        ignore_exceptions : bool, optional</span>
 <span class="sd">            Whether to ignore errors and skip failed conversions. This can be</span>
 <span class="sd">            helpful if some of the source files is known to be corrupted.</span>
-<span class="sd">            Defaults to False.</span>
+<span class="sd">            Defaults to True.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">)</span>

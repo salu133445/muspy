@@ -184,10 +184,7 @@
 
 
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">schema_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object loaded from a JSON or a YAML file.</span>
 
@@ -196,11 +193,8 @@
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the file to load.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
-<span class="sd">        Format to save. If None, infer the format from the extension of</span>
-<span class="sd">        `path`.</span>
-<span class="sd">    schema_path : str or Path, optional</span>
-<span class="sd">        Path to the schema file. If given, validate the loaded data by the</span>
-<span class="sd">        schema.</span>
+<span class="sd">        Format to save (case-insensitive). Defaults to infer the format from</span>
+<span class="sd">        the extension.</span>
 <span class="sd">    **kwargs : dict</span>
 <span class="sd">        Keyword arguments to pass to the target function. See</span>
 <span class="sd">        :func:`muspy.load_json` or :func:`muspy.load_yaml` for available</span>
@@ -213,9 +207,10 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.read`: Read from other formats such as MIDI and MusicXML.</span>
+<span class="sd">    :func:`muspy.read` : Read from other formats such as MIDI and MusicXML.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: disable=unused-argument</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
@@ -242,8 +237,8 @@
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the file to read.</span>
 <span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;abc&#39;}, optional</span>
-<span class="sd">        Format to save. If None, infer the format from the extension of</span>
-<span class="sd">        `path`.</span>
+<span class="sd">        Format to save (case-insensitive). Defaults to infer the format from</span>
+<span class="sd">        the extension.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -252,15 +247,13 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.load`: Load from a JSON or a YAML file.</span>
+<span class="sd">    :func:`muspy.load` : Load from a JSON or a YAML file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mid&quot;</span><span class="p">,</span> <span class="s2">&quot;.midi&quot;</span><span class="p">)):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.mxml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">))</span>
-        <span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musicxml&quot;</span>
         <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.abc&quot;</span><span class="p">):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
@@ -316,9 +309,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    array : :class:`numpy.ndarray`</span>
 <span class="sd">        Array in a supported representation.</span>
-<span class="sd">    kind : str</span>
-<span class="sd">        Data representation type. Supported values are &#39;pitch&#39;, &#39;pianoroll&#39;,</span>
-<span class="sd">        &#39;event&#39; and &#39;note&#39;.</span>
+<span class="sd">    kind : str, {&#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
+<span class="sd">        Data representation type (case-insensitive).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

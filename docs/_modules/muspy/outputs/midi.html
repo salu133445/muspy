@@ -164,12 +164,13 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">pretty_midi</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Instrument</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">KeySignature</span> <span class="k">as</span> <span class="n">PmKeySignature</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">PmTimeSignature</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PmNote</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Lyric</span> <span class="k">as</span> <span class="n">PmLyric</span>
 <span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">MetaMessage</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">MidiTrack</span><span class="p">,</span> <span class="n">bpm2tempo</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Instrument</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">KeySignature</span> <span class="k">as</span> <span class="n">PmKeySignature</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Lyric</span> <span class="k">as</span> <span class="n">PmLyric</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PmNote</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">PmTimeSignature</span>
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span>
@@ -537,31 +538,31 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Create an PrettyMIDI instance</span>
-    <span class="n">pm</span> <span class="o">=</span> <span class="n">PrettyMIDI</span><span class="p">()</span>
+    <span class="n">midi</span> <span class="o">=</span> <span class="n">PrettyMIDI</span><span class="p">()</span>
 
     <span class="c1"># Key signatures</span>
     <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span>
-        <span class="n">pm</span><span class="o">.</span><span class="n">key_signature_changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">midi</span><span class="o">.</span><span class="n">key_signature_changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">to_pretty_midi_key_signature</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="c1"># Time signatures</span>
     <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span>
-        <span class="n">pm</span><span class="o">.</span><span class="n">time_signature_changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+        <span class="n">midi</span><span class="o">.</span><span class="n">time_signature_changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="n">to_pretty_midi_time_signature</span><span class="p">(</span><span class="n">time_signature</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="c1"># Lyrics</span>
     <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">lyrics</span><span class="p">:</span>
-        <span class="n">pm</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pretty_midi_lyric</span><span class="p">(</span><span class="n">lyric</span><span class="p">))</span>
+        <span class="n">midi</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pretty_midi_lyric</span><span class="p">(</span><span class="n">lyric</span><span class="p">))</span>
 
     <span class="c1"># Tracks</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-        <span class="n">pm</span><span class="o">.</span><span class="n">instruments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pretty_midi_instrument</span><span class="p">(</span><span class="n">track</span><span class="p">))</span>
+        <span class="n">midi</span><span class="o">.</span><span class="n">instruments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_pretty_midi_instrument</span><span class="p">(</span><span class="n">track</span><span class="p">))</span>
 
     <span class="c1"># TODO: Adjust timings</span>
 
-    <span class="k">return</span> <span class="n">pm</span></div>
+    <span class="k">return</span> <span class="n">midi</span></div>
 
 
 <span class="k">def</span> <span class="nf">write_midi_pretty_midi</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">):</span>
@@ -577,8 +578,8 @@
 <span class="sd">        Music object to convert.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">pm</span> <span class="o">=</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="n">pm</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="n">midi</span> <span class="o">=</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="n">midi</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
 
 <div class="viewcode-block" id="write_midi"><a class="viewcode-back" href="../../../io/midi.html#muspy.write_midi">[docs]</a><span class="k">def</span> <span class="nf">write_midi</span><span class="p">(</span>

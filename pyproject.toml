@@ -5,6 +5,15 @@ line-length = 79
 profile = "black"
 line_length = 79
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = "tests"
+env = "TF_CPP_MIN_LOG_LEVEL=1"
+
+[tool.pylint.master]
+ignore-patterns = "test_.*?py"
+
 [tool.pylint.basic]
 good-names = "i,j,k,_,a,b,c,x,y,t,n,ax,f,T"
 
@@ -13,9 +22,3 @@ disable = "R,C0330,C0326,W0511"
 
 [tool.pylint.format]
 max-line-length = 79
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-ra -q"
-testpaths = "tests"
-env = "TF_CPP_MIN_LOG_LEVEL=1"
