@@ -1,6 +1,5 @@
 """Test cases for objective metrics."""
 import math
-from pathlib import Path
 
 import muspy
 from muspy import (

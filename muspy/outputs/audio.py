@@ -2,7 +2,7 @@
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import Optional, TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import numpy as np
 from numpy import ndarray

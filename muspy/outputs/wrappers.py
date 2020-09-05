@@ -1,6 +1,6 @@
 """Wrapper functions for output interface."""
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union, Any
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -74,7 +74,7 @@ def write(
     kind: Optional[str] = None,
     **kwargs: Any
 ):
-    """Write a Music object to a MIDI or a MusicXML file.
+    """Write a Music object to a MIDI, a MusicXML, an ABC or an audio file.
 
     Parameters
     ----------

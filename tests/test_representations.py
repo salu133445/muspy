@@ -188,7 +188,9 @@ def test_event_representation_force_velocity_event():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_representation(music, "event", force_velocity_event=False)
+    encoded = muspy.to_representation(
+        music, "event", force_velocity_event=False
+    )
 
     assert encoded.shape == (28, 1)
     assert encoded.dtype == np.uint16
@@ -235,7 +237,7 @@ def test_event_representation_end_of_sequence_event():
 
     # Encoding
     encoded = muspy.to_representation(
-        music, "event",use_end_of_sequence_event=True
+        music, "event", use_end_of_sequence_event=True
     )
 
     assert encoded.shape == (37, 1)
@@ -290,7 +292,9 @@ def test_pianoroll_representation_encode_velocity():
     music = muspy.load(TEST_JSON_PATH)
 
     # Encoding
-    encoded = muspy.to_representation(music, "pianoroll", encode_velocity=False)
+    encoded = muspy.to_representation(
+        music, "pianoroll", encode_velocity=False
+    )
 
     assert encoded.shape == (19, 128)
     assert encoded.dtype == np.bool

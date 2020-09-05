@@ -37,13 +37,13 @@ Dataset Classes
 """
 
 from .base import (
+    ABCFolderDataset,
     Dataset,
     DatasetInfo,
-    RemoteDataset,
-    ABCFolderDataset,
     FolderDataset,
     MusicDataset,
     RemoteABCFolderDataset,
+    RemoteDataset,
     RemoteFolderDataset,
     RemoteMusicDataset,
 )
@@ -60,7 +60,7 @@ from .music21 import Music21Dataset
 from .nes import NESMusicDatabase
 from .nmd import NottinghamDatabase
 from .wikifonia import WikifoniaDataset
-from .wrapper import list_datasets, get_dataset
+from .wrapper import get_dataset, list_datasets
 
 __all__ = [
     "ABCFolderDataset",

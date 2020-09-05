@@ -3,12 +3,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Tuple, Union
 
 import pretty_midi
-from pretty_midi import PrettyMIDI, Instrument
-from pretty_midi import KeySignature as PmKeySignature
-from pretty_midi import TimeSignature as PmTimeSignature
-from pretty_midi import Note as PmNote
-from pretty_midi import Lyric as PmLyric
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
+from pretty_midi import Instrument
+from pretty_midi import KeySignature as PmKeySignature
+from pretty_midi import Lyric as PmLyric
+from pretty_midi import Note as PmNote
+from pretty_midi import PrettyMIDI
+from pretty_midi import TimeSignature as PmTimeSignature
 
 from ..classes import (
     DEFAULT_VELOCITY,
@@ -376,31 +377,31 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
 
     """
     # Create an PrettyMIDI instance
-    pm = PrettyMIDI()
+    midi = PrettyMIDI()
 
     # Key signatures
     for key_signature in music.key_signatures:
-        pm.key_signature_changes.append(
+        midi.key_signature_changes.append(
             to_pretty_midi_key_signature(key_signature)
         )
 
     # Time signatures
     for time_signature in music.time_signatures:
-        pm.time_signature_changes.append(
+        midi.time_signature_changes.append(
             to_pretty_midi_time_signature(time_signature)
         )
 
     # Lyrics
     for lyric in music.lyrics:
-        pm.lyrics.append(to_pretty_midi_lyric(lyric))
+        midi.lyrics.append(to_pretty_midi_lyric(lyric))
 
     # Tracks
     for track in music.tracks:
-        pm.instruments.append(to_pretty_midi_instrument(track))
+        midi.instruments.append(to_pretty_midi_instrument(track))
 
     # TODO: Adjust timings
 
-    return pm
+    return midi
 
 
 def write_midi_pretty_midi(path: Union[str, Path], music: "Music"):
@@ -416,8 +417,8 @@ def write_midi_pretty_midi(path: Union[str, Path], music: "Music"):
         Music object to convert.
 
     """
-    pm = to_pretty_midi(music)
-    pm.write(str(path))
+    midi = to_pretty_midi(music)
+    midi.write(str(path))
 
 
 def write_midi(

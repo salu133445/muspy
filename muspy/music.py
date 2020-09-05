@@ -347,7 +347,7 @@ class Music(ComplexBase):
     def write(
         self, path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
     ):
-        """Write to a MIDI or a MusicXML file.
+        """Write to a MIDI, a MusicXML, an ABC or an audio file.
 
         Refer to :func:`muspy.write` for full documentation.
 

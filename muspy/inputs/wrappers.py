@@ -49,6 +49,7 @@ def load(
     :func:`muspy.read` : Read from other formats such as MIDI and MusicXML.
 
     """
+    # pylint: disable=unused-argument
     if kind is None:
         if str(path).lower().endswith(".json"):
             kind = "json"

@@ -5,8 +5,9 @@ from pathlib import Path
 from typing import List, Union
 
 from mido import MidiFile, tempo2bpm
-from pretty_midi import Instrument, PrettyMIDI
+from pretty_midi import Instrument
 from pretty_midi import Note as PrettyMIDINote
+from pretty_midi import PrettyMIDI
 
 from ..classes import (
     Annotation,
@@ -288,12 +289,12 @@ def read_midi_mido(
     return music
 
 
-def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
+def parse_pretty_midi_key_signatures(midi: PrettyMIDI) -> List[KeySignature]:
     """Return KeySignature objects parsed from a PrettyMIDI object.
 
     Parameters
     ----------
-    pm : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI` object
         PrettyMIDI object to convert.
 
     Returns
@@ -303,19 +304,19 @@ def parse_pretty_midi_key_signatures(pm: PrettyMIDI) -> List[KeySignature]:
 
     """
     key_signatures = []
-    for key_signature in pm.key_signature_changes:
+    for key_signature in midi.key_signature_changes:
         is_minor, root = divmod(key_signature.key_number, 12)
         mode = "minor" if is_minor else "major"
         key_signatures.append(KeySignature(key_signature.time, root, mode))
     return key_signatures
 
 
-def parse_pretty_midi_time_signatures(pm: PrettyMIDI) -> List[TimeSignature]:
-    """Return TimeSignature obejcts parsed from a PrettyMIDI object.
+def parse_pretty_midi_time_signatures(midi: PrettyMIDI) -> List[TimeSignature]:
+    """Return TimeSignature objects parsed from a PrettyMIDI object.
 
     Parameters
     ----------
-    pm : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI` object
         PrettyMIDI object to convert.
 
     Returns
@@ -325,7 +326,7 @@ def parse_pretty_midi_time_signatures(pm: PrettyMIDI) -> List[TimeSignature]:
 
     """
     time_signatures = []
-    for time_signature in pm.time_signature_changes:
+    for time_signature in midi.time_signature_changes:
         time_signatures.append(
             TimeSignature(
                 time_signature.time,
@@ -336,12 +337,12 @@ def parse_pretty_midi_time_signatures(pm: PrettyMIDI) -> List[TimeSignature]:
     return time_signatures
 
 
-def parse_pretty_midi_lyrics(pm: PrettyMIDI) -> List[Lyric]:
+def parse_pretty_midi_lyrics(midi: PrettyMIDI) -> List[Lyric]:
     """Return Lyric objects parsed from a PrettyMIDI object.
 
     Parameters
     ----------
-    pm : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI` object
         PrettyMIDI object to convert.
 
     Returns
@@ -350,7 +351,7 @@ def parse_pretty_midi_lyrics(pm: PrettyMIDI) -> List[Lyric]:
         Converted lyrics.
 
     """
-    return [Lyric(lyric.time, lyric.text) for lyric in pm.lyrics]
+    return [Lyric(lyric.time, lyric.text) for lyric in midi.lyrics]
 
 
 def parse_pretty_midi_note(note: PrettyMIDINote) -> Note:
@@ -390,12 +391,12 @@ def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
     )
 
 
-def from_pretty_midi(pm: PrettyMIDI) -> Music:
+def from_pretty_midi(midi: PrettyMIDI) -> Music:
     """Return a Music object converted from a pretty_midi PrettyMIDI object.
 
     Parameters
     ----------
-    pm : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI` object
         PrettyMIDI object to convert.
 
     Returns
@@ -404,10 +405,10 @@ def from_pretty_midi(pm: PrettyMIDI) -> Music:
         Converted Music object.
 
     """
-    key_signatures = parse_pretty_midi_key_signatures(pm)
-    time_signatures = parse_pretty_midi_time_signatures(pm)
-    lyrics = parse_pretty_midi_lyrics(pm)
-    tracks = [parse_pretty_midi_instrument(track) for track in pm.tracks]
+    key_signatures = parse_pretty_midi_key_signatures(midi)
+    time_signatures = parse_pretty_midi_time_signatures(midi)
+    lyrics = parse_pretty_midi_lyrics(midi)
+    tracks = [parse_pretty_midi_instrument(track) for track in midi.tracks]
     return Music(
         metadata=Metadata(source_format="midi"),
         key_signatures=key_signatures,

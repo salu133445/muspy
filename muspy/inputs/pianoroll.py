@@ -4,7 +4,6 @@ from typing import List
 
 import numpy as np
 from numpy import ndarray
-
 from pypianoroll import Multitrack
 from pypianoroll import Track as PypianorollTrack
 
@@ -67,12 +66,14 @@ def parse_pypianoroll_track(
     )
 
 
-def from_pypianoroll(m: Multitrack, default_velocity: int = 64) -> Music:
+def from_pypianoroll(
+    multitrack: Multitrack, default_velocity: int = 64
+) -> Music:
     """Return a Music object converted from a Pypianoroll Multitrack object.
 
     Parameters
     ----------
-    obj : :class:`pypianoroll.Multitrack` object
+    multitrack : :class:`pypianoroll.Multitrack` object
         Multitrack object to convert.
     default_velocity : int
         Default velocity value to use when decoding. Defaults to 64.
@@ -84,15 +85,19 @@ def from_pypianoroll(m: Multitrack, default_velocity: int = 64) -> Music:
 
     """
     # Tempos
-    tempo_change_timings = np.diff(m.tempo, prepend=-1).nonzero()[0]
-    tempos = [Tempo(time, qpm=m.tempo[time]) for time in tempo_change_timings]
+    tempo_change_timings = np.diff(multitrack.tempo, prepend=-1).nonzero()[0]
+    tempos = [
+        Tempo(time, qpm=multitrack.tempo[time])
+        for time in tempo_change_timings
+    ]
     # Tracks
     tracks = [
-        parse_pypianoroll_track(track, default_velocity) for track in m.tracks
+        parse_pypianoroll_track(track, default_velocity)
+        for track in multitrack.tracks
     ]
     return Music(
-        resolution=m.beat_resolution,
-        metadata=Metadata(title=m.name) if m.name else None,
+        resolution=multitrack.beat_resolution,
+        metadata=Metadata(title=multitrack.name) if multitrack.name else None,
         tempos=tempos,
         tracks=tracks,
     )

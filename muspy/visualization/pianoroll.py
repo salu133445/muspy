@@ -7,5 +7,5 @@ if TYPE_CHECKING:
 
 def show_pianoroll(music: "Music", **kwargs: Any):
     """Show pianoroll visualization."""
-    m = music.to_pypianoroll()
-    return m.plot(**kwargs)
+    multitrack = music.to_pypianoroll()
+    return multitrack.plot(**kwargs)

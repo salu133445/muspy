@@ -16,7 +16,6 @@ Functions
 import urllib
 from pathlib import Path
 
-
 __all__ = [
     "download_bravura_font",
     "download_musescore_soundfont",

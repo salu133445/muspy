@@ -13,7 +13,6 @@ from .utils import (
     TEST_MIDI_DIR,
     check_key_signatures,
     check_lyrics,
-    check_metadata,
     check_tempos,
     check_time_signatures,
     check_tracks,
@@ -29,7 +28,7 @@ def test_empty():
 
 def test_type2():
     with pytest.raises(MIDIError):
-        music = muspy.read(TEST_MIDI_DIR / "type2.mid")
+        muspy.read(TEST_MIDI_DIR / "type2.mid")
 
 
 def test_resolution():
@@ -40,12 +39,12 @@ def test_resolution():
 
 def test_zero_ticks_per_beat():
     with pytest.raises(MIDIError):
-        music = muspy.read(TEST_MIDI_DIR / "zero-ticks-per-beat.mid")
+        muspy.read(TEST_MIDI_DIR / "zero-ticks-per-beat.mid")
 
 
 def test_negative_ticks_per_beat():
     with pytest.raises(MIDIError):
-        music = muspy.read(TEST_MIDI_DIR / "negative-ticks-per-beat.mid")
+        muspy.read(TEST_MIDI_DIR / "negative-ticks-per-beat.mid")
 
 
 def test_multiple_copyrights():

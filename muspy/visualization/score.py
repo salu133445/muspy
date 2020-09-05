@@ -4,10 +4,10 @@ Unicode encoding for musical symbols is based on Standard Music Font
 Layout (SMuFL) (see https://w3c.github.io/smufl/gitbook/).
 
 """
+import warnings
 from operator import attrgetter
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Optional, Tuple, Union
-import warnings
 
 import matplotlib.pyplot as plt
 from matplotlib.artist import Artist
@@ -15,7 +15,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from matplotlib.font_manager import FontProperties
 from matplotlib.lines import Line2D
-from matplotlib.patches import Rectangle, Arc
+from matplotlib.patches import Arc, Rectangle
 from matplotlib.text import Text
 
 from ..base import Base
@@ -342,7 +342,7 @@ class ScorePlotter:
         # Check if font path exists
         if not self.font_path.exists():
             raise RuntimeError(
-                "Music font not found. Please download it by "
+                "Music font not found. You could download it by "
                 "`muspy.download_bravura_font()`."
             )
 

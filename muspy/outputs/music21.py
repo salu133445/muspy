@@ -1,15 +1,15 @@
 """Music21 converter interface."""
 from typing import TYPE_CHECKING
 
-from music21.metadata import Copyright, Contributor
+from music21.key import Key
+from music21.metadata import Contributor, Copyright
 from music21.metadata import Metadata as M21MetaData
+from music21.meter import TimeSignature as M21TimeSignature
 from music21.note import Note as M21Note
 from music21.stream import Part, Score
 from music21.tempo import MetronomeMark
-from music21.key import Key
-from music21.meter import TimeSignature as M21TimeSignature
 
-from ..classes import Metadata, Tempo, KeySignature, TimeSignature
+from ..classes import KeySignature, Metadata, Tempo, TimeSignature
 
 if TYPE_CHECKING:
     from ..music import Music

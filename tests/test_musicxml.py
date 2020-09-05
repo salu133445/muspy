@@ -5,16 +5,12 @@ from pathlib import Path
 import numpy as np
 
 import muspy
-from muspy.inputs.musicxml import CIRCLE_OF_FIFTHS, MODE_CENTERS
 
 from .utils import (
     TEST_JSON_PATH,
     TEST_MUSICXML_DIR,
     TEST_MUSICXML_LILYPOND_DIR,
     check_key_signatures,
-    check_lyrics,
-    check_metadata,
-    check_music,
     check_tempos,
     check_time_signatures,
     check_tracks,
@@ -217,7 +213,7 @@ def test_chords_and_durations():
         + [65, 69, 72]
         + [65, 69, 76]
         + [65, 69, 77]
-        + [65, 69, 74,]
+        + [65, 69, 74]
     )
     durations = [1.5, 1.5, 1.5] + [0.5, 0.5] + [1, 1, 1] * 4 + [2, 2, 2]
 

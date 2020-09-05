@@ -4,9 +4,6 @@ import muspy
 from .utils import (
     TEST_JSON_PATH,
     check_key_signatures,
-    check_lyrics,
-    check_metadata,
-    check_music,
     check_tempos,
     check_time_signatures,
     check_tracks,

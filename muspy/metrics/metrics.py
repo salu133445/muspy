@@ -519,7 +519,8 @@ def drum_pattern_consistency(music: Music) -> float:
 
 
 def _entropy(prob):
-    return -np.nansum(prob * np.log2(prob))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        return -np.nansum(prob * np.log2(prob))
 
 
 def pitch_entropy(music: Music) -> float:

@@ -8,14 +8,7 @@ from typing import Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
-from ..classes import (
-    KeySignature,
-    Metadata,
-    Note,
-    Tempo,
-    TimeSignature,
-    Track,
-)
+from ..classes import KeySignature, Metadata, Note, Tempo, TimeSignature, Track
 from ..music import Music
 
 T = TypeVar("T")
