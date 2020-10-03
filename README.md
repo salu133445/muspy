@@ -44,6 +44,16 @@ Please cite the following paper if you use MusPy in a published work:
 
 Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in _Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)_, 2020.
 
+[[homepage](https://salu133445.github.io/muspy/)]
+[[paper](https://salu133445.github.io/muspy/pdf/muspy-ismir2020-paper.pdf)]
+[[video](https://youtu.be/atdHMEuAYno)]
+[[slides](https://salu133445.github.io/muspy/pdf/muspy-ismir2020-slides.pdf)]
+[[poster](https://salu133445.github.io/muspy/pdf/muspy-ismir2020-poster.pdf)]
+[[arXiv](https://arxiv.org/abs/2008.01951)]
+[[code](https://github.com/salu133445/muspy)]
+[[documentation](https://salu133445.github.io/muspy/)]
+[[PYPI](https://pypi.python.org/pypi/muspy)]
+
 
 Disclaimer
 ----------
