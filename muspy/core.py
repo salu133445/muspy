@@ -39,7 +39,10 @@ __all__ = [
 
 
 def adjust_resolution(
-    music: Music, target: Optional[int] = None, factor: Optional[float] = None
+    music: Music,
+    target: Optional[int] = None,
+    factor: Optional[float] = None,
+    rounding: Optional[Union[str, Callable]] = "round",
 ) -> Music:
     """Adjust resolution and update the timing of time-stamped objects.
 
@@ -53,9 +56,13 @@ def adjust_resolution(
         Factor used to adjust the resolution based on the formula:
         `new_resolution = old_resolution * factor`. For example, a factor of
         2 double the resolution, and a factor of 0.5 halve the resolution.
+    rounding : {'round', 'ceil', 'floor'} or callable, optional
+            Rounding mode. Defaults to 'round'.
 
     """
-    return music.adjust_resolution(target=target, factor=factor)
+    return music.adjust_resolution(
+        target=target, factor=factor, rounding=rounding
+    )
 
 
 def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:

@@ -15,8 +15,9 @@ Variables
 
 """
 from collections import OrderedDict
+from math import ceil, floor
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Callable, List, Optional, Union
 
 from music21.stream import Stream
 from numpy import ndarray
@@ -233,7 +234,10 @@ class Music(ComplexBase):
         return real_end_time
 
     def adjust_resolution(
-        self, target: Optional[int] = None, factor: Optional[float] = None
+        self,
+        target: Optional[int] = None,
+        factor: Optional[float] = None,
+        rounding: Optional[Union[str, Callable]] = "round",
     ) -> "Music":
         """Adjust resolution and update the timing of time-stamped objects.
 
@@ -246,6 +250,8 @@ class Music(ComplexBase):
             `new_resolution = old_resolution * factor`. For example, a factor
             of 2 double the resolution, and a factor of 0.5 halve the
             resolution.
+        rounding : {'round', 'ceil', 'floor'} or callable, optional
+            Rounding mode. Defaults to 'round'.
 
         Returns
         -------
@@ -261,6 +267,15 @@ class Music(ComplexBase):
             raise ValueError("`target` and `factor` must not be both None.")
         if target is not None and factor is not None:
             raise ValueError("Either `target` or `factor` must be given.")
+
+        if rounding is None or rounding == "round":
+            rounding = round
+        elif rounding == "ceil":
+            rounding = ceil
+        elif rounding == "floor":
+            rounding = floor
+        elif isinstance(rounding, str):
+            raise ValueError(f"Unrecognized rounding mode : {rounding}.")
 
         if target is not None:
             if not isinstance(target, int):
@@ -278,7 +293,7 @@ class Music(ComplexBase):
             target_ = int(new_resolution)
 
         self.resolution = int(target_)
-        self.adjust_time(lambda time: round(time * factor_))
+        self.adjust_time(lambda time: rounding(time * factor_))  # type: ignore
         return self
 
     def clip(self, lower: int = 0, upper: int = 127) -> "Music":
