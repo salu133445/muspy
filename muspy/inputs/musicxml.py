@@ -10,6 +10,7 @@ from zipfile import ZipFile
 
 from ..classes import KeySignature, Metadata, Note, Tempo, TimeSignature, Track
 from ..music import Music
+from ..utils import NOTE_MAP
 
 T = TypeVar("T")
 
@@ -50,15 +51,6 @@ MODE_CENTERS = {
     "locrian": 13,
 }
 
-STEP_MAP: Dict[str, int] = {
-    "C": 0,
-    "D": 2,
-    "E": 4,
-    "F": 5,
-    "G": 7,
-    "A": 9,
-    "B": 11,
-}
 
 NOTE_TYPE_MAP: Dict[str, float] = {
     "1024th": 0.00390625,
@@ -193,7 +185,7 @@ def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
     step = get_required_text(elem, "step")
     octave = int(get_required_text(elem, "octave"))
     alter = int(get_text(elem, "alter", 0))
-    pitch = 12 * (octave + 1) + STEP_MAP[step] + alter
+    pitch = 12 * (octave + 1) + NOTE_MAP[step] + alter
     if alter > 0:
         pitch_str = step + "#" * alter + str(octave)
     elif alter < 0:

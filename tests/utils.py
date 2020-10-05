@@ -1,4 +1,5 @@
 """Utility functions for testing."""
+from math import isclose
 from pathlib import Path
 
 TEST_DIR = Path(__file__).parent
@@ -26,10 +27,13 @@ def check_metadata(metadata, ext=None):
     assert metadata.source_format is None
 
 
-def check_tempos(tempos):
+def check_tempos(tempos, strict=True):
     """Check tempos."""
     assert len(tempos) == 1
-    assert tempos[0].qpm == 72
+    if strict:
+        assert tempos[0].qpm == 72
+    else:
+        assert isclose(tempos[0].qpm, 72, rel_tol=1e-5)
 
 
 def check_key_signatures(key_signatures):

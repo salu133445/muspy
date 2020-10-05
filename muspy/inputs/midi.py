@@ -20,6 +20,7 @@ from ..classes import (
     Track,
 )
 from ..music import Music
+from ..utils import note_str_to_note_num
 
 
 class MIDIError(Exception):
@@ -113,15 +114,14 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
             # Key signature messages
             elif msg.type == "key_signature":
                 if msg.key.endswith("m"):
-                    key_signatures.append(
-                        KeySignature(
-                            time=time, root=msg.key[:-1], mode="minor"
-                        )
-                    )
+                    mode = "minor"
+                    root = note_str_to_note_num(msg.key[:-1])
                 else:
-                    key_signatures.append(
-                        KeySignature(time=time, root=msg.key, mode="major")
-                    )
+                    mode = "major"
+                    root = note_str_to_note_num(msg.key)
+                key_signatures.append(
+                    KeySignature(time=time, root=root, mode=mode)
+                )
 
             # Time signature messages
             elif msg.type == "time_signature":

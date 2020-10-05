@@ -58,7 +58,7 @@ def test_durations():
     assert len(music[0].notes) == 32
 
     # Answers
-    durations = [
+    durations = (
         16,
         8,
         4,
@@ -70,8 +70,8 @@ def test_durations():
         0.0625,
         0.03125,
         0.03125,
-    ]
-    durations_double_dotted = [
+    )
+    durations_double_dotted = (
         16,
         8,
         4,
@@ -82,7 +82,7 @@ def test_durations():
         0.125,
         0.0625,
         0.0625,
-    ]
+    )
 
     # Without dots
     for i, note in enumerate(music[0].notes[:11]):
@@ -116,8 +116,8 @@ def test_time_signatures():
     assert len(music.time_signatures) == 11
 
     # Answers
-    numerators = [2, 4, 2, 3, 2, 3, 4, 5, 3, 6, 12]
-    denominators = [2, 4, 2, 2, 4, 4, 4, 4, 8, 8, 8]
+    numerators = (2, 4, 2, 3, 2, 3, 4, 5, 3, 6, 12)
+    denominators = (2, 4, 2, 2, 4, 4, 4, 4, 8, 8, 8)
     starts = np.insert(
         np.cumsum(4 * np.array(numerators) / np.array(denominators)), 0, 0
     )
@@ -169,7 +169,7 @@ def test_church_modes():
     )
 
     # Answers
-    modes = [
+    modes = (
         "major",
         "minor",
         "ionian",
@@ -179,7 +179,7 @@ def test_church_modes():
         "mixolydian",
         "aeolian",
         "locrian",
-    ]
+    )
 
     for key_signature, answer in zip(music.key_signatures, modes):
         assert key_signature.mode == answer
@@ -228,9 +228,9 @@ def test_pickup_measures():
     )
 
     # Answers
-    pitches = [72, 65, 69, 72, 69, 72]
-    starts = [0, 1, 1, 1, 2, 2]
-    durations = [1, 1, 1, 1, 1, 1]
+    pitches = (72, 65, 69, 72, 69, 72)
+    starts = (0, 1, 1, 1, 2, 2)
+    durations = (1, 1, 1, 1, 1, 1)
 
     for i, note in enumerate(music[0].notes):
 
@@ -276,7 +276,7 @@ def test_metronome():
     assert len(music.tempos) == 3
 
     # Answers
-    qpms = [150, 1600, 115.5]
+    qpms = (150, 1600, 115.5)
 
     for tempo, qpm in zip(music.tempos, qpms):
         assert tempo.qpm == qpm
@@ -351,9 +351,9 @@ def test_voices():
     assert len(music) == 1
 
     # Answers
-    pitches = [72, 76, 71, 74, 67, 71, 71, 74, 55, 59, 69, 72]
-    starts = [0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5]
-    durations = [2, 2, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 0.5, 0.5]
+    pitches = (72, 76, 71, 74, 67, 71, 71, 74, 55, 59, 69, 72)
+    starts = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+    durations = (2, 2, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 0.5, 0.5)
 
     for i, note in enumerate(music[0].notes):
         assert note.start == music.resolution * starts[i]
@@ -407,7 +407,7 @@ def test_transpose_instruments():
     assert len(music) == 3
 
     # Answers
-    pitches = [60, 62, 64, 65, 67, 69, 71, 72]
+    pitches = (60, 62, 64, 65, 67, 69, 71, 72)
 
     for track in music.tracks:
         for note, pitch in zip(track.notes, pitches):

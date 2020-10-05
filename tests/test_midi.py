@@ -75,7 +75,7 @@ def test_durations():
     assert len(music[0].notes) == 11
 
     # Answers
-    durations = [
+    durations = (
         16,
         8,
         4,
@@ -87,7 +87,7 @@ def test_durations():
         0.0625,
         0.03125,
         0.03125,
-    ]
+    )
 
     for note, duration in zip(music[0].notes, durations):
         assert note.duration == music.resolution * duration
@@ -111,8 +111,8 @@ def test_time_signatures():
     assert len(music.time_signatures) == 11
 
     # Answers
-    numerators = [2, 4, 2, 3, 2, 3, 4, 5, 3, 6, 12]
-    denominators = [2, 4, 2, 2, 4, 4, 4, 4, 8, 8, 8]
+    numerators = (2, 4, 2, 3, 2, 3, 4, 5, 3, 6, 12)
+    denominators = (2, 4, 2, 2, 4, 4, 4, 4, 8, 8, 8)
     starts = np.insert(
         np.cumsum(4 * np.array(numerators) / np.array(denominators)), 0, 0
     )
@@ -128,40 +128,70 @@ def test_key_signatures():
     music = muspy.read(TEST_MIDI_DIR / "key-signatures.mid")
 
     # Answers
-    keys = [
-        "A",
-        "A#m",
-        "Ab",
-        "Abm",
-        "Am",
-        "B",
-        "Bb",
-        "Bbm",
-        "Bm",
-        "C",
-        "C#",
-        "C#m",
-        "Cb",
-        "Cm",
-        "D",
-        "D#m",
-        "Db",
-        "Dm",
-        "E",
-        "Eb",
-        "Ebm",
-        "Em",
-        "F",
-        "F#",
-        "F#m",
-        "Fm",
-        "G",
-        "G#m",
-        "Gb",
-        "Gm",
-    ]
-    is_majors = ["m" not in key for key in keys]
-    roots = [key.strip("m") for key in keys]
+    is_majors = (
+        True,
+        False,
+        True,
+        False,
+        False,
+        True,
+        True,
+        False,
+        False,
+        True,
+        True,
+        False,
+        True,
+        False,
+        True,
+        False,
+        True,
+        False,
+        True,
+        True,
+        False,
+        False,
+        True,
+        True,
+        False,
+        False,
+        True,
+        False,
+        True,
+        False,
+    )
+    roots = (
+        9,
+        10,
+        8,
+        8,
+        9,
+        11,
+        10,
+        10,
+        11,
+        0,
+        1,
+        1,
+        11,
+        0,
+        2,
+        3,
+        1,
+        2,
+        4,
+        3,
+        3,
+        4,
+        5,
+        6,
+        6,
+        5,
+        7,
+        8,
+        6,
+        7,
+    )
 
     for i, key_signature in enumerate(music.key_signatures):
         assert key_signature.time == 4 * music.resolution * i
@@ -206,7 +236,7 @@ def test_multitrack():
     assert len(music) == 4
 
     # Answers
-    pitches = [60, 64, 67, 72]
+    pitches = (60, 64, 67, 72)
 
     for i, (track, pitch) in enumerate(zip(music.tracks, pitches)):
         # TODO: Bad input file
@@ -229,12 +259,12 @@ def test_realworld():
     assert round(music.tempos[1].qpm) == 72
 
     assert len(music.key_signatures) == 2
-    assert music.key_signatures[0].root == "C"
+    assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
     assert len(music.time_signatures), 7
 
-    numerators = [1, 3, 2, 1, 3, 3, 2]
+    numerators = (1, 3, 2, 1, 3, 3, 2)
     for i, time_signature in enumerate(music.time_signatures):
         assert time_signature.numerator == numerators[i]
         assert time_signature.denominator == 8
@@ -253,8 +283,8 @@ def test_write():
     assert loaded.metadata.source_filename == "test.mid"
     assert loaded.metadata.source_format == "midi"
 
-    check_tempos(music.tempos)
-    check_key_signatures(music.key_signatures)
-    check_time_signatures(music.time_signatures)
-    check_lyrics(music.lyrics)
-    check_tracks(music.tracks)
+    check_tempos(loaded.tempos, strict=False)
+    check_key_signatures(loaded.key_signatures)
+    check_time_signatures(loaded.time_signatures)
+    check_lyrics(loaded.lyrics)
+    check_tracks(loaded.tracks)
