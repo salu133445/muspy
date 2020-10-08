@@ -197,7 +197,12 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                 if duplicate_note_mode.lower() == "fifo":
                     onset, velocity = active_notes[note_key][0]
                     track.notes.append(
-                        Note(onset, time - onset, msg.note, velocity)
+                        Note(
+                            time=onset,
+                            pitch=msg.note,
+                            duration=time - onset,
+                            velocity=velocity,
+                        )
                     )
                     del active_notes[note_key][0]
 
@@ -205,7 +210,12 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                 elif duplicate_note_mode.lower() == "lifo":
                     onset, velocity = active_notes[note_key][-1]
                     track.notes.append(
-                        Note(onset, time - onset, msg.note, velocity)
+                        Note(
+                            time=onset,
+                            pitch=msg.note,
+                            duration=time - onset,
+                            velocity=velocity,
+                        )
                     )
                     del active_notes[note_key][-1]
 
@@ -213,7 +223,12 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                 elif duplicate_note_mode.lower() in ("close_all", "close all"):
                     for onset, velocity in active_notes[note_key]:
                         track.notes.append(
-                            Note(onset, time - onset, msg.note, velocity)
+                            Note(
+                                time=onset,
+                                pitch=msg.note,
+                                duration=time - onset,
+                                velocity=velocity,
+                            )
                         )
                     del active_notes[note_key]
 
@@ -226,7 +241,14 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
             program = channel_programs[channel]
             track = _get_active_track(track_idx, program, channel)
             for onset, velocity in note_ons:
-                track.notes.append(Note(onset, time - onset, note, velocity))
+                track.notes.append(
+                    Note(
+                        time=onset,
+                        pitch=note,
+                        duration=time - onset,
+                        velocity=velocity,
+                    )
+                )
 
     music_tracks = []
     for track, track_name in zip(tracks, track_names):

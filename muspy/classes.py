@@ -245,9 +245,7 @@ class Annotation(Base):
 
     """
 
-    _attributes = _attributes = OrderedDict(
-        [("time", int), ("annotation", str)]
-    )
+    _attributes = OrderedDict([("time", int), ("annotation", str)])
     _optional_attributes = ["group"]
 
     def __init__(
@@ -265,10 +263,10 @@ class Note(Base):
     ----------
     time : int
         Start time of the note, in time steps.
-    duration : int
-        Duration of the note, in time steps.
     pitch : int
         Note pitch, as a MIDI note number.
+    duration : int
+        Duration of the note, in time steps.
     velocity : int, optional
         Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
     pitch_str : str
@@ -279,8 +277,8 @@ class Note(Base):
     _attributes = OrderedDict(
         [
             ("time", int),
-            ("duration", int),
             ("pitch", int),
+            ("duration", int),
             ("velocity", int),
             ("pitch_str", str),
         ]
@@ -290,26 +288,16 @@ class Note(Base):
     def __init__(
         self,
         time: int,
-        duration: int,
         pitch: int,
+        duration: int,
         velocity: Optional[int] = None,
         pitch_str: Optional[str] = None,
     ):
         self.time = time
-        self.duration = duration
         self.pitch = pitch
+        self.duration = duration
         self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
         self.pitch_str = pitch_str
-
-    @property
-    def end(self):
-        """End time of the note."""
-        return self.time + self.duration
-
-    @end.setter
-    def end(self, end):
-        """Setter for end time."""
-        self.duration = end - self.time
 
     @property
     def start(self):
@@ -321,12 +309,22 @@ class Note(Base):
         """Setter for start time."""
         self.time = start
 
+    @property
+    def end(self):
+        """End time of the note."""
+        return self.time + self.duration
+
+    @end.setter
+    def end(self, end):
+        """Setter for end time."""
+        self.duration = end - self.time
+
     def _validate(self, attr: str):
         super()._validate(attr)
-        if attr == "duration" and self.duration < 0:
-            raise ValueError("`duration` must be nonnegative.")
         if attr == "pitch" and (self.pitch < 0 or self.pitch > 127):
             raise ValueError("`pitch` must be in between 0 to 127.")
+        if attr == "duration" and self.duration < 0:
+            raise ValueError("`duration` must be nonnegative.")
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
 
@@ -383,10 +381,10 @@ class Chord(Base):
     ----------
     time : int
         Start time of the chord, in time steps.
-    duration : int
-        Duration of the chord, in time steps.
     pitches : list of int
         Note pitches, as MIDI note numbers.
+    duration : int
+        Duration of the chord, in time steps.
     velocity : int, optional
         Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
     pitches_str : list of str
@@ -397,8 +395,8 @@ class Chord(Base):
     _attributes = OrderedDict(
         [
             ("time", int),
-            ("duration", int),
             ("pitches", int),
+            ("duration", int),
             ("velocity", int),
             ("pitches_str", str),
         ]
@@ -409,26 +407,17 @@ class Chord(Base):
     def __init__(
         self,
         time: int,
-        duration: int,
         pitches: List[int],
+        duration: int,
         velocity: Optional[int] = None,
         pitches_str: Optional[List[int]] = None,
     ):
         self.time = time
-        self.duration = duration
+
         self.pitches = pitches
+        self.duration = duration
         self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
         self.pitches_str = pitches_str
-
-    @property
-    def end(self):
-        """End time of the chord."""
-        return self.time + self.duration
-
-    @end.setter
-    def end(self, end):
-        """Setter for end time."""
-        self.duration = end - self.time
 
     @property
     def start(self):
@@ -440,10 +429,18 @@ class Chord(Base):
         """Setter for start time."""
         self.time = start
 
+    @property
+    def end(self):
+        """End time of the chord."""
+        return self.time + self.duration
+
+    @end.setter
+    def end(self, end):
+        """Setter for end time."""
+        self.duration = end - self.time
+
     def _validate(self, attr: str):
         super()._validate(attr)
-        if attr == "duration" and self.duration < 0:
-            raise ValueError("`duration` must be nonnegative.")
         if attr == "pitches":
             for pitch in self.pitches:
                 if pitch < 0 or pitch > 127:
@@ -451,6 +448,8 @@ class Chord(Base):
                         "`pitches` must be a list of integers between 0 to "
                         "127."
                     )
+        if attr == "duration" and self.duration < 0:
+            raise ValueError("`duration` must be nonnegative.")
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
 

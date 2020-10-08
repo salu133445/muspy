@@ -108,8 +108,8 @@ def from_event_representation(
                 for pitch, note_on in note_ons.items():
                     note = Note(
                         time=note_on,
-                        duration=time - note_on,
                         pitch=pitch,
+                        duration=time - note_on,
                         velocity=velocity,
                     )
                     notes.append(note)
@@ -122,8 +122,8 @@ def from_event_representation(
                 if onset is not None:
                     note = Note(
                         time=onset,
-                        duration=time - onset,
                         pitch=pitch,
+                        duration=time - onset,
                         velocity=velocity,
                     )
                     notes.append(note)

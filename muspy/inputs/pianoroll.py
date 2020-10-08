@@ -27,7 +27,7 @@ def _pianoroll_to_notes(
             else:
                 velocity = default_velocity
             note = Note(
-                time=start, duration=end - start, pitch=i, velocity=velocity,
+                time=start, pitch=i, duration=end - start, velocity=velocity,
             )
             notes.append(note)
 

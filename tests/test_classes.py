@@ -4,7 +4,7 @@ from muspy import Music, Note, Track
 
 def test_repr():
     note = Note(time=0, duration=1, pitch=60)
-    assert repr(note) == "Note(time=0, duration=1, pitch=60, velocity=64)"
+    assert repr(note) == "Note(time=0, pitch=60, duration=1, velocity=64)"
 
 
 def test_from_dict():

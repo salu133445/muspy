@@ -398,8 +398,8 @@ def parse_part_elem(
                     # Create a new note and append it to the note list
                     note = Note(
                         time=time + position,
-                        duration=duration * factor,
                         pitch=pitch,
+                        duration=duration * factor,
                         velocity=velocity,
                         pitch_str=pitch_str,
                     )

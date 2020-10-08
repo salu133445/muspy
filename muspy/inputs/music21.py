@@ -173,14 +173,16 @@ def parse_notes_and_chords(
                 else:
                     del ties[pitch]
             else:
-                note = Note(time, duration, int(item.pitch.midi),)
+                note = Note(
+                    time=time, pitch=int(item.pitch.midi), duration=duration
+                )
                 notes.append(note)
                 if is_outgoing_tie:
                     ties[pitch] = len(notes) - 1
 
         elif item.isChord:
             pitches = [note.pitch.midi for note in item.notes]
-            chord = Chord(time, duration, pitches)
+            chord = Chord(time=time, pitches=pitches, duration=duration)
             chords.append(chord)
 
     return notes, chords
