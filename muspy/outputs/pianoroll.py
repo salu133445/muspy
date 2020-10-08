@@ -38,10 +38,10 @@ def to_pypianoroll(music: "Music") -> Multitrack:
             else:
                 pianoroll[note.time : note.end, note.pitch] = DEFAULT_VELOCITY
         track = Track(
-            pianoroll,
-            track.program,
-            track.is_drum,
-            track.name if track.name is not None else "",
+            program=track.program,
+            is_drum=track.is_drum,
+            name=track.name if track.name is not None else "",
+            pianoroll=pianoroll,
         )
         tracks.append(track)
 
