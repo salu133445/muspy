@@ -60,15 +60,20 @@ def from_note_representation(
     for note_tuple in array:
         if encode_velocity:
             velocity = note_tuple[3]
-        note = Note(
-            time=note_tuple[1],
-            duration=note_tuple[2] - note_tuple[1]
-            if use_start_end
-            else note_tuple[2],
-            pitch=note_tuple[0],
-            velocity=velocity,
+
+        if use_start_end:
+            duration = note_tuple[2] - note_tuple[0]
+        else:
+            duration = note_tuple[2]
+
+        notes.append(
+            Note(
+                time=note_tuple[0],
+                pitch=note_tuple[1],
+                duration=duration,
+                velocity=velocity,
+            )
         )
-        notes.append(note)
 
     # Sort the notes
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))

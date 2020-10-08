@@ -11,7 +11,7 @@ Representation Shape     Values           Default configurations
 Pitch-based    *T* x 1   {0, 1, ..., 129} 128 note-ons, 1 hold, 1 rest (support only monophonic music)
 Piano-roll     *T* x 128 {0, 1} or *N*    {0,1} for binary piano rolls; *N* for piano rolls with velocities
 Event-based    *M* x 1   {0, 1, ..., 387} 128 note-ons, 128 note-offs, 100 tick shifts, 32 velocities
-Note-based     *N* x 4   *N*              List of (*pitch*, *time*, *duration*, *velocity*) tuples
+Note-based     *N* x 4   *N*              List of (*time*, *pitch*, *duration*, *velocity*) tuples
 ============== ========= ================ =================================================================
 
 Note that *T*, *M*, and *N* denote the numbers of time steps, events and notes, respectively.
