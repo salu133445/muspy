@@ -176,20 +176,20 @@
 <dt>
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/note.html#to_note_representation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Encode a Music object into note-based representation.</p>
-<p>The note-based represetantion represents music as a sequence of (pitch,
-time, duration, velocity) tuples. For example, a note
+<p>The note-based represetantion represents music as a sequence of (time,
+pitch, duration, velocity) tuples. For example, a note
 Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
-tuple (0, 4, 60, 64). The output shape is N * D, where N is the number
+tuple (0, 60, 4, 64). The output shape is N * D, where N is the number
 of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise D is 3.
-The values of the second dimension represent pitch, time, duration and
+The values of the second dimension represent time, pitch, duration and
 velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
-<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
+<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
 ‘time’ and ‘duration’. Defaults to False.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -210,16 +210,16 @@ velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>ndarray</em>) – Array in note-based representation to decode. Will be casted to
 integer if not of integer type.</p></li>
-<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
-<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
 Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
 Piano).</p></li>
-<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
+<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
 False.</p></li>
-<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
+<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather than
 ‘time’ and ‘duration’. Defaults to False.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
-<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – Default velocity value to use when decoding if <cite>encode_velocity</cite> is
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
+<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding if <cite>encode_velocity</cite> is
 False. Defaults to 64.</p></li>
 </ul>
 </dd>
@@ -252,7 +252,7 @@ velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 ‘time’ and ‘duration’. Defaults to False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -263,7 +263,7 @@ velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 <dd><p>Whether to encode note velocities. Defaults to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -275,7 +275,7 @@ velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 False. Defaults to 64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
 </dd>
 </dl>
 </dd></dl>

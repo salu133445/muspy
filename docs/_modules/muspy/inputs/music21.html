@@ -334,14 +334,16 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">del</span> <span class="n">ties</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">pitch</span><span class="o">.</span><span class="n">midi</span><span class="p">),)</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">pitch</span><span class="o">.</span><span class="n">midi</span><span class="p">),</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span>
+                <span class="p">)</span>
                 <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">is_outgoing_tie</span><span class="p">:</span>
                     <span class="n">ties</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
         <span class="k">elif</span> <span class="n">item</span><span class="o">.</span><span class="n">isChord</span><span class="p">:</span>
             <span class="n">pitches</span> <span class="o">=</span> <span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="o">.</span><span class="n">midi</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">notes</span><span class="p">]</span>
-            <span class="n">chord</span> <span class="o">=</span> <span class="n">Chord</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">pitches</span><span class="p">)</span>
+            <span class="n">chord</span> <span class="o">=</span> <span class="n">Chord</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">pitches</span><span class="o">=</span><span class="n">pitches</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
             <span class="n">chords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chord</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">notes</span><span class="p">,</span> <span class="n">chords</span>

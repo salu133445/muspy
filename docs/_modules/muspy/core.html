@@ -200,7 +200,10 @@
 
 
 <div class="viewcode-block" id="adjust_resolution"><a class="viewcode-back" href="../../doc/muspy.html#muspy.adjust_resolution">[docs]</a><span class="k">def</span> <span class="nf">adjust_resolution</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rounding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Adjust resolution and update the timing of time-stamped objects.</span>
 
@@ -214,9 +217,13 @@
 <span class="sd">        Factor used to adjust the resolution based on the formula:</span>
 <span class="sd">        `new_resolution = old_resolution * factor`. For example, a factor of</span>
 <span class="sd">        2 double the resolution, and a factor of 0.5 halve the resolution.</span>
+<span class="sd">    rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable, optional</span>
+<span class="sd">            Rounding mode. Defaults to &#39;round&#39;.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">adjust_resolution</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">adjust_resolution</span><span class="p">(</span>
+        <span class="n">target</span><span class="o">=</span><span class="n">target</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="p">,</span> <span class="n">rounding</span><span class="o">=</span><span class="n">rounding</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.adjust_time">[docs]</a><span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Base</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Base</span><span class="p">:</span>

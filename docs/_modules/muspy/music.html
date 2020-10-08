@@ -176,8 +176,9 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">music21.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
@@ -394,7 +395,10 @@
         <span class="k">return</span> <span class="n">real_end_time</span></div>
 
 <div class="viewcode-block" id="Music.adjust_resolution"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.adjust_resolution">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_resolution</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rounding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Adjust resolution and update the timing of time-stamped objects.</span>
 
@@ -407,6 +411,8 @@
 <span class="sd">            `new_resolution = old_resolution * factor`. For example, a factor</span>
 <span class="sd">            of 2 double the resolution, and a factor of 0.5 halve the</span>
 <span class="sd">            resolution.</span>
+<span class="sd">        rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable, optional</span>
+<span class="sd">            Rounding mode. Defaults to &#39;round&#39;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -422,6 +428,15 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`target` and `factor` must not be both None.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">factor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either `target` or `factor` must be given.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rounding</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;round&quot;</span><span class="p">:</span>
+            <span class="n">rounding</span> <span class="o">=</span> <span class="nb">round</span>
+        <span class="k">elif</span> <span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;ceil&quot;</span><span class="p">:</span>
+            <span class="n">rounding</span> <span class="o">=</span> <span class="n">ceil</span>
+        <span class="k">elif</span> <span class="n">rounding</span> <span class="o">==</span> <span class="s2">&quot;floor&quot;</span><span class="p">:</span>
+            <span class="n">rounding</span> <span class="o">=</span> <span class="n">floor</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">rounding</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unrecognized rounding mode : </span><span class="si">{</span><span class="n">rounding</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -439,7 +454,7 @@
             <span class="n">target_</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_resolution</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target_</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="k">lambda</span> <span class="n">time</span><span class="p">:</span> <span class="nb">round</span><span class="p">(</span><span class="n">time</span> <span class="o">*</span> <span class="n">factor_</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="k">lambda</span> <span class="n">time</span><span class="p">:</span> <span class="n">rounding</span><span class="p">(</span><span class="n">time</span> <span class="o">*</span> <span class="n">factor_</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Music.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>

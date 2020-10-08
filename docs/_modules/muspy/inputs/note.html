@@ -221,15 +221,20 @@
     <span class="k">for</span> <span class="n">note_tuple</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
             <span class="n">velocity</span> <span class="o">=</span> <span class="n">note_tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-        <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-            <span class="n">time</span><span class="o">=</span><span class="n">note_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="n">duration</span><span class="o">=</span><span class="n">note_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">note_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">use_start_end</span>
-            <span class="k">else</span> <span class="n">note_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
-            <span class="n">pitch</span><span class="o">=</span><span class="n">note_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+
+        <span class="k">if</span> <span class="n">use_start_end</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">note_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">note_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">duration</span> <span class="o">=</span> <span class="n">note_tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">Note</span><span class="p">(</span>
+                <span class="n">time</span><span class="o">=</span><span class="n">note_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">pitch</span><span class="o">=</span><span class="n">note_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+                <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
-        <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
     <span class="c1"># Sort the notes</span>
     <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
