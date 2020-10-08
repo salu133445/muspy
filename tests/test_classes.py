@@ -1,5 +1,5 @@
 """Test cases for MusPy classes."""
-from muspy import Note, Track
+from muspy import Music, Note, Track
 
 
 def test_repr():
@@ -49,22 +49,37 @@ def test_remove_duplicate():
     assert len(track) == 1
 
 
-def test_sort():
+def test_sort_track():
     notes = [
-        Note(time=0, duration=2, pitch=64),
-        Note(time=1, duration=1, pitch=60),
-        Note(time=0, duration=1, pitch=64),
-        Note(time=0, duration=1, pitch=60),
+        Note(time=2, pitch=64, duration=1),
+        Note(time=0, pitch=60, duration=1),
+        Note(time=1, pitch=62, duration=1),
     ]
     track = Track(notes=notes)
     track.sort()
 
     # Answers
-    times = (0, 0, 0, 1)
-    durations = (1, 1, 2, 1)
-    pitches = (60, 64, 64, 60)
+    times = (0, 1, 2)
+    pitches = (60, 62, 64)
 
     for i, note in enumerate(track):
         assert note.time == times[i]
-        assert note.duration == durations[i]
+        assert note.pitch == pitches[i]
+
+
+def test_sort_music():
+    notes = [
+        Note(time=2, pitch=64, duration=1),
+        Note(time=0, pitch=60, duration=1),
+        Note(time=1, pitch=62, duration=1),
+    ]
+    music = Music(tracks=[Track(notes=notes)])
+    music.sort()
+
+    # Answers
+    times = (0, 1, 2)
+    pitches = (60, 62, 64)
+
+    for i, note in enumerate(music.tracks[0]):
+        assert note.time == times[i]
         assert note.pitch == pitches[i]

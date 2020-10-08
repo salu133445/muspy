@@ -583,10 +583,8 @@ class ComplexBase(Base):
         attr_type = self._attributes[attr]
         if isclass(attr_type) and issubclass(attr_type, Base):
             # pylint: disable=protected-access
-            if attr_type._sort_attributes:
-                getattr(self, attr).sort(
-                    key=attrgetter(*attr_type._sort_attributes)
-                )
+            if "time" in attr_type._attributes:
+                getattr(self, attr).sort(key=attrgetter("time"))
             # Apply recursively
             if recursive and issubclass(attr_type, ComplexBase):
                 for value in getattr(self, attr):
