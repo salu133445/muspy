@@ -54,9 +54,9 @@ def to_note_representation(
 
     # Initialize the array
     if encode_velocity:
-        array = np.zeros((len(notes), 4), np.uint8)
+        array = np.zeros((len(notes), 4), np.uint32)
     else:
-        array = np.zeros((len(notes), 3), np.uint8)
+        array = np.zeros((len(notes), 3), np.uint32)
 
     # Encode notes
     for i, note in enumerate(notes):
