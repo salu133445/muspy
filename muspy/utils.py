@@ -14,7 +14,7 @@ NOTE_MAP: Dict[str, int] = {
 }
 
 
-def encode_tempo(tempo, total_time_step):
+def rencode_tempo(tempo, total_time_step):
     """
     encode tempo at each time step
     Parameters

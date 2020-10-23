@@ -6,7 +6,7 @@ import numpy as np
 from numpy import ndarray
 
 from ..classes import DEFAULT_VELOCITY
-from ..utils import encode_tempo
+from ..utils import rencode_tempo
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -51,7 +51,7 @@ def to_note_representation(
     notes = []
     for track in music.tracks:
         notes.extend(track.notes)
-    tempos = encode_tempo(music.tempos, music.get_end_time())
+    tempos = rencode_tempo(music.tempos, music.get_end_time())
     # Raise an error if no notes is found
     if not notes:
         raise RuntimeError("No notes found.")
