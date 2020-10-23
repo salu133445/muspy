@@ -6,23 +6,29 @@ import numpy as np
 from numpy import ndarray
 
 from ..classes import DEFAULT_VELOCITY
+from ..utils import encode_tempo
 
 if TYPE_CHECKING:
     from ..music import Music
 
 
 def to_note_representation(
-    music: "Music", use_start_end: bool = False, encode_velocity: bool = True,
+    music: "Music", use_start_end: bool = False, encode_velocity: bool = True, encode_tempo: bool = True
 ) -> ndarray:
     """Encode a Music object into note-based representation.
 
     The note-based represetantion represents music as a sequence of (time,
-    pitch, duration, velocity) tuples. For example, a note
-    Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
-    tuple (0, 60, 4, 64). The output shape is N * D, where N is the number
-    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.
+    pitch, duration, velocity, tempo) tuples. For example, a note
+    Note(time=0, duration=4, pitch=60, velocity=64, tempo=86) will be encoded as a
+    tuple (0, 60, 4, 64, 86). The output shape is N * D, where N is the number
+    of notes and D is 5 when both `encode_velocity` and `encode_tempo` is True, D is 4
+    when either `encode_velocity` or `encode_tempo` is True, otherwise D is 3.
     The values of the second dimension represent time, pitch, duration and
-    velocity (discarded when `encode_velocity` is False).
+    velocity(discarded when `encode_velocity` is False), tempo (discarded when `encode_tempo` is False).
+    if `encode_velocity` and `encode_tempo` is True, a note will be encoded as
+    (time, duration, pitch, velocity, tempo), if either `encode_tempo` or `encode_velocity` is True,
+    a note will be encoded as (time, duration, pitch, velocity/tempo), else it
+    will be encoded as (time, duration, pitch)
 
     Parameters
     ----------
@@ -33,7 +39,8 @@ def to_note_representation(
         'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
-
+    encode_tempo : bool
+        Whether to encode note tempo. Defaults to True.
     Returns
     -------
     ndarray, dtype=uint8, shape=(?, 3 or 4)
@@ -44,7 +51,7 @@ def to_note_representation(
     notes = []
     for track in music.tracks:
         notes.extend(track.notes)
-
+    tempos = encode_tempo(music.tempos, music.get_end_time())
     # Raise an error if no notes is found
     if not notes:
         raise RuntimeError("No notes found.")
@@ -53,7 +60,9 @@ def to_note_representation(
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
 
     # Initialize the array
-    if encode_velocity:
+    if encode_velocity and encode_tempo:
+        array = np.zeros((len(notes), 5), np.uint32)
+    elif encode_tempo or encode_velocity:
         array = np.zeros((len(notes), 4), np.uint32)
     else:
         array = np.zeros((len(notes), 3), np.uint32)
@@ -68,5 +77,9 @@ def to_note_representation(
                 array[i, 3] = note.velocity
             else:
                 array[i, 3] = DEFAULT_VELOCITY
+        if encode_tempo and encode_velocity:
+            array[i, 4] = tempos[note.time]
+        elif encode_tempo and not encode_velocity:
+            array[i, 3] = tempos[note.time]
 
     return array

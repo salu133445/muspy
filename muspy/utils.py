@@ -1,5 +1,7 @@
 """Utility functions."""
 from typing import Dict
+import numpy as np
+from muspy import Tempo
 
 NOTE_MAP: Dict[str, int] = {
     "C": 0,
@@ -10,6 +12,50 @@ NOTE_MAP: Dict[str, int] = {
     "A": 9,
     "B": 11,
 }
+
+
+def encode_tempo(tempo, total_time_step):
+    """
+    encode tempo at each time step
+    Parameters
+    ----------
+    tempo : :List: List of `muspy.Tusic` object
+        Tempo object to encode.
+    total_time_step : :int
+        the total number step of expected encode
+    Returns
+    -------
+    ndarray, dtype=uint8, shape=(shape, 1)
+        Encoded tempo.
+    """
+    res = np.zeros(total_time_step, dtype=np.uint8)
+    if len(tempo) == 0:
+        # default qpm for midi standard is 120 qpm
+        tempo.append(Tempo(0, 120))
+    pre = tempo[0].qpm
+    if len(tempo) == 1:
+        res[:] = pre
+        return res
+
+    pre = tempo[0]
+    curr = tempo[1]
+    i = 1
+    while i < len(tempo):
+        assert pre.qpm != np.nan and curr.qpm != np.nan
+        if pre.time > total_time_step or curr.time > total_time_step:
+            break
+        curr = tempo[i]
+        if curr.qpm == pre.qpm:
+            i = i + 1
+            continue
+        # curr.qpm != pre.qpm
+        start, end = pre.time, curr.time
+        res[start:end] = pre.qpm
+        pre = curr
+        i = i + 1
+
+    res[pre.time:] = pre.qpm
+    return res
 
 
 def note_str_to_note_num(note_str: str):

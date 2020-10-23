@@ -1,10 +1,11 @@
 """Note-based representation input interface."""
+import statistics
 from operator import attrgetter
 
 import numpy as np
 from numpy import ndarray
 
-from ..classes import Note, Track
+from ..classes import Note, Track, Tempo, TimeSignature
 from ..music import DEFAULT_RESOLUTION, Music
 
 
@@ -15,7 +16,9 @@ def from_note_representation(
     is_drum: bool = False,
     use_start_end: bool = False,
     encode_velocity: bool = True,
+    encode_tempo: bool = True,
     default_velocity: int = 64,
+    default_tempo: int = 120
 ) -> Music:
     """Decode note-based representation into a Music object.
 
@@ -38,9 +41,14 @@ def from_note_representation(
         'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
+    encode_tempo: bool
+        Whether to encode note tempo. Defaults to True.
     default_velocity : int
         Default velocity value to use when decoding if `encode_velocity` is
         False. Defaults to 64.
+    default_tempo: int
+        Default tempo value to use when decoding if `encode_tempo` is False.
+        Defaults to 120
 
     Returns
     -------
@@ -55,11 +63,26 @@ def from_note_representation(
     if not np.issubdtype(array.dtype, np.integer):
         array = array.astype(np.int)
 
+    if encode_tempo:
+        tempo_dict = {}
     notes = []
     velocity = default_velocity
     for note_tuple in array:
-        if encode_velocity:
+
+        if encode_velocity and encode_tempo:
             velocity = note_tuple[3]
+            tempo = note_tuple[4]
+        elif encode_tempo:
+            tempo = note_tuple[3]
+        elif encode_velocity:
+            velocity = note_tuple[3]
+        if encode_tempo:
+            time = note_tuple[0]
+            if tempo_dict.has_key(str(time)):
+                tempo_dict[str(time)].append(tempo)
+            else:
+                tempo_dict[str(time)] = []
+                tempo_dict[str(time)].append(tempo)
 
         if use_start_end:
             duration = note_tuple[2] - note_tuple[0]
@@ -82,4 +105,15 @@ def from_note_representation(
     track = Track(program=program, is_drum=is_drum, notes=notes)
     music = Music(resolution=resolution, tracks=[track])
 
+    # Create Tempo object
+    if encode_tempo:
+        tempo_list = []
+        for key, value in tempo_dict.items():
+            time = int(key)
+            qpm = int(statistics.mean(value))
+            tempo = Tempo(time=time, qpm=qpm)
+            tempo_list.append(tempo)
+        tempo_list.sort(key=attrgetter("time"))
+        music.tempo = tempo_list
+    music.time_signatures = [TimeSignature(0, 4, 4)]
     return music
