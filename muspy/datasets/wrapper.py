@@ -3,6 +3,7 @@ from typing import Type
 
 from .base import Dataset
 from .essen import EssenFolkSongDatabase
+from .haydn import HaydnOp20Dataset
 from .hymnal import HymnalDataset, HymnalTuneDataset
 from .jsb import JSBChoralesDataset
 from .lmd import (
@@ -27,6 +28,7 @@ def list_datasets():
     """
     return [
         EssenFolkSongDatabase,
+        HaydnOp20Dataset,
         HymnalDataset,
         HymnalTuneDataset,
         JSBChoralesDataset,
@@ -58,6 +60,8 @@ def get_dataset(key: str) -> Type[Dataset]:
     key = key.lower()
     if key == "essen":
         return EssenFolkSongDatabase
+    if key == 'haydn':
+        return HaydnOp20Dataset
     if key.startswith("hymnal"):
         if key == "hymnal":
             return HymnalDataset
