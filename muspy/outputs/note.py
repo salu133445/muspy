@@ -1,6 +1,6 @@
 """Note-based representation output interface."""
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from numpy import ndarray
@@ -12,7 +12,10 @@ if TYPE_CHECKING:
 
 
 def to_note_representation(
-    music: "Music", use_start_end: bool = False, encode_velocity: bool = True,
+    music: "Music",
+    use_start_end: bool = False,
+    encode_velocity: bool = True,
+    dtype: Union[np.dtype, type, str] = int,
 ) -> ndarray:
     """Encode a Music object into note-based representation.
 
@@ -33,10 +36,13 @@ def to_note_representation(
         'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
+    dtype : dtype, type or str
+        Data type of the return array. Defaults to int.
+
 
     Returns
     -------
-    ndarray, dtype=uint8, shape=(?, 3 or 4)
+    ndarray, shape=(?, 3 or 4)
         Encoded array in note-based representation.
 
     """
@@ -54,9 +60,9 @@ def to_note_representation(
 
     # Initialize the array
     if encode_velocity:
-        array = np.zeros((len(notes), 4), np.uint8)
+        array = np.zeros((len(notes), 4), dtype)
     else:
-        array = np.zeros((len(notes), 3), np.uint8)
+        array = np.zeros((len(notes), 3), dtype)
 
     # Encode notes
     for i, note in enumerate(notes):
