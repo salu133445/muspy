@@ -90,7 +90,7 @@ def parse_key_signatures(
 
     """
     key_signatures = []
-    for item in stream.flat.getElementsByClass('Key'):
+    for item in stream.flat.getElementsByClass("Key"):
         time = int(float(item.offset * resolution))
         key_signature = KeySignature(time, item.tonic.pitchClass, item.mode)
         key_signatures.append(key_signature)
@@ -246,11 +246,9 @@ def from_music21_part(
 
     """
     instruments = partitionByInstrument(part)
-    if instruments and len(instruments) > 1:
-        return [
-            parse_track(instrument, resolution) for instrument in instruments
-        ]
-    return parse_track(part, resolution)
+    if not instruments:
+        return parse_track(part, resolution)
+    return [parse_track(instrument, resolution) for instrument in instruments]
 
 
 def from_music21_opus(
