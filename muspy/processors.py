@@ -11,6 +11,9 @@ Classes
 - PitchRepresentationProcessor
 
 """
+from typing import Union
+
+import numpy as np
 from numpy import ndarray
 
 from .inputs import (
@@ -53,6 +56,8 @@ class NoteRepresentationProcessor:
         'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
+    dtype : dtype, type or str
+        Data type of the return array. Defaults to int.
     default_velocity : int
         Default velocity value to use when decoding if `encode_velocity` is
         False. Defaults to 64.
@@ -63,10 +68,12 @@ class NoteRepresentationProcessor:
         self,
         use_start_end: bool = False,
         encode_velocity: bool = True,
+        dtype: Union[np.dtype, type, str] = int,
         default_velocity: int = 64,
     ):
         self.use_start_end = use_start_end
         self.encode_velocity = encode_velocity
+        self.dtype = dtype
         self.default_velocity = default_velocity
 
     def encode(self, music: Music) -> ndarray:
@@ -92,6 +99,7 @@ class NoteRepresentationProcessor:
             music,
             use_start_end=self.use_start_end,
             encode_velocity=self.encode_velocity,
+            dtype=self.dtype,
         )
 
     def decode(self, array: ndarray) -> Music:
@@ -141,6 +149,8 @@ class EventRepresentationProcessor:
     use_end_of_sequence_event : bool
         Whether to append an end-of-sequence event to the encoded sequence.
         Defaults to False.
+    encode_velocity : bool
+        Whether to encode velocities.
     force_velocity_event : bool
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
@@ -160,6 +170,7 @@ class EventRepresentationProcessor:
         self,
         use_single_note_off_event: bool = False,
         use_end_of_sequence_event: bool = False,
+        encode_velocity: bool = False,
         force_velocity_event: bool = True,
         max_time_shift: int = 100,
         velocity_bins: int = 32,
@@ -167,6 +178,7 @@ class EventRepresentationProcessor:
     ):
         self.use_single_note_off_event = use_single_note_off_event
         self.use_end_of_sequence_event = use_end_of_sequence_event
+        self.encode_velocity = encode_velocity
         self.force_velocity_event = force_velocity_event
         self.max_time_shift = max_time_shift
         self.velocity_bins = velocity_bins
@@ -195,6 +207,7 @@ class EventRepresentationProcessor:
             music,
             use_single_note_off_event=self.use_single_note_off_event,
             use_end_of_sequence_event=self.use_end_of_sequence_event,
+            encode_velocity=self.encode_velocity,
             force_velocity_event=self.force_velocity_event,
             max_time_shift=self.max_time_shift,
             velocity_bins=self.velocity_bins,
