@@ -328,9 +328,14 @@ class Music(ComplexBase):
         -------
         Object itself.
 
+        Notes
+        -----
+        Drum tracks are skipped.
+
         """
         for track in self.tracks:
-            track.transpose(semitone)
+            if not track.is_drum:
+                track.transpose(semitone)
         return self
 
     def save(
@@ -341,7 +346,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.save` for full documentation.
 
         """
-        return save(path, self, kind, **kwargs)
+        return save(path, self, kind=kind, **kwargs)
 
     def save_json(self, path: Union[str, Path], **kwargs: Any):
         """Save loselessly to a JSON file.
@@ -349,7 +354,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.save_json` for full documentation.
 
         """
-        return save(path, self, "json", **kwargs)
+        return save(path, self, kind="json", **kwargs)
 
     def save_yaml(self, path: Union[str, Path]):
         """Save loselessly to a YAML file.
@@ -357,7 +362,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.save_yaml` for full documentation.
 
         """
-        return save(path, self, "yaml")
+        return save(path, self, kind="yaml")
 
     def write(
         self, path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
@@ -367,7 +372,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write` for full documentation.
 
         """
-        return write(path, self, kind, **kwargs)
+        return write(path, self, kind=kind, **kwargs)
 
     def write_midi(self, path: Union[str, Path], **kwargs: Any):
         """Write to a MIDI file.
@@ -383,7 +388,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write_musicxml` for full documentation.
 
         """
-        return write(path, self, "musicxml", **kwargs)
+        return write(path, self, kind="musicxml", **kwargs)
 
     def write_abc(self, path: Union[str, Path], **kwargs: Any):
         """Write to an ABC file.
@@ -391,7 +396,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write_abc` for full documentation.
 
         """
-        return write(path, self, "abc", **kwargs)
+        return write(path, self, kind="abc", **kwargs)
 
     def write_audio(self, path: Union[str, Path], **kwargs: Any):
         """Write to an audio file.
@@ -399,7 +404,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.write_audio` for full documentation.
 
         """
-        return write(path, self, "audio", **kwargs)
+        return write(path, self, kind="audio", **kwargs)
 
     def to_object(self, target: str, **kwargs: Any):
         """Convert to a target class.
@@ -415,7 +420,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.to_music21` for full documentation.
 
         """
-        return to_object(self, "music21", **kwargs)
+        return to_object(self, kind="music21", **kwargs)
 
     def to_pretty_midi(self, **kwargs: Any) -> PrettyMIDI:
         """Return as a PrettyMIDI object.
@@ -423,7 +428,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.to_pretty_midi` for full documentation.
 
         """
-        return to_object(self, "pretty_midi", **kwargs)
+        return to_object(self, kind="pretty_midi", **kwargs)
 
     def to_pypianoroll(self, **kwargs: Any) -> Multitrack:
         """Return as a Multitrack object.
@@ -431,7 +436,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.to_pypianoroll` for full documentation.
 
         """
-        return to_object(self, "pypianoroll", **kwargs)
+        return to_object(self, kind="pypianoroll", **kwargs)
 
     def to_representation(self, kind: str, **kwargs: Any) -> ndarray:
         """Return in a specific representation.
@@ -439,7 +444,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.to_representation` for full documentation.
 
         """
-        return to_representation(self, kind, **kwargs)
+        return to_representation(self, kind=kind, **kwargs)
 
     def to_pitch_representation(self, **kwargs: Any) -> ndarray:
         """Return in pitch-based representation.
@@ -448,7 +453,7 @@ class Music(ComplexBase):
         documentation.
 
         """
-        return to_representation(self, "pitch", **kwargs)
+        return to_representation(self, kind="pitch", **kwargs)
 
     def to_pianoroll_representation(self, **kwargs: Any) -> ndarray:
         """Return in piano-roll representation.
@@ -457,7 +462,7 @@ class Music(ComplexBase):
         documentation.
 
         """
-        return to_representation(self, "piano-roll", **kwargs)
+        return to_representation(self, kind="piano-roll", **kwargs)
 
     def to_event_representation(self, **kwargs: Any) -> ndarray:
         """Return in event-based representation.
@@ -465,7 +470,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.to_event_representation` for full documentation.
 
         """
-        return to_representation(self, "event", **kwargs)
+        return to_representation(self, kind="event", **kwargs)
 
     def to_note_representation(self, **kwargs: Any) -> ndarray:
         """Return in note-based representation.
@@ -473,7 +478,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.to_note_representation` for full documentation.
 
         """
-        return to_representation(self, "note", **kwargs)
+        return to_representation(self, kind="note", **kwargs)
 
     def show(self, kind: str, **kwargs: Any):
         """Show visualization.
@@ -489,7 +494,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_score` for full documentation.
 
         """
-        return show(self, "score", **kwargs)
+        return show(self, kind="score", **kwargs)
 
     def show_pianoroll(self, **kwargs: Any):
         """Show pianoroll visualization.
@@ -497,7 +502,7 @@ class Music(ComplexBase):
         Refer to :func:`muspy.show_pianoroll` for full documentation.
 
         """
-        return show(self, "piano-roll", **kwargs)
+        return show(self, kind="piano-roll", **kwargs)
 
     def synthesize(self, **kwargs) -> ndarray:
         """Synthesize a Music object to raw audio.

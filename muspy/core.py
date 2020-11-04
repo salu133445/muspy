@@ -137,7 +137,7 @@ def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
     """Return the end time, i.e., the time of the last event in all tracks.
 
     This includes tempos, key signatures, time signatures, notes offsets,
-        lyrics and annotations.
+    lyrics and annotations.
 
     Parameters
     ----------
@@ -154,8 +154,8 @@ def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
     """Return the end time in realtime.
 
     This includes tempos, key signatures, time signatures, notes offsets,
-        lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
-        tempo information is available.
+    lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
+    tempo information is available.
 
     Parameters
     ----------
@@ -226,7 +226,7 @@ def transpose(
     object
         Object to transpose.
     semitone : int
-        The number of semitones to transpose the notes. A positive value
+        Number of semitones to transpose the notes. A positive value
         raises the pitches, while a negative value lowers the pitches.
 
     """

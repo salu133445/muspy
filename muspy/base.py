@@ -109,7 +109,7 @@ class Base:
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         to_join = []
         for attr in self._attributes:
             value = getattr(self, attr)

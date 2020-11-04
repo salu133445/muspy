@@ -64,7 +64,7 @@ class DatasetInfo:
         self.homepage = homepage
         self.license = license
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         to_join = []
         for attr in ("name", "description", "homepage", "license"):
             if getattr(self, attr) is not None:
@@ -622,7 +622,7 @@ if HAS_TORCH:
                     idx for idx in self.indices if idx < len(self.dataset)
                 )
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return (
                 "TorchMusicFactoryDataset(dataset={}, factory={}, subset={})"
                 "".format(self.dataset, self.subset, self.factory)
@@ -665,7 +665,7 @@ if HAS_TORCH:
 
             super().__init__(dataset, factory, subset, indices)
 
-        def __repr__(self):
+        def __repr__(self) -> str:
             return (
                 "TorchRepresentationDataset(dataset={}, representation={}, "
                 "subset={})".format(

@@ -30,9 +30,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/salu133445/muspy",
     download_url=(
-        "https://github.com/salu133445/muspy/archive/v{}.tar.gz".format(
-            VERSION
-        )
+        f"https://github.com/salu133445/muspy/archive/v{VERSION}.tar.gz"
     ),
     project_urls={"Documentation": "https://salu133445.github.io/muspy/"},
     license="MIT",
