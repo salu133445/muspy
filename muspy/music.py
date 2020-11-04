@@ -19,6 +19,7 @@ from math import ceil, floor
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
+from mido import MidiFile
 from music21.stream import Stream
 from numpy import ndarray
 from pretty_midi import PrettyMIDI
@@ -406,13 +407,13 @@ class Music(ComplexBase):
         """
         return write(path, self, kind="audio", **kwargs)
 
-    def to_object(self, target: str, **kwargs: Any):
-        """Convert to a target class.
+    def to_object(self, kind: str, **kwargs: Any):
+        """Return as an object in other libraries.
 
         Refer to :func:`muspy.to_object` for full documentation.
 
         """
-        return to_object(self, target, **kwargs)
+        return to_object(self, kind=kind, **kwargs)
 
     def to_music21(self, **kwargs: Any) -> Stream:
         """Return as a Stream object.
@@ -421,6 +422,14 @@ class Music(ComplexBase):
 
         """
         return to_object(self, kind="music21", **kwargs)
+
+    def to_mido(self, **kwargs: Any) -> MidiFile:
+        """Return as a MidiFile object.
+
+        Refer to :func:`muspy.to_mido` for full documentation.
+
+        """
+        return to_object(self, kind="mido", **kwargs)
 
     def to_pretty_midi(self, **kwargs: Any) -> PrettyMIDI:
         """Return as a PrettyMIDI object.

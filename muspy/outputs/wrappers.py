@@ -119,35 +119,38 @@ def write(
 
 
 def to_object(
-    music: "Music", target: str, **kwargs: Any
+    music: "Music", kind: str, **kwargs: Any
 ) -> Union[Stream, MidiFile, PrettyMIDI, Multitrack]:
-    """Return a Music object as a PrettyMIDI or a Multitrack object.
+    """Return a Music object as an object in other libraries.
+
+    Supported classes are `music21.Stream`, :class:`mido.MidiTrack`,
+    :class:`pretty_midi.PrettyMIDI` and :class:`pypianoroll.Multitrack`.
 
     Parameters
     ----------
     music : :class:`muspy.Music` object
         Music object to convert.
-    target : str, {'music21', 'mido', 'pretty_midi', 'pypianoroll'}
+    kind : str, {'music21', 'mido', 'pretty_midi', 'pypianoroll'}
         Target class (case-insensitive).
 
     Returns
     -------
-    `music21.Stream` or :class:`mido.MidiTrack` or
+    `music21.Stream`, :class:`mido.MidiTrack`,
     :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`
     object
         Converted object.
 
     """
-    if target.lower() == "music21":
+    if kind.lower() == "music21":
         return to_music21(music)
-    if target.lower() == "mido":
+    if kind.lower() == "mido":
         return to_mido(music, **kwargs)
-    if target.lower() in ("pretty_midi", "prettymidi", "pretty-midi"):
+    if kind.lower() in ("pretty_midi", "prettymidi", "pretty-midi"):
         return to_pretty_midi(music)
-    if target.lower() == "pypianoroll":
+    if kind.lower() == "pypianoroll":
         return to_pypianoroll(music)
     raise ValueError(
-        "`target` must be one of 'music21', 'mido', 'pretty_midi' and "
+        "`kind` must be one of 'music21', 'mido', 'pretty_midi' or "
         "'pypianoroll'."
     )
 
