@@ -48,7 +48,7 @@ setup(
         "mido>=1.0",
         "music21>=5.0",
         "pretty-midi>=0.2",
-        "pypianoroll>=0.5",
+        "pypianoroll>=1.0",
         "requests>=2.0",
         "tqdm>=4.0",
     ],

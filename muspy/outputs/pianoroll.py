@@ -46,24 +46,27 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         tracks.append(track)
 
     # Tempos
-    last_tempo_time = max((tempo.time for tempo in music.tempos))
-    tempo_arr = 120.0 * np.ones(last_tempo_time + 1)
-    qpm = 120.0
-    position = 0
-    for tempo in music.tempos:
-        tempo_arr[position : tempo.time] = qpm
-        tempo_arr[tempo.time] = tempo.qpm
-        position = tempo.time + 1
-        qpm = tempo.qpm
+    if not music.tempos:
+        tempo_arr = None
+    else:
+        last_tempo_time = max((tempo.time for tempo in music.tempos))
+        tempo_arr = 120.0 * np.ones(last_tempo_time + 1)
+        qpm = 120.0
+        position = 0
+        for tempo in music.tempos:
+            tempo_arr[position : tempo.time] = qpm
+            tempo_arr[tempo.time] = tempo.qpm
+            position = tempo.time + 1
+            qpm = tempo.qpm
 
     if music.metadata is not None:
         name = music.metadata.title if music.metadata.title is not None else ""
 
     return Multitrack(
+        resolution=music.resolution,
         tracks=tracks,
         tempo=tempo_arr,
         # downbeat=music.downbeats if music.downbeats else None,
-        beat_resolution=music.resolution,
         name=name,
     )
 

@@ -56,7 +56,7 @@ def parse_pypianoroll_track(
     """
     # Convert piano roll to notes
     notes = _pianoroll_to_notes(
-        track.pianoroll, not track.is_binarized, default_velocity
+        track.pianoroll, track.pianoroll.dtype == np.bool_, default_velocity
     )
     return Track(
         notes=notes,
@@ -96,7 +96,7 @@ def from_pypianoroll(
         for track in multitrack.tracks
     ]
     return Music(
-        resolution=multitrack.beat_resolution,
+        resolution=multitrack.resolution,
         metadata=Metadata(title=multitrack.name) if multitrack.name else None,
         tempos=tempos,
         tracks=tracks,
