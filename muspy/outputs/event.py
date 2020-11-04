@@ -13,6 +13,7 @@ def to_event_representation(
     music: "Music",
     use_single_note_off_event: bool = False,
     use_end_of_sequence_event: bool = False,
+    encode_velocity: bool = False,
     force_velocity_event: bool = True,
     max_time_shift: int = 100,
     velocity_bins: int = 32,
@@ -37,6 +38,8 @@ def to_event_representation(
     use_end_of_sequence_event : bool
         Whether to append an end-of-sequence event to the encoded sequence.
         Defaults to False.
+    encode_velocity : bool
+        Whether to encode velocities.
     force_velocity_event : bool
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
@@ -79,14 +82,16 @@ def to_event_representation(
     last_velocity = -1
     for note in notes:
         # Velocity event
-        if force_velocity_event or note.velocity != last_velocity:
-            note_events.append(
-                (
-                    note.time,
-                    offset_velocity + int(note.velocity * velocity_bins / 128),
+        if encode_velocity:
+            if force_velocity_event or note.velocity != last_velocity:
+                note_events.append(
+                    (
+                        note.time,
+                        offset_velocity
+                        + int(note.velocity * velocity_bins / 128),
+                    )
                 )
-            )
-        last_velocity = note.velocity
+            last_velocity = note.velocity
         # Note on event
         note_events.append((note.time, offset_note_on + note.pitch))
         # Note off event
