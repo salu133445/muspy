@@ -60,10 +60,10 @@ html_theme_options = {"logo_only": True}
 html_logo = os.path.join("images", "logo.svg")
 html_context = {
     "display_github": True,
-    "github_user": "user",
+    "github_user": "salu133445",
     "github_repo": "muspy",
     "github_version": "master",
-    "conf_py_path": "/doc/",
+    "conf_py_path": "/doc/source/",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
