@@ -385,8 +385,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_yaml_dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_none</span><span class="o">=</span><span class="n">skip_none</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Print the attributes in a YAML-like format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        skip_none : bool</span>
+<span class="sd">            Whether to skip attributes with value None or those that are</span>
+<span class="sd">            empty lists. Defaults to True.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -394,7 +400,7 @@
 <span class="sd">            Return the the attributes as a string in a YAML-like format.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">())</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">(</span><span class="n">skip_none</span><span class="o">=</span><span class="n">skip_none</span><span class="p">))</span></div>
 
     <span class="k">def</span> <span class="nf">_validate_attr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>

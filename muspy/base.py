@@ -224,8 +224,14 @@ class Base:
         """
         return _yaml_dump(self.to_ordered_dict(skip_none=skip_none))
 
-    def print(self):
+    def print(self, skip_none: bool = True):
         """Print the attributes in a YAML-like format.
+
+        Parameters
+        ----------
+        skip_none : bool
+            Whether to skip attributes with value None or those that are
+            empty lists. Defaults to True.
 
         See Also
         --------
@@ -233,7 +239,7 @@ class Base:
             Return the the attributes as a string in a YAML-like format.
 
         """
-        print(self.pretty_str())
+        print(self.pretty_str(skip_none=skip_none))
 
     def _validate_attr_type(self, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
