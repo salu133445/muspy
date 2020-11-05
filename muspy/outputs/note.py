@@ -19,21 +19,21 @@ def to_note_representation(
 ) -> ndarray:
     """Encode a Music object into note-based representation.
 
-    The note-based represetantion represents music as a sequence of (time,
-    pitch, duration, velocity) tuples. For example, a note
+    The note-based represetantion represents music as a sequence of
+    (time, pitch, duration, velocity) tuples. For example, a note
     Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
-    tuple (0, 60, 4, 64). The output shape is N * D, where N is the number
-    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.
-    The values of the second dimension represent time, pitch, duration and
-    velocity (discarded when `encode_velocity` is False).
+    tuple (0, 60, 4, 64). The output shape is N * D, where N is the
+    number of notes and D is 4 when `encode_velocity` is True, otherwise
+    D is 3. The values of the second dimension represent time, pitch,
+    duration and velocity (discarded when `encode_velocity` is False).
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to encode.
     use_start_end : bool
-        Whether to use 'start' and 'end' to encode the timing rather than
-        'time' and 'duration'. Defaults to False.
+        Whether to use 'start' and 'end' to encode the timing rather
+        than 'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
     dtype : dtype, type or str

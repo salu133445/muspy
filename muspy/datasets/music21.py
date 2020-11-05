@@ -28,14 +28,13 @@ class Music21Dataset(Dataset):
     Parameters
     ----------
     composer : str
-        Name of a composer or a collection.
+        Name of a composer or a collection. Please refer to the music21
+        corpus reference page for a full list [1].
     extensions : list of str
         File extensions of desired files.
 
-    Notes
-    -----
-    Please refer to the music21 corpus reference page for a full list [1].
-
+    References
+    ----------
     [1] https://web.mit.edu/music21/doc/about/referenceCorpus.html
 
     """
@@ -80,7 +79,7 @@ class Music21Dataset(Dataset):
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
     ) -> "MusicDataset":
-        """Convert and save the Music objects; return a MusicDataset instance.
+        """Convert and save the Music objects.
 
         Parameters
         ----------
@@ -89,12 +88,12 @@ class Music21Dataset(Dataset):
         kind : {'json', 'yaml'}, optional
             File format to save the data. Defaults to 'json'.
         n_jobs : int, optional
-            Maximum number of concurrently running jobs in multiprocessing. If
-            equal to 1, disable multiprocessing. Defaults to 1.
+            Maximum number of concurrently running jobs. If equal to 1,
+            disable multiprocessing. Defaults to 1.
         ignore_exceptions : bool, optional
-            Whether to ignore errors and skip failed conversions. This can be
-            helpful if some of the source files is known to be corrupted.
-            Defaults to True.
+            Whether to ignore errors and skip failed conversions. This
+            can be helpful if some source files are known to be
+            corrupted. Defaults to True.
 
         """
         self.save(root, kind, n_jobs, ignore_exceptions)

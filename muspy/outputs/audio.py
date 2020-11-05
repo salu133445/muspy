@@ -36,11 +36,11 @@ def synthesize(
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to write.
     soundfont_path : str or Path, optional
-        Path to the soundfount file. Defaults to the path to the downloaded
-        MuseScore General soundfont.
+        Path to the soundfount file. Defaults to the path to the
+        downloaded MuseScore General soundfont.
     rate : int
         Sample rate (in samples per sec). Defaults to 44100.
 
@@ -98,11 +98,11 @@ def write_audio(
     ----------
     path : str or Path
         Path to write the audio file.
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to write.
     soundfont_path : str or Path, optional
-        Path to the soundfount file. Defaults to the path to the downloaded
-        MuseScore General soundfont.
+        Path to the soundfount file. Defaults to the path to the
+        downloaded MuseScore General soundfont.
     rate : int
         Sample rate (in samples per sec). Defaults to 44100.
     audio_format : str, {'wav', 'aiff', 'flac', 'oga'}, optional

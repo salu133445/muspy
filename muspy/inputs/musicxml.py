@@ -167,8 +167,8 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
     return None
 
 
-def parse_key_elem(elem: Element) -> Optional[Dict]:
-    """Return a dictionary containing information parsed from a key element."""
+def parse_key_elem(elem: Element) -> Dict:
+    """Return a dictionary with data parsed from a key element."""
     mode = get_text(elem, "mode", "major")
     fifths = int(get_required_text(elem, "fifths"))
     if mode is None:
@@ -198,7 +198,7 @@ def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
 def parse_part_elem(
     part_elem: Element, resolution: int, instrument_info: dict
 ) -> dict:
-    """Return a dictionary containing data parsed from a part element."""
+    """Return a dictionary with data parsed from a part element."""
     # Initialize lists and placeholders
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
@@ -563,7 +563,7 @@ def read_musicxml(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     Notes
@@ -601,11 +601,12 @@ def read_musicxml(
     time_signatures: List[TimeSignature] = []
     tracks: List[Track] = []
 
-    # Raise error if part list information is missing for a multi-part piece
+    # Raise an error if part-list information is missing for a
+    # multi-part piece
     if not part_info:
         if len(root.findall("part")) > 1:
             raise MusicXMLError(
-                "Part list information is required for a multi-part piece."
+                "Part-list information is required for a multi-part piece."
             )
         part_elem = get_required(root, "part")
         instrument_info = {"": {"program": 0, "is_drum": False}}

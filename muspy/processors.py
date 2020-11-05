@@ -41,26 +41,26 @@ __all__ = [
 class NoteRepresentationProcessor:
     """Note-based representation processor.
 
-    The note-based represetantion represents music as a sequence of (pitch,
-    time, duration, velocity) tuples. For example, a note
+    The note-based represetantion represents music as a sequence of
+    (pitch, time, duration, velocity) tuples. For example, a note
     Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
-    tuple (0, 4, 60, 64). The output shape is L * D, where L is the number
-    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.
-    The values of the second dimension represent pitch, time, duration and
-    velocity (discarded when `encode_velocity` is False).
+    tuple (0, 4, 60, 64). The output shape is L * D, where L is th
+    number of notes and D is 4 when `encode_velocity` is True, otherwise
+    D is 3. The values of the second dimension represent pitch, time,
+    duration and velocity (discarded when `encode_velocity` is False).
 
     Attributes
     ----------
     use_start_end : bool
-        Whether to use 'start' and 'end' to encode the timing rather than
-        'time' and 'duration'. Defaults to False.
+        Whether to use 'start' and 'end' to encode the timing rather
+        than 'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
     dtype : dtype, type or str
         Data type of the return array. Defaults to int.
     default_velocity : int
-        Default velocity value to use when decoding if `encode_velocity` is
-        False. Defaults to 64.
+        Default velocity value to use when decoding if `encode_velocity`
+        is False. Defaults to 64.
 
     """
 
@@ -91,8 +91,8 @@ class NoteRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_note_representation` : Convert a Music object into
-          note-based representation.
+        :func:`muspy.to_note_representation` :
+            Convert a Music object into note-based representation.
 
         """
         return to_note_representation(
@@ -108,7 +108,7 @@ class NoteRepresentationProcessor:
         Parameters
         ----------
         array : ndarray
-            Array in note-based representation to decode. Will be casted to
+            Array in note-based representation to decode. Cast to
             integer if not of integer type.
 
         Returns
@@ -118,8 +118,9 @@ class NoteRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_note_representation` : Return a Music object
-          converted from note-based representation.
+        :func:`muspy.from_note_representation` :
+            Return a Music object converted from note-based
+            representation.
 
         """
         return from_note_representation(
@@ -133,32 +134,34 @@ class NoteRepresentationProcessor:
 class EventRepresentationProcessor:
     """Event-based representation processor.
 
-    The event-based represetantion represents music as a sequence of events,
-    including note-on, note-off, time-shift and velocity events. The output
-    shape is M x 1, where M is the number of events. The values encode the
-    events. The default configuration uses 0-127 to encode note-one events,
-    128-255 for note-off events, 256-355 for time-shift events, and 356 to
-    387 for velocity events.
+    The event-based represetantion represents music as a sequence of
+    events, including note-on, note-off, time-shift and velocity events.
+    The output shape is M x 1, where M is the number of events. The
+    values encode the events. The default configuration uses 0-127 to
+    encode note-one events, 128-255 for note-off events, 256-355 for
+    time-shift events, and 356 to 387 for velocity events.
 
     Attributes
     ----------
     use_single_note_off_event : bool
-        Whether to use a single note-off event for all the pitches. If True,
-        the note-off event will close all active notes, which can lead to
-        lossy conversion for polyphonic music. Defaults to False.
+        Whether to use a single note-off event for all the pitches. If
+        True, the note-off event will close all active notes, which can
+        lead to lossy conversion for polyphonic music. Defaults to
+        False.
     use_end_of_sequence_event : bool
-        Whether to append an end-of-sequence event to the encoded sequence.
-        Defaults to False.
+        Whether to append an end-of-sequence event to the encoded
+        sequence. Defaults to False.
     encode_velocity : bool
         Whether to encode velocities.
     force_velocity_event : bool
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
-        changed (i.e., different from the previous one). Defaults to True.
+        changed (i.e., different from the previous one). Defaults to
+        True.
     max_time_shift : int
-        Maximum time shift (in ticks) to be encoded as an separate event.
-        Time shifts larger than `max_time_shift` will be decomposed into
-        two or more time-shift events. Defaults to 100.
+        Maximum time shift (in ticks) to be encoded as an separate
+        event. Time shifts larger than `max_time_shift` will be
+        decomposed into two or more time-shift events. Defaults to 100.
     velocity_bins : int
         Number of velocity bins to use. Defaults to 32.
     default_velocity : int
@@ -199,8 +202,8 @@ class EventRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_event_representation` : Convert a Music object into
-          event-based representation.
+        :func:`muspy.to_event_representation` :
+            Convert a Music object into event-based representation.
 
         """
         return to_event_representation(
@@ -219,7 +222,7 @@ class EventRepresentationProcessor:
         Parameters
         ----------
         array : ndarray
-            Array in event-based representation to decode. Will be casted to
+            Array in event-based representation to decode. Cast to
             integer if not of integer type.
 
         Returns
@@ -229,8 +232,9 @@ class EventRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_event_representation` : Return a Music object
-          converted from event-based representation.
+        :func:`muspy.from_event_representation` :
+            Return a Music object converted from event-based
+            representation.
 
         """
         return from_event_representation(
@@ -246,11 +250,12 @@ class EventRepresentationProcessor:
 class PitchRepresentationProcessor:
     """Pitch-based representation processor.
 
-    The pitch-based represetantion represents music as a sequence of pitch,
-    rest and (optional) hold tokens. Only monophonic melodies are compatible
-    with this representation. The output shape is T x 1, where T is the
-    number of time steps. The values indicate whether the current time step
-    is a pitch (0-127), a rest (128) or (optionally) a hold (129).
+    The pitch-based represetantion represents music as a sequence of
+    pitch, rest and (optional) hold tokens. Only monophonic melodies are
+    compatible with this representation. The output shape is T x 1,
+    where T is the number of time steps. The values indicate whether the
+    current time step is a pitch (0-127), a rest (128) or (optionally) a
+    hold (129).
 
     Attributes
     ----------
@@ -282,8 +287,8 @@ class PitchRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_pitch_representation` : Convert a Music object into
-          pitch-based representation.
+        :func:`muspy.to_pitch_representation` :
+            Convert a Music object into pitch-based representation.
 
         """
         return to_pitch_representation(
@@ -296,7 +301,7 @@ class PitchRepresentationProcessor:
         Parameters
         ----------
         array : ndarray
-            Array in pitch-based representation to decode. Will be casted to
+            Array in pitch-based representation to decode. Cast to
             integer if not of integer type.
 
         Returns
@@ -306,8 +311,9 @@ class PitchRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_pitch_representation` : Return a Music object
-          converted from pitch-based representation.
+        :func:`muspy.from_pitch_representation` :
+            Return a Music object converted from pitch-based
+            representation.
 
         """
         return from_pitch_representation(
@@ -320,20 +326,21 @@ class PitchRepresentationProcessor:
 class PianoRollRepresentationProcessor:
     """Piano-roll representation processor.
 
-    The piano-roll represetantion represents music as a time-pitch matrix,
-    where the columns are the time steps and the rows are the pitches. The
-    values indicate the presence of pitches at different time steps. The
-    output shape is T x 128, where T is the number of time steps.
+    The piano-roll represetantion represents music as a time-pitch
+    matrix, where the columns are the time steps and the rows are the
+    pitches. The values indicate the presence of pitches at different
+    time steps. The output shape is T x 128, where T is the number of
+    time steps.
 
     Attributes
     ----------
     encode_velocity : bool
-        Whether to encode velocities. If True, a binary-valued array will be
-        return. Otherwise, an integer array will be return. Defaults to
-        True.
+        Whether to encode velocities. If True, a binary-valued array
+        will be return. Otherwise, an integer array will be return.
+        Defaults to True.
     default_velocity : int
-        Default velocity value to use when decoding if `encode_velocity` is
-        False. Defaults to 64.
+        Default velocity value to use when decoding if `encode_velocity`
+        is False. Defaults to 64.
 
     """
 
@@ -358,8 +365,8 @@ class PianoRollRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.to_pianoroll_representation` : Convert a Music object
-          into piano-roll representation.
+        :func:`muspy.to_pianoroll_representation` :
+            Convert a Music object into piano-roll representation.
 
         """
         return to_pianoroll_representation(
@@ -372,9 +379,9 @@ class PianoRollRepresentationProcessor:
         Parameters
         ----------
         array : ndarray
-            Array in piano-roll representation to decode. Will be casted to
-            integer if not of integer type. If `encode_velocity` is True,
-            will be casted to boolean if not of boolean type.
+            Array in piano-roll representation to decode. Cast to
+            integer if not of integer type. If `encode_velocity` is
+            True, casted to boolean if not of boolean type.
 
         Returns
         -------
@@ -383,8 +390,9 @@ class PianoRollRepresentationProcessor:
 
         See Also
         --------
-        :func:`muspy.from_pianoroll_representation` : Return a Music object
-          converted from piano-roll representation.
+        :func:`muspy.from_pianoroll_representation` :
+            Return a Music object converted from piano-roll
+            representation.
 
         """
         return from_pianoroll_representation(

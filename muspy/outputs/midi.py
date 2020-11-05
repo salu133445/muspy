@@ -433,7 +433,7 @@ def write_midi(
     ----------
     path : str or Path
         Path to write the MIDI file.
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to write.
     backend: {'mido', 'pretty_midi'}
         Backend to use. Defaults to 'mido'.

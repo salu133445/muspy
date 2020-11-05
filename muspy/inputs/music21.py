@@ -21,12 +21,12 @@ def parse_metadata(stream: Stream) -> Union[Metadata, None]:
 
     Parameters
     ----------
-    stream : `music21.stream.Stream` object
+    stream : `music21.stream.Stream`
         Stream object to parse.
 
     Returns
     -------
-    :class:`muspy.Metadata` object
+    :class:`muspy.Metadata`
         Parsed metadata.
 
     """
@@ -52,14 +52,15 @@ def parse_tempos(stream: Stream, resolution=DEFAULT_RESOLUTION) -> List[Tempo]:
 
     Parameters
     ----------
-    stream : `music21.stream.Stream` object
+    stream : `music21.stream.Stream`
         Stream object to parse.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    list of :class:`muspy.Tempo` objects
+    list of :class:`muspy.Tempo`
         Parsed tempos.
 
     """
@@ -78,14 +79,15 @@ def parse_key_signatures(
 
     Parameters
     ----------
-    stream : `music21.stream.Stream` object
+    stream : `music21.stream.Stream`
         Stream object to parse.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    list of :class:`muspy.KeySignature` objects
+    list of :class:`muspy.KeySignature`
         Parsed key signatures.
 
     """
@@ -104,14 +106,15 @@ def parse_time_signatures(
 
     Parameters
     ----------
-    stream : `music21.stream.Stream` object
+    stream : `music21.stream.Stream`
         Stream object to parse.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    list of :class:`muspy.TimeSignature` objects
+    list of :class:`muspy.TimeSignature`
         Parsed time signatures.
 
     """
@@ -130,16 +133,17 @@ def parse_notes_and_chords(
 
     Parameters
     ----------
-    stream : `music21.stream.Stream` object
+    stream : `music21.stream.Stream`
         Stream object to parse.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    list of :class:`muspy.Note` objects
+    list of :class:`muspy.Note`
         Parsed notes.
-    list of :class:`muspy.Chord` objects
+    list of :class:`muspy.Chord`
         Parsed chords.
 
     """
@@ -193,14 +197,15 @@ def parse_track(part: Part, resolution=DEFAULT_RESOLUTION) -> Track:
 
     Parameters
     ----------
-    part : `music21.stream.Part` object
+    part : `music21.stream.Part`
         Part object to parse.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    :class:`muspy.Track` object
+    :class:`muspy.Track`
         Parsed track.
 
     """
@@ -230,18 +235,19 @@ def parse_track(part: Part, resolution=DEFAULT_RESOLUTION) -> Track:
 def from_music21_part(
     part: Part, resolution=DEFAULT_RESOLUTION
 ) -> Union[Track, List[Track]]:
-    """Return track(s) parsed from a music21 Part object.
+    """Return a music21 Part object as Track object(s).
 
     Parameters
     ----------
-    part : `music21.stream.Part` object
+    part : `music21.stream.Part`
         Part object to parse.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    :class:`muspy.Track` object or list of :class:`muspy.Track` object
+    :class:`muspy.Track` or list of :class:`muspy.Track`
         Parsed track(s).
 
     """
@@ -251,40 +257,20 @@ def from_music21_part(
     return [parse_track(instrument, resolution) for instrument in instruments]
 
 
-def from_music21_opus(
-    opus: Opus, resolution=DEFAULT_RESOLUTION
-) -> List[Music]:
-    """Return a list of Music objects converted from a music21 Opus object.
-
-    Parameters
-    ----------
-    opus : `music21.stream.Opus` object
-        Opus object to convert.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
-
-    Returns
-    -------
-    :class:`muspy.Music` object
-        Converted MusPy Music object.
-
-    """
-    return [from_music21_score(score, resolution) for score in opus.scores]
-
-
 def from_music21_score(score: Score, resolution=DEFAULT_RESOLUTION) -> Music:
-    """Return a Music object converted from a music21 Stream object.
+    """Return a music21 Stream object as a Music object.
 
     Parameters
     ----------
-    score : `music21.stream.Score` object
+    score : `music21.stream.Score`
         Score object to convert.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """
@@ -307,22 +293,45 @@ def from_music21_score(score: Score, resolution=DEFAULT_RESOLUTION) -> Music:
     )
 
 
-def from_music21(
-    stream: Stream, resolution=DEFAULT_RESOLUTION
-) -> Union[Music, List[Music], Track, List[Track]]:
-    """Return a Music object converted from a music21 Stream object.
+def from_music21_opus(
+    opus: Opus, resolution=DEFAULT_RESOLUTION
+) -> List[Music]:
+    """Return a music21 Opus object as a list of Music objects.
 
     Parameters
     ----------
-    stream : `music21.stream.Stream` object
-        Stream object to convert.
+    opus : `music21.stream.Opus`
+        Opus object to convert.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    :class:`muspy.Music` object(s) or :class:`muspy.Track` object(s)
-        Converted Music object(s) or Track object(s).
+    :class:`muspy.Music`
+        Converted Music object.
+
+    """
+    return [from_music21_score(score, resolution) for score in opus.scores]
+
+
+def from_music21(
+    stream: Stream, resolution=DEFAULT_RESOLUTION
+) -> Union[Music, List[Music], Track, List[Track]]:
+    """Return a music21 Stream object as Music or Track object(s).
+
+    Parameters
+    ----------
+    stream : `music21.stream.Stream`
+        Stream object to convert.
+    resolution : int, optional
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
+
+    Returns
+    -------
+    :class:`muspy.Music` or :class:`muspy.Track`
+        Converted Music or Track object(s).
 
     """
     if isinstance(stream, Opus):

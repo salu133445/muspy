@@ -48,17 +48,17 @@ def to_music21_time_signature(
 
 
 def to_music21_metadata(metadata: Metadata) -> M21MetaData:
-    """Convert a Metadata object to a music21 Metadata object.
+    """Return a Metadata object as a music21 Metadata object.
 
     Parameters
     ----------
-    metadata : :class:`muspy.Metadata` object
+    metadata : :class:`muspy.Metadata`
         Metadata object to convert.
 
     Returns
     -------
-    `music21.metadata.Metadata` object
-        Converted music21 Score object.
+    `music21.metadata.Metadata`
+        Converted music21 Metadata object.
 
     """
     meta = M21MetaData()
@@ -76,16 +76,16 @@ def to_music21_metadata(metadata: Metadata) -> M21MetaData:
 
 
 def to_music21(music: "Music") -> Score:
-    """Convert a Music object to a music21 Score object.
+    """Return a Music object as a music21 Score object.
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to convert.
 
     Returns
     -------
-    `music21.stream.Score` object
+    `music21.stream.Score`
         Converted music21 Score object.
 
     """

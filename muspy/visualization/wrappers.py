@@ -13,15 +13,10 @@ def show(music: "Music", kind: str, **kwargs: Any):
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to convert.
     kind : str, {'piano-roll', 'score'}
         Target representation.
-
-    Returns
-    -------
-    array : ndarray
-        Converted representation.
 
     """
     if kind.lower() in ("piano-roll", "pianoroll", "piano roll"):

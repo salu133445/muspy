@@ -73,9 +73,10 @@ class HymnalDataset(FolderDataset):
             idx = 1
             consecutive_failure_count = 0
 
-            # Loop until the number of consecutive failures exceed tolerance
+            # Loop until the number of consecutive failures exceed
+            # the tolerance
             while consecutive_failure_count < tolerance:
-                # Send a HEAD request to check if the content type is MIDI
+                # Send a HEAD request to check if content type is MIDI
                 url = "https://www.hymnal.net/en/hymn/{}/{}/f={}".format(
                     key, idx, self._type
                 )
@@ -84,11 +85,12 @@ class HymnalDataset(FolderDataset):
                     consecutive_failure_count += 1
                     continue
 
-                # Send another HEAD request to check if we have exceeded the
-                # total number of pieces -> When we request for an out of
-                # bound index, it seems that it will randomly return another
-                # piece. Thus, if the first and the second requests have
-                # different content sizes, we can break the loop.
+                # Send another HEAD request to check if we have
+                # exceeded the total number of pieces -> When we request
+                # for an out of bound index, it seems that it will
+                # randomly return another piece. Thus, if the first and
+                # the second requests have different content sizes, we
+                # can break the loop.
                 second_req = requests.head(url)
                 if (
                     second_req.headers["Content-Length"]
@@ -173,9 +175,10 @@ class HymnalTuneDataset(FolderDataset):
             idx = 1
             consecutive_failure_count = 0
 
-            # Loop until the number of consecutive failures exceed tolerance
+            # Loop until the number of consecutive failures exceed
+            # the tolerance
             while consecutive_failure_count < tolerance:
-                # Send a HEAD request to check if the content type is MIDI
+                # Send a HEAD request to check if content type is MIDI
                 url = "https://www.hymnal.net/en/hymn/{}/{}/f={}".format(
                     key, idx, self._type
                 )
@@ -184,11 +187,12 @@ class HymnalTuneDataset(FolderDataset):
                     consecutive_failure_count += 1
                     continue
 
-                # Send another HEAD request to check if we have exceeded the
-                # total number of pieces -> When we request for an out of
-                # bound index, it seems that it will randomly return another
-                # piece. Thus, if the first and the second requests have
-                # different content sizes, we can break the loop.
+                # Send another HEAD request to check if we have
+                # exceeded the total number of pieces -> When we request
+                # for an out of bound index, it seems that it will
+                # randomly return another piece. Thus, if the first and
+                # the second requests have different content sizes, we
+                # can break the loop.
                 second_req = requests.head(url)
                 if (
                     second_req.headers["Content-Length"]

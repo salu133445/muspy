@@ -79,7 +79,8 @@ def download_url(
     path : str or Path
         Path to save the downloaded file.
     md5 : str, optional
-        Expected MD5 checksum of the downloaded file. If None, do not check.
+        Expected MD5 checksum of the downloaded file. If None, do not
+        check.
 
     """
     urllib.request.urlretrieve(url, str(path), reporthook=_ProgressBar())
@@ -118,8 +119,8 @@ def extract_archive(
     path : str or Path
         Path to the archive to be extracted.
     root : str or Path, optional
-        Root directory to save the extracted file. If None, use the dirname
-        of ``path``.
+        Root directory to save the extracted file. If None, use the
+        dirname of ``path``.
     kind : {'tar', 'tgz', 'txz', 'gz', 'zip'}, optional
         Fromat of the archive to be extracted. If None, infer the format
         from the extension of ``path``.

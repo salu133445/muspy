@@ -25,7 +25,7 @@ from .yaml import load_yaml
 def load(
     path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
 ) -> Music:
-    """Return a Music object loaded from a JSON or a YAML file.
+    """Load a JSON or a YAML file into a Music object.
 
     Parameters
     ----------
@@ -41,12 +41,13 @@ def load(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Loaded Music object.
 
     See Also
     --------
-    :func:`muspy.read` : Read from other formats such as MIDI and MusicXML.
+    :func:`muspy.read` :
+        Read a MIDI/MusicXML/ABC file into a Music object.
 
     """
     # pylint: disable=unused-argument
@@ -69,7 +70,7 @@ def load(
 def read(
     path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
 ) -> Union[Music, List[Music]]:
-    """Read a MIDI or a MusicXML file into a Music object.
+    """Read a MIDI/MusicXML/ABC file into a Music object.
 
     Parameters
     ----------
@@ -81,12 +82,12 @@ def read(
 
     Returns
     -------
-    :class:`muspy.Music` object or list of :class:`muspy.Music` objects
+    :class:`muspy.Music` or list of :class:`muspy.Music`
         Converted Music object(s).
 
     See Also
     --------
-    :func:`muspy.load` : Load from a JSON or a YAML file.
+    :func:`muspy.load` : Load a JSON or a YAML file into a Music object.
 
     """
     if kind is None:
@@ -112,7 +113,7 @@ def read(
 def from_object(
     obj: Union[Stream, MidiFile, PrettyMIDI, Multitrack], **kwargs: Any
 ) -> Union[Music, List[Music], Track, List[Track]]:
-    """Return a Music object converted from an outside object.
+    """Return an outside object as a Music object.
 
     Parameters
     ----------
@@ -123,7 +124,7 @@ def from_object(
 
     Returns
     -------
-    music : :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """
@@ -153,7 +154,7 @@ def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
 
     Returns
     -------
-    music : :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """

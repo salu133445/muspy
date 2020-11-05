@@ -44,18 +44,19 @@ def adjust_resolution(
     factor: Optional[float] = None,
     rounding: Optional[Union[str, Callable]] = "round",
 ) -> Music:
-    """Adjust resolution and update the timing of time-stamped objects.
+    """Adjust resolution and timing of all time-stamped objects.
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
-        MusPy music object to adjust.
+    music : :class:`muspy.Music`
+        Object to adjust the resolution.
     target : int, optional
         Target resolution.
     factor : int or float, optional
         Factor used to adjust the resolution based on the formula:
-        `new_resolution = old_resolution * factor`. For example, a factor of
-        2 double the resolution, and a factor of 0.5 halve the resolution.
+        `new_resolution = old_resolution * factor`. For example, a
+        factor of 2 double the resolution, and a factor of 0.5 halve the
+        resolution.
     rounding : {'round', 'ceil', 'floor'} or callable, optional
             Rounding mode. Defaults to 'round'.
 
@@ -70,16 +71,16 @@ def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
 
     Parameters
     ----------
-    obj : :class:`muspy.Music` or :class:`muspy.Track` object
-        Object to adjust.
+    obj : :class:`muspy.Music` or :class:`muspy.Track`
+        Object to adjust the timing.
     func : callable
         The function used to compute the new timing from the old timing,
         i.e., `new_time = func(old_time)`.
 
     See Also
     --------
-    :func:`muspy.adjust_resolution` : Adjust the resolution and the timing
-      of time-stamped objects.
+    :func:`muspy.adjust_resolution` :
+        Adjust the resolution and the timing of time-stamped objects.
 
     Note
     ----
@@ -92,6 +93,16 @@ def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
 def append(obj1: ComplexBase, obj2) -> ComplexBase:
     """Append an object to the correseponding list.
 
+    Parameters
+    ----------
+    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or \
+            :class:`muspy.Tempo`
+        Object to which `obj2` to append.
+    obj2
+        Object to be appended to `obj1`.
+
+    Notes
+    -----
     - If `obj1` is of type :class:`muspy.Music`, `obj2` can be
       :class:`muspy.KeySignature`, :class:`muspy.TimeSignature`,
       :class:`muspy.Lyric`, :class:`muspy.Annotation` or
@@ -101,14 +112,6 @@ def append(obj1: ComplexBase, obj2) -> ComplexBase:
       :class:`muspy.Annotation`.
     - If `obj1` is of type :class:`muspy.Timing`, `obj2` can be
       :class:`muspy.Tempo`.
-
-    Parameters
-    ----------
-    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or
-           :class:`muspy.Tempo` object
-        Object to which `obj2` to append.
-    obj2 : MusPy objects (see below)
-        Object to be appended to `obj1`.
 
     """
     return obj1.append(obj2)
@@ -121,8 +124,8 @@ def clip(
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
-          object
+    obj : :class:`muspy.Music`, :class:`muspy.Track` or \
+            :class:`muspy.Note`
         Object to clip.
     lower : int or float, optional
         Lower bound. Defaults to 0.
@@ -134,14 +137,14 @@ def clip(
 
 
 def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
-    """Return the end time, i.e., the time of the last event in all tracks.
+    """Return the the time of the last event in all tracks.
 
-    This includes tempos, key signatures, time signatures, notes offsets,
+    This includes tempos, key signatures, time signatures, note offsets,
     lyrics and annotations.
 
     Parameters
     ----------
-    obj : :class:`muspy.Music` or :class:`muspy.Track` object
+    obj : :class:`muspy.Music` or :class:`muspy.Track`
         Object to inspect.
     is_sorted : bool
         Whether all the list attributes are sorted. Defaults to False.
@@ -153,13 +156,13 @@ def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
 def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
     """Return the end time in realtime.
 
-    This includes tempos, key signatures, time signatures, notes offsets,
-    lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
-    tempo information is available.
+    This includes tempos, key signatures, time signatures, note offsets,
+    lyrics and annotations. Assume 120 qpm (quarter notes per minute) if
+    no tempo information is available.
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Object to inspect.
     is_sorted : bool
         Whether all the list attributes are sorted. Defaults to False.
@@ -173,7 +176,7 @@ def remove_duplicate(obj: ComplexBase) -> ComplexBase:
 
     Parameters
     ----------
-    obj : :class:`muspy.Music` object
+    obj : :class:`muspy.Music`
         Object to process.
 
     """
@@ -184,14 +187,14 @@ def sort(obj: ComplexBase) -> ComplexBase:
     """Sort all the time-stamped objects with respect to event time.
 
     - If a :class:`muspy.Music` is given, this will sort key signatures,
-      time signatures, lyrics and annotations, along with notes, lyrics and
-      annotations for each track.
-    - If a :class:`muspy.Track` is given, this will sort notes, lyrics and
-      annotations.
+      time signatures, lyrics and annotations, along with notes, lyrics
+      and annotations for each track.
+    - If a :class:`muspy.Track` is given, this will sort notes, lyrics
+      and annotations.
 
     Parameters
     ----------
-    obj : :class:`muspy.ComplexBase` object
+    obj : :class:`muspy.ComplexBase`
         Object to sort.
 
     """
@@ -203,8 +206,8 @@ def to_ordered_dict(obj: Base, ignore_null: bool = True) -> OrderedDict:
 
     Parameters
     ----------
-    obj : :class:`muspy.Base` object
-        MusPy object to convert.
+    obj : :class:`muspy.Base`
+        Object to convert.
 
     Returns
     -------
@@ -222,8 +225,8 @@ def transpose(
 
     Parameters
     ----------
-    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`
-    object
+    obj : :class:`muspy.Music`, :class:`muspy.Track` or \
+            :class:`muspy.Note`
         Object to transpose.
     semitone : int
         Number of semitones to transpose the notes. A positive value

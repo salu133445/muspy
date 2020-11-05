@@ -303,9 +303,9 @@ class ScorePlotter:
 
     Attributes
     ----------
-    fig : :class:`matplotlib.figure.Figure` object
+    fig : :class:`matplotlib.figure.Figure`
         Figure object to plot the score on.
-    axes : :class:`matplotlib.axes.Axes` object
+    axes : :class:`matplotlib.axes.Axes`
         Axes object to plot the score on.
     resolution : int
         Time steps per quarter note.
@@ -790,7 +790,7 @@ def show_score(
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to show.
     figsize : (float, float), optional
         Width and height in inches. Defaults to Matplotlib configuration.
@@ -809,7 +809,7 @@ def show_score(
 
     Returns
     -------
-    :class:`muspy.ScorePlotter` object
+    :class:`muspy.ScorePlotter`
         A ScorePlotter object that handles the score.
 
     """

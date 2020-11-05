@@ -20,11 +20,11 @@ def write_musicxml(
     ----------
     path : str or Path
         Path to write the MusicXML file.
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to write.
     compressed : bool, optional
-        Whether to write to a compressed MusicXML file. If None, infer from
-        the extension of the filename ('.xml' and '.musicxml' for
+        Whether to write to a compressed MusicXML file. If None, infer
+        from the extension of the filename ('.xml' and '.musicxml' for
         an uncompressed file, '.mxl' for a compressed file).
 
     """

@@ -60,24 +60,22 @@ def _get_type_string(attr_type):
 
 
 class Base:
-    """The base class for MusPy classes.
+    """Base class for MusPy classes.
 
     This is the base class for MusPy classes. It provides two handy I/O
-    methods---`from_dict` and `to_ordered_dict`. It also provides intuitive
-    `__repr__` as well as methods `pretty_str` and `print` for beautifully
-    printing the content.
+    methods---`from_dict` and `to_ordered_dict`. It also provides
+    intuitive `__repr__` as well as methods `pretty_str` and `print` for
+    beautifully printing the content.
 
     Hint
     ----
-    To implement a new class in MusPy, please inherit from this class and
-    set the following class variables properly.
+    To implement a new class in MusPy, please inherit from this class
+    and set the following class variables properly.
 
-    - `_attributes`: An OrderedDict with attribute names as keys and their
-      types as values.
+    - `_attributes`: An OrderedDict with attribute names as keys and
+      their types as values.
     - `_optional_attributes`: A list of optional attribute names.
     - `_list_attributes`: A list of attributes that are lists.
-    - `_sort_attributes`: A list of attributes used when being sorted,
-      which will be passed to operator.attrgetter.
 
     Take :class:`muspy.Note` for example.::
 
@@ -91,12 +89,11 @@ class Base:
             ]
         )
         _optional_attributes = ["pitch_str"]
-        _sort_attributes = ["time", "duration", "pitch"]
 
     See Also
     --------
-    :class:`muspy.ComplexBase` : A base class that supports advanced
-      operations on list attributes.
+    :class:`muspy.ComplexBase` :
+        Base class that supports advanced operations on list attributes.
 
     """
 
@@ -136,8 +133,8 @@ class Base:
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
         """Return an instance constructed from a dictionary.
 
-        Instantiate an object whose attributes and the corresponding values
-        are given as a dictionary.
+        Instantiate an object whose attributes and the corresponding
+        values are given as a dictionary.
 
         Parameters
         ----------
@@ -169,14 +166,14 @@ class Base:
     def to_ordered_dict(self, skip_none: bool = True) -> OrderedDict:
         """Return the object as an OrderedDict.
 
-        Return an ordered dictionary that stores the attributes and their
-        values as key-value pairs.
+        Return an ordered dictionary that stores the attributes and
+        their values as key-value pairs.
 
         Parameters
         ----------
         skip_none : bool
             Whether to skip attributes with value None or those that are
-            empty lists.
+            empty lists. Defaults to True.
 
         Returns
         -------
@@ -207,26 +204,32 @@ class Base:
     def pretty_str(self) -> str:
         """Return the stored data as a string in a beautiful YAML-like format.
 
+        Parameters
+        ----------
+        skip_none : bool
+            Whether to skip attributes with value None or those that are
+            empty lists. Defaults to True.
+
         Returns
         -------
         str
-            Stored data as a string in pretty YAML-like format.
+            Stored data as a string in a YAML-like format.
 
         See Also
         --------
-        :meth:`muspy.Base.print` : Print the stored data in a beautiful
-          YAML-like format.
+        :meth:`muspy.Base.print` :
+            Print the attributes in a YAML-like format.
 
         """
         return _yaml_dump(self.to_ordered_dict())
 
     def print(self):
-        """Print the stored data in a beautiful YAML-like format.
+        """Print the attributes in a YAML-like format.
 
         See Also
         --------
-        :meth:`muspy.Base.pretty_str` : Return the stored data as a string in a
-          beautiful YAML-like format.
+        :meth:`muspy.Base.pretty_str` :
+            Return the the attributes as a string in a YAML-like format.
 
         """
         print(self.pretty_str())
@@ -264,6 +267,8 @@ class Base:
         ----------
         attr : str
             Attribute to validate. Defaults to validate all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
 
         Returns
         -------
@@ -271,10 +276,10 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.is_valid_type` : Return True if an attribute has a
-          valid type, otherwise False.
-        :meth:`muspy.Base.validate` : Raise an error if a certain attribute has
-          an invalid type or value.
+        :meth:`muspy.Base.is_valid_type` :
+            Return True if an attribute is of a valid type.
+        :meth:`muspy.Base.validate` :
+            Raise an error if an attribute has an invalid type or value.
 
         """
         if attr is None:
@@ -307,6 +312,8 @@ class Base:
         ----------
         attr : str
             Attribute to validate. Defaults to validate all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
 
         Returns
         -------
@@ -314,10 +321,10 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.is_valid` : Return True if an attribute is valid,
-          otherwise False.
-        :meth:`muspy.Base.validate_type` : Raise an error if a certain
-          attribute has an invalid type.
+        :meth:`muspy.Base.is_valid` :
+            Return True if an attribute has a valid type and value.
+        :meth:`muspy.Base.validate_type` :
+            Raise an error if an attribute is of an invalid type.
 
         """
         if attr is None:
@@ -336,18 +343,22 @@ class Base:
         ----------
         attr : str
             Attribute to validate. Defaults to validate all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
 
         Returns
         -------
         bool
-            Whether the attribute has a valid type.
+            Whether the attribute is of a valid type.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
 
         See Also
         --------
-        :meth:`muspy.Base.validate_type` : Raise an error if a certain
-          attribute has an invalid type.
-        :meth:`muspy.Base.is_valid` : Return True if an attribute is valid,
-          otherwise False.
+        :meth:`muspy.Base.validate_type` :
+            Raise an error if a certain attribute is of an invalid type.
+        :meth:`muspy.Base.is_valid` :
+            Return True if an attribute has a valid type and value.
 
         """
         try:
@@ -365,6 +376,8 @@ class Base:
         ----------
         attr : str
             Attribute to validate. Defaults to validate all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
 
         Returns
         -------
@@ -373,10 +386,10 @@ class Base:
 
         See Also
         --------
-        :meth:`muspy.Base.validate` : Raise an error if a certain attribute
-          has an invalid type or value.
-        :meth:`muspy.Base.is_valid_type` : Return True if an attribute has a
-          valid type, otherwise False.
+        :meth:`muspy.Base.validate` :
+            Raise an error if an attribute has an invalid type or value.
+        :meth:`muspy.Base.is_valid_type` :
+            Return True if an attribute is of a valid type.
 
         """
         try:
@@ -406,16 +419,15 @@ class Base:
     ) -> BaseType:
         """Adjust the timing of time-stamped objects.
 
-        This will apply recursively to an attribute's attributes.
-
         Parameters
         ----------
         func : callable
-            The function used to compute the new timing from the old timing,
-            i.e., `new_time = func(old_time)`.
+            The function used to compute the new timing from the old
+            timing, i.e., `new_time = func(old_time)`.
         attr : str
-            Attribute to adjust. If None, adjust all attributes. Defaults to
-            None.
+            Attribute to adjust. Defaults to adjust all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
 
         Returns
         -------
@@ -431,15 +443,15 @@ class Base:
 
 
 class ComplexBase(Base):
-    """A base class that supports advanced operations on list attributes.
+    """Base class that supports advanced operations on list attributes.
 
     This class extend the Base class with advanced operations on list
-    attributes, including `append`, `remove_invalid`, `remove_duplicate` and
-    `sort`.
+    attributes, including `append`, `remove_invalid`, `remove_duplicate`
+    and `sort`.
 
     See Also
     --------
-    :class:`muspy.Base` : The base class for MusPy classes.
+    :class:`muspy.Base` : Base class for MusPy classes.
 
     """
 
@@ -499,7 +511,7 @@ class ComplexBase(Base):
         attr: Optional[str] = None,
         recursive: bool = True,
     ) -> ComplexBaseType:
-        """Remove invalid items from list attributes, others left unchanged.
+        """Remove invalid items from a list attribute.
 
         Parameters
         ----------
@@ -550,13 +562,12 @@ class ComplexBase(Base):
         attr: Optional[str] = None,
         recursive: bool = True,
     ) -> ComplexBaseType:
-        """Remove duplicate items.
+        """Remove duplicate items from a list attribute.
 
         Parameters
         ----------
         attr : str
-            Attribute to check. If None, check all attributes. Defaults to
-            None.
+            Attribute to check. Defaults to check all attributes.
         recursive : bool
             Whether to apply recursively. Defaults to True.
 
@@ -600,7 +611,7 @@ class ComplexBase(Base):
         Parameters
         ----------
         attr : str
-            Attribute to sort. If None, sort all attributes. Defaults to None.
+            Attribute to sort. Defaults to sort all attributes.
         recursive : bool
             Whether to apply recursively. Defaults to True.
 

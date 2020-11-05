@@ -14,7 +14,7 @@ def n_pitches_used(music: Music) -> int:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -24,8 +24,8 @@ def n_pitches_used(music: Music) -> int:
 
     See Also
     --------
-    :func:`muspy.n_pitch_class_used` : Compute the number of unique pitch
-      classes used.
+    :func:`muspy.n_pitch_class_used` :
+        Compute the number of unique pitch classes used.
 
     """
     count = 0
@@ -47,7 +47,7 @@ def n_pitch_classes_used(music: Music) -> int:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -57,8 +57,8 @@ def n_pitch_classes_used(music: Music) -> int:
 
     See Also
     --------
-    :func:`muspy.n_pitches_used` : Compute the number of unique pitches
-      used.
+    :func:`muspy.n_pitches_used` :
+        Compute the number of unique pitches used.
 
     """
     count = 0
@@ -81,7 +81,7 @@ def pitch_range(music: Music) -> int:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -111,16 +111,16 @@ def pitch_range(music: Music) -> int:
 def empty_beat_rate(music: Music) -> float:
     r"""Return the ratio of empty beats.
 
-    The empty-beat rate is defined as the ratio of the number of empty beats
-    (where no note is played) to the total number of beats. Return NaN if
-    song length is zero. This metric is also implemented in Pypianoroll
-    [1].
+    The empty-beat rate is defined as the ratio of the number of empty
+    beats (where no note is played) to the total number of beats. Return
+    NaN if song length is zero. This metric is also implemented in
+    Pypianoroll [1].
 
     .. math:: empty\_beat\_rate = \frac{\#(empty\_beats)}{\#(beats)}
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -130,11 +130,12 @@ def empty_beat_rate(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.empty_measure_rate` : Compute the ratio of empty measures.
+    :func:`muspy.empty_measure_rate` :
+        Compute the ratio of empty measures.
 
     References
     ----------
-    [1] Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
+    1. Hao-Wen Dong, Wen-Yi Hsiao, and Yi-Hsuan Yang, “Pypianoroll: Open
        Source Python Package for Handling Multitrack Pianorolls,” in
        Late-Breaking Demos of the 18th International Society for Music
        Information Retrieval Conference (ISMIR), 2018.
@@ -161,16 +162,18 @@ def empty_beat_rate(music: Music) -> float:
 def empty_measure_rate(music: Music, measure_resolution: int) -> float:
     r"""Return the ratio of empty measures.
 
-    The empty-measure rate is defined as the ratio of the number of empty
-    measures (where no note is played) to the total number of measures. Note
-    that this metric only works for songs with a constant time signature.
-    Return NaN if song length is zero. This metric is used in [1].
+    The empty-measure rate is defined as the ratio of the number of
+    empty measures (where no note is played) to the total number of
+    measures. Note that this metric only works for songs with a constant
+    time signature. Return NaN if song length is zero. This metric is
+    used in [1].
 
-    .. math:: empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}
+    .. math::
+        empty\_measure\_rate = \frac{\#(empty\_measures)}{\#(measures)}
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
     measure_resolution : int
         Time steps per measure.
@@ -186,10 +189,11 @@ def empty_measure_rate(music: Music, measure_resolution: int) -> float:
 
     References
     ----------
-    [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
-       "MuseGAN: Multi-track sequential generative adversarial networks for
-       symbolic music generation and accompaniment," in Proceedings of the
-       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks
+       for symbolic music generation and accompaniment," in Proceedings
+       of the 32nd AAAI Conference on Artificial Intelligence (AAAI),
+       2018.
 
     """
     length = max(track.get_end_time() for track in music.tracks)
@@ -223,11 +227,12 @@ def _get_pianoroll(music: Music) -> ndarray:
 
 
 def polyphony(music: Music) -> float:
-    r"""Return the average number of pitches being played at the same time.
+    r"""Return the average number of pitches being played concurrently.
 
-    The polyphony is defined as the average number of pitches being played
-    at the same time, evaluated only at time steps where at least one pitch
-    is on. Drum tracks are ignored. Return NaN if no note is found.
+    The polyphony is defined as the average number of pitches being
+    played at the same time, evaluated only at time steps where at least
+    one pitch is on. Drum tracks are ignored. Return NaN if no note is
+    found.
 
     .. math::
         polyphony = \frac{
@@ -238,7 +243,7 @@ def polyphony(music: Music) -> float:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -248,8 +253,8 @@ def polyphony(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.polyphony_rate` : Compute the ratio of time steps where
-      multiple pitches are on.
+    :func:`muspy.polyphony_rate` :
+        Compute the ratio of time steps where multiple pitches are on.
 
     """
     pianoroll = _get_pianoroll(music)
@@ -262,10 +267,10 @@ def polyphony(music: Music) -> float:
 def polyphony_rate(music: Music, threshold: int = 2) -> float:
     r"""Return the ratio of time steps where multiple pitches are on.
 
-    The polyphony rate is defined as the ratio of the number of time steps
-    where multiple pitches are on to the total number of time steps. Drum
-    tracks are ignored. Return NaN if song length is zero. This metric is
-    used in [1], where it is called *polyphonicity*.
+    The polyphony rate is defined as the ratio of the number of time
+    steps where multiple pitches are on to the total number of time
+    steps. Drum tracks are ignored. Return NaN if song length is zero.
+    This metric is used in [1], where it is called `polyphonicity`.
 
     .. math::
         polyphony\_rate = \frac{
@@ -276,10 +281,10 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
     threshold : int
-        The threshold of number of pitches to count into the numerator.
+        Threshold of number of pitches to count into the numerator.
 
     Returns
     -------
@@ -288,15 +293,17 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
 
     See Also
     --------
-    :func:`muspy.polyphony` : Compute the average number of pitches being
-      played at the same time.
+    :func:`muspy.polyphony` :
+        Compute the average number of pitches being played at the same
+        time.
 
     References
     ----------
-    [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
-       "MuseGAN: Multi-track sequential generative adversarial networks for
-       symbolic music generation and accompaniment," in Proceedings of the
-       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks
+       for symbolic music generation and accompaniment," in Proceedings
+       of the 32nd AAAI Conference on Artificial Intelligence (AAAI),
+       2018.
 
     """
     pianoroll = _get_pianoroll(music)
@@ -319,16 +326,17 @@ def _get_scale(root: int, mode: str) -> ndarray:
 def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
     r"""Return the ratio of pitches in a certain musical scale.
 
-    The pitch-in-scale rate is defined as the ratio of the number of notes
-    in a certain scale to the total number of notes. Drum tracks are
-    ignored. Return NaN if no note is found. This metric is used in [1].
+    The pitch-in-scale rate is defined as the ratio of the number of
+    notes in a certain scale to the total number of notes. Drum tracks
+    are ignored. Return NaN if no note is found. This metric is used in
+    [1].
 
     .. math::
         pitch\_in\_scale\_rate = \frac{\#(notes\_in\_scale)}{\#(notes)}
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
     root : int
         Root of the scale.
@@ -342,15 +350,16 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
 
     See Also
     --------
-    :func:`muspy.scale_consistency` : Compute the largest pitch-in-class
-      rate.
+    :func:`muspy.scale_consistency` :
+        Compute the largest pitch-in-class rate.
 
     References
     ----------
-    [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
-       "MuseGAN: Multi-track sequential generative adversarial networks for
-       symbolic music generation and accompaniment," in Proceedings of the
-       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks
+       for symbolic music generation and accompaniment," in Proceedings
+       of the 32nd AAAI Conference on Artificial Intelligence (AAAI),
+       2018.
 
     """
     scale = _get_scale(root, mode.lower())
@@ -371,9 +380,9 @@ def pitch_in_scale_rate(music: Music, root: int, mode: str) -> float:
 def scale_consistency(music: Music) -> float:
     r"""Return the largest pitch-in-scale rate.
 
-    The scale consistency is defined as the largest pitch-in-scale rate over
-    all major and minor scales. Drum tracks are ignored. Return NaN if no
-    note is found. This metric is used in [1].
+    The scale consistency is defined as the largest pitch-in-scale rate
+    over all major and minor scales. Drum tracks are ignored. Return NaN
+    if no note is found. This metric is used in [1].
 
     .. math::
         scale\_consistency = \max_{root, mode}{
@@ -381,7 +390,7 @@ def scale_consistency(music: Music) -> float:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -391,14 +400,14 @@ def scale_consistency(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_in_scale_rate` : Compute the ratio of pitches in a
-      certain musical scale.
+    :func:`muspy.pitch_in_scale_rate` :
+        Compute the ratio of pitches in a certain musical scale.
 
     References
     ----------
-    [1] Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks with
-       adversarial training," in NeuIPS Workshop on Constructive Machine
-       Learning, 2016.
+    1. Olof Mogren, "C-RNN-GAN: Continuous recurrent neural networks
+       with adversarial training," in NeuIPS Workshop on Constructive
+       Machine Learning, 2016.
 
     """
     max_in_scale_rate = 0.0
@@ -433,9 +442,9 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
     r"""Return the ratio of drum notes in a certain drum pattern.
 
     The drum-in-pattern rate is defined as the ratio of the number of
-    notes in a certain scale to the total number of notes. Only drum tracks
-    are considered. Return NaN if no drum note is found. This metric is used
-    in [1].
+    notes in a certain scale to the total number of notes. Only drum
+    tracks are considered. Return NaN if no drum note is found. This
+    metric is used in [1].
 
     .. math::
         drum\_in\_pattern\_rate = \frac{
@@ -443,7 +452,7 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
     meter : str, {'duple', 'triple'}
         Meter of the drum pattern.
@@ -455,15 +464,16 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
 
     See Also
     --------
-    :func:`muspy.drum_pattern_consistency` : Compute the largest
-      drum-in-pattern rate.
+    :func:`muspy.drum_pattern_consistency` :
+        Compute the largest drum-in-pattern rate.
 
     References
     ----------
-    [1] Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
-       "MuseGAN: Multi-track sequential generative adversarial networks for
-       symbolic music generation and accompaniment," in Proceedings of the
-       32nd AAAI Conference on Artificial Intelligence (AAAI), 2018.
+    1. Hao-Wen Dong, Wen-Yi Hsiao, Li-Chia Yang, and Yi-Hsuan Yang,
+       "MuseGAN: Multi-track sequential generative adversarial networks
+       for symbolic music generation and accompaniment," in Proceedings
+       of the 32nd AAAI Conference on Artificial Intelligence (AAAI),
+       2018.
 
     """
     drum_pattern = _get_drum_pattern(music.resolution, meter.lower())
@@ -484,9 +494,9 @@ def drum_in_pattern_rate(music: Music, meter: str) -> float:
 def drum_pattern_consistency(music: Music) -> float:
     r"""Return the largest drum-in-pattern rate.
 
-    The drum pattern consistency is defined as the largest drum-in-pattern
-    rate over duple and triple meters. Only drum tracks are considered.
-    Return NaN if no drum note is found.
+    The drum pattern consistency is defined as the largest
+    drum-in-pattern rate over duple and triple meters. Only drum tracks
+    are considered. Return NaN if no drum note is found.
 
     .. math::
         drum\_pattern\_consistency = \max_{meter}{
@@ -494,7 +504,7 @@ def drum_pattern_consistency(music: Music) -> float:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -504,8 +514,8 @@ def drum_pattern_consistency(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.drum_in_pattern_rate` : Compute the ratio of drum notes in
-      a certain drum pattern.
+    :func:`muspy.drum_in_pattern_rate` :
+        Compute the ratio of drum notes in a certain drum pattern.
 
     """
     drum_in_duple_pattern_rate = drum_in_pattern_rate(music, "duple")
@@ -526,16 +536,17 @@ def _entropy(prob):
 def pitch_entropy(music: Music) -> float:
     r"""Return the entropy of the normalized note pitch histogram.
 
-    The pitch entropy is defined as the Shannon entropy of the normalized
-    note pitch histogram. Drum tracks are ignored. Return NaN if no note is
-    found.
+    The pitch entropy is defined as the Shannon entropy of the
+    normalized note pitch histogram. Drum tracks are ignored. Return NaN
+    if no note is found.
 
     .. math::
-        pitch\_entropy = -\sum_{i = 0}^{127}{P(pitch=i) \log_2 P(pitch=i)}
+        pitch\_entropy = -\sum_{i = 0}^{127}{
+            P(pitch=i) \log_2 P(pitch=i)}
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -545,8 +556,8 @@ def pitch_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_class_entropy` : Compute the entropy of the
-      normalized pitch class histogram.
+    :func:`muspy.pitch_class_entropy` :
+        Compute the entropy of the normalized pitch class histogram.
 
     """
     counter = np.zeros(128)
@@ -566,8 +577,8 @@ def pitch_class_entropy(music: Music) -> float:
     r"""Return the entropy of the normalized note pitch class histogram.
 
     The pitch class entropy is defined as the Shannon entropy of the
-    normalized note pitch class histogram. Drum tracks are ignored. Return
-    NaN if no note is found. This metric is used in [1].
+    normalized note pitch class histogram. Drum tracks are ignored.
+    Return NaN if no note is found. This metric is used in [1].
 
     .. math::
         pitch\_class\_entropy = -\sum_{i = 0}^{11}{
@@ -575,7 +586,7 @@ def pitch_class_entropy(music: Music) -> float:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
 
     Returns
@@ -585,12 +596,12 @@ def pitch_class_entropy(music: Music) -> float:
 
     See Also
     --------
-    :func:`muspy.pitch_entropy` : Compute the entropy of the normalized
-      pitch histogram.
+    :func:`muspy.pitch_entropy` :
+        Compute the entropy of the normalized pitch histogram.
 
     References
     ----------
-    [1] Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
+    1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
        Society for Music Information Retrieval Conference, 2020.
@@ -612,23 +623,24 @@ def pitch_class_entropy(music: Music) -> float:
 def groove_consistency(music: Music, measure_resolution: int) -> float:
     r"""Return the groove consistency.
 
-    The groove consistency is defined as the mean hamming distance of the
-    neighboring measures.
+    The groove consistency is defined as the mean hamming distance of
+    the neighboring measures.
 
     .. math::
         groove\_consistency = 1 - \frac{1}{T - 1} \sum_{i = 1}^{T - 1}{
             d(G_i, G_{i + 1})}
 
     Here, :math:`T` is the number of measures, :math:`G_i` is the binary
-    onset vector of the :math:`i`-th measure (a one at position that has an
-    onset, otherwise a zero), and :math:`d(G, G')` is the hamming distance
-    between two vectors :math:`G` and :math:`G'`. Note that this metric only
-    works for songs with a constant time signature. Return NaN if the number
-    of measures is less than two. This metric is used in [1].
+    onset vector of the :math:`i`-th measure (a one at position that has
+    an onset, otherwise a zero), and :math:`d(G, G')` is the hamming
+    distance between two vectors :math:`G` and :math:`G'`. Note that
+    this metric only works for songs with a constant time signature.
+    Return NaN if the number of measures is less than two. This metric
+    is used in [1].
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to evaluate.
     measure_resolution : int
         Time steps per measure.
@@ -640,7 +652,7 @@ def groove_consistency(music: Music, measure_resolution: int) -> float:
 
     References
     ----------
-    [1] Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
+    1. Shih-Lun Wu and Yi-Hsuan Yang, "The Jazz Transformer on the Front
        Line: Exploring the Shortcomings of AI-composed Music through
        Quantitative Measures”, in Proceedings of the 21st International
        Society for Music Information Retrieval Conference, 2020.

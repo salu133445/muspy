@@ -48,12 +48,12 @@ DEFAULT_RESOLUTION = 24
 class Music(ComplexBase):
     """A universal container for symbolic music.
 
-    This is the core class of MusPy. A Music object can be constructed in
-    the following ways.
+    This is the core class of MusPy. A Music object can be constructed
+    in the following ways.
 
     - :meth:`muspy.Music`: Construct by setting values for attributes.
-    - :meth:`muspy.Music.from_dict`: Construct from a dictionary that stores
-      the attributes and their values as key-value pairs.
+    - :meth:`muspy.Music.from_dict`: Construct from a dictionary that
+      stores the attributes and their values as key-value pairs.
     - :func:`muspy.read`: Read from a MIDI, a MusicXML or an ABC file.
     - :func:`muspy.load`: Load from a JSON or a YAML file saved by
       :func:`muspy.save`.
@@ -63,15 +63,16 @@ class Music(ComplexBase):
 
     Attributes
     ----------
-    metadata : :class:`muspy.Metadata` object
+    metadata : :class:`muspy.Metadata`
         Metadata.
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
     tempos : list of :class:`muspy.Tempo`
         Tempo changes.
-    key_signatures : list of :class:`muspy.KeySignature` object
+    key_signatures : list of :class:`muspy.KeySignature`
         Key signatures changes.
-    time_signatures : list of :class:`muspy.TimeSignature` object
+    time_signatures : list of :class:`muspy.TimeSignature`
         Time signature changes.
     downbeats : list of int
         Downbeat positions.
@@ -82,12 +83,12 @@ class Music(ComplexBase):
     tracks : list of :class:`muspy.Track`
         Music tracks.
 
-    Tip
-    ---
-    Indexing a Music object gives the track of a certain index. That is,
-    `music[idx]` is equivalent to `music.tracks[idx]`. Length of a Music
-    object is the number of tracks. That is, `len(music)`  is equivalent to
-    `len(music.tracks)`.
+    Note
+    ----
+    Indexing a Music object returns the track of a certain index. That
+    is, ``music[idx]`` returns ``music.tracks[idx]``. Length of a Music
+    object is the number of tracks. That is, ``len(music)``  returns
+    ``len(music.tracks)``.
 
     """
 
@@ -164,15 +165,16 @@ class Music(ComplexBase):
         self.tracks[key] = value
 
     def get_end_time(self, is_sorted: bool = False) -> int:
-        """Return the end time, i.e., the time of the last event in all tracks.
+        """Return the the time of the last event in all tracks.
 
-        This includes tempos, key signatures, time signatures, notes offsets,
-        lyrics and annotations.
+        This includes tempos, key signatures, time signatures, note
+        offsets, lyrics and annotations.
 
         Parameters
         ----------
         is_sorted : bool
-            Whether all the list attributes are sorted. Defaults to False.
+            Whether all the list attributes are sorted. Defaults to
+            False.
 
         """
 
@@ -204,14 +206,15 @@ class Music(ComplexBase):
     def get_real_end_time(self, is_sorted: bool = False) -> float:
         """Return the end time in realtime.
 
-        This includes tempos, key signatures, time signatures, notes offsets,
-        lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no
-        tempo information is available.
+        This includes tempos, key signatures, time signatures, note
+        offsets, lyrics and annotations. Assume 120 qpm (quarter notes
+        per minute) if no tempo information is available.
 
         Parameters
         ----------
         is_sorted : bool
-            Whether all the list attributes are sorted. Defaults to False.
+            Whether all the list attributes are sorted. Defaults to
+            False.
 
         """
         # Get symbolic end time
@@ -240,7 +243,7 @@ class Music(ComplexBase):
         factor: Optional[float] = None,
         rounding: Optional[Union[str, Callable]] = "round",
     ) -> "Music":
-        """Adjust resolution and update the timing of time-stamped objects.
+        """Adjust resolution and timing of all time-stamped objects.
 
         Parameters
         ----------
@@ -248,9 +251,9 @@ class Music(ComplexBase):
             Target resolution.
         factor : int or float, optional
             Factor used to adjust the resolution based on the formula:
-            `new_resolution = old_resolution * factor`. For example, a factor
-            of 2 double the resolution, and a factor of 0.5 halve the
-            resolution.
+            `new_resolution = old_resolution * factor`. For example, a
+            factor of 2 double the resolution, and a factor of 0.5 halve
+            the resolution.
         rounding : {'round', 'ceil', 'floor'} or callable, optional
             Rounding mode. Defaults to 'round'.
 
@@ -317,13 +320,14 @@ class Music(ComplexBase):
         return self
 
     def transpose(self, semitone: int) -> "Music":
-        """Transpose all the notes for all tracks by a number of semitones.
+        """Transpose all the notes by a number of semitones.
 
         Parameters
         ----------
         semitone : int
-            Number of semitones to transpose the notes. A positive value raises
-            the pitches, while a negative value lowers the pitches.
+            Number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the
+            pitches.
 
         Returns
         -------
@@ -476,7 +480,8 @@ class Music(ComplexBase):
     def to_event_representation(self, **kwargs: Any) -> ndarray:
         """Return in event-based representation.
 
-        Refer to :func:`muspy.to_event_representation` for full documentation.
+        Refer to :func:`muspy.to_event_representation` for full
+        documentation.
 
         """
         return to_representation(self, kind="event", **kwargs)
@@ -484,7 +489,8 @@ class Music(ComplexBase):
     def to_note_representation(self, **kwargs: Any) -> ndarray:
         """Return in note-based representation.
 
-        Refer to :func:`muspy.to_note_representation` for full documentation.
+        Refer to :func:`muspy.to_note_representation` for full
+        documentation.
 
         """
         return to_representation(self, kind="note", **kwargs)

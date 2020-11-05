@@ -73,14 +73,14 @@ class DatasetInfo:
 
 
 class Dataset:
-    """Base class for all MusPy datasets.
+    """Base class for MusPy datasets.
 
-    To build a custom dataset, it should inherit this class and overide the
-    methods ``__getitem__`` and ``__len__`` as well as the class attribute
-    ``_info``. ``__getitem__`` should return the ``i``-th data sample as a
-    :class:`muspy.Music` object. ``__len__`` should return the size of the
-    dataset. ``_info`` should be a :class:`muspy.DatasetInfo` instance
-    containing the dataset information.
+    To build a custom dataset, it should inherit this class and overide
+    the methods ``__getitem__`` and ``__len__`` as well as the class
+    attribute ``_info``. ``__getitem__`` should return the ``i``-th data
+    sample as a :class:`muspy.Music` object. ``__len__`` should return
+    the size of the dataset. ``_info`` should be a
+    :class:`muspy.DatasetInfo` instance storing the dataset information.
 
     """
 
@@ -112,8 +112,6 @@ class Dataset:
     ):
         """Save all the music objects to a directory.
 
-        The converted files will be named by its index and saved to ``root/``.
-
         Parameters
         ----------
         root : str or Path
@@ -121,17 +119,18 @@ class Dataset:
         kind : {'json', 'yaml'}, optional
             File format to save the data. Defaults to 'json'.
         n_jobs : int, optional
-            Maximum number of concurrently running jobs in multiprocessing. If
-            equal to 1, disable multiprocessing. Defaults to 1.
+            Maximum number of concurrently running jobs. If equal to 1,
+            disable multiprocessing. Defaults to 1.
         ignore_exceptions : bool, optional
-            Whether to ignore errors and skip failed conversions. This can be
-            helpful if some of the source files is known to be corrupted.
-            Defaults to False.
+            Whether to ignore errors and skip failed conversions. This
+            can be helpful if some source files are known to be
+            corrupted. Defaults to True.
 
         Notes
         -----
-        The original filenames can be found in the ``filenames`` attribute.
-        For example, the file at ``filenames[i]`` will be converted and
+        The converted files will be named by its index. The original
+        filenames can be found in the ``filenames`` attribute. For
+        example, the file at ``filenames[i]`` will be converted and
         saved to ``{i}.json``.
 
         """
@@ -192,17 +191,19 @@ class Dataset:
         Parameters
         ----------
         filename : str or Path, optional
-            If given and exists, path to the file to read the split from.
-            If None or not exists, path to save the split.
+            If given and exists, path to the file to read the split
+            from. If None or not exists, path to save the split.
         splits : float or list of float, optional
             Ratios for train-test-validation splits. If None, return the
-            full dataset as a whole. If float, return train and test splits.
-            If list of two floats, return train and test splits. If list of
-            three floats, return train, test and validation splits.
+            full dataset as a whole. If float, return train and test
+            splits. If list of two floats, return train and test splits.
+            If list of three floats, return train, test and validation
+            splits.
         random_state : int, array_like or RandomState, optional
-            Random state used to create the splits. If int or array_like,
-            the value is passed to :class:`numpy.random.RandomState`, and
-            the create RandomState object is used to create the splits. If
+            Random state used to create the splits. If int or
+            array_like, the value is passed to
+            :class:`numpy.random.RandomState`, and the created
+            RandomState object is used to create the splits. If
             RandomState, it will be used to create the splits.
 
         """
@@ -264,28 +265,31 @@ class Dataset:
         Parameters
         ----------
         factory : Callable, optional
-            Function to be applied to the Music objects. The input is a Music
-            object, and the output is an array or a tensor.
-        representation : {'pitch', 'piano-roll', 'event', 'note'}, optional
-            Target representation.
+            Function to be applied to the Music objects. The input is a
+            Music object, and the output is an array or a tensor.
+        representation : str, optional
+            Target representation. See :func:`muspy.to_representation()`
+            for available representation.
         split_filename : str or Path, optional
-            If given and exists, path to the file to read the split from.
-            If None or not exists, path to save the split.
+            If given and exists, path to the file to read the split
+            from. If None or not exists, path to save the split.
         splits : float or list of float, optional
             Ratios for train-test-validation splits. If None, return the
-            full dataset as a whole. If float, return train and test splits.
-            If list of two floats, return train and test splits. If list of
-            three floats, return train, test and validation splits.
+            full dataset as a whole. If float, return train and test
+            splits. If list of two floats, return train and test splits.
+            If list of three floats, return train, test and validation
+            splits.
         random_state : int, array_like or RandomState, optional
-            Random state used to create the splits. If int or array_like,
-            the value is passed to :class:`numpy.random.RandomState`, and
-            the create RandomState object is used to create the splits. If
+            Random state used to create the splits. If int or
+            array_like, the value is passed to
+            :class:`numpy.random.RandomState`, and the created
+            RandomState object is used to create the splits. If
             RandomState, it will be used to create the splits.
 
         Returns
         -------
-        :class:torch.utils.data.Dataset` or Dict of
-        :class:torch.utils.data.Dataset`
+        :class:torch.utils.data.Dataset` or Dict of \
+                :class:torch.utils.data.Dataset`
             Converted PyTorch dataset(s).
 
         """
@@ -337,22 +341,25 @@ class Dataset:
         Parameters
         ----------
         factory : Callable, optional
-            Function to be applied to the Music objects. The input is a Music
-            object, and the output is an array or a tensor.
-        representation : {'pitch', 'piano-roll', 'event', 'note'}, optional
-            Target representation.
+            Function to be applied to the Music objects. The input is a
+            Music object, and the output is an array or a tensor.
+        representation : str, optional
+            Target representation. See :func:`muspy.to_representation()`
+            for available representation.
         split_filename : str or Path, optional
-            If given and exists, path to the file to read the split from.
-            If None or not exists, path to save the split.
+            If given and exists, path to the file to read the split
+            from. If None or not exists, path to save the split.
         splits : float or list of float, optional
             Ratios for train-test-validation splits. If None, return the
-            full dataset as a whole. If float, return train and test splits.
-            If list of two floats, return train and test splits. If list of
-            three floats, return train, test and validation splits.
+            full dataset as a whole. If float, return train and test
+            splits. If list of two floats, return train and test splits.
+            If list of three floats, return train, test and validation
+            splits.
         random_state : int, array_like or RandomState, optional
-            Random state used to create the splits. If int or array_like,
-            the value is passed to :class:`numpy.random.RandomState`, and
-            the create RandomState object is used to create the splits. If
+            Random state used to create the splits. If int or
+            array_like, the value is passed to
+            :class:`numpy.random.RandomState`, and the created
+            RandomState object is used to create the splits. If
             RandomState, it will be used to create the splits.
 
         Returns
@@ -407,12 +414,11 @@ class Dataset:
 class RemoteDataset(Dataset):
     """Base class for remote MusPy datasets.
 
-    This class is extended from :class:`muspy.Dataset` to support remote
-    datasets. To build a custom dataset based on this class, please refer to
-    :class:`muspy.Dataset` for the docmentation of the methods
-    ``__getitem__`` and ``__len__``, and the class attribute ``_info``. In
-    addition, the class attribute ``_sources`` containing the URLs to the
-    source files should be properly set (see Notes).
+    This class extends :class:`muspy.Dataset` to support remote
+    datasets. To build a custom remote dataset, please refer to the
+    documentation of :class:`muspy.Dataset` for details. In addition,
+    set the class attribute ``_sources`` to the URLs to the source files
+    (see Notes).
 
     Attributes
     ----------
@@ -435,17 +441,17 @@ class RemoteDataset(Dataset):
     Important
     ---------
     :meth:`muspy.Dataset.exists` depends solely on a special file named
-    ``.muspy.success`` in the folder ``{root}/``, which serves as an
-    indicator for the existence and integrity of the dataset. This file will
-    automatically be created if the dataset is successfully downloaded and
-    extracted by :meth:`muspy.Dataset.download_and_extract`.
-
-    If the dataset is downloaded manually, make sure to create the
-    ``.muspy.success`` file in the folder ``{root}/`` to prevent errors.
+    ``.muspy.success`` in directory ``{root}/_converted/``. This file
+    serves as an indicator for the existence and integrity of the
+    dataset. It will automatically be created if the dataset is
+    successfully downloaded and extracted by
+    :meth:`muspy.Dataset.download_and_extract`. If the dataset is
+    downloaded manually, make sure to create the ``.muspy.success`` file
+    in directory ``{root}/_converted/`` to prevent errors.
 
     Notes
     -----
-    The class attribute ``_sources`` is a dictionary containing the
+    The class attribute ``_sources`` is a dictionary storing the
     following information of each source file.
 
     - filename (str): Name to save the file.
@@ -466,7 +472,7 @@ class RemoteDataset(Dataset):
 
     See Also
     --------
-    :class:`muspy.Dataset` : The base class for all MusPy datasets.
+    :class:`muspy.Dataset` : Base class for MusPy datasets.
 
     """
 
@@ -576,8 +582,6 @@ class RemoteDataset(Dataset):
     ) -> RemoteDatasetType:
         """Extract the downloaded archives.
 
-        This is equivalent to ``RemoteDataset.download().extract(cleanup)``.
-
         Parameters
         ----------
         cleanup : bool, optional
@@ -586,6 +590,10 @@ class RemoteDataset(Dataset):
         Returns
         -------
         Object itself.
+
+        Notes
+        -----
+        Equivalent to ``RemoteDataset.download().extract(cleanup)``.
 
         """
         return self.download().extract(cleanup)
@@ -601,8 +609,8 @@ if HAS_TORCH:
         dataset : :class:`muspy.Dataset`
             Dataset object to base on.
         factory : Callable
-            Function to be applied to the Music objects. The input is a Music
-            object, and the output is an array or a tensor.
+            Function to be applied to the Music objects. The input is a
+            Music object, and the output is an array or a tensor.
 
         """
 
@@ -645,9 +653,9 @@ if HAS_TORCH:
         ----------
         dataset : :class:`muspy.Dataset`
             Dataset object to base on.
-        representation : {'pitch', 'piano-roll', 'event', 'note'}
-            Target representation.
-
+        representation : str
+            Target representation. See :func:`muspy.to_representation()`
+            for available representation.
         """
 
         def __init__(
@@ -675,7 +683,7 @@ if HAS_TORCH:
 
 
 class MusicDataset(Dataset):
-    """A local dataset containing MusPy JSON/YAML files in a folder.
+    """Class for datasets of MusPy JSON/YAML files.
 
     Attributes
     ----------
@@ -683,6 +691,10 @@ class MusicDataset(Dataset):
         Root directory of the dataset.
     kind : {'json', 'yaml'}, optional
         File format of the data. Defaults to 'json'.
+
+    See Also
+    --------
+    :class:`muspy.Dataset` : Base class for MusPy datasets.
 
     """
 
@@ -707,11 +719,7 @@ class MusicDataset(Dataset):
 
 
 class RemoteMusicDataset(MusicDataset, RemoteDataset):
-    """A dataset containing MusPy JSON/YAML files in a folder.
-
-    This class extended :class:`muspy.RemoteDataset` and
-    :class:`muspy.FolderDataset`. Please refer to their documentation for
-    details.
+    """Base class for remote datasets of MusPy JSON/YAML files.
 
     Attributes
     ----------
@@ -727,6 +735,12 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
     cleanup : bool, optional
         Whether to remove the original archive(s). Defaults to False.
 
+    See Also
+    --------
+    :class:`muspy.MusicDataset` :
+        Class for datasets of MusPy JSON/YAML files.
+    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.
+
     """
 
     def __init__(
@@ -741,12 +755,15 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
 
 
 class FolderDataset(Dataset):
-    """A class of datasets containing files in a folder.
+    """Class for datasets storing files in a folder.
 
-    Two modes are available for this dataset. When the on-the-fly mode is
-    enabled, a data sample is converted to a music object on the fly when
-    being indexed. When the on-the-fly mode is disabled, a data sample is
-    loaded from the precomputed converted data.
+    This class extends :class:`muspy.Dataset` to support folder
+    datasets. To build a custom folder dataset, please refer to the
+    documentation of :class:`muspy.Dataset` for details. In addition,
+    set class attribute ``_extension`` to the extension to look for
+    when building the dataset and set ``read`` to a callable that takes
+    as inputs a filename of a source file and return the converted Music
+    object.
 
     Attributes
     ----------
@@ -756,17 +773,18 @@ class FolderDataset(Dataset):
     Parameters
     ----------
     convert : bool, optional
-        Whether to convert the dataset to MusPy JSON/YAML files. If False,
-        will check if converted data exists. If so, disable on-the-fly mode.
-        If not, enable on-the-fly mode and warns. Defaults to False.
+        Whether to convert the dataset to MusPy JSON/YAML files. If
+        False, will check if converted data exists. If so, disable
+        on-the-fly mode. If not, enable on-the-fly mode and warns.
+        Defaults to False.
     kind : {'json', 'yaml'}, optional
         File format to save the data. Defaults to 'json'.
     n_jobs : int, optional
-        Maximum number of concurrently running jobs in multiprocessing. If
-        equal to 1, disable multiprocessing. Defaults to 1.
+        Maximum number of concurrently running jobs. If equal to 1,
+        disable multiprocessing. Defaults to 1.
     ignore_exceptions : bool, optional
-        Whether to ignore errors and skip failed conversions. This can be
-        helpful if some of the source files is known to be corrupted.
+        Whether to ignore errors and skip failed conversions. This can
+        be helpful if some source files are known to be corrupted.
         Defaults to True.
     use_converted : bool, optional
         Force to disable on-the-fly mode and use stored converted data
@@ -775,29 +793,24 @@ class FolderDataset(Dataset):
     ---------
     :meth:`muspy.FolderDataset.converted_exists` depends solely on a
     special file named ``.muspy.success`` in the folder
-    ``{root}/_converted/``, which serves as an indicator for the existence
-    and integrity of the converted dataset. If the converted dataset is
-    built by :meth:`muspy.FolderDataset.convert`, the ``.muspy.success``
-    file will be created as well. If the converted dataset is created
-    manually, make sure to create the ``.muspy.success`` file in the folder
-    ``{root}/_converted/`` to prevent errors.
+    ``{root}/_converted/``, which serves as an indicator for the
+    existence and integrity of the converted dataset. If the converted
+    dataset is built by :meth:`muspy.FolderDataset.convert`, the
+    ``.muspy.success`` file will be created as well. If the converted
+    dataset is created manually, make sure to create the
+    ``.muspy.success`` file in the folder ``{root}/_converted/`` to
+    prevent errors.
 
     Notes
     -----
-    This class is extended from :class:`muspy.Dataset`. To build a custom
-    dataset based on this class, please refer to :class:`muspy.Dataset` for
-    the docmentation of the methods ``__getitem__`` and ``__len__``, and the
-    class attribute ``_info``.
-
-    In addition, the attribute ``_extension`` and method ``read`` should be
-    properly set. ``_extension`` is the extension to look for when building
-    the dataset. All files with the given extension will be included as
-    source files. ``read`` is a callable that takes as inputs a filename of
-    a source file and return the converted Music object.
+    Two modes are available for this dataset. When the on-the-fly mode
+    is enabled, a data sample is converted to a music object on the fly
+    when being indexed. When the on-the-fly mode is disabled, a data
+    sample is loaded from the precomputed converted data.
 
     See Also
     --------
-    :class:`muspy.Dataset` : The base class for all MusPy datasets.
+    :class:`muspy.Dataset` : Base class for MusPy datasets.
 
     """
 
@@ -815,10 +828,10 @@ class FolderDataset(Dataset):
         self.root = Path(root).expanduser().resolve()
         self.kind = kind
 
-        # An internal pointer to the callable used to produce the Music object
+        # A pointer to the callable used to produce the Music object
         self._factory: Callable = lambda: None
 
-        # An internal pointer to the list of filenames used when indexing
+        # A pointer to the list of filenames used when indexing
         self._filenames: list = []
 
         self.raw_filenames: list = []
@@ -840,6 +853,11 @@ class FolderDataset(Dataset):
 
         (self.root / ".muspy.success").touch()
 
+    @property
+    def converted_dir(self):
+        """Path to the root directory of the converted dataset."""
+        return self.root / "_converted"
+
     def __repr__(self) -> str:
         return "{}(root={})".format(type(self).__name__, self.root)
 
@@ -854,7 +872,7 @@ class FolderDataset(Dataset):
         raise NotImplementedError
 
     def load(self, filename: Union[str, Path]) -> Music:
-        """Read a file into a Music object."""
+        """Load a file into a Music object."""
         return load(self.root / filename)
 
     def exists(self) -> bool:
@@ -862,11 +880,6 @@ class FolderDataset(Dataset):
         if not (self.root / ".muspy.success").is_file():
             return False
         return True
-
-    @property
-    def converted_dir(self):
-        """Return the path to the root directory of the converted dataset."""
-        return self.root / "_converted"
 
     def converted_exists(self) -> bool:
         """Return True if the saved dataset exists, otherwise False."""
@@ -929,20 +942,20 @@ class FolderDataset(Dataset):
 
         The converted files will be named by its index and saved to
         ``root/_converted``. The original filenames can be found in the
-        ``filenames`` attribute. For example, the file at ``filenames[i]``
-        will be converted and saved to ``{i}.json``.
+        ``filenames`` attribute. For example, the file at
+        ``filenames[i]`` will be converted and saved to ``{i}.json``.
 
         Parameters
         ----------
         kind : {'json', 'yaml'}, optional
             File format to save the data. Defaults to 'json'.
         n_jobs : int, optional
-            Maximum number of concurrently running jobs in multiprocessing. If
-            equal to 1, disable multiprocessing. Defaults to 1.
+            Maximum number of concurrently running jobs. If equal to 1,
+            disable multiprocessing. Defaults to 1.
         ignore_exceptions : bool, optional
-            Whether to ignore errors and skip failed conversions. This can be
-            helpful if some of the source files is known to be corrupted.
-            Defaults to True.
+            Whether to ignore errors and skip failed conversions. This
+            can be helpful if some source files are known to be
+            corrupted. Defaults to True.
 
         Returns
         -------
@@ -961,11 +974,7 @@ class FolderDataset(Dataset):
 
 
 class RemoteFolderDataset(FolderDataset, RemoteDataset):
-    """A class of remote datasets containing files in a folder.
-
-    This class extended :class:`muspy.RemoteDataset` and
-    :class:`muspy.FolderDataset`. Please refer to their documentation for
-    details.
+    """Base class for remote datasets stoting files in a folder.
 
     Attributes
     ----------
@@ -979,26 +988,27 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
     cleanup : bool, optional
         Whether to remove the original archive(s). Defaults to False.
     convert : bool, optional
-        Whether to convert the dataset to MusPy JSON/YAML files. If False,
-        will check if converted data exists. If so, disable on-the-fly mode.
-        If not, enable on-the-fly mode and warns. Defaults to False.
+        Whether to convert the dataset to MusPy JSON/YAML files. If
+        False, will check if converted data exists. If so, disable
+        on-the-fly mode. If not, enable on-the-fly mode and warns.
+        Defaults to False.
     kind : {'json', 'yaml'}, optional
         File format to save the data. Defaults to 'json'.
     n_jobs : int, optional
-        Maximum number of concurrently running jobs in multiprocessing. If
-        equal to 1, disable multiprocessing. Defaults to 1.
+        Maximum number of concurrently running jobs. If equal to 1,
+        disable multiprocessing. Defaults to 1.
     ignore_exceptions : bool, optional
-        Whether to ignore errors and skip failed conversions. This can be
-        helpful if some of the source files is known to be corrupted.
+        Whether to ignore errors and skip failed conversions. This can
+        be helpful if some source files are known to be corrupted.
         Defaults to True.
     use_converted : bool, optional
         Force to disable on-the-fly mode and use stored converted data
 
     See Also
     --------
+    :class:`muspy.FolderDataset` :
+        Class for datasets storing files in a folder.
     :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.
-    :class:`muspy.FolderDataset` : A class of datasets containing files in a
-      folder.
 
     """
 
@@ -1024,7 +1034,14 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
 
 
 class ABCFolderDataset(FolderDataset):
-    """A class of local datasets containing ABC files in a folder."""
+    """Class for datasets storing ABC files in a folder.
+
+    See Also
+    --------
+    :class:`muspy.FolderDataset` :
+        Class for datasets storing files in a folder.
+
+    """
 
     _extension = "abc"
 
@@ -1082,7 +1099,15 @@ class ABCFolderDataset(FolderDataset):
 
 
 class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):
-    """A class of remote datasets containing ABC files in a folder."""
+    """Base class for remote datasets storing ABC files in a folder.
+
+    See Also
+    --------
+    :class:`muspy.ABCFolderDataset` :
+        Class for datasets storing ABC files in a folder.
+    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.
+
+    """
 
     def __init__(
         self,

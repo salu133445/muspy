@@ -39,18 +39,18 @@ def _pianoroll_to_notes(
 def parse_pypianoroll_track(
     track: PypianorollTrack, default_velocity: int = 64
 ) -> Track:
-    """Return a Track object parsed from a Pypianoroll Track object.
+    """Return a Pypianoroll Track object as a Track object.
 
     Parameters
     ----------
-    track : :class:`pypianoroll.Track` object
+    track : :class:`pypianoroll.Track`
         Pypianoroll Track object to convert.
     default_velocity : int
         Default velocity value to use when decoding. Defaults to 64.
 
     Returns
     -------
-    :class:`muspy.Track` object
+    :class:`muspy.Track`
         Converted track.
 
     """
@@ -69,18 +69,18 @@ def parse_pypianoroll_track(
 def from_pypianoroll(
     multitrack: Multitrack, default_velocity: int = 64
 ) -> Music:
-    """Return a Music object converted from a Pypianoroll Multitrack object.
+    """Return a Pypianoroll Multitrack object as a Music object.
 
     Parameters
     ----------
-    multitrack : :class:`pypianoroll.Multitrack` object
-        Multitrack object to convert.
+    multitrack : :class:`pypianoroll.Multitrack`
+        Pypianoroll Multitrack object to convert.
     default_velocity : int
         Default velocity value to use when decoding. Defaults to 64.
 
     Returns
     -------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Converted MusPy Music object.
 
     """
@@ -120,7 +120,8 @@ def from_pianoroll_representation(
         integer if not of integer type. If `encode_velocity` is True,
         will be casted to boolean if not of boolean type.
     resolution : int
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
         Program number according to General MIDI specification [1].
         Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
@@ -135,7 +136,7 @@ def from_pianoroll_representation(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Decoded Music object.
 
     References

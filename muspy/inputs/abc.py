@@ -12,21 +12,23 @@ from .music21 import from_music21, from_music21_opus
 def read_abc_string(
     data_str: str, number: Optional[int] = None, resolution=DEFAULT_RESOLUTION,
 ):
-    """Read ABC data into Music object(s) using music21 as backend.
+    """Read ABC data into Music object(s) using music21 backend.
 
     Parameters
     ----------
     data_str : str
         ABC data to parse.
     number : int
-        Reference number of a specific tune to read (i.e., the 'X:' field).
+        Reference number of a specific tune to read (i.e., the 'X:'
+        field).
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    :class:`muspy.Music` object
-        Converted MusPy Music object(s).
+    :class:`muspy.Music`
+        Converted Music object(s).
 
     """
     # Parse the ABC data using music21
@@ -46,21 +48,23 @@ def read_abc(
     number: Optional[int] = None,
     resolution=DEFAULT_RESOLUTION,
 ) -> List[Music]:
-    """Return an ABC file into Music object(s) using music21 as backend.
+    """Return an ABC file into Music object(s) using music21 backend.
 
     Parameters
     ----------
     path : str or Path
         Path to the ABC file to read.
     number : int
-        Reference number of a specific tune to read (i.e., the 'X:' field).
+        Reference number of a specific tune to read (i.e., the 'X:'
+        field).
     resolution : int, optional
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
-    list of :class:`muspy.Music` objects
-        Converted MusPy Music object(s).
+    list of :class:`muspy.Music`
+        Converted Music object(s).
 
     """
     # Parse the ABC file using music21

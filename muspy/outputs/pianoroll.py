@@ -18,11 +18,11 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     Parameters
     ----------
     music : :class:`muspy.Music`
-        MusPy Music object to convert.
+        Music object to convert.
 
     Returns
     -------
-    multitrack : :class:`pypianoroll.Multitrack` object
+    multitrack : :class:`pypianoroll.Multitrack`
         Converted Multitrack object.
 
     """
@@ -78,12 +78,12 @@ def to_pianoroll_representation(
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to encode.
     encode_velocity : bool
-        Whether to encode velocities. If True, a binary-valued array will be
-        return. Otherwise, an integer array will be return. Defaults to
-        True.
+        Whether to encode velocities. If True, a binary-valued array
+        will be return. Otherwise, an integer array will be return.
+        Defaults to True.
 
     Returns
     -------

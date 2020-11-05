@@ -15,7 +15,7 @@ def write_abc(path: Union[str, Path], music: "Music"):
     ----------
     path : str or Path
         Path to write the ABC file.
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to write.
 
     """

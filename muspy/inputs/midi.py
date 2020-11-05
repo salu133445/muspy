@@ -32,17 +32,17 @@ def _is_drum(channel):
 
 
 def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
-    """Return a Music object converted from a mido MidiFile object.
+    """Return a mido MidiFile object as a Music object.
 
     Parameters
     ----------
-    midi : :class:`mido.MidiFile` object
-        MidiFile object to convert.
+    midi : :class:`mido.MidiFile`
+        Mido MidiFile object to convert.
     duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
-        Policy for dealing with duplicate notes. When a note off message is
-        presetned while there are multiple correspoding note on messages
-        that have not yet been closed, we need a policy to decide which note
-        on messages to close. Defaults to 'fifo'.
+        Policy for dealing with duplicate notes. When a note off
+        message is presetned while there are multiple correspoding note
+        on messages that have not yet been closed, we need a policy to
+        decide which note on messages to close. Defaults to 'fifo'.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out):close the latest note on
@@ -50,7 +50,7 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """
@@ -169,14 +169,14 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 
             # Note on messages
             elif msg.type == "note_on" and msg.velocity > 0:
-                # A note on message will later be closed by a note off message
+                # Will later be closed by a note off message
                 active_notes[(msg.channel, msg.note)].append(
                     (time, msg.velocity)
                 )
 
             # Note off messages
-            # NOTE: A note on message with a zero velocity is also considered a
-            # note off message
+            # NOTE: A note on message with a zero velocity is also
+            # considered a note off message
             elif msg.type == "note_off" or (
                 msg.type == "note_on" and msg.velocity == 0
             ):
@@ -189,9 +189,9 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                 program = channel_programs[msg.channel]
                 track = _get_active_track(track_idx, program, msg.channel)
 
-                # NOTE: There is no way to disambiguate duplicate notes (of
-                # the same pitch on the same channel). Thus, we need a policy
-                # for duplicate mode.
+                # NOTE: There is no way to disambiguate duplicate notes
+                # (of the same pitch on the same channel). Thus, we
+                # need a policy for duplicate mode.
 
                 # 'FIFO': (first in first out) close the earliest note
                 if duplicate_note_mode.lower() == "fifo":
@@ -283,17 +283,17 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 def read_midi_mido(
     path: Union[str, Path], duplicate_note_mode: str = "fifo"
 ) -> Music:
-    """Read a MIDI file into a Music object using mido as backend.
+    """Read a MIDI file into a Music object using mido backend.
 
     Parameters
     ----------
     path : str or Path
         Path to the MIDI file to read.
     duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
-        Policy for dealing with duplicate notes. When a note off message is
-        presetned while there are multiple correspoding note on messages
-        that have not yet been closed, we need a policy to decide which note
-        on messages to close. Defaults to 'fifo'.
+        Policy for dealing with duplicate notes. When a note off message
+        is presetned while there are multiple correspoding note on
+        messages that have not yet been closed, we need a policy to
+        decide which note on messages to close. Defaults to 'fifo'.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out):close the latest note on
@@ -301,7 +301,7 @@ def read_midi_mido(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """
@@ -316,13 +316,13 @@ def parse_pretty_midi_key_signatures(midi: PrettyMIDI) -> List[KeySignature]:
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
 
     Returns
     -------
-    list of :class:`muspy.KeySignature` objects
-        Converted key signatures.
+    list of :class:`muspy.KeySignature`
+        Parsed key signatures.
 
     """
     key_signatures = []
@@ -338,13 +338,13 @@ def parse_pretty_midi_time_signatures(midi: PrettyMIDI) -> List[TimeSignature]:
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
 
     Returns
     -------
-    list of :class:`muspy.TimeSignature` objects
-        Converted time signatures.
+    list of :class:`muspy.TimeSignature`
+        Parsed time signatures.
 
     """
     time_signatures = []
@@ -364,47 +364,47 @@ def parse_pretty_midi_lyrics(midi: PrettyMIDI) -> List[Lyric]:
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
 
     Returns
     -------
-    list of :class:`muspy.Lyric` objects
-        Converted lyrics.
+    list of :class:`muspy.Lyric`
+        Parsed lyrics.
 
     """
     return [Lyric(lyric.time, lyric.text) for lyric in midi.lyrics]
 
 
 def parse_pretty_midi_note(note: PrettyMIDINote) -> Note:
-    """Return a Note object parsed from a pretty_midi Note object.
+    """Return pretty_midi Note object as a MusPy Note object.
 
     Parameters
     ----------
-    note : :class:`pretty_midi.Note` object
+    note : :class:`pretty_midi.Note`
         pretty_midi Note object to convert.
 
     Returns
     -------
-    :class:`muspy.Note` object
-        Converted note.
+    :class:`muspy.Note`
+        Parsed note.
 
     """
     return Note(note.start, note.duration, note.pitch, note.velocity)
 
 
 def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
-    """Return a Track object parsed from a pretty_midi Instrument object.
+    """Return a pretty_midi Instrument object as a Track object.
 
     Parameters
     ----------
-    instrument : :class:`pretty_midi.Instrument` object
+    instrument : :class:`pretty_midi.Instrument`
         pretty_midi Instrument object to convert.
 
     Returns
     -------
-    :class:`muspy.Track` object
-        Converted track.
+    :class:`muspy.Track`
+        Parsed track.
 
     """
     notes = [parse_pretty_midi_note(note) for note in instrument.notes]
@@ -414,16 +414,16 @@ def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
 
 
 def from_pretty_midi(midi: PrettyMIDI) -> Music:
-    """Return a Music object converted from a pretty_midi PrettyMIDI object.
+    """Return a pretty_midi PrettyMIDI object as a Music object.
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI` object
+    midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """
@@ -441,7 +441,7 @@ def from_pretty_midi(midi: PrettyMIDI) -> Music:
 
 
 def read_midi_pretty_midi(path: Union[str, Path]) -> Music:
-    """Read a MIDI file into a Music object using pretty_midi as backend.
+    """Read a MIDI file into a Music object using pretty_midi backend.
 
     Parameters
     ----------
@@ -450,7 +450,7 @@ def read_midi_pretty_midi(path: Union[str, Path]) -> Music:
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """
@@ -473,11 +473,11 @@ def read_midi(
     backend: {'mido', 'pretty_midi'}
         Backend to use.
     duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
-        Policy for dealing with duplicate notes. When a note off message is
-        presetned while there are multiple correspoding note on messages
-        that have not yet been closed, we need a policy to decide which note
-        on messages to close. Defaults to 'fifo'. Only used when
-        `backend='mido'`.
+        Policy for dealing with duplicate notes. When a note off message
+        is presetned while there are multiple correspoding note on
+        messages that have not yet been closed, we need a policy to
+        decide which note on messages to close. Defaults to 'fifo'. Only
+        used when `backend='mido'`.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out):close the latest note on
@@ -485,7 +485,7 @@ def read_midi(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Converted Music object.
 
     """

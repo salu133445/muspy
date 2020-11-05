@@ -7,7 +7,7 @@ from ..music import Music
 
 
 def load_json(path: Union[str, Path]) -> Music:
-    """Return a Music object loaded from a JSON file.
+    """Load a JSON file into a Music object.
 
     Parameters
     ----------
@@ -16,7 +16,7 @@ def load_json(path: Union[str, Path]) -> Music:
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Loaded Music object.
 
     """

@@ -16,9 +16,9 @@ def note_str_to_note_num(note_str: str):
     """Return the note number of a note string.
 
     The regular expression for the note string is `[A-G][#b]*`. The base
-    note must be capitalized. There can be multiple accidentals, where '#'
-    denotes a sharp and 'b' denotes a flat. Some examples include 'C' -> 0,
-    'D#' -> 3, 'Eb' -> 3.
+    note must be capitalized. There can be multiple accidentals, where
+    '#' denotes a sharp and 'b' denotes a flat. Some examples include
+    'C'->0, 'D#'->3, 'Eb'->3.
 
     Parameters
     ----------

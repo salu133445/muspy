@@ -148,8 +148,8 @@ class KeySignature(Base):
     mode : str, optional
         Mode of the key signature.
     fifths : int, optional
-        Number of flats or sharps. Positive numbers for sharps and negative
-        numbers for flats.
+        Number of flats or sharps. Positive numbers for sharps and
+        negative numbers for flats.
     root_str : str, optional
         Root of the key signature as a string.
 
@@ -238,7 +238,7 @@ class Annotation(Base):
     ----------
     time : int
         Start time of the annotation, in time steps or seconds.
-    annotation : any object
+    annotation : any
         Annotation of any type.
     group : str, optional
         Group name for better organizing the annotations.
@@ -340,7 +340,7 @@ class Note(Base):
         Parameters
         ----------
         semitone : int
-            The number of semitones to transpose the note. A positive value
+            Number of semitones to transpose the note. A positive value
             raises the pitch, while a negative value lowers the pitch.
 
         Returns
@@ -465,8 +465,9 @@ class Chord(Base):
         Parameters
         ----------
         semitone : int
-            Number of semitones to transpose the notes. A positive value raises
-            the pitches, while a negative value lowers the pitches.
+            Number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the
+            pitches.
 
         Returns
         -------
@@ -502,10 +503,6 @@ class Chord(Base):
 class Track(ComplexBase):
     """A container for music track.
 
-    Indexing a Track object gives the note of a certain index. That is,
-    `track[idx]` is equivalent to `track.notes[idx]`, while the latter is
-    recommended for readability.
-
     Attributes
     ----------
     program : int, 0-127, optional
@@ -515,21 +512,21 @@ class Track(ComplexBase):
         Whether it is a percussion track. Defaults to False.
     name : str, optional
         Track name.
-    notes : list of :class:`muspy.Note` objects, optional
+    notes : list of :class:`muspy.Note`, optional
         Musical notes. Defaults to an empty list.
-    chords : list of :class:`muspy.Chord` objects, optional
+    chords : list of :class:`muspy.Chord`, optional
         Chords. Defaults to an empty list.
-    annotations : list of :class:`muspy.Annotation` objects, optional
+    annotations : list of :class:`muspy.Annotation`, optional
         Annotations. Defaults to an empty list.
-    lyrics : list of :class:`muspy.Lyric` objects, optional
+    lyrics : list of :class:`muspy.Lyric`, optional
         Lyrics. Defaults to an empty list.
 
-    Tip
-    ---
-    Indexing a Track object gives the note of a certain index. That is,
-    `track[idx]` is equivalent to `track.notes[idx]`. Length of a Track
-    object is the number of notes. That is, `len(track)`  is equivalent to
-    `len(track.notes)`.
+    Note
+    ----
+    Indexing a Track object returns the note at a certain index. That
+    is, ``track[idx]`` returns ``track.notes[idx]``. Length of a Track
+    object is the number of notes. That is, ``len(track)`` returns
+    ``len(track.notes)``.
 
     References
     ----------
@@ -607,7 +604,8 @@ class Track(ComplexBase):
         Parameters
         ----------
         is_sorted : bool
-            Whether all the list attributes are sorted. Defaults to False.
+            Whether all the list attributes are sorted. Defaults to
+            False.
 
         """
 
@@ -650,8 +648,9 @@ class Track(ComplexBase):
         Parameters
         ----------
         semitone : int
-            The number of semitones to transpose the notes. A positive value
-            raises the pitches, while a negative value lowers the pitches.
+            Number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the
+            pitches.
 
         Returns
         -------

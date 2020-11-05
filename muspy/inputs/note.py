@@ -25,7 +25,8 @@ def from_note_representation(
         Array in note-based representation to decode. Will be casted to
         integer if not of integer type.
     resolution : int
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
         Program number according to General MIDI specification [1].
         Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
@@ -34,8 +35,8 @@ def from_note_representation(
         A boolean indicating if it is a percussion track. Defaults to
         False.
     use_start_end : bool
-        Whether to use 'start' and 'end' to encode the timing rather than
-        'time' and 'duration'. Defaults to False.
+        Whether to use 'start' and 'end' to encode the timing rather
+        than 'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
     default_velocity : int
@@ -44,7 +45,7 @@ def from_note_representation(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Decoded Music object.
 
     References

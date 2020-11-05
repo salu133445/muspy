@@ -36,20 +36,22 @@ def save(
     ----------
     path : str or Path
         Path to save the file.
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to save.
     kind : {'json', 'yaml'}, optional
-        Format to save (case-insensitive). Defaults to infer the format from
-        the extension.
+        Format to save (case-insensitive). Defaults to infer the format
+        from the extension.
 
     See Also
     --------
-    :func:`muspy.write` : Write to other formats such as MIDI and MusicXML.
+    :func:`muspy.write` :
+        Write a Music object to a MIDI/MusicXML/ABC/audio file.
 
     Notes
     -----
-    The conversion can be lossy if any nonserializable object is used (for
-    example, in an Annotation object, which can store data of any type).
+    The conversion can be lossy if any nonserializable object is used
+    (for example, an Annotation object, which can store data of any
+    type).
 
     """
     if kind is None:
@@ -74,21 +76,22 @@ def write(
     kind: Optional[str] = None,
     **kwargs: Any
 ):
-    """Write a Music object to a MIDI, a MusicXML, an ABC or an audio file.
+    """Write a Music object to a MIDI/MusicXML/ABC/audio file.
 
     Parameters
     ----------
     path : str or Path
         Path to write the file.
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to convert.
     kind : {'midi', 'musicxml', 'abc', 'audio'}, optional
-        Format to save (case-insensitive). Defaults to infer the format from
-        the extension.
+        Format to save (case-insensitive). Defaults to infer the format
+        from the extension.
 
     See Also
     --------
-    :func:`muspy.save` : Losslessly save to a JSON or a YAML file.
+    :func:`muspy.save` :
+        Save a Music object loselessly to a JSON or a YAML file.
 
     """
     if kind is None:
@@ -128,16 +131,16 @@ def to_object(
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to convert.
     kind : str, {'music21', 'mido', 'pretty_midi', 'pypianoroll'}
         Target class (case-insensitive).
 
     Returns
     -------
-    `music21.Stream`, :class:`mido.MidiTrack`,
-    :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`
-    object
+    `music21.Stream`, :class:`mido.MidiTrack`, \
+            :class:`pretty_midi.PrettyMIDI` or \
+            :class:`pypianoroll.Multitrack`
         Converted object.
 
     """
@@ -160,7 +163,7 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to convert.
     kind : str, {'pitch', 'piano-roll', 'event', 'note'}
         Target representation (case-insensitive).

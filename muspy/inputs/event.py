@@ -27,7 +27,8 @@ def from_event_representation(
         Array in event-based representation to decode. Will be casted to
         integer if not of integer type.
     resolution : int
-        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
         Program number according to General MIDI specification [1].
         Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
@@ -36,16 +37,17 @@ def from_event_representation(
         A boolean indicating if it is a percussion track. Defaults to
         False.
     use_single_note_off_event : bool
-        Whether to use a single note-off event for all the pitches. If True,
-        the note-off event will close all active notes, which can lead to
-        lossy conversion for polyphonic music. Defaults to False.
+        Whether to use a single note-off event for all the pitches. If
+        True, a note-off event will close all active notes, which can
+        lead to lossy conversion for polyphonic music. Defaults to
+        False.
     use_end_of_sequence_event : bool
-        Whether to append an end-of-sequence event to the encoded sequence.
-        Defaults to False.
+        Whether to append an end-of-sequence event to the encoded
+        sequence. Defaults to False.
     max_time_shift : int
-        Maximum time shift (in ticks) to be encoded as an separate event.
-        Time shifts larger than `max_time_shift` will be decomposed into
-        two or more time-shift events. Defaults to 100.
+        Maximum time shift (in ticks) to be encoded as an separate
+        event. Time shifts larger than `max_time_shift` will be
+        decomposed into two or more time-shift events. Defaults to 100.
     velocity_bins : int
         Number of velocity bins to use. Defaults to 32.
     default_velocity : int
@@ -53,7 +55,7 @@ def from_event_representation(
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Decoded Music object.
 
     References

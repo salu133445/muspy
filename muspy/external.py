@@ -59,7 +59,7 @@ def download_bravura_font():
 
 
 def get_musescore_soundfont_dir() -> Path:
-    """Return path to the directory of the MuseScore General soundfont."""
+    """Return path to the MuseScore General soundfont directory."""
     return Path.home() / ".muspy/musescore-general"
 
 

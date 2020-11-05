@@ -20,34 +20,36 @@ def to_event_representation(
 ) -> ndarray:
     """Encode a Music object into event-based representation.
 
-    The event-based represetantion represents music as a sequence of events,
-    including note-on, note-off, time-shift and velocity events. The output
-    shape is M x 1, where M is the number of events. The values encode the
-    events. The default configuration uses 0-127 to encode note-one events,
-    128-255 for note-off events, 256-355 for time-shift events, and 356 to
-    387 for velocity events.
+    The event-based represetantion represents music as a sequence of
+    events, including note-on, note-off, time-shift and velocity events.
+    The output shape is M x 1, where M is the number of events. The
+    values encode the events. The default configuration uses 0-127 to
+    encode note-one events, 128-255 for note-off events, 256-355 for
+    time-shift events, and 356 to 387 for velocity events.
 
     Parameters
     ----------
-    music : :class:`muspy.Music` object
+    music : :class:`muspy.Music`
         Music object to encode.
     use_single_note_off_event : bool
-        Whether to use a single note-off event for all the pitches. If True,
-        the note-off event will close all active notes, which can lead to
-        lossy conversion for polyphonic music. Defaults to False.
+        Whether to use a single note-off event for all the pitches. If
+        True, the note-off event will close all active notes, which can
+        lead to lossy conversion for polyphonic music. Defaults to
+        False.
     use_end_of_sequence_event : bool
-        Whether to append an end-of-sequence event to the encoded sequence.
-        Defaults to False.
+        Whether to append an end-of-sequence event to the encoded
+        sequence. Defaults to False.
     encode_velocity : bool
         Whether to encode velocities.
     force_velocity_event : bool
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
-        changed (i.e., different from the previous one). Defaults to True.
+        changed (i.e., different from the previous one). Defaults to
+        True.
     max_time_shift : int
-        Maximum time shift (in ticks) to be encoded as an separate event.
-        Time shifts larger than `max_time_shift` will be decomposed into
-        two or more time-shift events. Defaults to 100.
+        Maximum time shift (in ticks) to be encoded as an separate
+        event. Time shifts larger than `max_time_shift` will be
+        decomposed into two or more time-shift events. Defaults to 100.
     velocity_bins : int
         Number of velocity bins to use. Defaults to 32.
 
@@ -109,7 +111,8 @@ def to_event_representation(
     time_cursor = 0
     # Iterate over note events
     for time, code in note_events:
-        # If event time is after the time cursor, append tick shift events
+        # If event time is after the time cursor, append tick shift
+        # events
         if time > time_cursor:
             div, mod = divmod(time - time_cursor, max_time_shift)
             for _ in range(div):

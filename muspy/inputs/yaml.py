@@ -8,7 +8,7 @@ from ..music import Music
 
 
 def load_yaml(path: Union[str, Path]) -> Music:
-    """Return a Music object loaded from a YAML file.
+    """Load a YAML file into a Music object.
 
     Parameters
     ----------
@@ -17,7 +17,7 @@ def load_yaml(path: Union[str, Path]) -> Music:
 
     Returns
     -------
-    :class:`muspy.Music` object
+    :class:`muspy.Music`
         Loaded Music object.
 
     """

@@ -51,8 +51,8 @@ class JSBChoralesDataset(RemoteFolderDataset):
         """Read a file into a Music object."""
         music = read_midi(self.root / filename)
 
-        # The resolution of MIDI file in this datset should be 120, but is
-        # incorrectly set to 100
+        # The resolution of MIDI file in this datset should be 120, but
+        # is incorrectly set to 100
         music.resolution = 120
 
         return music
