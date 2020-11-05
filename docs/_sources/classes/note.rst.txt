@@ -14,3 +14,7 @@ velocity   Note velocity                    int (0-127)
 ========== ================================ =========== =======
 
 .. Hint:: :class:`muspy.Note` has a property `end` with setter and getter implemented, which can be handy sometimes.
+
+.. autoclass:: muspy.Note
+    :noindex:
+    :inherited-members:

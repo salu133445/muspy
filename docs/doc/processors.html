@@ -165,7 +165,9 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/doc/processors.rst.txt" rel="nofollow"> View page source</a>
+            
+              <a href="https://github.com/user/muspy/blob/master/doc/doc/processors.rst" class="fa fa-github"> Edit on GitHub</a>
+            
           
         
       </li>
@@ -192,20 +194,20 @@
 </ul>
 <dl class="py class">
 <dt id="muspy.processors.NoteRepresentationProcessor">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.processors.</code><code class="sig-name descname">NoteRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#NoteRepresentationProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.processors.NoteRepresentationProcessor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.processors.</code><code class="sig-name descname">NoteRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param">use_start_end=False</em>, <em class="sig-param">encode_velocity=True</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em>, <em class="sig-param">default_velocity=64</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#NoteRepresentationProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.processors.NoteRepresentationProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Note-based representation processor.</p>
-<p>The note-based represetantion represents music as a sequence of (pitch,
-time, duration, velocity) tuples. For example, a note
+<p>The note-based represetantion represents music as a sequence of
+(pitch, time, duration, velocity) tuples. For example, a note
 Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a
-tuple (0, 4, 60, 64). The output shape is L * D, where L is the number
-of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise D is 3.
-The values of the second dimension represent pitch, time, duration and
-velocity (discarded when <cite>encode_velocity</cite> is False).</p>
+tuple (0, 4, 60, 64). The output shape is L * D, where L is th
+number of notes and D is 4 when <cite>encode_velocity</cite> is True, otherwise
+D is 3. The values of the second dimension represent pitch, time,
+duration and velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 <dl class="py attribute">
 <dt id="muspy.processors.NoteRepresentationProcessor.use_start_end">
 <code class="sig-name descname">use_start_end</code><a class="headerlink" href="#muspy.processors.NoteRepresentationProcessor.use_start_end" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether to use ‘start’ and ‘end’ to encode the timing rather than
-‘time’ and ‘duration’. Defaults to False.</p>
+<dd><p>Whether to use ‘start’ and ‘end’ to encode the timing rather
+than ‘time’ and ‘duration’. Defaults to False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -225,10 +227,21 @@ velocity (discarded when <cite>encode_velocity</cite> is False).</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt id="muspy.processors.NoteRepresentationProcessor.dtype">
+<code class="sig-name descname">dtype</code><a class="headerlink" href="#muspy.processors.NoteRepresentationProcessor.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data type of the return array. Defaults to int.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dtype, <a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)">type</a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
 <dt id="muspy.processors.NoteRepresentationProcessor.default_velocity">
 <code class="sig-name descname">default_velocity</code><a class="headerlink" href="#muspy.processors.NoteRepresentationProcessor.default_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default velocity value to use when decoding if <cite>encode_velocity</cite> is
-False. Defaults to 64.</p>
+<dd><p>Default velocity value to use when decoding if <cite>encode_velocity</cite>
+is False. Defaults to 64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -266,7 +279,7 @@ False. Defaults to 64.</p>
 <dd><p>Decode note-based representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in note-based representation to decode. Will be casted to
+<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in note-based representation to decode. Cast to
 integer if not of integer type.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -289,20 +302,21 @@ integer if not of integer type.</p>
 
 <dl class="py class">
 <dt id="muspy.processors.EventRepresentationProcessor">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.processors.</code><code class="sig-name descname">EventRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#EventRepresentationProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.processors.</code><code class="sig-name descname">EventRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#EventRepresentationProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Event-based representation processor.</p>
-<p>The event-based represetantion represents music as a sequence of events,
-including note-on, note-off, time-shift and velocity events. The output
-shape is M x 1, where M is the number of events. The values encode the
-events. The default configuration uses 0-127 to encode note-one events,
-128-255 for note-off events, 256-355 for time-shift events, and 356 to
-387 for velocity events.</p>
+<p>The event-based represetantion represents music as a sequence of
+events, including note-on, note-off, time-shift and velocity events.
+The output shape is M x 1, where M is the number of events. The
+values encode the events. The default configuration uses 0-127 to
+encode note-one events, 128-255 for note-off events, 256-355 for
+time-shift events, and 356 to 387 for velocity events.</p>
 <dl class="py attribute">
 <dt id="muspy.processors.EventRepresentationProcessor.use_single_note_off_event">
 <code class="sig-name descname">use_single_note_off_event</code><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor.use_single_note_off_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether to use a single note-off event for all the pitches. If True,
-the note-off event will close all active notes, which can lead to
-lossy conversion for polyphonic music. Defaults to False.</p>
+<dd><p>Whether to use a single note-off event for all the pitches. If
+True, the note-off event will close all active notes, which can
+lead to lossy conversion for polyphonic music. Defaults to
+False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -313,8 +327,19 @@ lossy conversion for polyphonic music. Defaults to False.</p>
 <dl class="py attribute">
 <dt id="muspy.processors.EventRepresentationProcessor.use_end_of_sequence_event">
 <code class="sig-name descname">use_end_of_sequence_event</code><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor.use_end_of_sequence_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether to append an end-of-sequence event to the encoded sequence.
-Defaults to False.</p>
+<dd><p>Whether to append an end-of-sequence event to the encoded
+sequence. Defaults to False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="muspy.processors.EventRepresentationProcessor.encode_velocity">
+<code class="sig-name descname">encode_velocity</code><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor.encode_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to encode velocities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -327,7 +352,8 @@ Defaults to False.</p>
 <code class="sig-name descname">force_velocity_event</code><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor.force_velocity_event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Whether to add a velocity event before every note-on event. If
 False, velocity events are only used when the note velocity is
-changed (i.e., different from the previous one). Defaults to True.</p>
+changed (i.e., different from the previous one). Defaults to
+True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -338,9 +364,9 @@ changed (i.e., different from the previous one). Defaults to True.</p>
 <dl class="py attribute">
 <dt id="muspy.processors.EventRepresentationProcessor.max_time_shift">
 <code class="sig-name descname">max_time_shift</code><a class="headerlink" href="#muspy.processors.EventRepresentationProcessor.max_time_shift" title="Permalink to this definition">¶</a></dt>
-<dd><p>Maximum time shift (in ticks) to be encoded as an separate event.
-Time shifts larger than <cite>max_time_shift</cite> will be decomposed into
-two or more time-shift events. Defaults to 100.</p>
+<dd><p>Maximum time shift (in ticks) to be encoded as an separate
+event. Time shifts larger than <cite>max_time_shift</cite> will be
+decomposed into two or more time-shift events. Defaults to 100.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -400,7 +426,7 @@ two or more time-shift events. Defaults to 100.</p>
 <dd><p>Decode event-based representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Will be casted to
+<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Cast to
 integer if not of integer type.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -425,16 +451,17 @@ integer if not of integer type.</p>
 <dt id="muspy.processors.PianoRollRepresentationProcessor">
 <em class="property">class </em><code class="sig-prename descclassname">muspy.processors.</code><code class="sig-name descname">PianoRollRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#PianoRollRepresentationProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.processors.PianoRollRepresentationProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Piano-roll representation processor.</p>
-<p>The piano-roll represetantion represents music as a time-pitch matrix,
-where the columns are the time steps and the rows are the pitches. The
-values indicate the presence of pitches at different time steps. The
-output shape is T x 128, where T is the number of time steps.</p>
+<p>The piano-roll represetantion represents music as a time-pitch
+matrix, where the columns are the time steps and the rows are the
+pitches. The values indicate the presence of pitches at different
+time steps. The output shape is T x 128, where T is the number of
+time steps.</p>
 <dl class="py attribute">
 <dt id="muspy.processors.PianoRollRepresentationProcessor.encode_velocity">
 <code class="sig-name descname">encode_velocity</code><a class="headerlink" href="#muspy.processors.PianoRollRepresentationProcessor.encode_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Whether to encode velocities. If True, a binary-valued array will be
-return. Otherwise, an integer array will be return. Defaults to
-True.</p>
+<dd><p>Whether to encode velocities. If True, a binary-valued array
+will be return. Otherwise, an integer array will be return.
+Defaults to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -445,8 +472,8 @@ True.</p>
 <dl class="py attribute">
 <dt id="muspy.processors.PianoRollRepresentationProcessor.default_velocity">
 <code class="sig-name descname">default_velocity</code><a class="headerlink" href="#muspy.processors.PianoRollRepresentationProcessor.default_velocity" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default velocity value to use when decoding if <cite>encode_velocity</cite> is
-False. Defaults to 64.</p>
+<dd><p>Default velocity value to use when decoding if <cite>encode_velocity</cite>
+is False. Defaults to 64.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
@@ -484,9 +511,9 @@ False. Defaults to 64.</p>
 <dd><p>Decode piano-roll representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in piano-roll representation to decode. Will be casted to
-integer if not of integer type. If <cite>encode_velocity</cite> is True,
-will be casted to boolean if not of boolean type.</p>
+<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in piano-roll representation to decode. Cast to
+integer if not of integer type. If <cite>encode_velocity</cite> is
+True, casted to boolean if not of boolean type.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Decoded Music object.</p>
@@ -510,11 +537,12 @@ will be casted to boolean if not of boolean type.</p>
 <dt id="muspy.processors.PitchRepresentationProcessor">
 <em class="property">class </em><code class="sig-prename descclassname">muspy.processors.</code><code class="sig-name descname">PitchRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_hold_state</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#PitchRepresentationProcessor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.processors.PitchRepresentationProcessor" title="Permalink to this definition">¶</a></dt>
 <dd><p>Pitch-based representation processor.</p>
-<p>The pitch-based represetantion represents music as a sequence of pitch,
-rest and (optional) hold tokens. Only monophonic melodies are compatible
-with this representation. The output shape is T x 1, where T is the
-number of time steps. The values indicate whether the current time step
-is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
+<p>The pitch-based represetantion represents music as a sequence of
+pitch, rest and (optional) hold tokens. Only monophonic melodies are
+compatible with this representation. The output shape is T x 1,
+where T is the number of time steps. The values indicate whether the
+current time step is a pitch (0-127), a rest (128) or (optionally) a
+hold (129).</p>
 <dl class="py attribute">
 <dt id="muspy.processors.PitchRepresentationProcessor.use_hold_state">
 <code class="sig-name descname">use_hold_state</code><a class="headerlink" href="#muspy.processors.PitchRepresentationProcessor.use_hold_state" title="Permalink to this definition">¶</a></dt>
@@ -567,7 +595,7 @@ is a pitch (0-127), a rest (128) or (optionally) a hold (129).</p>
 <dd><p>Decode pitch-based representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in pitch-based representation to decode. Will be casted to
+<dd class="field-odd"><p><strong>array</strong> (<em>ndarray</em>) – Array in pitch-based representation to decode. Cast to
 integer if not of integer type.</p>
 </dd>
 <dt class="field-even">Returns</dt>

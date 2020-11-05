@@ -186,7 +186,7 @@
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object loaded from a JSON or a YAML file.</span>
+    <span class="sd">&quot;&quot;&quot;Load a JSON or a YAML file into a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -202,12 +202,13 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Loaded Music object.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.read` : Read from other formats such as MIDI and MusicXML.</span>
+<span class="sd">    :func:`muspy.read` :</span>
+<span class="sd">        Read a MIDI/MusicXML/ABC file into a Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># pylint: disable=unused-argument</span>
@@ -230,7 +231,7 @@
 <div class="viewcode-block" id="read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI or a MusicXML file into a Music object.</span>
+    <span class="sd">&quot;&quot;&quot;Read a MIDI/MusicXML/ABC file into a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -242,12 +243,12 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object or list of :class:`muspy.Music` objects</span>
+<span class="sd">    :class:`muspy.Music` or list of :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object(s).</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.load` : Load from a JSON or a YAML file.</span>
+<span class="sd">    :func:`muspy.load` : Load a JSON or a YAML file into a Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -273,7 +274,7 @@
 <div class="viewcode-block" id="from_object"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_object">[docs]</a><span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span>
     <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stream</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">],</span> <span class="n">Track</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object converted from an outside object.</span>
+    <span class="sd">&quot;&quot;&quot;Return an outside object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -284,7 +285,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -314,7 +315,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

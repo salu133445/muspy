@@ -234,9 +234,10 @@
             <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">consecutive_failure_count</span> <span class="o">=</span> <span class="mi">0</span>
 
-            <span class="c1"># Loop until the number of consecutive failures exceed tolerance</span>
+            <span class="c1"># Loop until the number of consecutive failures exceed</span>
+            <span class="c1"># the tolerance</span>
             <span class="k">while</span> <span class="n">consecutive_failure_count</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">:</span>
-                <span class="c1"># Send a HEAD request to check if the content type is MIDI</span>
+                <span class="c1"># Send a HEAD request to check if content type is MIDI</span>
                 <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.hymnal.net/en/hymn/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/f=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">key</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
                 <span class="p">)</span>
@@ -245,11 +246,12 @@
                     <span class="n">consecutive_failure_count</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="k">continue</span>
 
-                <span class="c1"># Send another HEAD request to check if we have exceeded the</span>
-                <span class="c1"># total number of pieces -&gt; When we request for an out of</span>
-                <span class="c1"># bound index, it seems that it will randomly return another</span>
-                <span class="c1"># piece. Thus, if the first and the second requests have</span>
-                <span class="c1"># different content sizes, we can break the loop.</span>
+                <span class="c1"># Send another HEAD request to check if we have</span>
+                <span class="c1"># exceeded the total number of pieces -&gt; When we request</span>
+                <span class="c1"># for an out of bound index, it seems that it will</span>
+                <span class="c1"># randomly return another piece. Thus, if the first and</span>
+                <span class="c1"># the second requests have different content sizes, we</span>
+                <span class="c1"># can break the loop.</span>
                 <span class="n">second_req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">second_req</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">]</span>
@@ -334,9 +336,10 @@
             <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">consecutive_failure_count</span> <span class="o">=</span> <span class="mi">0</span>
 
-            <span class="c1"># Loop until the number of consecutive failures exceed tolerance</span>
+            <span class="c1"># Loop until the number of consecutive failures exceed</span>
+            <span class="c1"># the tolerance</span>
             <span class="k">while</span> <span class="n">consecutive_failure_count</span> <span class="o">&lt;</span> <span class="n">tolerance</span><span class="p">:</span>
-                <span class="c1"># Send a HEAD request to check if the content type is MIDI</span>
+                <span class="c1"># Send a HEAD request to check if content type is MIDI</span>
                 <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://www.hymnal.net/en/hymn/</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">/f=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="n">key</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
                 <span class="p">)</span>
@@ -345,11 +348,12 @@
                     <span class="n">consecutive_failure_count</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="k">continue</span>
 
-                <span class="c1"># Send another HEAD request to check if we have exceeded the</span>
-                <span class="c1"># total number of pieces -&gt; When we request for an out of</span>
-                <span class="c1"># bound index, it seems that it will randomly return another</span>
-                <span class="c1"># piece. Thus, if the first and the second requests have</span>
-                <span class="c1"># different content sizes, we can break the loop.</span>
+                <span class="c1"># Send another HEAD request to check if we have</span>
+                <span class="c1"># exceeded the total number of pieces -&gt; When we request</span>
+                <span class="c1"># for an out of bound index, it seems that it will</span>
+                <span class="c1"># randomly return another piece. Thus, if the first and</span>
+                <span class="c1"># the second requests have different content sizes, we</span>
+                <span class="c1"># can break the loop.</span>
                 <span class="n">second_req</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">second_req</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="s2">&quot;Content-Length&quot;</span><span class="p">]</span>

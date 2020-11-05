@@ -193,17 +193,17 @@
 
 
 <div class="viewcode-block" id="from_mido"><a class="viewcode-back" href="../../../io/mido.html#muspy.inputs.from_mido">[docs]</a><span class="k">def</span> <span class="nf">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a mido MidiFile object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a mido MidiFile object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`mido.MidiFile` object</span>
-<span class="sd">        MidiFile object to convert.</span>
+<span class="sd">    midi : :class:`mido.MidiFile`</span>
+<span class="sd">        Mido MidiFile object to convert.</span>
 <span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
-<span class="sd">        Policy for dealing with duplicate notes. When a note off message is</span>
-<span class="sd">        presetned while there are multiple correspoding note on messages</span>
-<span class="sd">        that have not yet been closed, we need a policy to decide which note</span>
-<span class="sd">        on messages to close. Defaults to &#39;fifo&#39;.</span>
+<span class="sd">        Policy for dealing with duplicate notes. When a note off</span>
+<span class="sd">        message is presetned while there are multiple correspoding note</span>
+<span class="sd">        on messages that have not yet been closed, we need a policy to</span>
+<span class="sd">        decide which note on messages to close. Defaults to &#39;fifo&#39;.</span>
 
 <span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
 <span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
@@ -211,7 +211,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -330,14 +330,14 @@
 
             <span class="c1"># Note on messages</span>
             <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_on&quot;</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># A note on message will later be closed by a note off message</span>
+                <span class="c1"># Will later be closed by a note off message</span>
                 <span class="n">active_notes</span><span class="p">[(</span><span class="n">msg</span><span class="o">.</span><span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">note</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
                 <span class="p">)</span>
 
             <span class="c1"># Note off messages</span>
-            <span class="c1"># NOTE: A note on message with a zero velocity is also considered a</span>
-            <span class="c1"># note off message</span>
+            <span class="c1"># NOTE: A note on message with a zero velocity is also</span>
+            <span class="c1"># considered a note off message</span>
             <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_off&quot;</span> <span class="ow">or</span> <span class="p">(</span>
                 <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;note_on&quot;</span> <span class="ow">and</span> <span class="n">msg</span><span class="o">.</span><span class="n">velocity</span> <span class="o">==</span> <span class="mi">0</span>
             <span class="p">):</span>
@@ -350,9 +350,9 @@
                 <span class="n">program</span> <span class="o">=</span> <span class="n">channel_programs</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span>
                 <span class="n">track</span> <span class="o">=</span> <span class="n">_get_active_track</span><span class="p">(</span><span class="n">track_idx</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
 
-                <span class="c1"># NOTE: There is no way to disambiguate duplicate notes (of</span>
-                <span class="c1"># the same pitch on the same channel). Thus, we need a policy</span>
-                <span class="c1"># for duplicate mode.</span>
+                <span class="c1"># NOTE: There is no way to disambiguate duplicate notes</span>
+                <span class="c1"># (of the same pitch on the same channel). Thus, we</span>
+                <span class="c1"># need a policy for duplicate mode.</span>
 
                 <span class="c1"># &#39;FIFO&#39;: (first in first out) close the earliest note</span>
                 <span class="k">if</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fifo&quot;</span><span class="p">:</span>
@@ -444,17 +444,17 @@
 <span class="k">def</span> <span class="nf">read_midi_mido</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using mido as backend.</span>
+    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using mido backend.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the MIDI file to read.</span>
 <span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
-<span class="sd">        Policy for dealing with duplicate notes. When a note off message is</span>
-<span class="sd">        presetned while there are multiple correspoding note on messages</span>
-<span class="sd">        that have not yet been closed, we need a policy to decide which note</span>
-<span class="sd">        on messages to close. Defaults to &#39;fifo&#39;.</span>
+<span class="sd">        Policy for dealing with duplicate notes. When a note off message</span>
+<span class="sd">        is presetned while there are multiple correspoding note on</span>
+<span class="sd">        messages that have not yet been closed, we need a policy to</span>
+<span class="sd">        decide which note on messages to close. Defaults to &#39;fifo&#39;.</span>
 
 <span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
 <span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
@@ -462,7 +462,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -477,13 +477,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI` object</span>
+<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
 <span class="sd">        PrettyMIDI object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.KeySignature` objects</span>
-<span class="sd">        Converted key signatures.</span>
+<span class="sd">    list of :class:`muspy.KeySignature`</span>
+<span class="sd">        Parsed key signatures.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[]</span>
@@ -499,13 +499,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI` object</span>
+<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
 <span class="sd">        PrettyMIDI object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.TimeSignature` objects</span>
-<span class="sd">        Converted time signatures.</span>
+<span class="sd">    list of :class:`muspy.TimeSignature`</span>
+<span class="sd">        Parsed time signatures.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[]</span>
@@ -525,47 +525,47 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI` object</span>
+<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
 <span class="sd">        PrettyMIDI object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.Lyric` objects</span>
-<span class="sd">        Converted lyrics.</span>
+<span class="sd">    list of :class:`muspy.Lyric`</span>
+<span class="sd">        Parsed lyrics.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">Lyric</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">PrettyMIDINote</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Note object parsed from a pretty_midi Note object.</span>
+    <span class="sd">&quot;&quot;&quot;Return pretty_midi Note object as a MusPy Note object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    note : :class:`pretty_midi.Note` object</span>
+<span class="sd">    note : :class:`pretty_midi.Note`</span>
 <span class="sd">        pretty_midi Note object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Note` object</span>
-<span class="sd">        Converted note.</span>
+<span class="sd">    :class:`muspy.Note`</span>
+<span class="sd">        Parsed note.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">parse_pretty_midi_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">:</span> <span class="n">Instrument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Track object parsed from a pretty_midi Instrument object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a pretty_midi Instrument object as a Track object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    instrument : :class:`pretty_midi.Instrument` object</span>
+<span class="sd">    instrument : :class:`pretty_midi.Instrument`</span>
 <span class="sd">        pretty_midi Instrument object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Track` object</span>
-<span class="sd">        Converted track.</span>
+<span class="sd">    :class:`muspy.Track`</span>
+<span class="sd">        Parsed track.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="n">parse_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">instrument</span><span class="o">.</span><span class="n">notes</span><span class="p">]</span>
@@ -575,16 +575,16 @@
 
 
 <div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a pretty_midi PrettyMIDI object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a pretty_midi PrettyMIDI object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI` object</span>
+<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
 <span class="sd">        PrettyMIDI object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -602,7 +602,7 @@
 
 
 <span class="k">def</span> <span class="nf">read_midi_pretty_midi</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using pretty_midi as backend.</span>
+    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using pretty_midi backend.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -611,7 +611,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -634,11 +634,11 @@
 <span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}</span>
 <span class="sd">        Backend to use.</span>
 <span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
-<span class="sd">        Policy for dealing with duplicate notes. When a note off message is</span>
-<span class="sd">        presetned while there are multiple correspoding note on messages</span>
-<span class="sd">        that have not yet been closed, we need a policy to decide which note</span>
-<span class="sd">        on messages to close. Defaults to &#39;fifo&#39;. Only used when</span>
-<span class="sd">        `backend=&#39;mido&#39;`.</span>
+<span class="sd">        Policy for dealing with duplicate notes. When a note off message</span>
+<span class="sd">        is presetned while there are multiple correspoding note on</span>
+<span class="sd">        messages that have not yet been closed, we need a policy to</span>
+<span class="sd">        decide which note on messages to close. Defaults to &#39;fifo&#39;. Only</span>
+<span class="sd">        used when `backend=&#39;mido&#39;`.</span>
 
 <span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
 <span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
@@ -646,7 +646,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

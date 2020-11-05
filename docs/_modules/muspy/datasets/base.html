@@ -225,7 +225,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">homepage</span> <span class="o">=</span> <span class="n">homepage</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">license</span> <span class="o">=</span> <span class="n">license</span>
 
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">to_join</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;homepage&quot;</span><span class="p">,</span> <span class="s2">&quot;license&quot;</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -234,14 +234,14 @@
 
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Base class for all MusPy datasets.</span>
+    <span class="sd">&quot;&quot;&quot;Base class for MusPy datasets.</span>
 
-<span class="sd">    To build a custom dataset, it should inherit this class and overide the</span>
-<span class="sd">    methods ``__getitem__`` and ``__len__`` as well as the class attribute</span>
-<span class="sd">    ``_info``. ``__getitem__`` should return the ``i``-th data sample as a</span>
-<span class="sd">    :class:`muspy.Music` object. ``__len__`` should return the size of the</span>
-<span class="sd">    dataset. ``_info`` should be a :class:`muspy.DatasetInfo` instance</span>
-<span class="sd">    containing the dataset information.</span>
+<span class="sd">    To build a custom dataset, it should inherit this class and overide</span>
+<span class="sd">    the methods ``__getitem__`` and ``__len__`` as well as the class</span>
+<span class="sd">    attribute ``_info``. ``__getitem__`` should return the ``i``-th data</span>
+<span class="sd">    sample as a :class:`muspy.Music` object. ``__len__`` should return</span>
+<span class="sd">    the size of the dataset. ``_info`` should be a</span>
+<span class="sd">    :class:`muspy.DatasetInfo` instance storing the dataset information.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -273,8 +273,6 @@
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save all the music objects to a directory.</span>
 
-<span class="sd">        The converted files will be named by its index and saved to ``root/``.</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        root : str or Path</span>
@@ -282,17 +280,18 @@
 <span class="sd">        kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
 <span class="sd">            File format to save the data. Defaults to &#39;json&#39;.</span>
 <span class="sd">        n_jobs : int, optional</span>
-<span class="sd">            Maximum number of concurrently running jobs in multiprocessing. If</span>
-<span class="sd">            equal to 1, disable multiprocessing. Defaults to 1.</span>
+<span class="sd">            Maximum number of concurrently running jobs. If equal to 1,</span>
+<span class="sd">            disable multiprocessing. Defaults to 1.</span>
 <span class="sd">        ignore_exceptions : bool, optional</span>
-<span class="sd">            Whether to ignore errors and skip failed conversions. This can be</span>
-<span class="sd">            helpful if some of the source files is known to be corrupted.</span>
-<span class="sd">            Defaults to False.</span>
+<span class="sd">            Whether to ignore errors and skip failed conversions. This</span>
+<span class="sd">            can be helpful if some source files are known to be</span>
+<span class="sd">            corrupted. Defaults to True.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-<span class="sd">        The original filenames can be found in the ``filenames`` attribute.</span>
-<span class="sd">        For example, the file at ``filenames[i]`` will be converted and</span>
+<span class="sd">        The converted files will be named by its index. The original</span>
+<span class="sd">        filenames can be found in the ``filenames`` attribute. For</span>
+<span class="sd">        example, the file at ``filenames[i]`` will be converted and</span>
 <span class="sd">        saved to ``{i}.json``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -353,17 +352,19 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str or Path, optional</span>
-<span class="sd">            If given and exists, path to the file to read the split from.</span>
-<span class="sd">            If None or not exists, path to save the split.</span>
+<span class="sd">            If given and exists, path to the file to read the split</span>
+<span class="sd">            from. If None or not exists, path to save the split.</span>
 <span class="sd">        splits : float or list of float, optional</span>
 <span class="sd">            Ratios for train-test-validation splits. If None, return the</span>
-<span class="sd">            full dataset as a whole. If float, return train and test splits.</span>
-<span class="sd">            If list of two floats, return train and test splits. If list of</span>
-<span class="sd">            three floats, return train, test and validation splits.</span>
+<span class="sd">            full dataset as a whole. If float, return train and test</span>
+<span class="sd">            splits. If list of two floats, return train and test splits.</span>
+<span class="sd">            If list of three floats, return train, test and validation</span>
+<span class="sd">            splits.</span>
 <span class="sd">        random_state : int, array_like or RandomState, optional</span>
-<span class="sd">            Random state used to create the splits. If int or array_like,</span>
-<span class="sd">            the value is passed to :class:`numpy.random.RandomState`, and</span>
-<span class="sd">            the create RandomState object is used to create the splits. If</span>
+<span class="sd">            Random state used to create the splits. If int or</span>
+<span class="sd">            array_like, the value is passed to</span>
+<span class="sd">            :class:`numpy.random.RandomState`, and the created</span>
+<span class="sd">            RandomState object is used to create the splits. If</span>
 <span class="sd">            RandomState, it will be used to create the splits.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -425,28 +426,31 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        factory : Callable, optional</span>
-<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
-<span class="sd">            object, and the output is an array or a tensor.</span>
-<span class="sd">        representation : {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}, optional</span>
-<span class="sd">            Target representation.</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a</span>
+<span class="sd">            Music object, and the output is an array or a tensor.</span>
+<span class="sd">        representation : str, optional</span>
+<span class="sd">            Target representation. See :func:`muspy.to_representation()`</span>
+<span class="sd">            for available representation.</span>
 <span class="sd">        split_filename : str or Path, optional</span>
-<span class="sd">            If given and exists, path to the file to read the split from.</span>
-<span class="sd">            If None or not exists, path to save the split.</span>
+<span class="sd">            If given and exists, path to the file to read the split</span>
+<span class="sd">            from. If None or not exists, path to save the split.</span>
 <span class="sd">        splits : float or list of float, optional</span>
 <span class="sd">            Ratios for train-test-validation splits. If None, return the</span>
-<span class="sd">            full dataset as a whole. If float, return train and test splits.</span>
-<span class="sd">            If list of two floats, return train and test splits. If list of</span>
-<span class="sd">            three floats, return train, test and validation splits.</span>
+<span class="sd">            full dataset as a whole. If float, return train and test</span>
+<span class="sd">            splits. If list of two floats, return train and test splits.</span>
+<span class="sd">            If list of three floats, return train, test and validation</span>
+<span class="sd">            splits.</span>
 <span class="sd">        random_state : int, array_like or RandomState, optional</span>
-<span class="sd">            Random state used to create the splits. If int or array_like,</span>
-<span class="sd">            the value is passed to :class:`numpy.random.RandomState`, and</span>
-<span class="sd">            the create RandomState object is used to create the splits. If</span>
+<span class="sd">            Random state used to create the splits. If int or</span>
+<span class="sd">            array_like, the value is passed to</span>
+<span class="sd">            :class:`numpy.random.RandomState`, and the created</span>
+<span class="sd">            RandomState object is used to create the splits. If</span>
 <span class="sd">            RandomState, it will be used to create the splits.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        :class:torch.utils.data.Dataset` or Dict of</span>
-<span class="sd">        :class:torch.utils.data.Dataset`</span>
+<span class="sd">        :class:torch.utils.data.Dataset` or Dict of \</span>
+<span class="sd">                :class:torch.utils.data.Dataset`</span>
 <span class="sd">            Converted PyTorch dataset(s).</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -498,22 +502,25 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        factory : Callable, optional</span>
-<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
-<span class="sd">            object, and the output is an array or a tensor.</span>
-<span class="sd">        representation : {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}, optional</span>
-<span class="sd">            Target representation.</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a</span>
+<span class="sd">            Music object, and the output is an array or a tensor.</span>
+<span class="sd">        representation : str, optional</span>
+<span class="sd">            Target representation. See :func:`muspy.to_representation()`</span>
+<span class="sd">            for available representation.</span>
 <span class="sd">        split_filename : str or Path, optional</span>
-<span class="sd">            If given and exists, path to the file to read the split from.</span>
-<span class="sd">            If None or not exists, path to save the split.</span>
+<span class="sd">            If given and exists, path to the file to read the split</span>
+<span class="sd">            from. If None or not exists, path to save the split.</span>
 <span class="sd">        splits : float or list of float, optional</span>
 <span class="sd">            Ratios for train-test-validation splits. If None, return the</span>
-<span class="sd">            full dataset as a whole. If float, return train and test splits.</span>
-<span class="sd">            If list of two floats, return train and test splits. If list of</span>
-<span class="sd">            three floats, return train, test and validation splits.</span>
+<span class="sd">            full dataset as a whole. If float, return train and test</span>
+<span class="sd">            splits. If list of two floats, return train and test splits.</span>
+<span class="sd">            If list of three floats, return train, test and validation</span>
+<span class="sd">            splits.</span>
 <span class="sd">        random_state : int, array_like or RandomState, optional</span>
-<span class="sd">            Random state used to create the splits. If int or array_like,</span>
-<span class="sd">            the value is passed to :class:`numpy.random.RandomState`, and</span>
-<span class="sd">            the create RandomState object is used to create the splits. If</span>
+<span class="sd">            Random state used to create the splits. If int or</span>
+<span class="sd">            array_like, the value is passed to</span>
+<span class="sd">            :class:`numpy.random.RandomState`, and the created</span>
+<span class="sd">            RandomState object is used to create the splits. If</span>
 <span class="sd">            RandomState, it will be used to create the splits.</span>
 
 <span class="sd">        Returns</span>
@@ -568,12 +575,11 @@
 <div class="viewcode-block" id="RemoteDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for remote MusPy datasets.</span>
 
-<span class="sd">    This class is extended from :class:`muspy.Dataset` to support remote</span>
-<span class="sd">    datasets. To build a custom dataset based on this class, please refer to</span>
-<span class="sd">    :class:`muspy.Dataset` for the docmentation of the methods</span>
-<span class="sd">    ``__getitem__`` and ``__len__``, and the class attribute ``_info``. In</span>
-<span class="sd">    addition, the class attribute ``_sources`` containing the URLs to the</span>
-<span class="sd">    source files should be properly set (see Notes).</span>
+<span class="sd">    This class extends :class:`muspy.Dataset` to support remote</span>
+<span class="sd">    datasets. To build a custom remote dataset, please refer to the</span>
+<span class="sd">    documentation of :class:`muspy.Dataset` for details. In addition,</span>
+<span class="sd">    set the class attribute ``_sources`` to the URLs to the source files</span>
+<span class="sd">    (see Notes).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -596,17 +602,17 @@
 <span class="sd">    Important</span>
 <span class="sd">    ---------</span>
 <span class="sd">    :meth:`muspy.Dataset.exists` depends solely on a special file named</span>
-<span class="sd">    ``.muspy.success`` in the folder ``{root}/``, which serves as an</span>
-<span class="sd">    indicator for the existence and integrity of the dataset. This file will</span>
-<span class="sd">    automatically be created if the dataset is successfully downloaded and</span>
-<span class="sd">    extracted by :meth:`muspy.Dataset.download_and_extract`.</span>
-
-<span class="sd">    If the dataset is downloaded manually, make sure to create the</span>
-<span class="sd">    ``.muspy.success`` file in the folder ``{root}/`` to prevent errors.</span>
+<span class="sd">    ``.muspy.success`` in directory ``{root}/_converted/``. This file</span>
+<span class="sd">    serves as an indicator for the existence and integrity of the</span>
+<span class="sd">    dataset. It will automatically be created if the dataset is</span>
+<span class="sd">    successfully downloaded and extracted by</span>
+<span class="sd">    :meth:`muspy.Dataset.download_and_extract`. If the dataset is</span>
+<span class="sd">    downloaded manually, make sure to create the ``.muspy.success`` file</span>
+<span class="sd">    in directory ``{root}/_converted/`` to prevent errors.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The class attribute ``_sources`` is a dictionary containing the</span>
+<span class="sd">    The class attribute ``_sources`` is a dictionary storing the</span>
 <span class="sd">    following information of each source file.</span>
 
 <span class="sd">    - filename (str): Name to save the file.</span>
@@ -627,7 +633,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :class:`muspy.Dataset` : The base class for all MusPy datasets.</span>
+<span class="sd">    :class:`muspy.Dataset` : Base class for MusPy datasets.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -737,8 +743,6 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Extract the downloaded archives.</span>
 
-<span class="sd">        This is equivalent to ``RemoteDataset.download().extract(cleanup)``.</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        cleanup : bool, optional</span>
@@ -747,6 +751,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Object itself.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Equivalent to ``RemoteDataset.download().extract(cleanup)``.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">()</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">cleanup</span><span class="p">)</span></div></div>
@@ -762,8 +770,8 @@
 <span class="sd">        dataset : :class:`muspy.Dataset`</span>
 <span class="sd">            Dataset object to base on.</span>
 <span class="sd">        factory : Callable</span>
-<span class="sd">            Function to be applied to the Music objects. The input is a Music</span>
-<span class="sd">            object, and the output is an array or a tensor.</span>
+<span class="sd">            Function to be applied to the Music objects. The input is a</span>
+<span class="sd">            Music object, and the output is an array or a tensor.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -783,7 +791,7 @@
                     <span class="n">idx</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
                 <span class="p">)</span>
 
-        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="s2">&quot;TorchMusicFactoryDataset(dataset=</span><span class="si">{}</span><span class="s2">, factory=</span><span class="si">{}</span><span class="s2">, subset=</span><span class="si">{}</span><span class="s2">)&quot;</span>
                 <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
@@ -806,9 +814,9 @@
 <span class="sd">        ----------</span>
 <span class="sd">        dataset : :class:`muspy.Dataset`</span>
 <span class="sd">            Dataset object to base on.</span>
-<span class="sd">        representation : {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
-<span class="sd">            Target representation.</span>
-
+<span class="sd">        representation : str</span>
+<span class="sd">            Target representation. See :func:`muspy.to_representation()`</span>
+<span class="sd">            for available representation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -826,7 +834,7 @@
 
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">factory</span><span class="p">,</span> <span class="n">subset</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="s2">&quot;TorchRepresentationDataset(dataset=</span><span class="si">{}</span><span class="s2">, representation=</span><span class="si">{}</span><span class="s2">, &quot;</span>
                 <span class="s2">&quot;subset=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
@@ -836,7 +844,7 @@
 
 
 <div class="viewcode-block" id="MusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.MusicDataset">[docs]</a><span class="k">class</span> <span class="nc">MusicDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A local dataset containing MusPy JSON/YAML files in a folder.</span>
+    <span class="sd">&quot;&quot;&quot;Class for datasets of MusPy JSON/YAML files.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -844,6 +852,10 @@
 <span class="sd">        Root directory of the dataset.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
 <span class="sd">        File format of the data. Defaults to &#39;json&#39;.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.Dataset` : Base class for MusPy datasets.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -868,11 +880,7 @@
 
 
 <div class="viewcode-block" id="RemoteMusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteMusicDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteMusicDataset</span><span class="p">(</span><span class="n">MusicDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A dataset containing MusPy JSON/YAML files in a folder.</span>
-
-<span class="sd">    This class extended :class:`muspy.RemoteDataset` and</span>
-<span class="sd">    :class:`muspy.FolderDataset`. Please refer to their documentation for</span>
-<span class="sd">    details.</span>
+    <span class="sd">&quot;&quot;&quot;Base class for remote datasets of MusPy JSON/YAML files.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -888,6 +896,12 @@
 <span class="sd">    cleanup : bool, optional</span>
 <span class="sd">        Whether to remove the original archive(s). Defaults to False.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.MusicDataset` :</span>
+<span class="sd">        Class for datasets of MusPy JSON/YAML files.</span>
+<span class="sd">    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -902,12 +916,15 @@
 
 
 <div class="viewcode-block" id="FolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset">[docs]</a><span class="k">class</span> <span class="nc">FolderDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A class of datasets containing files in a folder.</span>
+    <span class="sd">&quot;&quot;&quot;Class for datasets storing files in a folder.</span>
 
-<span class="sd">    Two modes are available for this dataset. When the on-the-fly mode is</span>
-<span class="sd">    enabled, a data sample is converted to a music object on the fly when</span>
-<span class="sd">    being indexed. When the on-the-fly mode is disabled, a data sample is</span>
-<span class="sd">    loaded from the precomputed converted data.</span>
+<span class="sd">    This class extends :class:`muspy.Dataset` to support folder</span>
+<span class="sd">    datasets. To build a custom folder dataset, please refer to the</span>
+<span class="sd">    documentation of :class:`muspy.Dataset` for details. In addition,</span>
+<span class="sd">    set class attribute ``_extension`` to the extension to look for</span>
+<span class="sd">    when building the dataset and set ``read`` to a callable that takes</span>
+<span class="sd">    as inputs a filename of a source file and return the converted Music</span>
+<span class="sd">    object.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -917,17 +934,18 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    convert : bool, optional</span>
-<span class="sd">        Whether to convert the dataset to MusPy JSON/YAML files. If False,</span>
-<span class="sd">        will check if converted data exists. If so, disable on-the-fly mode.</span>
-<span class="sd">        If not, enable on-the-fly mode and warns. Defaults to False.</span>
+<span class="sd">        Whether to convert the dataset to MusPy JSON/YAML files. If</span>
+<span class="sd">        False, will check if converted data exists. If so, disable</span>
+<span class="sd">        on-the-fly mode. If not, enable on-the-fly mode and warns.</span>
+<span class="sd">        Defaults to False.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
 <span class="sd">        File format to save the data. Defaults to &#39;json&#39;.</span>
 <span class="sd">    n_jobs : int, optional</span>
-<span class="sd">        Maximum number of concurrently running jobs in multiprocessing. If</span>
-<span class="sd">        equal to 1, disable multiprocessing. Defaults to 1.</span>
+<span class="sd">        Maximum number of concurrently running jobs. If equal to 1,</span>
+<span class="sd">        disable multiprocessing. Defaults to 1.</span>
 <span class="sd">    ignore_exceptions : bool, optional</span>
-<span class="sd">        Whether to ignore errors and skip failed conversions. This can be</span>
-<span class="sd">        helpful if some of the source files is known to be corrupted.</span>
+<span class="sd">        Whether to ignore errors and skip failed conversions. This can</span>
+<span class="sd">        be helpful if some source files are known to be corrupted.</span>
 <span class="sd">        Defaults to True.</span>
 <span class="sd">    use_converted : bool, optional</span>
 <span class="sd">        Force to disable on-the-fly mode and use stored converted data</span>
@@ -936,29 +954,24 @@
 <span class="sd">    ---------</span>
 <span class="sd">    :meth:`muspy.FolderDataset.converted_exists` depends solely on a</span>
 <span class="sd">    special file named ``.muspy.success`` in the folder</span>
-<span class="sd">    ``{root}/_converted/``, which serves as an indicator for the existence</span>
-<span class="sd">    and integrity of the converted dataset. If the converted dataset is</span>
-<span class="sd">    built by :meth:`muspy.FolderDataset.convert`, the ``.muspy.success``</span>
-<span class="sd">    file will be created as well. If the converted dataset is created</span>
-<span class="sd">    manually, make sure to create the ``.muspy.success`` file in the folder</span>
-<span class="sd">    ``{root}/_converted/`` to prevent errors.</span>
+<span class="sd">    ``{root}/_converted/``, which serves as an indicator for the</span>
+<span class="sd">    existence and integrity of the converted dataset. If the converted</span>
+<span class="sd">    dataset is built by :meth:`muspy.FolderDataset.convert`, the</span>
+<span class="sd">    ``.muspy.success`` file will be created as well. If the converted</span>
+<span class="sd">    dataset is created manually, make sure to create the</span>
+<span class="sd">    ``.muspy.success`` file in the folder ``{root}/_converted/`` to</span>
+<span class="sd">    prevent errors.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This class is extended from :class:`muspy.Dataset`. To build a custom</span>
-<span class="sd">    dataset based on this class, please refer to :class:`muspy.Dataset` for</span>
-<span class="sd">    the docmentation of the methods ``__getitem__`` and ``__len__``, and the</span>
-<span class="sd">    class attribute ``_info``.</span>
-
-<span class="sd">    In addition, the attribute ``_extension`` and method ``read`` should be</span>
-<span class="sd">    properly set. ``_extension`` is the extension to look for when building</span>
-<span class="sd">    the dataset. All files with the given extension will be included as</span>
-<span class="sd">    source files. ``read`` is a callable that takes as inputs a filename of</span>
-<span class="sd">    a source file and return the converted Music object.</span>
+<span class="sd">    Two modes are available for this dataset. When the on-the-fly mode</span>
+<span class="sd">    is enabled, a data sample is converted to a music object on the fly</span>
+<span class="sd">    when being indexed. When the on-the-fly mode is disabled, a data</span>
+<span class="sd">    sample is loaded from the precomputed converted data.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :class:`muspy.Dataset` : The base class for all MusPy datasets.</span>
+<span class="sd">    :class:`muspy.Dataset` : Base class for MusPy datasets.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -976,10 +989,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
 
-        <span class="c1"># An internal pointer to the callable used to produce the Music object</span>
+        <span class="c1"># A pointer to the callable used to produce the Music object</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span>
 
-        <span class="c1"># An internal pointer to the list of filenames used when indexing</span>
+        <span class="c1"># A pointer to the list of filenames used when indexing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_filenames</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1001,6 +1014,11 @@
 
         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">converted_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Path to the root directory of the converted dataset.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;_converted&quot;</span>
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(root=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 
@@ -1015,7 +1033,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="FolderDataset.load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Load a file into a Music object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FolderDataset.exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -1023,11 +1041,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">converted_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the path to the root directory of the converted dataset.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;_converted&quot;</span>
 
 <div class="viewcode-block" id="FolderDataset.converted_exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.converted_exists">[docs]</a>    <span class="k">def</span> <span class="nf">converted_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if the saved dataset exists, otherwise False.&quot;&quot;&quot;</span>
@@ -1090,20 +1103,20 @@
 
 <span class="sd">        The converted files will be named by its index and saved to</span>
 <span class="sd">        ``root/_converted``. The original filenames can be found in the</span>
-<span class="sd">        ``filenames`` attribute. For example, the file at ``filenames[i]``</span>
-<span class="sd">        will be converted and saved to ``{i}.json``.</span>
+<span class="sd">        ``filenames`` attribute. For example, the file at</span>
+<span class="sd">        ``filenames[i]`` will be converted and saved to ``{i}.json``.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
 <span class="sd">            File format to save the data. Defaults to &#39;json&#39;.</span>
 <span class="sd">        n_jobs : int, optional</span>
-<span class="sd">            Maximum number of concurrently running jobs in multiprocessing. If</span>
-<span class="sd">            equal to 1, disable multiprocessing. Defaults to 1.</span>
+<span class="sd">            Maximum number of concurrently running jobs. If equal to 1,</span>
+<span class="sd">            disable multiprocessing. Defaults to 1.</span>
 <span class="sd">        ignore_exceptions : bool, optional</span>
-<span class="sd">            Whether to ignore errors and skip failed conversions. This can be</span>
-<span class="sd">            helpful if some of the source files is known to be corrupted.</span>
-<span class="sd">            Defaults to True.</span>
+<span class="sd">            Whether to ignore errors and skip failed conversions. This</span>
+<span class="sd">            can be helpful if some source files are known to be</span>
+<span class="sd">            corrupted. Defaults to True.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1122,11 +1135,7 @@
 
 
 <div class="viewcode-block" id="RemoteFolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteFolderDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteFolderDataset</span><span class="p">(</span><span class="n">FolderDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A class of remote datasets containing files in a folder.</span>
-
-<span class="sd">    This class extended :class:`muspy.RemoteDataset` and</span>
-<span class="sd">    :class:`muspy.FolderDataset`. Please refer to their documentation for</span>
-<span class="sd">    details.</span>
+    <span class="sd">&quot;&quot;&quot;Base class for remote datasets stoting files in a folder.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -1140,26 +1149,27 @@
 <span class="sd">    cleanup : bool, optional</span>
 <span class="sd">        Whether to remove the original archive(s). Defaults to False.</span>
 <span class="sd">    convert : bool, optional</span>
-<span class="sd">        Whether to convert the dataset to MusPy JSON/YAML files. If False,</span>
-<span class="sd">        will check if converted data exists. If so, disable on-the-fly mode.</span>
-<span class="sd">        If not, enable on-the-fly mode and warns. Defaults to False.</span>
+<span class="sd">        Whether to convert the dataset to MusPy JSON/YAML files. If</span>
+<span class="sd">        False, will check if converted data exists. If so, disable</span>
+<span class="sd">        on-the-fly mode. If not, enable on-the-fly mode and warns.</span>
+<span class="sd">        Defaults to False.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
 <span class="sd">        File format to save the data. Defaults to &#39;json&#39;.</span>
 <span class="sd">    n_jobs : int, optional</span>
-<span class="sd">        Maximum number of concurrently running jobs in multiprocessing. If</span>
-<span class="sd">        equal to 1, disable multiprocessing. Defaults to 1.</span>
+<span class="sd">        Maximum number of concurrently running jobs. If equal to 1,</span>
+<span class="sd">        disable multiprocessing. Defaults to 1.</span>
 <span class="sd">    ignore_exceptions : bool, optional</span>
-<span class="sd">        Whether to ignore errors and skip failed conversions. This can be</span>
-<span class="sd">        helpful if some of the source files is known to be corrupted.</span>
+<span class="sd">        Whether to ignore errors and skip failed conversions. This can</span>
+<span class="sd">        be helpful if some source files are known to be corrupted.</span>
 <span class="sd">        Defaults to True.</span>
 <span class="sd">    use_converted : bool, optional</span>
 <span class="sd">        Force to disable on-the-fly mode and use stored converted data</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.FolderDataset` :</span>
+<span class="sd">        Class for datasets storing files in a folder.</span>
 <span class="sd">    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.</span>
-<span class="sd">    :class:`muspy.FolderDataset` : A class of datasets containing files in a</span>
-<span class="sd">      folder.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1185,7 +1195,14 @@
 
 
 <div class="viewcode-block" id="ABCFolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset">[docs]</a><span class="k">class</span> <span class="nc">ABCFolderDataset</span><span class="p">(</span><span class="n">FolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A class of local datasets containing ABC files in a folder.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Class for datasets storing ABC files in a folder.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.FolderDataset` :</span>
+<span class="sd">        Class for datasets storing files in a folder.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
 
@@ -1243,7 +1260,15 @@
 
 
 <div class="viewcode-block" id="RemoteABCFolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteABCFolderDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteABCFolderDataset</span><span class="p">(</span><span class="n">ABCFolderDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A class of remote datasets containing ABC files in a folder.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base class for remote datasets storing ABC files in a folder.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.ABCFolderDataset` :</span>
+<span class="sd">        Class for datasets storing ABC files in a folder.</span>
+<span class="sd">    :class:`muspy.RemoteDataset` : Base class for remote MusPy datasets.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>

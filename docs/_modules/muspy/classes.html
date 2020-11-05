@@ -184,7 +184,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.schemas</span> <span class="kn">import</span> <span class="n">DEFAULT_SCHEMA_VERSION</span>
@@ -291,8 +291,8 @@
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">time</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">qpm</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">qpm</span>
 
-    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;qpm&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">qpm</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`qpm` must be positive.&quot;</span><span class="p">)</span></div>
 
@@ -309,8 +309,8 @@
 <span class="sd">    mode : str, optional</span>
 <span class="sd">        Mode of the key signature.</span>
 <span class="sd">    fifths : int, optional</span>
-<span class="sd">        Number of flats or sharps. Positive numbers for sharps and negative</span>
-<span class="sd">        numbers for flats.</span>
+<span class="sd">        Number of flats or sharps. Positive numbers for sharps and</span>
+<span class="sd">        negative numbers for flats.</span>
 <span class="sd">    root_str : str, optional</span>
 <span class="sd">        Root of the key signature as a string.</span>
 
@@ -365,8 +365,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">=</span> <span class="n">numerator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">=</span> <span class="n">denominator</span>
 
-    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;numerator&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">numerator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`numerator` must be positive.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;denominator&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -399,7 +399,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    time : int</span>
 <span class="sd">        Start time of the annotation, in time steps or seconds.</span>
-<span class="sd">    annotation : any object</span>
+<span class="sd">    annotation : any</span>
 <span class="sd">        Annotation of any type.</span>
 <span class="sd">    group : str, optional</span>
 <span class="sd">        Group name for better organizing the annotations.</span>
@@ -480,8 +480,8 @@
         <span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
-    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;pitch&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`pitch` must be in between 0 to 127.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;duration&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -489,7 +489,9 @@
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;velocity&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`velocity` must be in between 0 to 127.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_adjust_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_adjust_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span>
@@ -501,7 +503,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        semitone : int</span>
-<span class="sd">            The number of semitones to transpose the note. A positive value</span>
+<span class="sd">            Number of semitones to transpose the note. A positive value</span>
 <span class="sd">            raises the pitch, while a negative value lowers the pitch.</span>
 
 <span class="sd">        Returns</span>
@@ -563,7 +565,6 @@
         <span class="p">]</span>
     <span class="p">)</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;pitches_str&quot;</span><span class="p">]</span>
-    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pitches&quot;</span><span class="p">,</span> <span class="s2">&quot;pitches_str&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -574,7 +575,6 @@
         <span class="n">pitches_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">=</span> <span class="n">pitches</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span> <span class="k">if</span> <span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_VELOCITY</span>
@@ -600,8 +600,8 @@
         <span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
-    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;pitches&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">pitch</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">pitch</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">:</span>
@@ -614,7 +614,9 @@
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;velocity&quot;</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`velocity` must be in between 0 to 127.&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_adjust_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_adjust_time</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">):</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span>
@@ -626,8 +628,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        semitone : int</span>
-<span class="sd">            Number of semitones to transpose the notes. A positive value raises</span>
-<span class="sd">            the pitches, while a negative value lowers the pitches.</span>
+<span class="sd">            Number of semitones to transpose the notes. A positive value</span>
+<span class="sd">            raises the pitches, while a negative value lowers the</span>
+<span class="sd">            pitches.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -663,10 +666,6 @@
 <div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A container for music track.</span>
 
-<span class="sd">    Indexing a Track object gives the note of a certain index. That is,</span>
-<span class="sd">    `track[idx]` is equivalent to `track.notes[idx]`, while the latter is</span>
-<span class="sd">    recommended for readability.</span>
-
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    program : int, 0-127, optional</span>
@@ -676,21 +675,21 @@
 <span class="sd">        Whether it is a percussion track. Defaults to False.</span>
 <span class="sd">    name : str, optional</span>
 <span class="sd">        Track name.</span>
-<span class="sd">    notes : list of :class:`muspy.Note` objects, optional</span>
+<span class="sd">    notes : list of :class:`muspy.Note`, optional</span>
 <span class="sd">        Musical notes. Defaults to an empty list.</span>
-<span class="sd">    chords : list of :class:`muspy.Chord` objects, optional</span>
+<span class="sd">    chords : list of :class:`muspy.Chord`, optional</span>
 <span class="sd">        Chords. Defaults to an empty list.</span>
-<span class="sd">    annotations : list of :class:`muspy.Annotation` objects, optional</span>
+<span class="sd">    annotations : list of :class:`muspy.Annotation`, optional</span>
 <span class="sd">        Annotations. Defaults to an empty list.</span>
-<span class="sd">    lyrics : list of :class:`muspy.Lyric` objects, optional</span>
+<span class="sd">    lyrics : list of :class:`muspy.Lyric`, optional</span>
 <span class="sd">        Lyrics. Defaults to an empty list.</span>
 
-<span class="sd">    Tip</span>
-<span class="sd">    ---</span>
-<span class="sd">    Indexing a Track object gives the note of a certain index. That is,</span>
-<span class="sd">    `track[idx]` is equivalent to `track.notes[idx]`. Length of a Track</span>
-<span class="sd">    object is the number of notes. That is, `len(track)`  is equivalent to</span>
-<span class="sd">    `len(track.notes)`.</span>
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Indexing a Track object returns the note at a certain index. That</span>
+<span class="sd">    is, ``track[idx]`` returns ``track.notes[idx]``. Length of a Track</span>
+<span class="sd">    object is the number of notes. That is, ``len(track)`` returns</span>
+<span class="sd">    ``len(track.notes)``.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -739,26 +738,10 @@
     <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Note</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="Track.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Track&quot;</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Raise proper errors if a certain attribute is invalid.</span>
-
-<span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
-<span class="sd">            Attribute to validate. If None, validate all attributes. Defaults</span>
-<span class="sd">            to None.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`program` must not be None.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_drum</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`is_drum` must not be None.&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;program&quot;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">program</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`program` must be in between 0 to 127.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Track.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
@@ -768,7 +751,8 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        is_sorted : bool</span>
-<span class="sd">            Whether all the list attributes are sorted. Defaults to False.</span>
+<span class="sd">            Whether all the list attributes are sorted. Defaults to</span>
+<span class="sd">            False.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -811,8 +795,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        semitone : int</span>
-<span class="sd">            The number of semitones to transpose the notes. A positive value</span>
-<span class="sd">            raises the pitches, while a negative value lowers the pitches.</span>
+<span class="sd">            Number of semitones to transpose the notes. A positive value</span>
+<span class="sd">            raises the pitches, while a negative value lowers the</span>
+<span class="sd">            pitches.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

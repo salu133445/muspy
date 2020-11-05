@@ -10,3 +10,7 @@ Attributes Description            Type  Default
 time       Start time             int
 annotation Annotation of any type
 ========== ====================== ==== =======
+
+.. autoclass:: muspy.Annotation
+    :noindex:
+    :inherited-members:

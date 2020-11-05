@@ -179,11 +179,11 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
-<span class="sd">        MusPy Music object to convert.</span>
+<span class="sd">        Music object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    multitrack : :class:`pypianoroll.Multitrack` object</span>
+<span class="sd">    multitrack : :class:`pypianoroll.Multitrack`</span>
 <span class="sd">        Converted Multitrack object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -207,24 +207,27 @@
         <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
 
     <span class="c1"># Tempos</span>
-    <span class="n">last_tempo_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">))</span>
-    <span class="n">tempo_arr</span> <span class="o">=</span> <span class="mf">120.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">last_tempo_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">qpm</span> <span class="o">=</span> <span class="mf">120.0</span>
-    <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
-        <span class="n">tempo_arr</span><span class="p">[</span><span class="n">position</span> <span class="p">:</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">qpm</span>
-        <span class="n">tempo_arr</span><span class="p">[</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span>
-        <span class="n">position</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">qpm</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+        <span class="n">tempo_arr</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">last_tempo_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">))</span>
+        <span class="n">tempo_arr</span> <span class="o">=</span> <span class="mf">120.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">last_tempo_time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">qpm</span> <span class="o">=</span> <span class="mf">120.0</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+            <span class="n">tempo_arr</span><span class="p">[</span><span class="n">position</span> <span class="p">:</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">qpm</span>
+            <span class="n">tempo_arr</span><span class="p">[</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">qpm</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span>
 
     <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span> <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">Multitrack</span><span class="p">(</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
         <span class="n">tempo</span><span class="o">=</span><span class="n">tempo_arr</span><span class="p">,</span>
         <span class="c1"># downbeat=music.downbeats if music.downbeats else None,</span>
-        <span class="n">resolution</span><span class="o">=</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
     <span class="p">)</span></div>
 
@@ -236,12 +239,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to encode.</span>
 <span class="sd">    encode_velocity : bool</span>
-<span class="sd">        Whether to encode velocities. If True, a binary-valued array will be</span>
-<span class="sd">        return. Otherwise, an integer array will be return. Defaults to</span>
-<span class="sd">        True.</span>
+<span class="sd">        Whether to encode velocities. If True, a binary-valued array</span>
+<span class="sd">        will be return. Otherwise, an integer array will be return.</span>
+<span class="sd">        Defaults to True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

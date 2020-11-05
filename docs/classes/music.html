@@ -164,7 +164,9 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/classes/music.rst.txt" rel="nofollow"> View page source</a>
+            
+              <a href="https://github.com/user/muspy/blob/master/doc/classes/music.rst" class="fa fa-github"> Edit on GitHub</a>
+            
           
         
       </li>
@@ -246,6 +248,679 @@
 <p class="admonition-title">Hint</p>
 <p>An example of a MusPy Music object as a YAML file is available <a class="reference external" href="../examples.html">here</a>.</p>
 </div>
+<dl class="py class">
+<dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">Music</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metadata</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tempos</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">key_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">time_signatures</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">downbeats</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">lyrics</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">annotations</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tracks</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>A universal container for symbolic music.</p>
+<p>This is the core class of MusPy. A Music object can be constructed
+in the following ways.</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music()</span></code></a>: Construct by setting values for attributes.</p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Music.from_dict()</span></code>: Construct from a dictionary that
+stores the attributes and their values as key-value pairs.</p></li>
+<li><p><a class="reference internal" href="../doc/muspy.html#muspy.read" title="muspy.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.read()</span></code></a>: Read from a MIDI, a MusicXML or an ABC file.</p></li>
+<li><p><a class="reference internal" href="../doc/muspy.html#muspy.load" title="muspy.load"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load()</span></code></a>: Load from a JSON or a YAML file saved by
+<a class="reference internal" href="../doc/muspy.html#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a>.</p></li>
+<li><p><a class="reference internal" href="../doc/muspy.html#muspy.from_object" title="muspy.from_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.from_object()</span></code></a>: Convert from a <cite>music21.Stream</cite>, a
+<a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiFile" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiFile</span></code></a>, a <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> or a
+<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a> object.</p></li>
+</ul>
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">metadata</code></dt>
+<dd><p>Metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../doc/muspy.html#muspy.Metadata" title="muspy.Metadata"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Metadata</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">resolution</code></dt>
+<dd><p>Time steps per quarter note. Defaults to
+<cite>muspy.DEFAULT_RESOLUTION</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">tempos</code></dt>
+<dd><p>Tempo changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Tempo" title="muspy.Tempo"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Tempo</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">key_signatures</code></dt>
+<dd><p>Key signatures changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.KeySignature" title="muspy.KeySignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.KeySignature</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">time_signatures</code></dt>
+<dd><p>Time signature changes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.TimeSignature" title="muspy.TimeSignature"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.TimeSignature</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">downbeats</code></dt>
+<dd><p>Downbeat positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">lyrics</code></dt>
+<dd><p>Lyrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Lyric" title="muspy.Lyric"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Lyric</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">annotations</code></dt>
+<dd><p>Annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Annotation" title="muspy.Annotation"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Annotation</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">tracks</code></dt>
+<dd><p>Music tracks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="../doc/muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Indexing a Music object returns the track of a certain index. That
+is, <code class="docutils literal notranslate"><span class="pre">music[idx]</span></code> returns <code class="docutils literal notranslate"><span class="pre">music.tracks[idx]</span></code>. Length of a Music
+object is the number of tracks. That is, <code class="docutils literal notranslate"><span class="pre">len(music)</span></code>  returns
+<code class="docutils literal notranslate"><span class="pre">len(music.tracks)</span></code>.</p>
+</div>
+<dl class="py method">
+<dt>
+<code class="sig-name descname">get_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_end_time"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the the time of the last event in all tracks.</p>
+<p>This includes tempos, key signatures, time signatures, note
+offsets, lyrics and annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether all the list attributes are sorted. Defaults to
+False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">get_real_end_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">is_sorted</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.get_real_end_time"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return the end time in realtime.</p>
+<p>This includes tempos, key signatures, time signatures, note
+offsets, lyrics and annotations. Assume 120 qpm (quarter notes
+per minute) if no tempo information is available.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether all the list attributes are sorted. Defaults to
+False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">adjust_resolution</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">target</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">factor</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rounding</span><span class="o">=</span><span class="default_value">'round'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.adjust_resolution"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Adjust resolution and timing of all time-stamped objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Target resolution.</p></li>
+<li><p><strong>factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Factor used to adjust the resolution based on the formula:
+<cite>new_resolution = old_resolution * factor</cite>. For example, a
+factor of 2 double the resolution, and a factor of 0.5 halve
+the resolution.</p></li>
+<li><p><strong>rounding</strong> (<em>{'round'</em><em>, </em><em>'ceil'</em><em>, </em><em>'floor'}</em><em> or </em><em>callable</em><em>, </em><em>optional</em>) – Rounding mode. Defaults to ‘round’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">clip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lower</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">upper</span><span class="o">=</span><span class="default_value">127</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.clip"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Clip the velocity of each note for each track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lower</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Lower bound. Defaults to 0.</p></li>
+<li><p><strong>upper</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Upper bound. Defaults to 127.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">transpose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">semitone</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.transpose"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Transpose all the notes by a number of semitones.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>semitone</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of semitones to transpose the notes. A positive value
+raises the pitches, while a negative value lowers the
+pitches.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Drum tracks are skipped.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.save"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Save loselessly to a JSON or a YAML file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">save_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.save_json"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Save loselessly to a JSON file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">save_yaml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.save_yaml"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Save loselessly to a YAML file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">write</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Write to a MIDI, a MusicXML, an ABC or an audio file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.write" title="muspy.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">write_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_midi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Write to a MIDI file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.write_midi" title="muspy.write_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_midi()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">write_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_musicxml"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Write to a MusicXML file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.write_musicxml" title="muspy.write_musicxml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_musicxml()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">write_abc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_abc"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Write to an ABC file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.write_abc" title="muspy.write_abc"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_abc()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">write_audio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.write_audio"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Write to an audio file.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.write_audio" title="muspy.write_audio"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.write_audio()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_object"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return as an object in other libraries.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_object" title="muspy.to_object"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_object()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_music21</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_music21"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return as a Stream object.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_music21" title="muspy.to_music21"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_music21()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_mido</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_mido"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return as a MidiFile object.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_mido" title="muspy.to_mido"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_mido()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_pretty_midi</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pretty_midi"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return as a PrettyMIDI object.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_pretty_midi" title="muspy.to_pretty_midi"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pretty_midi()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_pypianoroll</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pypianoroll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return as a Multitrack object.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_pypianoroll" title="muspy.to_pypianoroll"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pypianoroll()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return in a specific representation.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_representation" title="muspy.to_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_representation()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_pitch_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pitch_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return in pitch-based representation.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_pitch_representation" title="muspy.to_pitch_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pitch_representation()</span></code></a> for full
+documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return in piano-roll representation.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_pianoroll_representation" title="muspy.to_pianoroll_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_pianoroll_representation()</span></code></a> for full
+documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return in event-based representation.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_event_representation" title="muspy.to_event_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_event_representation()</span></code></a> for full
+documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.to_note_representation"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Return in note-based representation.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.to_note_representation" title="muspy.to_note_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_note_representation()</span></code></a> for full
+documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.show"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Show visualization.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.show" title="muspy.show"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.show()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">show_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.show_score"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Show score visualization.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.show_score" title="muspy.show_score"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.show_score()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">show_pianoroll</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.show_pianoroll"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Show pianoroll visualization.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.show_pianoroll" title="muspy.show_pianoroll"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.show_pianoroll()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/music.html#Music.synthesize"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Synthesize a Music object to raw audio.</p>
+<p>Refer to <a class="reference internal" href="../doc/muspy.html#muspy.synthesize" title="muspy.synthesize"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.synthesize()</span></code></a> for full documentation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">adjust_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Adjust the timing of time-stamped objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>callable</em>) – The function used to compute the new timing from the old
+timing, i.e., <cite>new_time = func(old_time)</cite>.</p></li>
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to adjust. Defaults to adjust all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">append</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Append an object to the correseponding list.</p>
+<p>This will automatically determine the list attributes to append
+based on the type of the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> – Object to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<em class="property">classmethod </em><code class="sig-name descname">from_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dict_</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return an instance constructed from a dictionary.</p>
+<p>Instantiate an object whose attributes and the corresponding
+values are given as a dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a><em> or </em><em>mapping</em>) – A dictionary that stores the attributes and their values as
+key-value pairs, e.g., <cite>{“attr1”: value1, “attr2”: value2}</cite>.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Constructed object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">is_valid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return True if an attribute has a valid type and value.</p>
+<p>This will recursively apply to an attribute’s attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to validate. Defaults to validate all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether the attribute has a valid type and value.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.validate" title="muspy.Base.validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.validate()</span></code></a></dt><dd><p>Raise an error if an attribute has an invalid type or value.</p>
+</dd>
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.is_valid_type" title="muspy.Base.is_valid_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.is_valid_type()</span></code></a></dt><dd><p>Return True if an attribute is of a valid type.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">is_valid_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return True if an attribute is of a valid type.</p>
+<p>This will apply recursively to an attribute’s attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to validate. Defaults to validate all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><em>bool</em> – Whether the attribute is of a valid type.</p></li>
+<li><p><strong>recursive</strong> (<em>bool</em>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.validate_type" title="muspy.Base.validate_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.validate_type()</span></code></a></dt><dd><p>Raise an error if a certain attribute is of an invalid type.</p>
+</dd>
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.is_valid" title="muspy.Base.is_valid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.is_valid()</span></code></a></dt><dd><p>Return True if an attribute has a valid type and value.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">pretty_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_none</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return the attributes as a string in a YAML-like format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>skip_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
+empty lists. Defaults to True.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Stored data as a string in a YAML-like format.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.print" title="muspy.Base.print"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.print()</span></code></a></dt><dd><p>Print the attributes in a YAML-like format.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">print</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Print the attributes in a YAML-like format.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.pretty_str" title="muspy.Base.pretty_str"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.pretty_str()</span></code></a></dt><dd><p>Return the the attributes as a string in a YAML-like format.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">remove_duplicate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove duplicate items from a list attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to check. Defaults to check all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">remove_invalid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove invalid items from a list attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to validate. Defaults to validate all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">sort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Sort a list attribute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to sort. Defaults to sort all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">to_ordered_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_none</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Return the object as an OrderedDict.</p>
+<p>Return an ordered dictionary that stores the attributes and
+their values as key-value pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>skip_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
+empty lists. Defaults to True.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary that stores the attributes and their values as
+key-value pairs, e.g., <cite>{“attr1”: value1, “attr2”: value2}</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>OrderedDict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Raise an error if an attribute has an invalid type or value.</p>
+<p>This will apply recursively to an attribute’s attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to validate. Defaults to validate all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.is_valid" title="muspy.Base.is_valid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.is_valid()</span></code></a></dt><dd><p>Return True if an attribute has a valid type and value.</p>
+</dd>
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.validate_type" title="muspy.Base.validate_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.validate_type()</span></code></a></dt><dd><p>Raise an error if an attribute is of an invalid type.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">validate_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Raise an error if an attribute is of an invalid type.</p>
+<p>This will apply recursively to an attribute’s attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to validate. Defaults to validate all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.is_valid_type" title="muspy.Base.is_valid_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.is_valid_type()</span></code></a></dt><dd><p>Return True if an attribute is of a valid type.</p>
+</dd>
+<dt><a class="reference internal" href="../doc/muspy.html#muspy.Base.validate" title="muspy.Base.validate"><code class="xref py py-meth docutils literal notranslate"><span class="pre">muspy.Base.validate()</span></code></a></dt><dd><p>Raise an error if an attribute has an invalid type or value.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

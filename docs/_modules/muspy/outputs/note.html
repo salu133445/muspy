@@ -161,7 +161,7 @@
   <h1>Source code for muspy.outputs.note</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Note-based representation output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
@@ -173,31 +173,37 @@
 
 
 <div class="viewcode-block" id="to_note_representation"><a class="viewcode-back" href="../../../representations/note.html#muspy.to_note_representation">[docs]</a><span class="k">def</span> <span class="nf">to_note_representation</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_start_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">use_start_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Encode a Music object into note-based representation.</span>
 
-<span class="sd">    The note-based represetantion represents music as a sequence of (time,</span>
-<span class="sd">    pitch, duration, velocity) tuples. For example, a note</span>
+<span class="sd">    The note-based represetantion represents music as a sequence of</span>
+<span class="sd">    (time, pitch, duration, velocity) tuples. For example, a note</span>
 <span class="sd">    Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a</span>
-<span class="sd">    tuple (0, 60, 4, 64). The output shape is N * D, where N is the number</span>
-<span class="sd">    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.</span>
-<span class="sd">    The values of the second dimension represent time, pitch, duration and</span>
-<span class="sd">    velocity (discarded when `encode_velocity` is False).</span>
+<span class="sd">    tuple (0, 60, 4, 64). The output shape is N * D, where N is the</span>
+<span class="sd">    number of notes and D is 4 when `encode_velocity` is True, otherwise</span>
+<span class="sd">    D is 3. The values of the second dimension represent time, pitch,</span>
+<span class="sd">    duration and velocity (discarded when `encode_velocity` is False).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to encode.</span>
 <span class="sd">    use_start_end : bool</span>
-<span class="sd">        Whether to use &#39;start&#39; and &#39;end&#39; to encode the timing rather than</span>
-<span class="sd">        &#39;time&#39; and &#39;duration&#39;. Defaults to False.</span>
+<span class="sd">        Whether to use &#39;start&#39; and &#39;end&#39; to encode the timing rather</span>
+<span class="sd">        than &#39;time&#39; and &#39;duration&#39;. Defaults to False.</span>
 <span class="sd">    encode_velocity : bool</span>
 <span class="sd">        Whether to encode note velocities. Defaults to True.</span>
+<span class="sd">    dtype : dtype, type or str</span>
+<span class="sd">        Data type of the return array. Defaults to int.</span>
+
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray, dtype=uint8, shape=(?, 3 or 4)</span>
+<span class="sd">    ndarray, shape=(?, 3 or 4)</span>
 <span class="sd">        Encoded array in note-based representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -215,9 +221,9 @@
 
     <span class="c1"># Initialize the array</span>
     <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="n">dtype</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+        <span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="p">)</span>
 
     <span class="c1"># Encode notes</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">note</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">notes</span><span class="p">):</span>

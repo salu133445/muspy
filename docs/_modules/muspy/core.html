@@ -205,18 +205,19 @@
     <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">rounding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Adjust resolution and update the timing of time-stamped objects.</span>
+    <span class="sd">&quot;&quot;&quot;Adjust resolution and timing of all time-stamped objects.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
-<span class="sd">        MusPy music object to adjust.</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
+<span class="sd">        Object to adjust the resolution.</span>
 <span class="sd">    target : int, optional</span>
 <span class="sd">        Target resolution.</span>
 <span class="sd">    factor : int or float, optional</span>
 <span class="sd">        Factor used to adjust the resolution based on the formula:</span>
-<span class="sd">        `new_resolution = old_resolution * factor`. For example, a factor of</span>
-<span class="sd">        2 double the resolution, and a factor of 0.5 halve the resolution.</span>
+<span class="sd">        `new_resolution = old_resolution * factor`. For example, a</span>
+<span class="sd">        factor of 2 double the resolution, and a factor of 0.5 halve the</span>
+<span class="sd">        resolution.</span>
 <span class="sd">    rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable, optional</span>
 <span class="sd">            Rounding mode. Defaults to &#39;round&#39;.</span>
 
@@ -231,16 +232,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track` object</span>
-<span class="sd">        Object to adjust.</span>
+<span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track`</span>
+<span class="sd">        Object to adjust the timing.</span>
 <span class="sd">    func : callable</span>
 <span class="sd">        The function used to compute the new timing from the old timing,</span>
 <span class="sd">        i.e., `new_time = func(old_time)`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.adjust_resolution` : Adjust the resolution and the timing</span>
-<span class="sd">      of time-stamped objects.</span>
+<span class="sd">    :func:`muspy.adjust_resolution` :</span>
+<span class="sd">        Adjust the resolution and the timing of time-stamped objects.</span>
 
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
@@ -253,6 +254,16 @@
 <div class="viewcode-block" id="append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">obj1</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">,</span> <span class="n">obj2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or \</span>
+<span class="sd">            :class:`muspy.Tempo`</span>
+<span class="sd">        Object to which `obj2` to append.</span>
+<span class="sd">    obj2</span>
+<span class="sd">        Object to be appended to `obj1`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
 <span class="sd">    - If `obj1` is of type :class:`muspy.Music`, `obj2` can be</span>
 <span class="sd">      :class:`muspy.KeySignature`, :class:`muspy.TimeSignature`,</span>
 <span class="sd">      :class:`muspy.Lyric`, :class:`muspy.Annotation` or</span>
@@ -262,14 +273,6 @@
 <span class="sd">      :class:`muspy.Annotation`.</span>
 <span class="sd">    - If `obj1` is of type :class:`muspy.Timing`, `obj2` can be</span>
 <span class="sd">      :class:`muspy.Tempo`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or</span>
-<span class="sd">           :class:`muspy.Tempo` object</span>
-<span class="sd">        Object to which `obj2` to append.</span>
-<span class="sd">    obj2 : MusPy objects (see below)</span>
-<span class="sd">        Object to be appended to `obj1`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj2</span><span class="p">)</span></div>
@@ -282,8 +285,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`</span>
-<span class="sd">          object</span>
+<span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or \</span>
+<span class="sd">            :class:`muspy.Note`</span>
 <span class="sd">        Object to clip.</span>
 <span class="sd">    lower : int or float, optional</span>
 <span class="sd">        Lower bound. Defaults to 0.</span>
@@ -295,14 +298,14 @@
 
 
 <div class="viewcode-block" id="get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.get_end_time">[docs]</a><span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">Track</span><span class="p">],</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return the end time, i.e., the time of the last event in all tracks.</span>
+    <span class="sd">&quot;&quot;&quot;Return the the time of the last event in all tracks.</span>
 
-<span class="sd">    This includes tempos, key signatures, time signatures, notes offsets,</span>
-<span class="sd">        lyrics and annotations.</span>
+<span class="sd">    This includes tempos, key signatures, time signatures, note offsets,</span>
+<span class="sd">    lyrics and annotations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track` object</span>
+<span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track`</span>
 <span class="sd">        Object to inspect.</span>
 <span class="sd">    is_sorted : bool</span>
 <span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
@@ -314,13 +317,13 @@
 <div class="viewcode-block" id="get_real_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.get_real_end_time">[docs]</a><span class="k">def</span> <span class="nf">get_real_end_time</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return the end time in realtime.</span>
 
-<span class="sd">    This includes tempos, key signatures, time signatures, notes offsets,</span>
-<span class="sd">        lyrics and annotations. Assume 120 qpm (quarter notes per minute) if no</span>
-<span class="sd">        tempo information is available.</span>
+<span class="sd">    This includes tempos, key signatures, time signatures, note offsets,</span>
+<span class="sd">    lyrics and annotations. Assume 120 qpm (quarter notes per minute) if</span>
+<span class="sd">    no tempo information is available.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Object to inspect.</span>
 <span class="sd">    is_sorted : bool</span>
 <span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
@@ -334,7 +337,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music` object</span>
+<span class="sd">    obj : :class:`muspy.Music`</span>
 <span class="sd">        Object to process.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -345,14 +348,14 @@
     <span class="sd">&quot;&quot;&quot;Sort all the time-stamped objects with respect to event time.</span>
 
 <span class="sd">    - If a :class:`muspy.Music` is given, this will sort key signatures,</span>
-<span class="sd">      time signatures, lyrics and annotations, along with notes, lyrics and</span>
-<span class="sd">      annotations for each track.</span>
-<span class="sd">    - If a :class:`muspy.Track` is given, this will sort notes, lyrics and</span>
-<span class="sd">      annotations.</span>
+<span class="sd">      time signatures, lyrics and annotations, along with notes, lyrics</span>
+<span class="sd">      and annotations for each track.</span>
+<span class="sd">    - If a :class:`muspy.Track` is given, this will sort notes, lyrics</span>
+<span class="sd">      and annotations.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.ComplexBase` object</span>
+<span class="sd">    obj : :class:`muspy.ComplexBase`</span>
 <span class="sd">        Object to sort.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -364,8 +367,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Base` object</span>
-<span class="sd">        MusPy object to convert.</span>
+<span class="sd">    obj : :class:`muspy.Base`</span>
+<span class="sd">        Object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -383,11 +386,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or :class:`muspy.Note`</span>
-<span class="sd">    object</span>
+<span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or \</span>
+<span class="sd">            :class:`muspy.Note`</span>
 <span class="sd">        Object to transpose.</span>
 <span class="sd">    semitone : int</span>
-<span class="sd">        The number of semitones to transpose the notes. A positive value</span>
+<span class="sd">        Number of semitones to transpose the notes. A positive value</span>
 <span class="sd">        raises the pitches, while a negative value lowers the pitches.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>

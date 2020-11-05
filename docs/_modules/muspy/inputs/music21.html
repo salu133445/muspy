@@ -182,12 +182,12 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stream : `music21.stream.Stream` object</span>
+<span class="sd">    stream : `music21.stream.Stream`</span>
 <span class="sd">        Stream object to parse.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Metadata` object</span>
+<span class="sd">    :class:`muspy.Metadata`</span>
 <span class="sd">        Parsed metadata.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -213,14 +213,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stream : `music21.stream.Stream` object</span>
+<span class="sd">    stream : `music21.stream.Stream`</span>
 <span class="sd">        Stream object to parse.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.Tempo` objects</span>
+<span class="sd">    list of :class:`muspy.Tempo`</span>
 <span class="sd">        Parsed tempos.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -239,19 +240,20 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stream : `music21.stream.Stream` object</span>
+<span class="sd">    stream : `music21.stream.Stream`</span>
 <span class="sd">        Stream object to parse.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.KeySignature` objects</span>
+<span class="sd">    list of :class:`muspy.KeySignature`</span>
 <span class="sd">        Parsed key signatures.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">flat</span><span class="o">.</span><span class="n">getKeySignatures</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">flat</span><span class="o">.</span><span class="n">getElementsByClass</span><span class="p">(</span><span class="s2">&quot;Key&quot;</span><span class="p">):</span>
         <span class="n">time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">offset</span> <span class="o">*</span> <span class="n">resolution</span><span class="p">))</span>
         <span class="n">key_signature</span> <span class="o">=</span> <span class="n">KeySignature</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">tonic</span><span class="o">.</span><span class="n">pitchClass</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
         <span class="n">key_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>
@@ -265,14 +267,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stream : `music21.stream.Stream` object</span>
+<span class="sd">    stream : `music21.stream.Stream`</span>
 <span class="sd">        Stream object to parse.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.TimeSignature` objects</span>
+<span class="sd">    list of :class:`muspy.TimeSignature`</span>
 <span class="sd">        Parsed time signatures.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -291,16 +294,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stream : `music21.stream.Stream` object</span>
+<span class="sd">    stream : `music21.stream.Stream`</span>
 <span class="sd">        Stream object to parse.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.Note` objects</span>
+<span class="sd">    list of :class:`muspy.Note`</span>
 <span class="sd">        Parsed notes.</span>
-<span class="sd">    list of :class:`muspy.Chord` objects</span>
+<span class="sd">    list of :class:`muspy.Chord`</span>
 <span class="sd">        Parsed chords.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -354,14 +358,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    part : `music21.stream.Part` object</span>
+<span class="sd">    part : `music21.stream.Part`</span>
 <span class="sd">        Part object to parse.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Track` object</span>
+<span class="sd">    :class:`muspy.Track`</span>
 <span class="sd">        Parsed track.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -391,63 +396,42 @@
 <span class="k">def</span> <span class="nf">from_music21_part</span><span class="p">(</span>
     <span class="n">part</span><span class="p">:</span> <span class="n">Part</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Track</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return track(s) parsed from a music21 Part object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a music21 Part object as Track object(s).</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    part : `music21.stream.Part` object</span>
+<span class="sd">    part : `music21.stream.Part`</span>
 <span class="sd">        Part object to parse.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Track` object or list of :class:`muspy.Track` object</span>
+<span class="sd">    :class:`muspy.Track` or list of :class:`muspy.Track`</span>
 <span class="sd">        Parsed track(s).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">instruments</span> <span class="o">=</span> <span class="n">partitionByInstrument</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instruments</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="n">parse_track</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span> <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="n">instruments</span>
-        <span class="p">]</span>
-    <span class="k">return</span> <span class="n">parse_track</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="from_music21_opus"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_music21_opus">[docs]</a><span class="k">def</span> <span class="nf">from_music21_opus</span><span class="p">(</span>
-    <span class="n">opus</span><span class="p">:</span> <span class="n">Opus</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a list of Music objects converted from a music21 Opus object.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    opus : `music21.stream.Opus` object</span>
-<span class="sd">        Opus object to convert.</span>
-<span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
-<span class="sd">        Converted MusPy Music object.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">from_music21_score</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">opus</span><span class="o">.</span><span class="n">scores</span><span class="p">]</span></div>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">instruments</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">parse_track</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">parse_track</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span> <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="n">instruments</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">from_music21_score</span><span class="p">(</span><span class="n">score</span><span class="p">:</span> <span class="n">Score</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a music21 Stream object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a music21 Stream object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    score : `music21.stream.Score` object</span>
+<span class="sd">    score : `music21.stream.Score`</span>
 <span class="sd">        Score object to convert.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -470,22 +454,45 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="from_music21"><a class="viewcode-back" href="../../../io/music21.html#muspy.inputs.from_music21">[docs]</a><span class="k">def</span> <span class="nf">from_music21</span><span class="p">(</span>
-    <span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">],</span> <span class="n">Track</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object converted from a music21 Stream object.</span>
+<div class="viewcode-block" id="from_music21_opus"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_music21_opus">[docs]</a><span class="k">def</span> <span class="nf">from_music21_opus</span><span class="p">(</span>
+    <span class="n">opus</span><span class="p">:</span> <span class="n">Opus</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a music21 Opus object as a list of Music objects.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    stream : `music21.stream.Stream` object</span>
-<span class="sd">        Stream object to convert.</span>
+<span class="sd">    opus : `music21.stream.Opus`</span>
+<span class="sd">        Opus object to convert.</span>
 <span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object(s) or :class:`muspy.Track` object(s)</span>
-<span class="sd">        Converted Music object(s) or Track object(s).</span>
+<span class="sd">    :class:`muspy.Music`</span>
+<span class="sd">        Converted Music object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">from_music21_score</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span> <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">opus</span><span class="o">.</span><span class="n">scores</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="from_music21"><a class="viewcode-back" href="../../../io/music21.html#muspy.inputs.from_music21">[docs]</a><span class="k">def</span> <span class="nf">from_music21</span><span class="p">(</span>
+    <span class="n">stream</span><span class="p">:</span> <span class="n">Stream</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">],</span> <span class="n">Track</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a music21 Stream object as Music or Track object(s).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    stream : `music21.stream.Stream`</span>
+<span class="sd">        Stream object to convert.</span>
+<span class="sd">    resolution : int, optional</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Music` or :class:`muspy.Track`</span>
+<span class="sd">        Converted Music or Track object(s).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Opus</span><span class="p">):</span>

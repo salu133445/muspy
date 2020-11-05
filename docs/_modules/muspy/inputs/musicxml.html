@@ -328,8 +328,8 @@
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">parse_key_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a dictionary containing information parsed from a key element.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">parse_key_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a dictionary with data parsed from a key element.&quot;&quot;&quot;</span>
     <span class="n">mode</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
     <span class="n">fifths</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;fifths&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -359,7 +359,7 @@
 <span class="k">def</span> <span class="nf">parse_part_elem</span><span class="p">(</span>
     <span class="n">part_elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">instrument_info</span><span class="p">:</span> <span class="nb">dict</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a dictionary containing data parsed from a part element.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return a dictionary with data parsed from a part element.&quot;&quot;&quot;</span>
     <span class="c1"># Initialize lists and placeholders</span>
     <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -724,7 +724,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music` object</span>
+<span class="sd">    :class:`muspy.Music`</span>
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    Notes</span>
@@ -762,11 +762,12 @@
     <span class="n">time_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">tracks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="c1"># Raise error if part list information is missing for a multi-part piece</span>
+    <span class="c1"># Raise an error if part-list information is missing for a</span>
+    <span class="c1"># multi-part piece</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">part_info</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;part&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
-                <span class="s2">&quot;Part list information is required for a multi-part piece.&quot;</span>
+                <span class="s2">&quot;Part-list information is required for a multi-part piece.&quot;</span>
             <span class="p">)</span>
         <span class="n">part_elem</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;part&quot;</span><span class="p">)</span>
         <span class="n">instrument_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;program&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;is_drum&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}}</span>

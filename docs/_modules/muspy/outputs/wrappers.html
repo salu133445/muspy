@@ -197,20 +197,22 @@
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to save the file.</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to save.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
-<span class="sd">        Format to save (case-insensitive). Defaults to infer the format from</span>
-<span class="sd">        the extension.</span>
+<span class="sd">        Format to save (case-insensitive). Defaults to infer the format</span>
+<span class="sd">        from the extension.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.write` : Write to other formats such as MIDI and MusicXML.</span>
+<span class="sd">    :func:`muspy.write` :</span>
+<span class="sd">        Write a Music object to a MIDI/MusicXML/ABC/audio file.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    The conversion can be lossy if any nonserializable object is used (for</span>
-<span class="sd">    example, in an Annotation object, which can store data of any type).</span>
+<span class="sd">    The conversion can be lossy if any nonserializable object is used</span>
+<span class="sd">    (for example, an Annotation object, which can store data of any</span>
+<span class="sd">    type).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -235,21 +237,22 @@
     <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI, a MusicXML, an ABC or an audio file.</span>
+    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI/MusicXML/ABC/audio file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to write the file.</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to convert.</span>
 <span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;abc&#39;, &#39;audio&#39;}, optional</span>
-<span class="sd">        Format to save (case-insensitive). Defaults to infer the format from</span>
-<span class="sd">        the extension.</span>
+<span class="sd">        Format to save (case-insensitive). Defaults to infer the format</span>
+<span class="sd">        from the extension.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :func:`muspy.save` : Losslessly save to a JSON or a YAML file.</span>
+<span class="sd">    :func:`muspy.save` :</span>
+<span class="sd">        Save a Music object loselessly to a JSON or a YAML file.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -280,35 +283,38 @@
 
 
 <div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stream</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object as a PrettyMIDI or a Multitrack object.</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object as an object in other libraries.</span>
+
+<span class="sd">    Supported classes are `music21.Stream`, :class:`mido.MidiTrack`,</span>
+<span class="sd">    :class:`pretty_midi.PrettyMIDI` and :class:`pypianoroll.Multitrack`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to convert.</span>
-<span class="sd">    target : str, {&#39;music21&#39;, &#39;mido&#39;, &#39;pretty_midi&#39;, &#39;pypianoroll&#39;}</span>
+<span class="sd">    kind : str, {&#39;music21&#39;, &#39;mido&#39;, &#39;pretty_midi&#39;, &#39;pypianoroll&#39;}</span>
 <span class="sd">        Target class (case-insensitive).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    `music21.Stream` or :class:`mido.MidiTrack` or</span>
-<span class="sd">    :class:`pretty_midi.PrettyMIDI` or :class:`pypianoroll.Multitrack`</span>
-<span class="sd">    object</span>
+<span class="sd">    `music21.Stream`, :class:`mido.MidiTrack`, \</span>
+<span class="sd">            :class:`pretty_midi.PrettyMIDI` or \</span>
+<span class="sd">            :class:`pypianoroll.Multitrack`</span>
 <span class="sd">        Converted object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;music21&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;music21&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mido&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;mido&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pretty_midi&quot;</span><span class="p">,</span> <span class="s2">&quot;prettymidi&quot;</span><span class="p">,</span> <span class="s2">&quot;pretty-midi&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;pretty_midi&quot;</span><span class="p">,</span> <span class="s2">&quot;prettymidi&quot;</span><span class="p">,</span> <span class="s2">&quot;pretty-midi&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">to_pretty_midi</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pypianoroll&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pypianoroll&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">to_pypianoroll</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`target` must be one of &#39;music21&#39;, &#39;mido&#39;, &#39;pretty_midi&#39; and &quot;</span>
+        <span class="s2">&quot;`kind` must be one of &#39;music21&#39;, &#39;mido&#39;, &#39;pretty_midi&#39; or &quot;</span>
         <span class="s2">&quot;&#39;pypianoroll&#39;.&quot;</span>
     <span class="p">)</span></div>
 
@@ -318,7 +324,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    music : :class:`muspy.Music` object</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to convert.</span>
 <span class="sd">    kind : str, {&#39;pitch&#39;, &#39;piano-roll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
 <span class="sd">        Target representation (case-insensitive).</span>

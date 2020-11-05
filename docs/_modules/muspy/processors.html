@@ -172,6 +172,9 @@
 <span class="sd">- PitchRepresentationProcessor</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
 <span class="kn">from</span> <span class="nn">.inputs</span> <span class="kn">import</span> <span class="p">(</span>
@@ -199,24 +202,26 @@
 <div class="viewcode-block" id="NoteRepresentationProcessor"><a class="viewcode-back" href="../../representations/note.html#muspy.NoteRepresentationProcessor">[docs]</a><span class="k">class</span> <span class="nc">NoteRepresentationProcessor</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Note-based representation processor.</span>
 
-<span class="sd">    The note-based represetantion represents music as a sequence of (pitch,</span>
-<span class="sd">    time, duration, velocity) tuples. For example, a note</span>
+<span class="sd">    The note-based represetantion represents music as a sequence of</span>
+<span class="sd">    (pitch, time, duration, velocity) tuples. For example, a note</span>
 <span class="sd">    Note(time=0, duration=4, pitch=60, velocity=64) will be encoded as a</span>
-<span class="sd">    tuple (0, 4, 60, 64). The output shape is L * D, where L is the number</span>
-<span class="sd">    of notes and D is 4 when `encode_velocity` is True, otherwise D is 3.</span>
-<span class="sd">    The values of the second dimension represent pitch, time, duration and</span>
-<span class="sd">    velocity (discarded when `encode_velocity` is False).</span>
+<span class="sd">    tuple (0, 4, 60, 64). The output shape is L * D, where L is th</span>
+<span class="sd">    number of notes and D is 4 when `encode_velocity` is True, otherwise</span>
+<span class="sd">    D is 3. The values of the second dimension represent pitch, time,</span>
+<span class="sd">    duration and velocity (discarded when `encode_velocity` is False).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    use_start_end : bool</span>
-<span class="sd">        Whether to use &#39;start&#39; and &#39;end&#39; to encode the timing rather than</span>
-<span class="sd">        &#39;time&#39; and &#39;duration&#39;. Defaults to False.</span>
+<span class="sd">        Whether to use &#39;start&#39; and &#39;end&#39; to encode the timing rather</span>
+<span class="sd">        than &#39;time&#39; and &#39;duration&#39;. Defaults to False.</span>
 <span class="sd">    encode_velocity : bool</span>
 <span class="sd">        Whether to encode note velocities. Defaults to True.</span>
+<span class="sd">    dtype : dtype, type or str</span>
+<span class="sd">        Data type of the return array. Defaults to int.</span>
 <span class="sd">    default_velocity : int</span>
-<span class="sd">        Default velocity value to use when decoding if `encode_velocity` is</span>
-<span class="sd">        False. Defaults to 64.</span>
+<span class="sd">        Default velocity value to use when decoding if `encode_velocity`</span>
+<span class="sd">        is False. Defaults to 64.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -224,10 +229,12 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">use_start_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_start_end</span> <span class="o">=</span> <span class="n">use_start_end</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">encode_velocity</span> <span class="o">=</span> <span class="n">encode_velocity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">default_velocity</span> <span class="o">=</span> <span class="n">default_velocity</span>
 
 <div class="viewcode-block" id="NoteRepresentationProcessor.encode"><a class="viewcode-back" href="../../doc/processors.html#muspy.NoteRepresentationProcessor.encode">[docs]</a>    <span class="k">def</span> <span class="nf">encode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
@@ -245,14 +252,15 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.to_note_representation` : Convert a Music object into</span>
-<span class="sd">          note-based representation.</span>
+<span class="sd">        :func:`muspy.to_note_representation` :</span>
+<span class="sd">            Convert a Music object into note-based representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_note_representation</span><span class="p">(</span>
             <span class="n">music</span><span class="p">,</span>
             <span class="n">use_start_end</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_start_end</span><span class="p">,</span>
             <span class="n">encode_velocity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encode_velocity</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="NoteRepresentationProcessor.decode"><a class="viewcode-back" href="../../doc/processors.html#muspy.NoteRepresentationProcessor.decode">[docs]</a>    <span class="k">def</span> <span class="nf">decode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
@@ -261,7 +269,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        array : ndarray</span>
-<span class="sd">            Array in note-based representation to decode. Will be casted to</span>
+<span class="sd">            Array in note-based representation to decode. Cast to</span>
 <span class="sd">            integer if not of integer type.</span>
 
 <span class="sd">        Returns</span>
@@ -271,8 +279,9 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.from_note_representation` : Return a Music object</span>
-<span class="sd">          converted from note-based representation.</span>
+<span class="sd">        :func:`muspy.from_note_representation` :</span>
+<span class="sd">            Return a Music object converted from note-based</span>
+<span class="sd">            representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">from_note_representation</span><span class="p">(</span>
@@ -286,30 +295,34 @@
 <div class="viewcode-block" id="EventRepresentationProcessor"><a class="viewcode-back" href="../../representations/event.html#muspy.EventRepresentationProcessor">[docs]</a><span class="k">class</span> <span class="nc">EventRepresentationProcessor</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Event-based representation processor.</span>
 
-<span class="sd">    The event-based represetantion represents music as a sequence of events,</span>
-<span class="sd">    including note-on, note-off, time-shift and velocity events. The output</span>
-<span class="sd">    shape is M x 1, where M is the number of events. The values encode the</span>
-<span class="sd">    events. The default configuration uses 0-127 to encode note-one events,</span>
-<span class="sd">    128-255 for note-off events, 256-355 for time-shift events, and 356 to</span>
-<span class="sd">    387 for velocity events.</span>
+<span class="sd">    The event-based represetantion represents music as a sequence of</span>
+<span class="sd">    events, including note-on, note-off, time-shift and velocity events.</span>
+<span class="sd">    The output shape is M x 1, where M is the number of events. The</span>
+<span class="sd">    values encode the events. The default configuration uses 0-127 to</span>
+<span class="sd">    encode note-one events, 128-255 for note-off events, 256-355 for</span>
+<span class="sd">    time-shift events, and 356 to 387 for velocity events.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    use_single_note_off_event : bool</span>
-<span class="sd">        Whether to use a single note-off event for all the pitches. If True,</span>
-<span class="sd">        the note-off event will close all active notes, which can lead to</span>
-<span class="sd">        lossy conversion for polyphonic music. Defaults to False.</span>
+<span class="sd">        Whether to use a single note-off event for all the pitches. If</span>
+<span class="sd">        True, the note-off event will close all active notes, which can</span>
+<span class="sd">        lead to lossy conversion for polyphonic music. Defaults to</span>
+<span class="sd">        False.</span>
 <span class="sd">    use_end_of_sequence_event : bool</span>
-<span class="sd">        Whether to append an end-of-sequence event to the encoded sequence.</span>
-<span class="sd">        Defaults to False.</span>
+<span class="sd">        Whether to append an end-of-sequence event to the encoded</span>
+<span class="sd">        sequence. Defaults to False.</span>
+<span class="sd">    encode_velocity : bool</span>
+<span class="sd">        Whether to encode velocities.</span>
 <span class="sd">    force_velocity_event : bool</span>
 <span class="sd">        Whether to add a velocity event before every note-on event. If</span>
 <span class="sd">        False, velocity events are only used when the note velocity is</span>
-<span class="sd">        changed (i.e., different from the previous one). Defaults to True.</span>
+<span class="sd">        changed (i.e., different from the previous one). Defaults to</span>
+<span class="sd">        True.</span>
 <span class="sd">    max_time_shift : int</span>
-<span class="sd">        Maximum time shift (in ticks) to be encoded as an separate event.</span>
-<span class="sd">        Time shifts larger than `max_time_shift` will be decomposed into</span>
-<span class="sd">        two or more time-shift events. Defaults to 100.</span>
+<span class="sd">        Maximum time shift (in ticks) to be encoded as an separate</span>
+<span class="sd">        event. Time shifts larger than `max_time_shift` will be</span>
+<span class="sd">        decomposed into two or more time-shift events. Defaults to 100.</span>
 <span class="sd">    velocity_bins : int</span>
 <span class="sd">        Number of velocity bins to use. Defaults to 32.</span>
 <span class="sd">    default_velocity : int</span>
@@ -321,6 +334,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">use_single_note_off_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_end_of_sequence_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">force_velocity_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">max_time_shift</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">velocity_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
@@ -328,6 +342,7 @@
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_single_note_off_event</span> <span class="o">=</span> <span class="n">use_single_note_off_event</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_end_of_sequence_event</span> <span class="o">=</span> <span class="n">use_end_of_sequence_event</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encode_velocity</span> <span class="o">=</span> <span class="n">encode_velocity</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">force_velocity_event</span> <span class="o">=</span> <span class="n">force_velocity_event</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">max_time_shift</span> <span class="o">=</span> <span class="n">max_time_shift</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity_bins</span> <span class="o">=</span> <span class="n">velocity_bins</span>
@@ -348,14 +363,15 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.to_event_representation` : Convert a Music object into</span>
-<span class="sd">          event-based representation.</span>
+<span class="sd">        :func:`muspy.to_event_representation` :</span>
+<span class="sd">            Convert a Music object into event-based representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_event_representation</span><span class="p">(</span>
             <span class="n">music</span><span class="p">,</span>
             <span class="n">use_single_note_off_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_single_note_off_event</span><span class="p">,</span>
             <span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_end_of_sequence_event</span><span class="p">,</span>
+            <span class="n">encode_velocity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encode_velocity</span><span class="p">,</span>
             <span class="n">force_velocity_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">force_velocity_event</span><span class="p">,</span>
             <span class="n">max_time_shift</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_time_shift</span><span class="p">,</span>
             <span class="n">velocity_bins</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">velocity_bins</span><span class="p">,</span>
@@ -367,7 +383,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        array : ndarray</span>
-<span class="sd">            Array in event-based representation to decode. Will be casted to</span>
+<span class="sd">            Array in event-based representation to decode. Cast to</span>
 <span class="sd">            integer if not of integer type.</span>
 
 <span class="sd">        Returns</span>
@@ -377,8 +393,9 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.from_event_representation` : Return a Music object</span>
-<span class="sd">          converted from event-based representation.</span>
+<span class="sd">        :func:`muspy.from_event_representation` :</span>
+<span class="sd">            Return a Music object converted from event-based</span>
+<span class="sd">            representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">from_event_representation</span><span class="p">(</span>
@@ -394,11 +411,12 @@
 <div class="viewcode-block" id="PitchRepresentationProcessor"><a class="viewcode-back" href="../../representations/pitch.html#muspy.PitchRepresentationProcessor">[docs]</a><span class="k">class</span> <span class="nc">PitchRepresentationProcessor</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Pitch-based representation processor.</span>
 
-<span class="sd">    The pitch-based represetantion represents music as a sequence of pitch,</span>
-<span class="sd">    rest and (optional) hold tokens. Only monophonic melodies are compatible</span>
-<span class="sd">    with this representation. The output shape is T x 1, where T is the</span>
-<span class="sd">    number of time steps. The values indicate whether the current time step</span>
-<span class="sd">    is a pitch (0-127), a rest (128) or (optionally) a hold (129).</span>
+<span class="sd">    The pitch-based represetantion represents music as a sequence of</span>
+<span class="sd">    pitch, rest and (optional) hold tokens. Only monophonic melodies are</span>
+<span class="sd">    compatible with this representation. The output shape is T x 1,</span>
+<span class="sd">    where T is the number of time steps. The values indicate whether the</span>
+<span class="sd">    current time step is a pitch (0-127), a rest (128) or (optionally) a</span>
+<span class="sd">    hold (129).</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -430,8 +448,8 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.to_pitch_representation` : Convert a Music object into</span>
-<span class="sd">          pitch-based representation.</span>
+<span class="sd">        :func:`muspy.to_pitch_representation` :</span>
+<span class="sd">            Convert a Music object into pitch-based representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_pitch_representation</span><span class="p">(</span>
@@ -444,7 +462,7 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        array : ndarray</span>
-<span class="sd">            Array in pitch-based representation to decode. Will be casted to</span>
+<span class="sd">            Array in pitch-based representation to decode. Cast to</span>
 <span class="sd">            integer if not of integer type.</span>
 
 <span class="sd">        Returns</span>
@@ -454,8 +472,9 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.from_pitch_representation` : Return a Music object</span>
-<span class="sd">          converted from pitch-based representation.</span>
+<span class="sd">        :func:`muspy.from_pitch_representation` :</span>
+<span class="sd">            Return a Music object converted from pitch-based</span>
+<span class="sd">            representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">from_pitch_representation</span><span class="p">(</span>
@@ -468,20 +487,21 @@
 <div class="viewcode-block" id="PianoRollRepresentationProcessor"><a class="viewcode-back" href="../../representations/pianoroll.html#muspy.PianoRollRepresentationProcessor">[docs]</a><span class="k">class</span> <span class="nc">PianoRollRepresentationProcessor</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Piano-roll representation processor.</span>
 
-<span class="sd">    The piano-roll represetantion represents music as a time-pitch matrix,</span>
-<span class="sd">    where the columns are the time steps and the rows are the pitches. The</span>
-<span class="sd">    values indicate the presence of pitches at different time steps. The</span>
-<span class="sd">    output shape is T x 128, where T is the number of time steps.</span>
+<span class="sd">    The piano-roll represetantion represents music as a time-pitch</span>
+<span class="sd">    matrix, where the columns are the time steps and the rows are the</span>
+<span class="sd">    pitches. The values indicate the presence of pitches at different</span>
+<span class="sd">    time steps. The output shape is T x 128, where T is the number of</span>
+<span class="sd">    time steps.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    encode_velocity : bool</span>
-<span class="sd">        Whether to encode velocities. If True, a binary-valued array will be</span>
-<span class="sd">        return. Otherwise, an integer array will be return. Defaults to</span>
-<span class="sd">        True.</span>
+<span class="sd">        Whether to encode velocities. If True, a binary-valued array</span>
+<span class="sd">        will be return. Otherwise, an integer array will be return.</span>
+<span class="sd">        Defaults to True.</span>
 <span class="sd">    default_velocity : int</span>
-<span class="sd">        Default velocity value to use when decoding if `encode_velocity` is</span>
-<span class="sd">        False. Defaults to 64.</span>
+<span class="sd">        Default velocity value to use when decoding if `encode_velocity`</span>
+<span class="sd">        is False. Defaults to 64.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -506,8 +526,8 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.to_pianoroll_representation` : Convert a Music object</span>
-<span class="sd">          into piano-roll representation.</span>
+<span class="sd">        :func:`muspy.to_pianoroll_representation` :</span>
+<span class="sd">            Convert a Music object into piano-roll representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">to_pianoroll_representation</span><span class="p">(</span>
@@ -520,9 +540,9 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        array : ndarray</span>
-<span class="sd">            Array in piano-roll representation to decode. Will be casted to</span>
-<span class="sd">            integer if not of integer type. If `encode_velocity` is True,</span>
-<span class="sd">            will be casted to boolean if not of boolean type.</span>
+<span class="sd">            Array in piano-roll representation to decode. Cast to</span>
+<span class="sd">            integer if not of integer type. If `encode_velocity` is</span>
+<span class="sd">            True, casted to boolean if not of boolean type.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -531,8 +551,9 @@
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
-<span class="sd">        :func:`muspy.from_pianoroll_representation` : Return a Music object</span>
-<span class="sd">          converted from piano-roll representation.</span>
+<span class="sd">        :func:`muspy.from_pianoroll_representation` :</span>
+<span class="sd">            Return a Music object converted from piano-roll</span>
+<span class="sd">            representation.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">from_pianoroll_representation</span><span class="p">(</span>

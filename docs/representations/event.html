@@ -157,7 +157,9 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/representations/event.rst.txt" rel="nofollow"> View page source</a>
+            
+              <a href="https://github.com/user/muspy/blob/master/doc/representations/event.rst" class="fa fa-github"> Edit on GitHub</a>
+            
           
         
       </li>
@@ -174,29 +176,32 @@
 <h1>Event-based Representation<a class="headerlink" href="#event-based-representation" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Encode a Music object into event-based representation.</p>
-<p>The event-based represetantion represents music as a sequence of events,
-including note-on, note-off, time-shift and velocity events. The output
-shape is M x 1, where M is the number of events. The values encode the
-events. The default configuration uses 0-127 to encode note-one events,
-128-255 for note-off events, 256-355 for time-shift events, and 356 to
-387 for velocity events.</p>
+<p>The event-based represetantion represents music as a sequence of
+events, including note-on, note-off, time-shift and velocity events.
+The output shape is M x 1, where M is the number of events. The
+values encode the events. The default configuration uses 0-127 to
+encode note-one events, 128-255 for note-off events, 256-355 for
+time-shift events, and 356 to 387 for velocity events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to encode.</p></li>
-<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a single note-off event for all the pitches. If True,
-the note-off event will close all active notes, which can lead to
-lossy conversion for polyphonic music. Defaults to False.</p></li>
-<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to append an end-of-sequence event to the encoded sequence.
-Defaults to False.</p></li>
+<li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to encode.</p></li>
+<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a single note-off event for all the pitches. If
+True, the note-off event will close all active notes, which can
+lead to lossy conversion for polyphonic music. Defaults to
+False.</p></li>
+<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to append an end-of-sequence event to the encoded
+sequence. Defaults to False.</p></li>
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode velocities.</p></li>
 <li><p><strong>force_velocity_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to add a velocity event before every note-on event. If
 False, velocity events are only used when the note velocity is
-changed (i.e., different from the previous one). Defaults to True.</p></li>
-<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum time shift (in ticks) to be encoded as an separate event.
-Time shifts larger than <cite>max_time_shift</cite> will be decomposed into
-two or more time-shift events. Defaults to 100.</p></li>
+changed (i.e., different from the previous one). Defaults to
+True.</p></li>
+<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum time shift (in ticks) to be encoded as an separate
+event. Time shifts larger than <cite>max_time_shift</cite> will be
+decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
 </ul>
 </dd>
@@ -218,20 +223,22 @@ two or more time-shift events. Defaults to 100.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Will be casted to
 integer if not of integer type.</p></li>
-<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to
+<cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
 <li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
 Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
 Piano).</p></li>
 <li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – A boolean indicating if it is a percussion track. Defaults to
 False.</p></li>
-<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a single note-off event for all the pitches. If True,
-the note-off event will close all active notes, which can lead to
-lossy conversion for polyphonic music. Defaults to False.</p></li>
-<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to append an end-of-sequence event to the encoded sequence.
-Defaults to False.</p></li>
-<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum time shift (in ticks) to be encoded as an separate event.
-Time shifts larger than <cite>max_time_shift</cite> will be decomposed into
-two or more time-shift events. Defaults to 100.</p></li>
+<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a single note-off event for all the pitches. If
+True, a note-off event will close all active notes, which can
+lead to lossy conversion for polyphonic music. Defaults to
+False.</p></li>
+<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to append an end-of-sequence event to the encoded
+sequence. Defaults to False.</p></li>
+<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum time shift (in ticks) to be encoded as an separate
+event. Time shifts larger than <cite>max_time_shift</cite> will be
+decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
 <li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
 </ul>
@@ -240,7 +247,7 @@ two or more time-shift events. Defaults to 100.</p></li>
 <dd class="field-even"><p>Decoded Music object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object</p>
+<dd class="field-odd"><p><a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a></p>
 </dd>
 </dl>
 <p class="rubric">References</p>
@@ -249,20 +256,21 @@ two or more time-shift events. Defaults to 100.</p></li>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">EventRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#EventRepresentationProcessor"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">EventRepresentationProcessor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/processors.html#EventRepresentationProcessor"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Event-based representation processor.</p>
-<p>The event-based represetantion represents music as a sequence of events,
-including note-on, note-off, time-shift and velocity events. The output
-shape is M x 1, where M is the number of events. The values encode the
-events. The default configuration uses 0-127 to encode note-one events,
-128-255 for note-off events, 256-355 for time-shift events, and 356 to
-387 for velocity events.</p>
+<p>The event-based represetantion represents music as a sequence of
+events, including note-on, note-off, time-shift and velocity events.
+The output shape is M x 1, where M is the number of events. The
+values encode the events. The default configuration uses 0-127 to
+encode note-one events, 128-255 for note-off events, 256-355 for
+time-shift events, and 356 to 387 for velocity events.</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-name descname">use_single_note_off_event</code></dt>
-<dd><p>Whether to use a single note-off event for all the pitches. If True,
-the note-off event will close all active notes, which can lead to
-lossy conversion for polyphonic music. Defaults to False.</p>
+<dd><p>Whether to use a single note-off event for all the pitches. If
+True, the note-off event will close all active notes, which can
+lead to lossy conversion for polyphonic music. Defaults to
+False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -273,8 +281,19 @@ lossy conversion for polyphonic music. Defaults to False.</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-name descname">use_end_of_sequence_event</code></dt>
-<dd><p>Whether to append an end-of-sequence event to the encoded sequence.
-Defaults to False.</p>
+<dd><p>Whether to append an end-of-sequence event to the encoded
+sequence. Defaults to False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt>
+<code class="sig-name descname">encode_velocity</code></dt>
+<dd><p>Whether to encode velocities.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -287,7 +306,8 @@ Defaults to False.</p>
 <code class="sig-name descname">force_velocity_event</code></dt>
 <dd><p>Whether to add a velocity event before every note-on event. If
 False, velocity events are only used when the note velocity is
-changed (i.e., different from the previous one). Defaults to True.</p>
+changed (i.e., different from the previous one). Defaults to
+True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a></p>
@@ -298,9 +318,9 @@ changed (i.e., different from the previous one). Defaults to True.</p>
 <dl class="py attribute">
 <dt>
 <code class="sig-name descname">max_time_shift</code></dt>
-<dd><p>Maximum time shift (in ticks) to be encoded as an separate event.
-Time shifts larger than <cite>max_time_shift</cite> will be decomposed into
-two or more time-shift events. Defaults to 100.</p>
+<dd><p>Maximum time shift (in ticks) to be encoded as an separate
+event. Time shifts larger than <cite>max_time_shift</cite> will be
+decomposed into two or more time-shift events. Defaults to 100.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)">int</a></p>
