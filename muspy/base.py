@@ -100,7 +100,6 @@ class Base:
     _attributes: Mapping[str, Any] = {}
     _optional_attributes: List[str] = []
     _list_attributes: List[str] = []
-    _sort_attributes: List[str] = []
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -189,20 +188,22 @@ class Base:
                 if not value and skip_none:
                     continue
                 if isclass(attr_type) and issubclass(attr_type, Base):
-                    ordered_dict[attr] = [v.to_ordered_dict() for v in value]
+                    ordered_dict[attr] = [
+                        v.to_ordered_dict(skip_none=skip_none) for v in value
+                    ]
                 else:
                     ordered_dict[attr] = value
             elif value is None:
                 if not skip_none:
                     ordered_dict[attr] = None
             elif isclass(attr_type) and issubclass(attr_type, Base):
-                ordered_dict[attr] = value.to_ordered_dict()
+                ordered_dict[attr] = value.to_ordered_dict(skip_none=skip_none)
             else:
                 ordered_dict[attr] = value
         return ordered_dict
 
-    def pretty_str(self) -> str:
-        """Return the stored data as a string in a beautiful YAML-like format.
+    def pretty_str(self, skip_none: bool = True) -> str:
+        """Return the attributes as a string in a YAML-like format.
 
         Parameters
         ----------
@@ -221,7 +222,7 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return _yaml_dump(self.to_ordered_dict())
+        return _yaml_dump(self.to_ordered_dict(skip_none=skip_none))
 
     def print(self):
         """Print the attributes in a YAML-like format.
@@ -234,7 +235,7 @@ class Base:
         """
         print(self.pretty_str())
 
-    def _validate_attr_type(self, attr: str):
+    def _validate_attr_type(self, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
         value = getattr(self, attr)
         if value is None:
@@ -258,8 +259,18 @@ class Base:
                 )
             )
 
-    def validate_type(self: BaseType, attr: Optional[str] = None) -> BaseType:
-        """Raise an error if a certain attribute has an invalid type.
+        # Apply recursively
+        if recursive and isclass(attr_type) and issubclass(attr_type, Base):
+            if attr in self._list_attributes:
+                for item in getattr(self, attr):
+                    item.validate_type(recursive=recursive)
+            elif getattr(self, attr) is not None:
+                getattr(self, attr).validate_type(recursive=recursive)
+
+    def validate_type(
+        self: BaseType, attr: Optional[str] = None, recursive: bool = True,
+    ) -> BaseType:
+        """Raise an error if an attribute is of an invalid type.
 
         This will apply recursively to an attribute's attributes.
 
@@ -284,12 +295,12 @@ class Base:
         """
         if attr is None:
             for attribute in self._attributes:
-                self._validate_attr_type(attribute)
+                self._validate_attr_type(attribute, recursive)
         else:
-            self._validate_attr_type(attr)
+            self._validate_attr_type(attr, recursive)
         return self
 
-    def _validate(self, attr: str):
+    def _validate(self, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
         if isclass(attr_type) and issubclass(attr_type, Base):
             if attr in self._list_attributes:
@@ -299,12 +310,24 @@ class Base:
             else:
                 getattr(self, attr).validate()
         else:
-            self._validate_attr_type(attr)
+            # Set recursive=False to avoid repeated checks invoked when
+            # calling `validate` recursively
+            self._validate_attr_type(attr, False)
             if attr == "time" and getattr(self, "time") < 0:
                 raise ValueError("`time` must be nonnegative.")
 
-    def validate(self: BaseType, attr: Optional[str] = None) -> BaseType:
-        """Raise an error if a certain attribute has an invalid type or value.
+        # Apply recursively
+        if recursive and isclass(attr_type) and issubclass(attr_type, Base):
+            if attr in self._list_attributes:
+                for item in getattr(self, attr):
+                    item.validate(recursive=recursive)
+            elif getattr(self, attr) is not None:
+                getattr(self, attr).validate(recursive=recursive)
+
+    def validate(
+        self: BaseType, attr: Optional[str] = None, recursive: bool = True,
+    ) -> BaseType:
+        """Raise an error if an attribute has an invalid type or value.
 
         This will apply recursively to an attribute's attributes.
 
@@ -329,13 +352,15 @@ class Base:
         """
         if attr is None:
             for attribute in self._attributes:
-                self._validate(attribute)
+                self._validate(attribute, recursive)
         else:
-            self._validate(attr)
+            self._validate(attr, recursive)
         return self
 
-    def is_valid_type(self, attr: Optional[str] = None) -> bool:
-        """Return True if an attribute has a valid type, otherwise False.
+    def is_valid_type(
+        self, attr: Optional[str] = None, recursive: bool = True,
+    ) -> bool:
+        """Return True if an attribute is of a valid type.
 
         This will apply recursively to an attribute's attributes.
 
@@ -362,13 +387,15 @@ class Base:
 
         """
         try:
-            self.validate_type(attr)
+            self.validate_type(attr, recursive)
         except TypeError:
             return False
         return True
 
-    def is_valid(self, attr: Optional[str] = None) -> bool:
-        """Return True if an attribute is valid, otherwise False.
+    def is_valid(
+        self, attr: Optional[str] = None, recursive: bool = True,
+    ) -> bool:
+        """Return True if an attribute has a valid type and value.
 
         This will recursively apply to an attribute's attributes.
 
@@ -393,12 +420,14 @@ class Base:
 
         """
         try:
-            self.validate(attr)
+            self.validate(attr, recursive)
         except (TypeError, ValueError):
             return False
         return True
 
-    def _adjust_time(self, func: Callable[[int], int], attr: str):
+    def _adjust_time(
+        self, func: Callable[[int], int], attr: str, recursive: bool
+    ):
         attr_type = self._attributes[attr]
         if attr == "time":
             if "time" in self._list_attributes:
@@ -406,16 +435,18 @@ class Base:
                 setattr(self, "time", new_list)
             else:
                 setattr(self, "time", func(getattr(self, attr)))
-        else:
-            if isclass(attr_type) and issubclass(attr_type, Base):
-                if attr in self._list_attributes:
-                    for item in getattr(self, attr):
-                        item.adjust_time(func)
-                elif getattr(self, attr) is not None:
-                    getattr(self, attr).adjust_time(func)
+        elif recursive and isclass(attr_type) and issubclass(attr_type, Base):
+            if attr in self._list_attributes:
+                for item in getattr(self, attr):
+                    item.adjust_time(func, recursive=recursive)
+            elif getattr(self, attr) is not None:
+                getattr(self, attr).adjust_time(func, recursive=recursive)
 
     def adjust_time(
-        self: BaseType, func: Callable[[int], int], attr: Optional[str] = None
+        self: BaseType,
+        func: Callable[[int], int],
+        attr: Optional[str] = None,
+        recursive: bool = True,
     ) -> BaseType:
         """Adjust the timing of time-stamped objects.
 
@@ -436,9 +467,10 @@ class Base:
         """
         if attr is None:
             for attribute in self._attributes:
-                self._adjust_time(func, attribute)
+                print(self)
+                self._adjust_time(func, attribute, recursive)
         else:
-            self._adjust_time(func, attr)
+            self._adjust_time(func, attr, recursive)
         return self
 
 
@@ -491,20 +523,26 @@ class ComplexBase(Base):
         if not getattr(self, attr):
             return
 
-        # Replace the old lis with a new list of only valid items
         attr_type = self._attributes[attr]
         value = getattr(self, attr)
         is_class = isclass(attr_type)
-        if is_class and issubclass(attr_type, Base):
-            new_value = [item for item in value if item.is_valid()]
-        else:
-            new_value = [item for item in value if isinstance(item, attr_type)]
-        setattr(self, attr, new_value)
+
+        # NOTE: The ordering mathers here. We first apply recursively
+        # and later check to the currect object so that something that
+        # can be fixed in a lower level would not make the high-level
+        # object to be removed.
 
         # Apply recursively
         if recursive and is_class and issubclass(attr_type, ComplexBase):
             for value in getattr(self, attr):
                 value.remove_invalid(recursive=recursive)
+
+        # Replace the old list with a new list of only valid items
+        if is_class and issubclass(attr_type, Base):
+            new_value = [item for item in value if item.is_valid()]
+        else:
+            new_value = [item for item in value if isinstance(item, attr_type)]
+        setattr(self, attr, new_value)
 
     def remove_invalid(
         self: ComplexBaseType,
@@ -555,7 +593,7 @@ class ComplexBase(Base):
             and issubclass(attr_type, ComplexBase)
         ):
             for value in getattr(self, attr):
-                value.sort(recursive=recursive)
+                value.remove_duplicate(recursive=recursive)
 
     def remove_duplicate(
         self: ComplexBaseType,

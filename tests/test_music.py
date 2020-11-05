@@ -4,14 +4,24 @@ import muspy
 from .utils import TEST_JSON_PATH, check_tracks
 
 
-def test_is_valid():
+def test_validate_type():
     music = muspy.load(TEST_JSON_PATH)
-    assert music.is_valid()
+    music.validate_type()
 
 
 def test_is_valid_type():
     music = muspy.load(TEST_JSON_PATH)
-    music.is_valid_type()
+    assert music.is_valid_type()
+
+
+def test_validate():
+    music = muspy.load(TEST_JSON_PATH)
+    music.validate()
+
+
+def test_is_valid():
+    music = muspy.load(TEST_JSON_PATH)
+    assert music.is_valid()
 
 
 def test_get_real_end_time():

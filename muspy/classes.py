@@ -23,7 +23,7 @@ Variables
 
 """
 from collections import OrderedDict
-from typing import Any, List, Optional
+from typing import Any, Callable, List, Optional
 
 from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
@@ -130,8 +130,8 @@ class Tempo(Base):
     def __eq__(self, other):
         return self.time == other.time and self.qpm == other.qpm
 
-    def _validate(self, attr: str):
-        super()._validate(attr)
+    def _validate(self, attr: str, recursive: bool):
+        super()._validate(attr, recursive)
         if attr == "qpm" and self.qpm <= 0:
             raise ValueError("`qpm` must be positive.")
 
@@ -204,8 +204,8 @@ class TimeSignature(Base):
         self.numerator = numerator
         self.denominator = denominator
 
-    def _validate(self, attr: str):
-        super()._validate(attr)
+    def _validate(self, attr: str, recursive: bool):
+        super()._validate(attr, recursive)
         if attr == "numerator" and self.numerator < 1:
             raise ValueError("`numerator` must be positive.")
         if attr == "denominator" and self.denominator < 1:
@@ -319,8 +319,8 @@ class Note(Base):
         """Setter for end time."""
         self.duration = end - self.time
 
-    def _validate(self, attr: str):
-        super()._validate(attr)
+    def _validate(self, attr: str, recursive: bool):
+        super()._validate(attr, recursive)
         if attr == "pitch" and (self.pitch < 0 or self.pitch > 127):
             raise ValueError("`pitch` must be in between 0 to 127.")
         if attr == "duration" and self.duration < 0:
@@ -328,7 +328,9 @@ class Note(Base):
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
 
-    def _adjust_time(self, func, attr):
+    def _adjust_time(
+        self, func: Callable[[int], int], attr: str, recursive: bool
+    ):
         if attr == "time":
             self.time = func(self.time)
         elif attr == "duration":
@@ -402,7 +404,6 @@ class Chord(Base):
         ]
     )
     _optional_attributes = ["velocity", "pitches_str"]
-    _list_attributes = ["pitches", "pitches_str"]
 
     def __init__(
         self,
@@ -413,7 +414,6 @@ class Chord(Base):
         pitches_str: Optional[List[int]] = None,
     ):
         self.time = time
-
         self.pitches = pitches
         self.duration = duration
         self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
@@ -439,8 +439,8 @@ class Chord(Base):
         """Setter for end time."""
         self.duration = end - self.time
 
-    def _validate(self, attr: str):
-        super()._validate(attr)
+    def _validate(self, attr: str, recursive: bool):
+        super()._validate(attr, recursive)
         if attr == "pitches":
             for pitch in self.pitches:
                 if pitch < 0 or pitch > 127:
@@ -453,7 +453,9 @@ class Chord(Base):
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
 
-    def _adjust_time(self, func, attr):
+    def _adjust_time(
+        self, func: Callable[[int], int], attr: str, recursive: bool
+    ):
         if attr == "time":
             self.time = func(self.time)
         elif attr == "duration":
@@ -575,26 +577,10 @@ class Track(ComplexBase):
     def __setitem__(self, key: int, value: Note):
         self.notes[key] = value
 
-    def validate(self, attr: Optional[str] = None) -> "Track":
-        """Raise proper errors if a certain attribute is invalid.
-
-        This will apply recursively to an attribute's attributes.
-
-        Parameters
-        ----------
-        attr : str
-            Attribute to validate. If None, validate all attributes. Defaults
-            to None.
-
-        """
-        super().validate()
-        if self.program is None:
-            raise TypeError("`program` must not be None.")
-        if self.is_drum is None:
-            raise TypeError("`is_drum` must not be None.")
-        if self.program < 0 or self.program > 127:
+    def _validate(self, attr: str, recursive: bool):
+        super()._validate(attr, recursive)
+        if attr == "program" and self.program < 0 or self.program > 127:
             raise ValueError("`program` must be in between 0 to 127.")
-        return self
 
     def get_end_time(self, is_sorted: bool = False) -> int:
         """Return the time of the last event.
