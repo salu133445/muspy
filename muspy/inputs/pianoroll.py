@@ -36,7 +36,7 @@ def _pianoroll_to_notes(
     return notes
 
 
-def parse_pypianoroll_track(
+def from_pypianoroll_track(
     track: PypianorollTrack, default_velocity: int = 64
 ) -> Track:
     """Return a Pypianoroll Track object as a Track object.
@@ -92,7 +92,7 @@ def from_pypianoroll(
     ]
     # Tracks
     tracks = [
-        parse_pypianoroll_track(track, default_velocity)
+        from_pypianoroll_track(track, default_velocity)
         for track in multitrack.tracks
     ]
     return Music(

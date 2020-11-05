@@ -5,10 +5,10 @@ import os
 import os.path
 import shutil
 import tarfile
-import urllib
 import zipfile
 from pathlib import Path
 from typing import Optional, Union
+from urllib.request import urlretrieve
 
 from tqdm import tqdm
 
@@ -83,7 +83,7 @@ def download_url(
         check.
 
     """
-    urllib.request.urlretrieve(url, str(path), reporthook=_ProgressBar())
+    urlretrieve(url, str(path), reporthook=_ProgressBar())
     if md5 is not None and not check_md5(path, md5):
         raise RuntimeError("Downloaded file is corrupted.")
 
