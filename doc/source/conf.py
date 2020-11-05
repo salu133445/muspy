@@ -58,6 +58,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "sphinx_rtd_theme"  # "alabaster"
 html_theme_options = {"logo_only": True}
 html_logo = os.path.join("images", "logo.svg")
+html_context = {
+    "display_github": True,
+    "github_user": "user",
+    "github_repo": "muspy",
+    "github_version": "master",
+    "conf_py_path": "/doc/",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
