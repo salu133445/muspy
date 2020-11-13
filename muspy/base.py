@@ -473,7 +473,6 @@ class Base:
         """
         if attr is None:
             for attribute in self._attributes:
-                print(self)
                 self._adjust_time(func, attribute, recursive)
         else:
             self._adjust_time(func, attr, recursive)
