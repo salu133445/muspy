@@ -38,10 +38,19 @@ from .abc import read_abc, read_abc_string
 from .event import from_event_representation
 from .json import load_json
 from .midi import MIDIError, from_mido, from_pretty_midi, read_midi
-from .music21 import from_music21, from_music21_opus
+from .music21 import (
+    from_music21,
+    from_music21_opus,
+    from_music21_part,
+    from_music21_score,
+)
 from .musicxml import MusicXMLError, read_musicxml
 from .note import from_note_representation
-from .pianoroll import from_pianoroll_representation, from_pypianoroll
+from .pianoroll import (
+    from_pianoroll_representation,
+    from_pypianoroll,
+    from_pypianoroll_track,
+)
 from .pitch import from_pitch_representation
 from .wrappers import from_object, from_representation, load, read
 from .yaml import load_yaml
@@ -53,12 +62,15 @@ __all__ = [
     "from_mido",
     "from_music21",
     "from_music21_opus",
+    "from_music21_part",
+    "from_music21_score",
     "from_note_representation",
     "from_object",
     "from_pianoroll_representation",
     "from_pitch_representation",
     "from_pretty_midi",
     "from_pypianoroll",
+    "from_pypianoroll_track",
     "from_representation",
     "load",
     "load_json",
