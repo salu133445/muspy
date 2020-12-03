@@ -3,6 +3,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+import tensorflow as tf
 
 import muspy
 from muspy import (
@@ -81,6 +82,7 @@ def test_to_pytorch_dataset():
 
 
 def test_to_tensorflow_dataset():
+    tf.config.set_visible_devices([], "GPU")
     dataset = Music21Dataset("demos")
     tensorflow_dataset = dataset.to_tensorflow_dataset(representation="pitch")
     tensorflow_dataset.take(1)
