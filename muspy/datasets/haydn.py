@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import Union
 
-from ..inputs import from_music21
+from ..inputs import from_music21_score
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
@@ -55,5 +55,5 @@ class HaydnOp20Dataset(RemoteFolderDataset):
         # Remove the annotations from the original score
         # (they mess with the python representation)
         s.remove(rna, recurse=True)
-        music = from_music21(s)
+        music = from_music21_score(s)
         return music
