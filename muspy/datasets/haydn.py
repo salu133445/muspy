@@ -3,8 +3,9 @@ from pathlib import Path
 from typing import Union
 
 from ..inputs import from_music21_score
-from ..music import Music
+from ..music import Music, DEFAULT_RESOLUTION
 from .base import DatasetInfo, RemoteFolderDataset
+from ..classes import Annotation
 
 import music21
 
@@ -52,8 +53,30 @@ class HaydnOp20Dataset(RemoteFolderDataset):
         s = music21.converter.parse(filename, format='humdrum')
         # Getting the annotations
         rna = list(s.flat.getElementsByClass('RomanNumeral'))
+        rnadict = {rn.offset: rn for rn in rna}
+        annotations = get_annotations(rnadict)
         # Remove the annotations from the original score
         # (they mess with the python representation)
         s.remove(rna, recurse=True)
         music = from_music21_score(s)
+        music.annotations = annotations
         return music
+
+
+def get_annotations(rna, resolution=DEFAULT_RESOLUTION):
+    annotations = []
+    for offset, rn in rna.items():
+        if not rn:
+            continue
+        time = int(round(float(offset * resolution)))
+        tonicizedKey = rn.secondaryRomanNumeralKey
+        key = tonicizedKey if tonicizedKey else rn.key
+        figure = rn.figure
+        chord = rn.pitchedCommonName
+        annotation = {
+            "key": key.tonicPitchNameWithCase,
+            "figure": figure,
+            "chord": chord,
+        }
+        annotations.append(Annotation(time=time, annotation=annotation))
+    return annotations
