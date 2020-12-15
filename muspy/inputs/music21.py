@@ -340,29 +340,3 @@ def from_music21(
         return from_music21_part(stream, resolution)
     else:
         return from_music21_score(stream, resolution)
-
-    tracks = []
-    if isinstance(stream, Score):
-        for part in stream.parts:
-            instruments = partitionByInstrument(part)
-            if instruments:
-                for instrument in instruments:
-                    tracks.append(parse_track(instrument))
-            elif len(part.flat.notesAndRests) > 0:
-                tracks.append(parse_track(part))
-    else:
-        instruments = partitionByInstrument(stream)
-        if instruments:
-            for instrument in instruments:
-                tracks.append(parse_track(instrument))
-        elif len(stream.flat.notesAndRests) > 0:
-            tracks.append(parse_track(stream))
-
-    return Music(
-        metadata=parse_metadata(stream),
-        resolution=DEFAULT_RESOLUTION,
-        tempos=parse_tempos(stream),
-        key_signatures=parse_key_signatures(stream, resolution),
-        time_signatures=parse_time_signatures(stream, resolution),
-        tracks=tracks,
-    )
