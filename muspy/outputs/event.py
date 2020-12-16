@@ -24,7 +24,7 @@ def to_event_representation(
     events, including note-on, note-off, time-shift and velocity events.
     The output shape is M x 1, where M is the number of events. The
     values encode the events. The default configuration uses 0-127 to
-    encode note-one events, 128-255 for note-off events, 256-355 for
+    encode note-on events, 128-255 for note-off events, 256-355 for
     time-shift events, and 356 to 387 for velocity events.
 
     Parameters

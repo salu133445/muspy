@@ -38,14 +38,14 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
     ----------
     midi : :class:`mido.MidiFile`
         Mido MidiFile object to convert.
-    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
+    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}
         Policy for dealing with duplicate notes. When a note off
         message is presetned while there are multiple correspoding note
         on messages that have not yet been closed, we need a policy to
         decide which note on messages to close. Defaults to 'fifo'.
 
         - 'fifo' (first in first out): close the earliest note on
-        - 'lifo' (first in first out):close the latest note on
+        - 'lifo' (first in first out): close the latest note on
         - 'close_all': close all note on messages
 
     Returns
@@ -191,7 +191,7 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 
                 # NOTE: There is no way to disambiguate duplicate notes
                 # (of the same pitch on the same channel). Thus, we
-                # need a policy for duplicate mode.
+                # need a policy for handling duplicate notes.
 
                 # 'FIFO': (first in first out) close the earliest note
                 if duplicate_note_mode.lower() == "fifo":
@@ -220,7 +220,7 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                     del active_notes[note_key][-1]
 
                 # 'close_all' - close all note on messages
-                elif duplicate_note_mode.lower() in ("close_all", "close all"):
+                elif duplicate_note_mode.lower() == "close_all":
                     for onset, velocity in active_notes[note_key]:
                         track.notes.append(
                             Note(
