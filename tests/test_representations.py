@@ -184,6 +184,64 @@ def test_event_representation():
     assert decoded[0].notes == music[0].notes
 
 
+def test_event_representation_single_note_off():
+    music = muspy.load(TEST_JSON_PATH)
+
+    # Encoding
+    encoded = muspy.to_representation(
+        music, "event", use_single_note_off_event=True, encode_velocity=True
+    )
+
+    # assert encoded.shape == (36, 1)
+    assert encoded.dtype == np.uint16
+
+    answer = [
+        245,
+        76,
+        130,
+        128,
+        245,
+        75,
+        130,
+        128,
+        245,
+        76,
+        130,
+        128,
+        245,
+        75,
+        130,
+        128,
+        245,
+        76,
+        130,
+        128,
+        245,
+        71,
+        130,
+        128,
+        245,
+        74,
+        130,
+        128,
+        245,
+        72,
+        130,
+        128,
+        245,
+        69,
+        130,
+        128,
+    ]
+    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
+
+    # Decoding
+    decoded = muspy.from_representation(
+        encoded, "event", use_single_note_off_event=True
+    )
+    assert decoded[0].notes == music[0].notes
+
+
 def test_event_representation_force_velocity_event():
     music = muspy.load(TEST_JSON_PATH)
 
