@@ -17,11 +17,10 @@ audio files)."""
 _HOMEPAGE = "https://colinraffel.com/projects/lmd/"
 _LICENSE = "Creative Commons Attribution 4.0 International License (CC-By 4.0)"
 _CITATION = """\
-@phdthesis{raffel2016learning, \
-author={Colin Raffel}, \
-title={Learning-Based Methods for Comparing Sequences, with Applications \
-to Audio-to-{MIDI} Alignment and Matching}, \
-year=2016\
+@phdthesis{raffel2016learning,
+  author={Colin Raffel},
+  title={Learning-Based Methods for Comparing Sequences, with Applications to Audio-to-{MIDI} Alignment and Matching},
+  year=2016
 }"""
 
 
@@ -37,8 +36,7 @@ class LakhMIDIDataset(RemoteFolderDataset):
             "archive": True,
             "size": 35727800,
             "md5": "2536ce3fd2cede53ddaa264f731859ab",
-            "sha256": "6fcfe2ac49ca08f3f214cec86ab138d4fc4dabcd7f27f491a838dae"
-            "6db45a12b",
+            "sha256": "6fcfe2ac49ca08f3f214cec86ab138d4fc4dabcd7f27f491a838dae6db45a12b",
         }
     }
     _extension = "mid"
@@ -59,8 +57,7 @@ class LakhMIDIMatchedDataset(RemoteFolderDataset):
             "url": "http://hog.ee.columbia.edu/craffel/lmd/lmd_matched.tar.gz",
             "archive": True,
             "md5": "fb80d01c22020295bb3eeef31f1aa63a",
-            "sha256": "621ff830aed771f469e5bfa13dc12a33c6ed69090adeda63d0b5c47"
-            "783af0191",
+            "sha256": "621ff830aed771f469e5bfa13dc12a33c6ed69090adeda63d0b5c47783af0191",
         }
     }
     _extension = "mid"
@@ -82,8 +79,7 @@ class LakhMIDIAlignedDataset(RemoteFolderDataset):
             "archive": True,
             "size": 1407072670,
             "md5": "d36ca9159966d81d97e1e37d10ed4584",
-            "sha256": "2bf5400e82eba73204644946515489b68811e1e656b0cfd854efc14"
-            "377f6e53b",
+            "sha256": "2bf5400e82eba73204644946515489b68811e1e656b0cfd854efc14377f6e53b",
         }
     }
     _extension = "mid"

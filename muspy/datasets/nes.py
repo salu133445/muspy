@@ -16,36 +16,28 @@ learning techniques. The synthesizer is typically programmed in assembly, but \
 we parse the assembly into straightforward formats that are more suitable for \
 machine learning."""
 _HOMEPAGE = "https://github.com/chrisdonahue/nesmdb"
-_LICENSE = "MIT License"
 _CITATION = """\
-@inproceedings{donahue2018nesmdb, \
-title={The {NES} Music Database: A multi-instrumental dataset with expressive \
-performance attributes}, \
-author={Chris Donahue and Huanru Henry Mao and Julian McAuley}, \
-booktitle={Proceedings of the 19th International Society for Music \
-Retrieval Conference (ISMIR)}, \
-year=2018\
+@inproceedings{donahue2018nesmdb,
+  author={Chris Donahue and Huanru Henry Mao and Julian McAuley},
+  title={The {NES} Music Database: A multi-instrumental dataset with expressive performance attributes},
+  booktitle={Proceedings of the 19th International Society for Music Retrieval Conference (ISMIR)},
+  year=2018
 }"""
 
 
 class NESMusicDatabase(RemoteFolderDataset):
     """NES Music Database."""
 
-    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE)
     _citation = _CITATION
     _sources = {
         "nes": {
             "filename": "nesmdb_midi.tar.gz",
-            "url": (
-                "http://deepyeti.ucsd.edu/cdonahue/nesmdb/nesmdb_midi.tar.gz"
-            ),
+            "url": "http://deepyeti.ucsd.edu/cdonahue/nesmdb/nesmdb_midi.tar.gz",
             "archive": True,
             "size": 12922275,
             "md5": "3f3e8ab4f660dd1b19350e5a8a91f3e6",
-            "sha256": (
-                "37610e2ca5fe70359c85170cf1f4982596783bb304c59d9c439f68c24ff4e"
-                "e93"
-            ),
+            "sha256": "37610e2ca5fe70359c85170cf1f4982596783bb304c59d9c439f68c24ff4ee93",
         }
     }
     _extension = "mid"

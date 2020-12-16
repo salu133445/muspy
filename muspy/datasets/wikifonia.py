@@ -24,8 +24,7 @@ class WikifoniaDataset(RemoteFolderDataset):
             "archive": True,
             "size": 35727800,
             "md5": "d26e22562e67eb7d37535e96cc5eebba",
-            "sha256": "e7bce509462a73cee175308b6a3cdafa9effd6e8958b3ce03b4edb2"
-            "93cc6b691",
+            "sha256": "e7bce509462a73cee175308b6a3cdafa9effd6e8958b3ce03b4edb293cc6b691",
         }
     }
     _extension = "mxl"
