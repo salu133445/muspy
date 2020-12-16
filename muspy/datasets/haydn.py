@@ -1,15 +1,16 @@
 """Haydn Op.20 Dataset."""
 from pathlib import Path
-from typing import Union
-
-from ..inputs import from_music21_score
-from ..music import Music, DEFAULT_RESOLUTION
-from .base import DatasetInfo, RemoteFolderDataset
-from ..classes import Annotation
+from typing import List, Union
 
 import music21
+from music21.roman import RomanNumeral
 
-_NAME = "Haydn Op.20 Dataset."
+from ..classes import Annotation
+from ..inputs import from_music21_score
+from ..music import DEFAULT_RESOLUTION, Music
+from .base import DatasetInfo, RemoteFolderDataset
+
+_NAME = "Haydn Op.20 Dataset"
 _DESCRIPTION = """\
 This dataset is a set of functional harmonic analysis annotations \
 for the Op.20 string quartets from Joseph Haydn, commonly known as \
@@ -17,15 +18,15 @@ the 'Sun' quartets."""
 _HOMEPAGE = "https://doi.org/10.5281/zenodo.1095630"
 _CITATION = """\
 @dataset{nestor_napoles_lopez_2017_1095630, \
-  author       = {N\'apoles L\'opez, N\'estor}, \
-  title        = {{Joseph Haydn - String Quartets Op.20 - Harmonic \
-                   Analysis Annotations Dataset}}, \
-  month        = dec, \
-  year         = 2017, \
-  publisher    = {Zenodo}, \
-  version      = {v1.1-alpha}, \
-  doi          = {10.5281/zenodo.1095630}, \
-  url          = {https://doi.org/10.5281/zenodo.1095630} \
+author={N\'apoles L\'opez, N\'estor}, \
+title={{Joseph Haydn - String Quartets Op.20 - Harmonic \
+Analysis Annotations Dataset}}, \
+month=dec, \
+year=2017, \
+publisher={Zenodo}, \
+version={v1.1-alpha}, \
+doi={10.5281/zenodo.1095630}, \
+url={https://doi.org/10.5281/zenodo.1095630}\
 }"""
 
 
@@ -37,46 +38,53 @@ class HaydnOp20Dataset(RemoteFolderDataset):
     _sources = {
         "haydn": {
             "filename": "haydnop20v1.3_annotated.zip",
-            "url": (
-                "https://github.com/napulen/haydn_op20_harm/releases/download/v1.3/haydnop20v1.3_annotated.zip"
-            ),
+            "url": "https://github.com/napulen/haydn_op20_harm/releases/"
+            "download/v1.3/haydnop20v1.3_annotated.zip",
             "archive": True,
             "size": 130954,
             "md5": "1c65c8da312e1c9dda681d0496bf527f",
-            "sha256": "96986cccebfd37a36cc97a2fc0ebcfbe22d5136e622b21e04ea125d589f5073b"
+            "sha256": "96986cccebfd37a36cc97a2fc0ebcfbe22d5136e622b21e04ea125d"
+            "589f5073b",
         }
     }
     _extension = "hrm"
 
     def read(self, filename: Union[str, Path]) -> Music:
         """Read a file into a Music object."""
-        s = music21.converter.parse(filename, format='humdrum')
-        # Getting the annotations
-        rna = list(s.flat.getElementsByClass('RomanNumeral'))
-        rnadict = {rn.offset: rn for rn in rna}
-        annotations = get_annotations(rnadict)
+        score = music21.converter.parse(filename, format="humdrum")
+
+        # Get the annotations
+        roman_numerals = list(score.flat.getElementsByClass("RomanNumeral"))
+        annotations = get_annotations(roman_numerals)
+
         # Remove the annotations from the original score
         # (they mess with the python representation)
-        s.remove(rna, recurse=True)
-        music = from_music21_score(s)
+        score.remove(roman_numerals, recurse=True)
+
+        music = from_music21_score(score)
         music.annotations = annotations
+
         return music
 
 
-def get_annotations(rna, resolution=DEFAULT_RESOLUTION):
+def get_annotations(
+    roman_numerals: List[RomanNumeral], resolution=DEFAULT_RESOLUTION
+) -> List[Annotation]:
+    """Return music21 RomanNumeral objects as Annotation objects."""
     annotations = []
-    for offset, rn in rna.items():
-        if not rn:
+    for roman_numeral in roman_numerals:
+        if not roman_numeral:
             continue
-        time = int(round(float(offset * resolution)))
-        tonicizedKey = rn.secondaryRomanNumeralKey
-        key = tonicizedKey if tonicizedKey else rn.key
-        figure = rn.figure
-        chord = rn.pitchedCommonName
+
+        time = int(round(float(roman_numeral.offset * resolution)))
+        tonicized_key = roman_numeral.secondaryRomanNumeralKey
+        key = tonicized_key if tonicized_key else roman_numeral.key
+
         annotation = {
             "key": key.tonicPitchNameWithCase,
-            "figure": figure,
-            "chord": chord,
+            "figure": roman_numeral.figure,
+            "chord": roman_numeral.pitchedCommonName,
         }
         annotations.append(Annotation(time=time, annotation=annotation))
+
     return annotations
