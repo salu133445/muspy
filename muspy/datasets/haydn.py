@@ -71,12 +71,12 @@ def get_annotations(
     roman_numerals: List[RomanNumeral], resolution=DEFAULT_RESOLUTION
 ) -> List[Annotation]:
     """Return music21 RomanNumeral objects as Annotation objects."""
-    annotations = []
-    for roman_numeral in roman_numerals:
-        if not roman_numeral:
-            continue
+    # Convert the list into a dictionary to remove duplicate items
+    roman_numeral_dict = {rn.offset: rn for rn in roman_numerals if rn}
 
-        time = int(round(float(roman_numeral.offset * resolution)))
+    annotations = []
+    for offset, roman_numeral in roman_numeral_dict.items():
+        time = int(round(float(offset * resolution)))
         tonicized_key = roman_numeral.secondaryRomanNumeralKey
         key = tonicized_key if tonicized_key else roman_numeral.key
 
