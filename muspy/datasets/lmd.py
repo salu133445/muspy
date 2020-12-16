@@ -17,11 +17,11 @@ audio files)."""
 _HOMEPAGE = "https://colinraffel.com/projects/lmd/"
 _LICENSE = "Creative Commons Attribution 4.0 International License (CC-By 4.0)"
 _CITATION = """\
-@phdthesis{raffel2016learning
-  title={Learning-Based Methods for Comparing Sequences, with Applications\
-to Audio-to-{MIDI} Alignment and Matching},
-  author={Colin Raffel},
-  year={2016}
+@phdthesis{raffel2016learning, \
+author={Colin Raffel}, \
+title={Learning-Based Methods for Comparing Sequences, with Applications \
+to Audio-to-{MIDI} Alignment and Matching}, \
+year=2016\
 }"""
 
 

@@ -15,16 +15,16 @@ _HOMEPAGE = "https://magenta.tensorflow.org/datasets/maestro"
 _LICENSE = "Creative Commons Attribution Non-Commercial Share-Alike 4.0 \
 (CC BY-NC-SA 4.0)"
 _CITATION = """\
-@inproceedings{hawthorne2018enabling,
-  title={Enabling Factorized Piano Music Modeling and Generation with the \
-{MAESTRO} Dataset},
-  author={Curtis Hawthorne and Andriy Stasyuk and Adam Roberts and Ian Simon \
+@inproceedings{hawthorne2018enabling, \
+title={Enabling Factorized Piano Music Modeling and Generation with the \
+{MAESTRO} Dataset}, \
+author={Curtis Hawthorne and Andriy Stasyuk and Adam Roberts and Ian Simon \
 and Cheng-Zhi Anna Huang and Sander Dieleman and Erich Elsen and Jesse Engel \
-and Douglas Eck},
-  booktitle={Proceedings of the 7th International Conference on Learning \
-Representations (ICLR)},
-  year={2019},
-  url={https://openreview.net/forum?id=r1lYRjC9F7}
+and Douglas Eck}, \
+booktitle={Proceedings of the 7th International Conference on Learning \
+Representations (ICLR)}, \
+year=2019, \
+url={https://openreview.net/forum?id=r1lYRjC9F7}\
 }"""
 
 

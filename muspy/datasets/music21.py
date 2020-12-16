@@ -12,13 +12,13 @@ _NAME = "Music21 Corpus Dataset"
 _DESCRIPTION = """Dataset automatically created from a music21 corpus."""
 _HOMEPAGE = "https://web.mit.edu/music21/doc/about/referenceCorpus.html"
 _CITATION = """\
-@inproceedings{cuthbert2010music21,
-  author={Michael Scott Cuthbert and Christopher Ariza},
-  title={Music21: A Toolkit for Computer-Aided Musicology and Symbolic Music \
-Data},
-  booktitle={Proceedings of the 11th International Society for Music \
-Information Retrieval Conference (ISMIR)},
-  year={2010}
+@inproceedings{cuthbert2010music21, \
+author={Michael Scott Cuthbert and Christopher Ariza}, \
+title={Music21: A Toolkit for Computer-Aided Musicology and Symbolic Music \
+Data}, \
+booktitle={Proceedings of the 11th International Society for Music \
+Information Retrieval Conference (ISMIR)}, \
+year=2010\
 }"""
 
 

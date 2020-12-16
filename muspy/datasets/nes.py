@@ -18,13 +18,13 @@ machine learning."""
 _HOMEPAGE = "https://github.com/chrisdonahue/nesmdb"
 _LICENSE = "MIT License"
 _CITATION = """\
-@inproceedings{donahue2018nesmdb,
-  title={The {NES} Music Database: A multi-instrumental dataset with \
-expressive performance attributes},
-  author={Chris Donahue and Huanru Henry Mao and Julian McAuley},
-  booktitle={Proceedings of the 19th International Society for Music \
-Information Retrieval Conference (ISMIR)},
-  year={2018}
+@inproceedings{donahue2018nesmdb, \
+title={The {NES} Music Database: A multi-instrumental dataset with expressive \
+performance attributes}, \
+author={Chris Donahue and Huanru Henry Mao and Julian McAuley}, \
+booktitle={Proceedings of the 19th International Society for Music \
+Retrieval Conference (ISMIR)}, \
+year=2018\
 }"""
 
 

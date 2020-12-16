@@ -16,14 +16,13 @@ validation split used in the paper "Harmonising Chorales by Probabilistic \
 Inference" in NIPS 2005."""
 _HOMEPAGE = "http://www-etud.iro.umontreal.ca/~boulanni/icml2012"
 _CITATION = """\
-@inproceedings{boulangerlewandowski2012modeling,
-  author={Nicolas Boulanger-Lewandowski and Yoshua Bengio and Pascal \
-Vincent},
-  title={Modeling Temporal Dependencies in High-Dimensional Sequences: \
-Application to Polyphonic Music Generation and Transcription},
-  booktitle={Proceedings of the 29th International Conference on Machine \
-Learning (ICML)},
-  year={2012}
+@inproceedings{boulangerlewandowski2012modeling, \
+author={Nicolas Boulanger-Lewandowski and Yoshua Bengio and Pascal Vincent}, \
+title={Modeling Temporal Dependencies in High-Dimensional Sequences: \
+Application to Polyphonic Music Generation and Transcription}, \
+booktitle={Proceedings of the 29th International Conference on Machine \
+Learning (ICML)}, \
+year=2012\
 }"""
 
 
