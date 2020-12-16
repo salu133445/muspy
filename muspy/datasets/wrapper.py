@@ -13,6 +13,7 @@ from .lmd import (
 )
 from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
 from .music21 import Music21Dataset
+from .musicnet import MusicNetDataset
 from .nes import NESMusicDatabase
 from .nmd import NottinghamDatabase
 from .wikifonia import WikifoniaDataset
@@ -38,6 +39,7 @@ def list_datasets():
         MAESTRODatasetV1,
         MAESTRODatasetV2,
         Music21Dataset,
+        MusicNetDataset,
         NESMusicDatabase,
         NottinghamDatabase,
         WikifoniaDataset,
@@ -60,7 +62,7 @@ def get_dataset(key: str) -> Type[Dataset]:
     key = key.lower()
     if key == "essen":
         return EssenFolkSongDatabase
-    if key == 'haydn':
+    if key == "haydn":
         return HaydnOp20Dataset
     if key.startswith("hymnal"):
         if key == "hymnal":
@@ -83,6 +85,8 @@ def get_dataset(key: str) -> Type[Dataset]:
             return MAESTRODatasetV1
     if key == "music21":
         return Music21Dataset
+    if key == "musicnet":
+        return MusicNetDataset
     if key == "nes":
         return NESMusicDatabase
     if key == "nmd":

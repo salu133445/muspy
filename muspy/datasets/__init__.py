@@ -31,6 +31,7 @@ Dataset Classes
 - MAESTRODatasetV1
 - MAESTRODatasetV2
 - Music21Dataset
+- MusicNetDataset
 - NESMusicDatabase
 - NottinghamDatabase
 - WikifoniaDataset
@@ -59,6 +60,7 @@ from .lmd import (
 )
 from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
 from .music21 import Music21Dataset
+from .musicnet import MusicNetDataset
 from .nes import NESMusicDatabase
 from .nmd import NottinghamDatabase
 from .wikifonia import WikifoniaDataset
@@ -81,6 +83,7 @@ __all__ = [
     "MAESTRODatasetV2",
     "Music21Dataset",
     "MusicDataset",
+    "MusicNetDataset",
     "NESMusicDatabase",
     "NottinghamDatabase",
     "RemoteABCFolderDataset",

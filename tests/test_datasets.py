@@ -19,6 +19,7 @@ from muspy import (
     MAESTRODatasetV2,
     Music21Dataset,
     MusicDataset,
+    MusicNetDataset,
     NESMusicDatabase,
     NottinghamDatabase,
     WikifoniaDataset,
@@ -42,6 +43,7 @@ def test_get_dataset():
         ("maestro-v2", MAESTRODatasetV2),
         ("maestro-v1", MAESTRODatasetV1),
         ("music21", Music21Dataset),
+        ("musicnet", MusicNetDataset),
         ("nes", NESMusicDatabase),
         ("nmd", NottinghamDatabase),
         ("wikifonia", WikifoniaDataset),
@@ -54,7 +56,7 @@ def test_get_dataset():
 
 
 def test_list_datasets():
-    assert len(list_datasets()) == 14
+    assert len(list_datasets()) == 15
 
 
 def test_music21():
