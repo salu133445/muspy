@@ -8,6 +8,7 @@ import tensorflow as tf
 import muspy
 from muspy import (
     EssenFolkSongDatabase,
+    HaydnOp20Dataset,
     HymnalDataset,
     HymnalTuneDataset,
     JSBChoralesDataset,
@@ -29,6 +30,7 @@ from muspy import (
 def test_get_dataset():
     answers = [
         ("essen", EssenFolkSongDatabase),
+        ("haydn", HaydnOp20Dataset),
         ("hymnal", HymnalDataset),
         ("hymnal-tune", HymnalTuneDataset),
         ("jsb", JSBChoralesDataset),
@@ -52,7 +54,7 @@ def test_get_dataset():
 
 
 def test_list_datasets():
-    assert len(list_datasets()) == 13
+    assert len(list_datasets()) == 14
 
 
 def test_music21():
