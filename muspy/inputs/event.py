@@ -1,4 +1,5 @@
 """Event-based representation input interface."""
+from collections import defaultdict
 from operator import attrgetter
 
 import numpy as np
@@ -18,14 +19,15 @@ def from_event_representation(
     max_time_shift: int = 100,
     velocity_bins: int = 32,
     default_velocity: int = 64,
+    duplicate_note_mode: str = "fifo",
 ) -> Music:
     """Decode event-based representation into a Music object.
 
     Parameters
     ----------
     array : ndarray
-        Array in event-based representation to decode. Will be casted to
-        integer if not of integer type.
+        Array in event-based representation to decode. Cast to integer
+        if not of integer type.
     resolution : int
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
@@ -52,6 +54,16 @@ def from_event_representation(
         Number of velocity bins to use. Defaults to 32.
     default_velocity : int
         Default velocity value to use when decoding. Defaults to 64.
+    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}
+        Policy for dealing with duplicate notes. When a note off event
+        is presetned while there are multiple correspoding note on
+        events that have not yet been closed, we need a policy to decide
+        which note on messages to close. This is only effective when
+        `use_single_note_off_event` is False. Defaults to 'fifo'.
+
+        - 'fifo' (first in first out): close the earliest note on
+        - 'lifo' (first in first out): close the latest note on
+        - 'close_all': close all note on messages
 
     Returns
     -------
@@ -87,54 +99,98 @@ def from_event_representation(
     time = 0
     velocity = default_velocity
     velocity_factor = 128 / velocity_bins
-    note_ons = {}
     notes = []
+
+    # Keep track of active note on messages
+    active_notes = defaultdict(list)
+
+    # Iterate over the events
     for event in array.flatten().tolist():
-        # Skip unknown event
-        if event < offset_note_on:
+        # Skip unknown events
+        if event < offset_note_on or event >= vocab_size:
             continue
 
-        # End-of-sequence event
+        # End-of-sequence events
         if use_end_of_sequence_event and event == offset_eos:
             break
 
-        # Note on event
+        # Note on events
         if event < offset_note_off:
-            note_ons[event] = time
+            pitch = event - offset_note_on
+            active_notes[pitch].append(time)
 
-        # Note off event
+        # Note off events
         elif event < offset_time_shift:
-
             # Close all notes
             if use_single_note_off_event:
-                for pitch, note_on in note_ons.items():
-                    note = Note(
-                        time=note_on,
-                        pitch=pitch,
-                        duration=time - note_on,
-                        velocity=velocity,
-                    )
-                    notes.append(note)
-                note_ons = {}
+                if active_notes:
+                    for pitch, onsets in active_notes.items():
+                        for onset in onsets:
+                            notes.append(
+                                Note(
+                                    time=onset,
+                                    pitch=pitch,
+                                    duration=time - onset,
+                                    velocity=velocity,
+                                )
+                            )
+                    active_notes = defaultdict(list)
+                continue
 
-            # Close a specific note
-            else:
-                pitch = event - offset_note_off
-                onset = note_ons.pop(pitch)
-                if onset is not None:
-                    note = Note(
+            pitch = event - offset_note_off
+
+            # Skip it if there is no active notes
+            if not active_notes[pitch]:
+                continue
+
+            # NOTE: There is no way to disambiguate duplicate notes of
+            # the same pitch. Thus, we need a policy for handling
+            # duplicate notes.
+
+            # 'FIFO': (first in first out) close the earliest note
+            elif duplicate_note_mode.lower() == "fifo":
+                onset = active_notes[pitch][0]
+                notes.append(
+                    Note(
                         time=onset,
                         pitch=pitch,
                         duration=time - onset,
                         velocity=velocity,
                     )
-                    notes.append(note)
+                )
+                del active_notes[pitch][0]
 
-        # Time shift event
+            # 'LIFO': (last in first out) close the latest note on
+            elif duplicate_note_mode.lower() == "lifo":
+                onset = active_notes[pitch][-1]
+                notes.append(
+                    Note(
+                        time=onset,
+                        pitch=pitch,
+                        duration=time - onset,
+                        velocity=velocity,
+                    )
+                )
+                del active_notes[pitch][-1]
+
+            # 'close_all' - close all note on events
+            elif duplicate_note_mode.lower() == "close_all":
+                for onset in active_notes[pitch]:
+                    notes.append(
+                        Note(
+                            time=onset,
+                            pitch=pitch,
+                            duration=time - onset,
+                            velocity=velocity,
+                        )
+                    )
+                del active_notes[pitch]
+
+        # Time-shift events
         elif event < offset_velocity:
             time += event - offset_time_shift + 1
 
-        # Velocity event
+        # Velocity events
         elif event < vocab_size:
             velocity = int((event - offset_velocity) * velocity_factor)
 
