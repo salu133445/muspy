@@ -48,7 +48,7 @@ def download_bravura_font():
         prefix + "redist/otf/Bravura.otf", get_bravura_font_path()
     )
     print(
-        "MBravura font has successfully been downloaded to : "
+        "Bravura font has successfully been downloaded to : "
         "{}.".format(get_musescore_soundfont_dir())
     )
 
