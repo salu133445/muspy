@@ -85,15 +85,11 @@ def to_event_representation(
     for note in notes:
         # Velocity event
         if encode_velocity:
-            if force_velocity_event or note.velocity != last_velocity:
+            quantized_velocity = int(note.velocity * velocity_bins / 128)
+            if force_velocity_event or quantized_velocity != last_velocity:
                 note_events.append(
-                    (
-                        note.time,
-                        offset_velocity
-                        + int(note.velocity * velocity_bins / 128),
-                    )
-                )
-            last_velocity = note.velocity
+                    (note.time, offset_velocity + quantized_velocity))
+            last_velocity = quantized_velocity
         # Note on event
         note_events.append((note.time, offset_note_on + note.pitch))
         # Note off event
