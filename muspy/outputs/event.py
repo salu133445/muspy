@@ -117,7 +117,8 @@ def to_event_representation(
             div, mod = divmod(time - time_cursor, max_time_shift)
             for _ in range(div):
                 events.append(offset_time_shift + max_time_shift - 1)
-            events.append(offset_time_shift + mod - 1)
+            if mod > 0:
+                events.append(offset_time_shift + mod - 1)
             events.append(code)
             time_cursor = time
         else:
