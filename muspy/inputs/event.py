@@ -117,23 +117,24 @@ def from_event_representation(
         # Note on events
         if event < offset_note_off:
             pitch = event - offset_note_on
-            active_notes[pitch].append(time)
+            active_notes[pitch].append(
+                Note(
+                    time=time,
+                    pitch=pitch,
+                    duration=-1,
+                    velocity=velocity,
+                )
+            )
 
         # Note off events
         elif event < offset_time_shift:
             # Close all notes
             if use_single_note_off_event:
                 if active_notes:
-                    for pitch, onsets in active_notes.items():
-                        for onset in onsets:
-                            notes.append(
-                                Note(
-                                    time=onset,
-                                    pitch=pitch,
-                                    duration=time - onset,
-                                    velocity=velocity,
-                                )
-                            )
+                    for pitch, note_list in active_notes.items():
+                        for note in note_list:
+                            note.duration = time - note.time
+                            notes.append(note)
                     active_notes = defaultdict(list)
                 continue
 
@@ -149,41 +150,23 @@ def from_event_representation(
 
             # 'FIFO': (first in first out) close the earliest note
             elif duplicate_note_mode.lower() == "fifo":
-                onset = active_notes[pitch][0]
-                notes.append(
-                    Note(
-                        time=onset,
-                        pitch=pitch,
-                        duration=time - onset,
-                        velocity=velocity,
-                    )
-                )
+                note = active_notes[pitch][0]
+                note.duration = time - note.time
+                notes.append(note)
                 del active_notes[pitch][0]
 
             # 'LIFO': (last in first out) close the latest note on
             elif duplicate_note_mode.lower() == "lifo":
-                onset = active_notes[pitch][-1]
-                notes.append(
-                    Note(
-                        time=onset,
-                        pitch=pitch,
-                        duration=time - onset,
-                        velocity=velocity,
-                    )
-                )
+                note = active_notes[pitch][-1]
+                note.duration = time - note.time
+                notes.append(note)
                 del active_notes[pitch][-1]
 
             # 'close_all' - close all note on events
             elif duplicate_note_mode.lower() == "close_all":
-                for onset in active_notes[pitch]:
-                    notes.append(
-                        Note(
-                            time=onset,
-                            pitch=pitch,
-                            duration=time - onset,
-                            velocity=velocity,
-                        )
-                    )
+                for note in active_notes[pitch]:
+                    note.duration = time - note.time
+                    notes.append(note)
                 del active_notes[pitch]
 
         # Time-shift events
