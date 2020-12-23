@@ -1,6 +1,5 @@
 """Test cases for representations."""
 import copy
-from muspy import processors
 
 import numpy as np
 
