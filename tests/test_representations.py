@@ -1,4 +1,7 @@
 """Test cases for representations."""
+import copy
+from muspy import processors
+
 import numpy as np
 
 import muspy
@@ -301,6 +304,29 @@ def test_event_representation_end_of_sequence_event():
         encoded, "event", use_end_of_sequence_event=True
     )
     assert decoded[0].notes == music[0].notes
+
+
+def test_event_representation_multitrack():
+    music = muspy.load(TEST_JSON_PATH)
+
+    # Add a new track, transposed and time-shifted
+    music.append(copy.deepcopy(music[0]))
+    music[1].transpose(-5)
+    music[1].adjust_time(lambda t: t + music.resolution)
+
+    music[0].program = 0
+    music[1].program = 1
+
+    processor = muspy.processors.EventRepresentationProcessor(
+        encode_velocity=True, use_end_of_sequence_event=True,
+        num_tracks=4, encode_instrument=True, default_is_drum=True)
+    decoded = processor.decode(processor.encode(music))
+
+    assert len(decoded) == len(music)
+    for tr in range(len(music)):
+        assert decoded[tr].notes == music[tr].notes
+        assert decoded[tr].program == music[tr].program
+        assert decoded[tr].is_drum == music[tr].is_drum
 
 
 def test_pianoroll_representation():

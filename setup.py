@@ -43,6 +43,7 @@ setup(
     packages=find_packages(include=["muspy", "muspy.*"], exclude=["tests"]),
     install_requires=[
         "PyYAML>=3.0",
+        "bidict>=0.21.0",
         "joblib>=0.15",
         "matplotlib>=1.5",
         "mido>=1.0",
