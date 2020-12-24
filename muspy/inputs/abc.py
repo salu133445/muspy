@@ -6,12 +6,12 @@ import music21.converter
 from music21.stream import Opus
 
 from ..music import DEFAULT_RESOLUTION, Music
-from .music21 import from_music21, from_music21_opus
+from .music21 import from_music21_opus, from_music21_score
 
 
 def read_abc_string(
     data_str: str, number: Optional[int] = None, resolution=DEFAULT_RESOLUTION,
-):
+) -> Union[Music, List[Music]]:
     """Read ABC data into Music object(s) using music21 backend.
 
     Parameters
@@ -34,20 +34,31 @@ def read_abc_string(
     # Parse the ABC data using music21
     parsed = music21.converter.parse(data_str, format="abc", number=number)
 
-    # Convert music21 object(s) to MusPy Music object(s)
+    # An ABC file can contain multiple songs
     if isinstance(parsed, Opus):
+        # Convert the parsed music21 Opus object to MusPy Music objects
         music_list = from_music21_opus(parsed, resolution)
-    else:
-        music_list = [from_music21(parsed, resolution)]
 
-    return music_list
+        # Set metadata
+        for music in music_list:
+            music.metadata.source_format = "abc"
+
+        return music_list
+
+    # Convert the parsed music21 Score object to a MusPy Music object
+    music = from_music21_score(parsed, resolution)
+
+    # Set metadata
+    music.metadata.source_format = "abc"
+
+    return music
 
 
 def read_abc(
     path: Union[str, Path],
     number: Optional[int] = None,
     resolution=DEFAULT_RESOLUTION,
-) -> List[Music]:
+) -> Union[Music, List[Music]]:
     """Return an ABC file into Music object(s) using music21 backend.
 
     Parameters
@@ -70,15 +81,23 @@ def read_abc(
     # Parse the ABC file using music21
     parsed = music21.converter.parse(path, format="abc", number=number)
 
-    # Convert music21 object(s) to MusPy Music object(s)
+    # An ABC file can contain multiple songs
     if isinstance(parsed, Opus):
+        # Convert the parsed music21 Opus object to MusPy Music objects
         music_list = from_music21_opus(parsed, resolution)
-    else:
-        music_list = [from_music21(parsed, resolution)]
+
+        # Set metadata
+        for music in music_list:
+            music.metadata.source_filename = Path(path).name
+            music.metadata.source_format = "abc"
+
+        return music_list
+
+    # Convert the parsed music21 Score object to a MusPy Music object
+    music = from_music21_score(parsed, resolution)
 
     # Set metadata
-    for music in music_list:
-        music.metadata.source_filename = Path(path).name
-        music.metadata.source_format = "abc"
+    music.metadata.source_filename = Path(path).name
+    music.metadata.source_format = "abc"
 
-    return music_list
+    return music
