@@ -1053,7 +1053,7 @@ class ABCFolderDataset(FolderDataset):
             for idx, line in enumerate(f):
                 if start <= idx < end and not line.startswith("%"):
                     data.append(line)
-        return read_abc_string("".join(data))[0]
+        return read_abc_string("".join(data), number=0)  # type: ignore
 
     def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
         """Enable on-the-fly mode and convert the data on the fly.

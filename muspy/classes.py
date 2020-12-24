@@ -144,11 +144,11 @@ class KeySignature(Base):
     time : int
         Start time of the key signature, in time steps or seconds.
     root : int, optional
-        Root of the key signature.
+        Root (tonic) of the key signature.
     mode : str, optional
         Mode of the key signature.
     fifths : int, optional
-        Number of flats or sharps. Positive numbers for sharps and
+        Number of sharps or flats. Positive numbers for sharps and
         negative numbers for flats.
     root_str : str, optional
         Root of the key signature as a string.

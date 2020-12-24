@@ -8,11 +8,8 @@ from .utils import TEST_ABC_DIR, TEST_JSON_PATH
 
 
 def test_header():
-    musics = muspy.read(TEST_ABC_DIR / "header.abc")
+    music = muspy.read(TEST_ABC_DIR / "header.abc")
 
-    assert len(musics) == 1
-
-    music = musics[0]
     assert music.metadata.title == "TEST: Header lines only"
     assert len(music.metadata.creators) == 1
     assert music.metadata.creators[0] == "Composer"
@@ -37,7 +34,7 @@ def test_header():
 
 
 def test_notes():
-    music = muspy.read(TEST_ABC_DIR / "notes.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "notes.abc")
 
     assert len(music) == 1
 
@@ -53,7 +50,7 @@ def test_notes():
 
 
 def test_durations():
-    music = muspy.read(TEST_ABC_DIR / "durations.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "durations.abc")
 
     # Answers
     durations = (
@@ -69,7 +66,7 @@ def test_durations():
 
 
 def test_broken_rhythm():
-    music = muspy.read(TEST_ABC_DIR / "broken_rhythm.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "broken_rhythm.abc")
 
     # Answers
     durations = [0.75, 0.25, 1.5, 0.5, 0.875, 0.125, 1.875, 0.125]
@@ -81,7 +78,7 @@ def test_broken_rhythm():
 
 
 def test_beams():
-    music = muspy.read(TEST_ABC_DIR / "beams.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "beams.abc")
 
     # Answers
     pitches = [69, 71, 72, 74]
@@ -92,7 +89,7 @@ def test_beams():
 
 
 def test_tuplets():
-    music = muspy.read(TEST_ABC_DIR / "tuplets.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "tuplets.abc")
 
     # Answers
     pitches = []
@@ -110,7 +107,7 @@ def test_tuplets():
 
 
 def test_ties():
-    music = muspy.read(TEST_ABC_DIR / "ties_and_slurs.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "ties_and_slurs.abc")
 
     # Answers
     durations = [0.25, 0.25] + [0.5] * 8 + [1, 1.5, 3]
@@ -123,7 +120,7 @@ def test_ties():
 
 
 def test_accidentals():
-    music = muspy.read(TEST_ABC_DIR / "accidentals.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "accidentals.abc")
 
     # Answers
     pitches = [67, 68, 69, 70, 71]
@@ -134,7 +131,7 @@ def test_accidentals():
 
 
 def test_grace_notes():
-    music = muspy.read(TEST_ABC_DIR / "grace_notes.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "grace_notes.abc")
 
     # Answer
     durations = [1.5, 0.5, 0.5, 0.5] * 2
@@ -145,7 +142,7 @@ def test_grace_notes():
 
 
 def test_chords():
-    music = muspy.read(TEST_ABC_DIR / "chords.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "chords.abc")
 
     # Answers
     pitches = (
@@ -165,7 +162,7 @@ def test_chords():
 
 
 def test_keys_and_modes():
-    music = muspy.read(TEST_ABC_DIR / "keys_and_modes.abc")[0]
+    music = muspy.read(TEST_ABC_DIR / "keys_and_modes.abc")
 
     # TODO: Support changing keys in the middle
     return
