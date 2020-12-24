@@ -3,6 +3,7 @@ from operator import attrgetter, itemgetter
 from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Any, DefaultDict, List
+import warnings
 
 from bidict import frozenbidict
 import numpy as np
@@ -171,6 +172,12 @@ class EventRepresentationProcessor:
         self.vocab = frozenbidict(enumerate(vocab_list)).inverse  # type: frozenbidict[Any, int]
 
     def encode(self, music: Music) -> ndarray:
+        if music.resolution != self.resolution:
+            warnings.warn(
+                'Expected a resolution of {} TPQN, got {}'.format(
+                    self.resolution, music.resolution),
+                RuntimeWarning)
+
         # Create a list for all events
         events = []  # type: List[tuple]
 
