@@ -65,7 +65,10 @@ class Music21Dataset(Dataset):
         return "{}(composer={})".format(type(self).__name__, self.composer)
 
     def __getitem__(self, index) -> Music:
-        return read(str(self.filenames[index]))
+        loaded = read(str(self.filenames[index]))
+        if isinstance(loaded, list):
+            return loaded[0]
+        return loaded
 
     def __len__(self) -> int:
         return len(self.filenames)
