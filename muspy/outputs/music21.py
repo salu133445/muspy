@@ -10,6 +10,7 @@ from music21.stream import Part, Score
 from music21.tempo import MetronomeMark
 
 from ..classes import KeySignature, Metadata, Tempo, TimeSignature
+from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -31,7 +32,21 @@ def to_music21_metronome(tempo: Tempo) -> MetronomeMark:
 
 def to_music21_key(key_signature: KeySignature) -> Key:
     """Return a KeySignature object as a music21 Key object."""
-    key = Key(tonic=PITCH_NAMES[key_signature.root], mode=key_signature.mode)
+    if key_signature.root_str is not None:
+        tonic = key_signature.root_str
+    elif key_signature.root is not None:
+        tonic = PITCH_NAMES[key_signature.root]
+    elif key_signature.fifths is not None:
+        if key_signature.mode is not None:
+            offset = MODE_CENTERS[key_signature.mode]
+            tonic = CIRCLE_OF_FIFTHS[key_signature.fifths + offset][1]
+        else:
+            tonic = CIRCLE_OF_FIFTHS[key_signature.fifths][1]
+    else:
+        raise ValueError(
+            "One of `root`, `root_str` or `fifths` must be specified."
+        )
+    key = Key(tonic=tonic, mode=key_signature.mode)
     key.offset = key_signature.time
     return key
 
@@ -39,7 +54,7 @@ def to_music21_key(key_signature: KeySignature) -> Key:
 def to_music21_time_signature(
     time_signature: TimeSignature,
 ) -> M21TimeSignature:
-    """Return a TimeSignature object as a music21 TimeSignature object."""
+    """Return a TimeSignature object as a music21 TimeSignature."""
     m21_time_signature = M21TimeSignature(
         "{}/{}".format(time_signature.numerator, time_signature.denominator)
     )
@@ -63,8 +78,8 @@ def to_music21_metadata(metadata: Metadata) -> M21MetaData:
     """
     meta = M21MetaData()
 
-    # Title is usually stored in movement-title
-    # See https://www.musicxml.com/tutorial/file-structure/score-header-entity/
+    # Title is usually stored in movement-title. See
+    # https://www.musicxml.com/tutorial/file-structure/score-header-entity/
     if metadata.title:
         meta.movementName = metadata.title
 
