@@ -25,9 +25,6 @@ ComplexBaseType = TypeVar("ComplexBaseType", bound="ComplexBase")
 class _OrderedDumper(yaml.SafeDumper):
     """A dumper that supports OrderedDict."""
 
-    def increase_indent(self, flow=False, indentless=False):
-        return super().increase_indent(flow, False)
-
 
 def _dict_representer(dumper, data):
     return dumper.represent_mapping(
