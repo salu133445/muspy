@@ -28,6 +28,6 @@ def save_json(
         Indent level. See :py:func:`json.dumps`.
 
     """
-    with open(str(path), "w", encoding="utf8") as f:
+    with open(str(path), "w", encoding="utf-8") as f:
         data = music.to_ordered_dict()
         json.dump(data, f, ensure_ascii=ensure_ascii, indent=indent)

@@ -21,6 +21,6 @@ def load_yaml(path: Union[str, Path]) -> Music:
         Loaded Music object.
 
     """
-    with open(str(path)) as f:
+    with open(str(path), encoding="utf-8") as f:
         data = yaml.safe_load(f)
     return Music.from_dict(data)

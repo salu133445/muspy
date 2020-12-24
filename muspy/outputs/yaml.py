@@ -17,5 +17,5 @@ def save_yaml(path: Union[str, Path], music: "Music"):
         Music object to save.
 
     """
-    with open(str(path), "w") as f:
+    with open(str(path), "w", encoding="utf-8") as f:
         f.write(music.pretty_str())

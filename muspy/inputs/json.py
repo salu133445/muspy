@@ -20,6 +20,6 @@ def load_json(path: Union[str, Path]) -> Music:
         Loaded Music object.
 
     """
-    with open(str(path)) as f:
+    with open(str(path), encoding="utf-8") as f:
         data = json.load(f)
     return Music.from_dict(data)
