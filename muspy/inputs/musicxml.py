@@ -10,64 +10,9 @@ from zipfile import ZipFile
 
 from ..classes import KeySignature, Metadata, Note, Tempo, TimeSignature, Track
 from ..music import Music
-from ..utils import NOTE_MAP
+from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS, NOTE_MAP, NOTE_TYPE_MAP
 
 T = TypeVar("T")
-
-
-CIRCLE_OF_FIFTHS: List[Tuple[int, str]] = [
-    (4, "Fb"),
-    (11, "Cb"),
-    (6, "Gb"),
-    (1, "Db"),
-    (8, "Ab"),
-    (3, "Eb"),
-    (10, "Bb"),
-    (5, "F"),  # Lydian
-    (0, "C"),  # Major/Ionian
-    (7, "G"),  # Mixolydian
-    (2, "D"),  # Dorian
-    (9, "A"),  # Minor/Aeolian
-    (4, "E"),  # Phrygian
-    (11, "B"),  # Locrian
-    (6, "F#"),
-    (1, "C#"),
-    (8, "G#"),
-    (3, "D#"),
-    (10, "A#"),
-    (5, "E#"),
-    (0, "B#"),
-]
-
-MODE_CENTERS = {
-    "major": 8,
-    "minor": 11,
-    "lydian": 7,
-    "ionian": 8,
-    "mixolydian": 9,
-    "dorian": 10,
-    "aeolian": 11,
-    "phrygian": 12,
-    "locrian": 13,
-}
-
-
-NOTE_TYPE_MAP: Dict[str, float] = {
-    "1024th": 0.00390625,
-    "512th": 0.0078125,
-    "256th": 0.015625,
-    "128th": 0.03125,
-    "64th": 0.0625,
-    "32nd": 0.125,
-    "16th": 0.25,
-    "eighth": 0.5,
-    "quarter": 1.0,
-    "half": 2.0,
-    "whole": 4.0,
-    "breve": 8.0,
-    "long": 16.0,
-    "maxima": 32.0,
-}
 
 
 class MusicXMLError(Exception):
