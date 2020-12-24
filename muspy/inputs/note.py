@@ -40,8 +40,8 @@ def from_note_representation(
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
     default_velocity : int
-        Default velocity value to use when decoding if `encode_velocity` is
-        False. Defaults to 64.
+        Default velocity value to use when decoding if `encode_velocity`
+        is False. Defaults to 64.
 
     Returns
     -------

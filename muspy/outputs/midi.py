@@ -317,7 +317,7 @@ def write_midi_mido(
 def to_pretty_midi_key_signature(
     key_signature: KeySignature,
 ) -> PmKeySignature:
-    """Return a KeySignature object as a pretty_midi KeySignature object."""
+    """Return a KeySignature object as a pretty_midi KeySignature."""
     return PmKeySignature(
         pretty_midi.key_name_to_key_number(
             "{} {}".format(key_signature.root, key_signature.mode)
@@ -329,7 +329,7 @@ def to_pretty_midi_key_signature(
 def to_pretty_midi_time_signature(
     time_signature: TimeSignature,
 ) -> PmTimeSignature:
-    """Return a KeySignature object as a pretty_midi TimeSignature object."""
+    """Return a TimeSignature object as a pretty_midi TimeSignature."""
     return PmTimeSignature(
         numerator=time_signature.numerator,
         denominator=time_signature.denominator,

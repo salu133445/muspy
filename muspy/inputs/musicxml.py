@@ -438,8 +438,8 @@ def parse_part_elem(
 
 def parse_metadata(root: Element) -> Metadata:
     """Return a Metadata object parsed from a MusicXML file."""
-    # Title is usually stored in movement-title
-    # See https://www.musicxml.com/tutorial/file-structure/score-header-entity/
+    # Title is usually stored in movement-title. See
+    # https://www.musicxml.com/tutorial/file-structure/score-header-entity/
     title = get_text(root, "movement-title", remove_newlines=True)
     if not title:
         title = get_text(root, "work/work-title", remove_newlines=True)

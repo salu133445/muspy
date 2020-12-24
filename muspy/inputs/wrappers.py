@@ -32,8 +32,8 @@ def load(
     path : str or Path
         Path to the file to load.
     kind : {'json', 'yaml'}, optional
-        Format to save (case-insensitive). Defaults to infer the format from
-        the extension.
+        Format to save (case-insensitive). Defaults to infer the format
+        from the extension.
     **kwargs : dict
         Keyword arguments to pass to the target function. See
         :func:`muspy.load_json` or :func:`muspy.load_yaml` for available
@@ -77,8 +77,8 @@ def read(
     path : str or Path
         Path to the file to read.
     kind : {'midi', 'musicxml', 'abc'}, optional
-        Format to save (case-insensitive). Defaults to infer the format from
-        the extension.
+        Format to save (case-insensitive). Defaults to infer the format
+        from the extension.
 
     Returns
     -------

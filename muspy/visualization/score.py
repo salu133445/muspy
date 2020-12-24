@@ -200,10 +200,11 @@ def _to_compound_note_codes_alt(note_counts) -> List[str]:
 def _to_note_counts(note_value) -> List[int]:
     """Return a list of counts of notes that sum to a note value.
 
-    For example, a note value of 1.75 will be decoposed into a whole note, a
-    half note and a quarter note, respectively. The return list is of
-    length 12, where the first value corresponds to the count of double
-    whole notes and the last value corresponds to the count of 1024th notes.
+    For example, a note value of 1.75 will be decoposed into a whole
+    note, a half note and a quarter note, respectively. The return list
+    is of length 12, where the first value corresponds to the count of
+    double whole notes and the last value corresponds to the count of
+    1024th notes.
 
     """
     if note_value < 2:
@@ -221,8 +222,8 @@ def _to_note_counts(note_value) -> List[int]:
 def to_note_codes(note_value) -> List[str]:
     """Return a note value as a list of note codes.
 
-    For example, a note value of 1.75 will be decoposed into a whole note, a
-    half note and a quarter note, respectively.
+    For example, a note value of 1.75 will be decoposed into a whole
+    note, a half note and a quarter note, respectively.
 
     """
     note_code = COMMON_NOTE_CODES.get(note_value)
@@ -233,11 +234,11 @@ def to_note_codes(note_value) -> List[str]:
 
 
 def to_note_codes_alt(note_value) -> List[str]:
-    """Return a note value as a list of note codes (with straight beams).
+    """Return a note value as a list of note codes with straight beams.
 
-    This is useful for making chords as all the notes comes with a straight
-    beam. For example, a note value of 1.75 will be decoposed into a whole
-    note, a half note and a quarter note, respectively.
+    This is useful for making chords as all the notes comes with a
+    straight beam. For example, a note value of 1.75 will be decomposed
+    into a whole note, a half note and a quarter note, respectively.
 
     """
     note_code = COMMON_NOTE_CODES_ALT.get(note_value)
@@ -256,14 +257,14 @@ def get_time_signature_code(number: int) -> str:
 
 
 def get_pitch_classes(fifths: int) -> List[int]:
-    """Return a list indicating the root note of each pitch number."""
+    """Return a list of the root note of each pitch number."""
     if fifths >= 0:
         return [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]
     return [0, 1, 1, 2, 2, 3, 4, 4, 5, 5, 6, 6]
 
 
 def get_accidentals(fifths: int) -> List[Optional[int]]:
-    """Return a list indicating the accidentals and the pitch classes."""
+    """Return a list of the accidentals and the pitch classes."""
     if fifths >= 0:
         accidentals = [None, 1, None, 1, None, None, 1, None, 1, None, 1, None]
         if fifths > 0:
@@ -315,8 +316,8 @@ class ScorePlotter:
         Path to the music font. Defaults to the path to the downloaded
         Bravura font.
     font_scale : float, optional
-        Font scaling factor for finetuning. Defaults to 140, optimized for
-        the Bravura font.
+        Font scaling factor for finetuning. Defaults to 140, optimized
+        for the Bravura font.
 
     """
 
@@ -392,7 +393,7 @@ class ScorePlotter:
         self._accidentals = get_accidentals(0)
 
     def set_baseline(self, y):
-        """Set baseline position (the y-coordinate of the first staff line)."""
+        """Set baseline position (y-coordinate of first staff line)."""
         self._baseline = y
         self.top = max(self.top, self._baseline)
         self.bottom = max(self.bottom, self._baseline)
@@ -605,7 +606,7 @@ class ScorePlotter:
         return [note, text]
 
     def plot_key_signature(self, root: int, mode: str):
-        """Plot a key signature. Only major and minor keys are supported."""
+        """Plot a key signature. Supports only major and minor keys."""
         # self._accidentals = _get_accidentals(0)
         # self._pitches = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]
         # TODO: Support keys other than major and minor keys
@@ -793,7 +794,8 @@ def show_score(
     music : :class:`muspy.Music`
         Music object to show.
     figsize : (float, float), optional
-        Width and height in inches. Defaults to Matplotlib configuration.
+        Width and height in inches. Defaults to Matplotlib
+        configuration.
     clef : str, {'treble', 'alto', 'bass'}
         Clef type. Defaults to a treble clef.
     clef_octave : int
@@ -801,11 +803,11 @@ def show_score(
     note_spacing : int, optional
         Spacing of notes. Defaults to 4.
     font_path : str or Path, optional
-        Path to the music font. Defaults to the path to the built-in Bravura
-        font.
+        Path to the music font. Defaults to the path to the built-in
+        Bravura font.
     font_scale : float, optional
-        Font scaling factor for finetuning. Defaults to 140, optimized for
-        the Bravura font.
+        Font scaling factor for finetuning. Defaults to 140, optimized
+        for the Bravura font.
 
     Returns
     -------
