@@ -191,7 +191,7 @@ class EventRepresentationProcessor:
             # TODO: Maybe warn or throw exception if too many tracks
             track_objs = music.tracks
             if self.ignore_empty_tracks:
-                track_objs = [track for track in music.tracks if track.notes]
+                track_objs = [track for track in track_objs if track.notes]
             track_objs = track_objs[:self.num_tracks]
 
             tracks = [[n for n in track.notes] for track in track_objs]
