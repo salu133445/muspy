@@ -185,7 +185,7 @@
 <span class="sd">    events, including note-on, note-off, time-shift and velocity events.</span>
 <span class="sd">    The output shape is M x 1, where M is the number of events. The</span>
 <span class="sd">    values encode the events. The default configuration uses 0-127 to</span>
-<span class="sd">    encode note-one events, 128-255 for note-off events, 256-355 for</span>
+<span class="sd">    encode note-on events, 128-255 for note-off events, 256-355 for</span>
 <span class="sd">    time-shift events, and 356 to 387 for velocity events.</span>
 
 <span class="sd">    Parameters</span>
@@ -246,15 +246,11 @@
     <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
         <span class="c1"># Velocity event</span>
         <span class="k">if</span> <span class="n">encode_velocity</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">force_velocity_event</span> <span class="ow">or</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">!=</span> <span class="n">last_velocity</span><span class="p">:</span>
+            <span class="n">quantized_velocity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">velocity_bins</span> <span class="o">/</span> <span class="mi">128</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">force_velocity_event</span> <span class="ow">or</span> <span class="n">quantized_velocity</span> <span class="o">!=</span> <span class="n">last_velocity</span><span class="p">:</span>
                 <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">(</span>
-                        <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                        <span class="n">offset_velocity</span>
-                        <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">velocity_bins</span> <span class="o">/</span> <span class="mi">128</span><span class="p">),</span>
-                    <span class="p">)</span>
-                <span class="p">)</span>
-            <span class="n">last_velocity</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span>
+                    <span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">offset_velocity</span> <span class="o">+</span> <span class="n">quantized_velocity</span><span class="p">))</span>
+            <span class="n">last_velocity</span> <span class="o">=</span> <span class="n">quantized_velocity</span>
         <span class="c1"># Note on event</span>
         <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">offset_note_on</span> <span class="o">+</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
         <span class="c1"># Note off event</span>
@@ -278,7 +274,8 @@
             <span class="n">div</span><span class="p">,</span> <span class="n">mod</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">time_cursor</span><span class="p">,</span> <span class="n">max_time_shift</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">div</span><span class="p">):</span>
                 <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_time_shift</span> <span class="o">+</span> <span class="n">max_time_shift</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_time_shift</span> <span class="o">+</span> <span class="n">mod</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">mod</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_time_shift</span> <span class="o">+</span> <span class="n">mod</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
             <span class="n">time_cursor</span> <span class="o">=</span> <span class="n">time</span>
         <span class="k">else</span><span class="p">:</span>

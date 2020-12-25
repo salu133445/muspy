@@ -160,6 +160,7 @@
             
   <h1>Source code for muspy.inputs.event</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Event-based representation input interface.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -179,14 +180,15 @@
     <span class="n">max_time_shift</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="n">velocity_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
     <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decode event-based representation into a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    array : ndarray</span>
-<span class="sd">        Array in event-based representation to decode. Will be casted to</span>
-<span class="sd">        integer if not of integer type.</span>
+<span class="sd">        Array in event-based representation to decode. Cast to integer</span>
+<span class="sd">        if not of integer type.</span>
 <span class="sd">    resolution : int</span>
 <span class="sd">        Time steps per quarter note. Defaults to</span>
 <span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
@@ -213,6 +215,16 @@
 <span class="sd">        Number of velocity bins to use. Defaults to 32.</span>
 <span class="sd">    default_velocity : int</span>
 <span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
+<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo&#39;, &#39;close_all&#39;}</span>
+<span class="sd">        Policy for dealing with duplicate notes. When a note off event</span>
+<span class="sd">        is presetned while there are multiple correspoding note on</span>
+<span class="sd">        events that have not yet been closed, we need a policy to decide</span>
+<span class="sd">        which note on messages to close. This is only effective when</span>
+<span class="sd">        `use_single_note_off_event` is False. Defaults to &#39;fifo&#39;.</span>
+
+<span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
+<span class="sd">        - &#39;lifo&#39; (first in first out): close the latest note on</span>
+<span class="sd">        - &#39;close_all&#39;: close all note on messages</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -248,54 +260,81 @@
     <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">velocity</span> <span class="o">=</span> <span class="n">default_velocity</span>
     <span class="n">velocity_factor</span> <span class="o">=</span> <span class="mi">128</span> <span class="o">/</span> <span class="n">velocity_bins</span>
-    <span class="n">note_ons</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Keep track of active note on messages</span>
+    <span class="n">active_notes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="c1"># Iterate over the events</span>
     <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">array</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">():</span>
-        <span class="c1"># Skip unknown event</span>
-        <span class="k">if</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">offset_note_on</span><span class="p">:</span>
+        <span class="c1"># Skip unknown events</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">offset_note_on</span> <span class="ow">or</span> <span class="n">event</span> <span class="o">&gt;=</span> <span class="n">vocab_size</span><span class="p">:</span>
             <span class="k">continue</span>
 
-        <span class="c1"># End-of-sequence event</span>
+        <span class="c1"># End-of-sequence events</span>
         <span class="k">if</span> <span class="n">use_end_of_sequence_event</span> <span class="ow">and</span> <span class="n">event</span> <span class="o">==</span> <span class="n">offset_eos</span><span class="p">:</span>
             <span class="k">break</span>
 
-        <span class="c1"># Note on event</span>
+        <span class="c1"># Note on events</span>
         <span class="k">if</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">offset_note_off</span><span class="p">:</span>
-            <span class="n">note_ons</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+            <span class="n">pitch</span> <span class="o">=</span> <span class="n">event</span> <span class="o">-</span> <span class="n">offset_note_on</span>
+            <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">Note</span><span class="p">(</span>
+                    <span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span>
+                    <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
+                    <span class="n">duration</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
 
-        <span class="c1"># Note off event</span>
+        <span class="c1"># Note off events</span>
         <span class="k">elif</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">offset_time_shift</span><span class="p">:</span>
-
             <span class="c1"># Close all notes</span>
             <span class="k">if</span> <span class="n">use_single_note_off_event</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">note_on</span> <span class="ow">in</span> <span class="n">note_ons</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-                        <span class="n">time</span><span class="o">=</span><span class="n">note_on</span><span class="p">,</span>
-                        <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
-                        <span class="n">duration</span><span class="o">=</span><span class="n">time</span> <span class="o">-</span> <span class="n">note_on</span><span class="p">,</span>
-                        <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
-                <span class="n">note_ons</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">if</span> <span class="n">active_notes</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">note_list</span> <span class="ow">in</span> <span class="n">active_notes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">note_list</span><span class="p">:</span>
+                            <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+                    <span class="n">active_notes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+                <span class="k">continue</span>
 
-            <span class="c1"># Close a specific note</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pitch</span> <span class="o">=</span> <span class="n">event</span> <span class="o">-</span> <span class="n">offset_note_off</span>
-                <span class="n">onset</span> <span class="o">=</span> <span class="n">note_ons</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">pitch</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">onset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-                        <span class="n">time</span><span class="o">=</span><span class="n">onset</span><span class="p">,</span>
-                        <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
-                        <span class="n">duration</span><span class="o">=</span><span class="n">time</span> <span class="o">-</span> <span class="n">onset</span><span class="p">,</span>
-                        <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
-                    <span class="p">)</span>
-                    <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+            <span class="n">pitch</span> <span class="o">=</span> <span class="n">event</span> <span class="o">-</span> <span class="n">offset_note_off</span>
 
-        <span class="c1"># Time shift event</span>
+            <span class="c1"># Skip it if there is no active notes</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># NOTE: There is no way to disambiguate duplicate notes of</span>
+            <span class="c1"># the same pitch. Thus, we need a policy for handling</span>
+            <span class="c1"># duplicate notes.</span>
+
+            <span class="c1"># &#39;FIFO&#39;: (first in first out) close the earliest note</span>
+            <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fifo&quot;</span><span class="p">:</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># &#39;LIFO&#39;: (last in first out) close the latest note on</span>
+            <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;lifo&quot;</span><span class="p">:</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># &#39;close_all&#39; - close all note on events</span>
+            <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;close_all&quot;</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]:</span>
+                    <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                    <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span>
+
+        <span class="c1"># Time-shift events</span>
         <span class="k">elif</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">offset_velocity</span><span class="p">:</span>
             <span class="n">time</span> <span class="o">+=</span> <span class="n">event</span> <span class="o">-</span> <span class="n">offset_time_shift</span> <span class="o">+</span> <span class="mi">1</span>
 
-        <span class="c1"># Velocity event</span>
+        <span class="c1"># Velocity events</span>
         <span class="k">elif</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">vocab_size</span><span class="p">:</span>
             <span class="n">velocity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">event</span> <span class="o">-</span> <span class="n">offset_velocity</span><span class="p">)</span> <span class="o">*</span> <span class="n">velocity_factor</span><span class="p">)</span>
 

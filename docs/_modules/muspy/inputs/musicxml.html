@@ -171,64 +171,9 @@
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">NOTE_MAP</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">,</span> <span class="n">MODE_CENTERS</span><span class="p">,</span> <span class="n">NOTE_MAP</span><span class="p">,</span> <span class="n">NOTE_TYPE_MAP</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-
-
-<span class="n">CIRCLE_OF_FIFTHS</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;Fb&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s2">&quot;Cb&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;Gb&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;Db&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;Ab&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;Eb&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;Bb&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">),</span>  <span class="c1"># Lydian</span>
-    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">),</span>  <span class="c1"># Major/Ionian</span>
-    <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">),</span>  <span class="c1"># Mixolydian</span>
-    <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">),</span>  <span class="c1"># Dorian</span>
-    <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">),</span>  <span class="c1"># Minor/Aeolian</span>
-    <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">),</span>  <span class="c1"># Phrygian</span>
-    <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">),</span>  <span class="c1"># Locrian</span>
-    <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;F#&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;C#&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="s2">&quot;G#&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;D#&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;A#&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="s2">&quot;E#&quot;</span><span class="p">),</span>
-    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;B#&quot;</span><span class="p">),</span>
-<span class="p">]</span>
-
-<span class="n">MODE_CENTERS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;major&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-    <span class="s2">&quot;minor&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-    <span class="s2">&quot;lydian&quot;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-    <span class="s2">&quot;ionian&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
-    <span class="s2">&quot;mixolydian&quot;</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
-    <span class="s2">&quot;dorian&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="s2">&quot;aeolian&quot;</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
-    <span class="s2">&quot;phrygian&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
-    <span class="s2">&quot;locrian&quot;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
-<span class="p">}</span>
-
-
-<span class="n">NOTE_TYPE_MAP</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;1024th&quot;</span><span class="p">:</span> <span class="mf">0.00390625</span><span class="p">,</span>
-    <span class="s2">&quot;512th&quot;</span><span class="p">:</span> <span class="mf">0.0078125</span><span class="p">,</span>
-    <span class="s2">&quot;256th&quot;</span><span class="p">:</span> <span class="mf">0.015625</span><span class="p">,</span>
-    <span class="s2">&quot;128th&quot;</span><span class="p">:</span> <span class="mf">0.03125</span><span class="p">,</span>
-    <span class="s2">&quot;64th&quot;</span><span class="p">:</span> <span class="mf">0.0625</span><span class="p">,</span>
-    <span class="s2">&quot;32nd&quot;</span><span class="p">:</span> <span class="mf">0.125</span><span class="p">,</span>
-    <span class="s2">&quot;16th&quot;</span><span class="p">:</span> <span class="mf">0.25</span><span class="p">,</span>
-    <span class="s2">&quot;eighth&quot;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
-    <span class="s2">&quot;quarter&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-    <span class="s2">&quot;half&quot;</span><span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
-    <span class="s2">&quot;whole&quot;</span><span class="p">:</span> <span class="mf">4.0</span><span class="p">,</span>
-    <span class="s2">&quot;breve&quot;</span><span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span>
-    <span class="s2">&quot;long&quot;</span><span class="p">:</span> <span class="mf">16.0</span><span class="p">,</span>
-    <span class="s2">&quot;maxima&quot;</span><span class="p">:</span> <span class="mf">32.0</span><span class="p">,</span>
-<span class="p">}</span>
 
 
 <div class="viewcode-block" id="MusicXMLError"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.MusicXMLError">[docs]</a><span class="k">class</span> <span class="nc">MusicXMLError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
@@ -599,8 +544,8 @@
 
 <span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MusicXML file.&quot;&quot;&quot;</span>
-    <span class="c1"># Title is usually stored in movement-title</span>
-    <span class="c1"># See https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
+    <span class="c1"># Title is usually stored in movement-title. See</span>
+    <span class="c1"># https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
     <span class="n">title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;movement-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
         <span class="n">title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

@@ -361,10 +361,11 @@
 <span class="k">def</span> <span class="nf">_to_note_counts</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a list of counts of notes that sum to a note value.</span>
 
-<span class="sd">    For example, a note value of 1.75 will be decoposed into a whole note, a</span>
-<span class="sd">    half note and a quarter note, respectively. The return list is of</span>
-<span class="sd">    length 12, where the first value corresponds to the count of double</span>
-<span class="sd">    whole notes and the last value corresponds to the count of 1024th notes.</span>
+<span class="sd">    For example, a note value of 1.75 will be decoposed into a whole</span>
+<span class="sd">    note, a half note and a quarter note, respectively. The return list</span>
+<span class="sd">    is of length 12, where the first value corresponds to the count of</span>
+<span class="sd">    double whole notes and the last value corresponds to the count of</span>
+<span class="sd">    1024th notes.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">note_value</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
@@ -382,8 +383,8 @@
 <span class="k">def</span> <span class="nf">to_note_codes</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a note value as a list of note codes.</span>
 
-<span class="sd">    For example, a note value of 1.75 will be decoposed into a whole note, a</span>
-<span class="sd">    half note and a quarter note, respectively.</span>
+<span class="sd">    For example, a note value of 1.75 will be decoposed into a whole</span>
+<span class="sd">    note, a half note and a quarter note, respectively.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">note_code</span> <span class="o">=</span> <span class="n">COMMON_NOTE_CODES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span>
@@ -394,11 +395,11 @@
 
 
 <span class="k">def</span> <span class="nf">to_note_codes_alt</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a note value as a list of note codes (with straight beams).</span>
+    <span class="sd">&quot;&quot;&quot;Return a note value as a list of note codes with straight beams.</span>
 
-<span class="sd">    This is useful for making chords as all the notes comes with a straight</span>
-<span class="sd">    beam. For example, a note value of 1.75 will be decoposed into a whole</span>
-<span class="sd">    note, a half note and a quarter note, respectively.</span>
+<span class="sd">    This is useful for making chords as all the notes comes with a</span>
+<span class="sd">    straight beam. For example, a note value of 1.75 will be decomposed</span>
+<span class="sd">    into a whole note, a half note and a quarter note, respectively.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">note_code</span> <span class="o">=</span> <span class="n">COMMON_NOTE_CODES_ALT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">note_value</span><span class="p">)</span>
@@ -417,14 +418,14 @@
 
 
 <span class="k">def</span> <span class="nf">get_pitch_classes</span><span class="p">(</span><span class="n">fifths</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a list indicating the root note of each pitch number.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of the root note of each pitch number.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">fifths</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">get_accidentals</span><span class="p">(</span><span class="n">fifths</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a list indicating the accidentals and the pitch classes.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of the accidentals and the pitch classes.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">fifths</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">accidentals</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">fifths</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -476,8 +477,8 @@
 <span class="sd">        Path to the music font. Defaults to the path to the downloaded</span>
 <span class="sd">        Bravura font.</span>
 <span class="sd">    font_scale : float, optional</span>
-<span class="sd">        Font scaling factor for finetuning. Defaults to 140, optimized for</span>
-<span class="sd">        the Bravura font.</span>
+<span class="sd">        Font scaling factor for finetuning. Defaults to 140, optimized</span>
+<span class="sd">        for the Bravura font.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -553,7 +554,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_accidentals</span> <span class="o">=</span> <span class="n">get_accidentals</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ScorePlotter.set_baseline"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.set_baseline">[docs]</a>    <span class="k">def</span> <span class="nf">set_baseline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Set baseline position (the y-coordinate of the first staff line).&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Set baseline position (y-coordinate of first staff line).&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bottom</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bottom</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span><span class="p">)</span>
@@ -766,7 +767,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">note</span><span class="p">,</span> <span class="n">text</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="ScorePlotter.plot_key_signature"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_key_signature">[docs]</a>    <span class="k">def</span> <span class="nf">plot_key_signature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plot a key signature. Only major and minor keys are supported.&quot;&quot;&quot;</span></div>
+        <span class="sd">&quot;&quot;&quot;Plot a key signature. Supports only major and minor keys.&quot;&quot;&quot;</span></div>
         <span class="c1"># self._accidentals = _get_accidentals(0)</span>
         <span class="c1"># self._pitches = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6]</span>
         <span class="c1"># TODO: Support keys other than major and minor keys</span>
@@ -954,7 +955,8 @@
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to show.</span>
 <span class="sd">    figsize : (float, float), optional</span>
-<span class="sd">        Width and height in inches. Defaults to Matplotlib configuration.</span>
+<span class="sd">        Width and height in inches. Defaults to Matplotlib</span>
+<span class="sd">        configuration.</span>
 <span class="sd">    clef : str, {&#39;treble&#39;, &#39;alto&#39;, &#39;bass&#39;}</span>
 <span class="sd">        Clef type. Defaults to a treble clef.</span>
 <span class="sd">    clef_octave : int</span>
@@ -962,11 +964,11 @@
 <span class="sd">    note_spacing : int, optional</span>
 <span class="sd">        Spacing of notes. Defaults to 4.</span>
 <span class="sd">    font_path : str or Path, optional</span>
-<span class="sd">        Path to the music font. Defaults to the path to the built-in Bravura</span>
-<span class="sd">        font.</span>
+<span class="sd">        Path to the music font. Defaults to the path to the built-in</span>
+<span class="sd">        Bravura font.</span>
 <span class="sd">    font_scale : float, optional</span>
-<span class="sd">        Font scaling factor for finetuning. Defaults to 140, optimized for</span>
-<span class="sd">        the Bravura font.</span>
+<span class="sd">        Font scaling factor for finetuning. Defaults to 140, optimized</span>
+<span class="sd">        for the Bravura font.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

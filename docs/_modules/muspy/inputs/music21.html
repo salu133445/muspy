@@ -393,7 +393,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">from_music21_part</span><span class="p">(</span>
+<div class="viewcode-block" id="from_music21_part"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_music21_part">[docs]</a><span class="k">def</span> <span class="nf">from_music21_part</span><span class="p">(</span>
     <span class="n">part</span><span class="p">:</span> <span class="n">Part</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Track</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Return a music21 Part object as Track object(s).</span>
@@ -415,10 +415,10 @@
     <span class="n">instruments</span> <span class="o">=</span> <span class="n">partitionByInstrument</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">instruments</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">parse_track</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">parse_track</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span> <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="n">instruments</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">parse_track</span><span class="p">(</span><span class="n">instrument</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span> <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="n">instruments</span><span class="p">]</span></div>
 
 
-<span class="k">def</span> <span class="nf">from_music21_score</span><span class="p">(</span><span class="n">score</span><span class="p">:</span> <span class="n">Score</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_music21_score"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_music21_score">[docs]</a><span class="k">def</span> <span class="nf">from_music21_score</span><span class="p">(</span><span class="n">score</span><span class="p">:</span> <span class="n">Score</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a music21 Stream object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
@@ -451,7 +451,7 @@
         <span class="n">key_signatures</span><span class="o">=</span><span class="n">parse_key_signatures</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span>
         <span class="n">time_signatures</span><span class="o">=</span><span class="n">parse_time_signatures</span><span class="p">(</span><span class="n">score</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="from_music21_opus"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_music21_opus">[docs]</a><span class="k">def</span> <span class="nf">from_music21_opus</span><span class="p">(</span>
@@ -500,33 +500,7 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Part</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">from_music21_part</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">from_music21_score</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
-
-    <span class="n">tracks</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">Score</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">stream</span><span class="o">.</span><span class="n">parts</span><span class="p">:</span>
-            <span class="n">instruments</span> <span class="o">=</span> <span class="n">partitionByInstrument</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">instruments</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="n">instruments</span><span class="p">:</span>
-                    <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parse_track</span><span class="p">(</span><span class="n">instrument</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">part</span><span class="o">.</span><span class="n">flat</span><span class="o">.</span><span class="n">notesAndRests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parse_track</span><span class="p">(</span><span class="n">part</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">instruments</span> <span class="o">=</span> <span class="n">partitionByInstrument</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">instruments</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">instrument</span> <span class="ow">in</span> <span class="n">instruments</span><span class="p">:</span>
-                <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parse_track</span><span class="p">(</span><span class="n">instrument</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">stream</span><span class="o">.</span><span class="n">flat</span><span class="o">.</span><span class="n">notesAndRests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parse_track</span><span class="p">(</span><span class="n">stream</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
-        <span class="n">metadata</span><span class="o">=</span><span class="n">parse_metadata</span><span class="p">(</span><span class="n">stream</span><span class="p">),</span>
-        <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span>
-        <span class="n">tempos</span><span class="o">=</span><span class="n">parse_tempos</span><span class="p">(</span><span class="n">stream</span><span class="p">),</span>
-        <span class="n">key_signatures</span><span class="o">=</span><span class="n">parse_key_signatures</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span>
-        <span class="n">time_signatures</span><span class="o">=</span><span class="n">parse_time_signatures</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">),</span>
-        <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
-    <span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">from_music21_score</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

@@ -175,11 +175,9 @@
 <span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">@inproceedings{cuthbert2010music21,</span>
 <span class="s2">  author={Michael Scott Cuthbert and Christopher Ariza},</span>
-<span class="s2">  title={Music21: A Toolkit for Computer-Aided Musicology and Symbolic Music </span><span class="se">\</span>
-<span class="s2">Data},</span>
-<span class="s2">  booktitle={Proceedings of the 11th International Society for Music </span><span class="se">\</span>
-<span class="s2">Information Retrieval Conference (ISMIR)},</span>
-<span class="s2">  year=</span><span class="si">{2010}</span><span class="s2"></span>
+<span class="s2">  title={Music21: A Toolkit for Computer-Aided Musicology and Symbolic Music Data},</span>
+<span class="s2">  booktitle={Proceedings of the 11th International Society for Music Information Retrieval Conference (ISMIR)},</span>
+<span class="s2">  year=2010</span>
 <span class="s2">}&quot;&quot;&quot;</span>
 
 
@@ -228,7 +226,9 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(composer=</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">composer</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.abc&quot;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">number</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>  <span class="c1"># type: ignore</span>
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>

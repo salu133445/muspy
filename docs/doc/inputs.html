@@ -231,13 +231,13 @@ commonly-used representations in music generation.</p>
 
 <dl class="py function">
 <dt id="muspy.inputs.from_event_representation">
-<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">duplicate_note_mode</span><span class="o">=</span><span class="default_value">'fifo'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decode event-based representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Will be casted to
-integer if not of integer type.</p></li>
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Cast to integer
+if not of integer type.</p></li>
 <li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to
 <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
 <li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
@@ -256,6 +256,17 @@ event. Time shifts larger than <cite>max_time_shift</cite> will be
 decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
 <li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off event
+is presetned while there are multiple correspoding note on
+events that have not yet been closed, we need a policy to decide
+which note on messages to close. This is only effective when
+<cite>use_single_note_off_event</cite> is False. Defaults to ‘fifo’.</p>
+<ul>
+<li><p>’fifo’ (first in first out): close the earliest note on</p></li>
+<li><p>’lifo’ (first in first out): close the latest note on</p></li>
+<li><p>’close_all’: close all note on messages</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -277,13 +288,13 @@ decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>midi</strong> (<a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiFile" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiFile</span></code></a>) – Mido MidiFile object to convert.</p></li>
-<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off
 message is presetned while there are multiple correspoding note
 on messages that have not yet been closed, we need a policy to
 decide which note on messages to close. Defaults to ‘fifo’.</p>
 <ul>
 <li><p>’fifo’ (first in first out): close the earliest note on</p></li>
-<li><p>’lifo’ (first in first out):close the latest note on</p></li>
+<li><p>’lifo’ (first in first out): close the latest note on</p></li>
 <li><p>’close_all’: close all note on messages</p></li>
 </ul>
 </p></li>
@@ -341,6 +352,48 @@ decide which note on messages to close. Defaults to ‘fifo’.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.inputs.from_music21_part">
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_music21_part</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">part</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/music21.html#from_music21_part"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_music21_part" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a music21 Part object as Track object(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>part</strong> (<cite>music21.stream.Part</cite>) – Part object to parse.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Time steps per quarter note. Defaults to
+<cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Parsed track(s).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a> or list of <a class="reference internal" href="muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.inputs.from_music21_score">
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_music21_score</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">score</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/music21.html#from_music21_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_music21_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a music21 Stream object as a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>score</strong> (<cite>music21.stream.Score</cite>) – Score object to convert.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Time steps per quarter note. Defaults to
+<cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Converted Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.inputs.from_note_representation">
 <code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_note_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_start_end</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/note.html#from_note_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_note_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decode note-based representation into a Music object.</p>
@@ -359,8 +412,8 @@ False.</p></li>
 <li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather
 than ‘time’ and ‘duration’. Defaults to False.</p></li>
 <li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
-<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding if <cite>encode_velocity</cite> is
-False. Defaults to 64.</p></li>
+<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding if <cite>encode_velocity</cite>
+is False. Defaults to 64.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -494,6 +547,26 @@ False.</p></li>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.inputs.from_pypianoroll_track">
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_pypianoroll_track</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">track</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/pianoroll.html#from_pypianoroll_track"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_pypianoroll_track" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a Pypianoroll Track object as a Track object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>track</strong> (<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Track" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Track</span></code></a>) – Pypianoroll Track object to convert.</p></li>
+<li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Converted track.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Track" title="muspy.Track"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Track</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.inputs.from_representation">
 <code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">from_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/wrappers.html#from_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.from_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update with the given representation.</p>
@@ -521,8 +594,8 @@ False.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the file to load.</p></li>
-<li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – Format to save (case-insensitive). Defaults to infer the format from
-the extension.</p></li>
+<li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – Format to save (case-insensitive). Defaults to infer the format
+from the extension.</p></li>
 <li><p><strong>**kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.9)"><em>dict</em></a>) – Keyword arguments to pass to the target function. See
 <a class="reference internal" href="muspy.html#muspy.load_json" title="muspy.load_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_json()</span></code></a> or <a class="reference internal" href="muspy.html#muspy.load_yaml" title="muspy.load_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.load_yaml()</span></code></a> for available
 arguments.</p></li>
@@ -586,8 +659,8 @@ arguments.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the file to read.</p></li>
-<li><p><strong>kind</strong> (<em>{'midi'</em><em>, </em><em>'musicxml'</em><em>, </em><em>'abc'}</em><em>, </em><em>optional</em>) – Format to save (case-insensitive). Defaults to infer the format from
-the extension.</p></li>
+<li><p><strong>kind</strong> (<em>{'midi'</em><em>, </em><em>'musicxml'</em><em>, </em><em>'abc'}</em><em>, </em><em>optional</em>) – Format to save (case-insensitive). Defaults to infer the format
+from the extension.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>muspy.datasets.haydn &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>muspy.datasets.haydn</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for muspy.datasets.haydn</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Haydn Op.20 Dataset.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">music21</span>
+<span class="kn">from</span> <span class="nn">music21.roman</span> <span class="kn">import</span> <span class="n">RomanNumeral</span>
+
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Annotation</span>
+<span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">from_music21_score</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span><span class="p">,</span> <span class="n">RemoteFolderDataset</span>
+
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;Haydn Op.20 Dataset&quot;</span>
+<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">This dataset is a set of functional harmonic analysis annotations </span><span class="se">\</span>
+<span class="s2">for the Op.20 string quartets from Joseph Haydn, commonly known as </span><span class="se">\</span>
+<span class="s2">the &#39;Sun&#39; quartets.&quot;&quot;&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://doi.org/10.5281/zenodo.1095630&quot;</span>
+<span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">@dataset{nestor_napoles_lopez_2017_1095630,</span>
+<span class="s2">  author={N</span><span class="se">\&#39;</span><span class="s2">apoles L</span><span class="se">\&#39;</span><span class="s2">opez, N</span><span class="se">\&#39;</span><span class="s2">estor},</span>
+<span class="s2">  title={{Joseph Haydn - String Quartets Op.20 - Harmonic Analysis Annotations Dataset}},</span>
+<span class="s2">  month=dec,</span>
+<span class="s2">  year=2017,</span>
+<span class="s2">  publisher=</span><span class="si">{Zenodo}</span><span class="s2">,</span>
+<span class="s2">  version={v1.1-alpha},</span>
+<span class="s2">  doi={10.5281/zenodo.1095630},</span>
+<span class="s2">  url={https://doi.org/10.5281/zenodo.1095630}</span>
+<span class="s2">}&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="HaydnOp20Dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.HaydnOp20Dataset">[docs]</a><span class="k">class</span> <span class="nc">HaydnOp20Dataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Haydn Op.20 Dataset.&quot;&quot;&quot;</span>
+
+    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">)</span>
+    <span class="n">_citation</span> <span class="o">=</span> <span class="n">_CITATION</span>
+    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;haydn&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;haydnop20v1.3_annotated.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://github.com/napulen/haydn_op20_harm/releases/download/v1.3/haydnop20v1.3_annotated.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">130954</span><span class="p">,</span>
+            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="s2">&quot;1c65c8da312e1c9dda681d0496bf527f&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="s2">&quot;96986cccebfd37a36cc97a2fc0ebcfbe22d5136e622b21e04ea125d589f5073b&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;hrm&quot;</span>
+
+<div class="viewcode-block" id="HaydnOp20Dataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.HaydnOp20Dataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">music21</span><span class="o">.</span><span class="n">converter</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;humdrum&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Get the annotations</span>
+        <span class="n">roman_numerals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">score</span><span class="o">.</span><span class="n">flat</span><span class="o">.</span><span class="n">getElementsByClass</span><span class="p">(</span><span class="s2">&quot;RomanNumeral&quot;</span><span class="p">))</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">get_annotations</span><span class="p">(</span><span class="n">roman_numerals</span><span class="p">)</span>
+
+        <span class="c1"># Remove the annotations from the original score</span>
+        <span class="c1"># (they mess with the python representation)</span>
+        <span class="n">score</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">roman_numerals</span><span class="p">,</span> <span class="n">recurse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">music</span> <span class="o">=</span> <span class="n">from_music21_score</span><span class="p">(</span><span class="n">score</span><span class="p">)</span>
+        <span class="n">music</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span>
+
+        <span class="k">return</span> <span class="n">music</span></div></div>
+
+
+<span class="k">def</span> <span class="nf">get_annotations</span><span class="p">(</span>
+    <span class="n">roman_numerals</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">RomanNumeral</span><span class="p">],</span> <span class="n">resolution</span><span class="o">=</span><span class="n">DEFAULT_RESOLUTION</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return music21 RomanNumeral objects as Annotation objects.&quot;&quot;&quot;</span>
+    <span class="c1"># Convert the list into a dictionary to remove duplicate items</span>
+    <span class="n">roman_numeral_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">rn</span><span class="o">.</span><span class="n">offset</span><span class="p">:</span> <span class="n">rn</span> <span class="k">for</span> <span class="n">rn</span> <span class="ow">in</span> <span class="n">roman_numerals</span> <span class="k">if</span> <span class="n">rn</span><span class="p">}</span>
+
+    <span class="n">annotations</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">offset</span><span class="p">,</span> <span class="n">roman_numeral</span> <span class="ow">in</span> <span class="n">roman_numeral_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">offset</span> <span class="o">*</span> <span class="n">resolution</span><span class="p">)))</span>
+        <span class="n">tonicized_key</span> <span class="o">=</span> <span class="n">roman_numeral</span><span class="o">.</span><span class="n">secondaryRomanNumeralKey</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">tonicized_key</span> <span class="k">if</span> <span class="n">tonicized_key</span> <span class="k">else</span> <span class="n">roman_numeral</span><span class="o">.</span><span class="n">key</span>
+
+        <span class="n">annotation</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">key</span><span class="o">.</span><span class="n">tonicPitchNameWithCase</span><span class="p">,</span>
+            <span class="s2">&quot;figure&quot;</span><span class="p">:</span> <span class="n">roman_numeral</span><span class="o">.</span><span class="n">figure</span><span class="p">,</span>
+            <span class="s2">&quot;chord&quot;</span><span class="p">:</span> <span class="n">roman_numeral</span><span class="o">.</span><span class="n">pitchedCommonName</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Annotation</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">annotation</span><span class="o">=</span><span class="n">annotation</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">annotations</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Hao-Wen Dong
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

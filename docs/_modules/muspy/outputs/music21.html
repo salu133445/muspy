@@ -171,6 +171,7 @@
 <span class="kn">from</span> <span class="nn">music21.tempo</span> <span class="kn">import</span> <span class="n">MetronomeMark</span>
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">,</span> <span class="n">MODE_CENTERS</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
@@ -192,7 +193,21 @@
 
 <span class="k">def</span> <span class="nf">to_music21_key</span><span class="p">(</span><span class="n">key_signature</span><span class="p">:</span> <span class="n">KeySignature</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Key</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a KeySignature object as a music21 Key object.&quot;&quot;&quot;</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">tonic</span><span class="o">=</span><span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span><span class="p">],</span> <span class="n">mode</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">root_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tonic</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">root_str</span>
+    <span class="k">elif</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">tonic</span> <span class="o">=</span> <span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span>
+            <span class="n">tonic</span> <span class="o">=</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span> <span class="o">+</span> <span class="n">offset</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tonic</span> <span class="o">=</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;One of `root`, `root_str` or `fifths` must be specified.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">tonic</span><span class="o">=</span><span class="n">tonic</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
     <span class="n">key</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span>
     <span class="k">return</span> <span class="n">key</span>
 
@@ -200,7 +215,7 @@
 <span class="k">def</span> <span class="nf">to_music21_time_signature</span><span class="p">(</span>
     <span class="n">time_signature</span><span class="p">:</span> <span class="n">TimeSignature</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M21TimeSignature</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a TimeSignature object as a music21 TimeSignature object.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Return a TimeSignature object as a music21 TimeSignature.&quot;&quot;&quot;</span>
     <span class="n">m21_time_signature</span> <span class="o">=</span> <span class="n">M21TimeSignature</span><span class="p">(</span>
         <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span> <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
     <span class="p">)</span>
@@ -224,8 +239,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">meta</span> <span class="o">=</span> <span class="n">M21MetaData</span><span class="p">()</span>
 
-    <span class="c1"># Title is usually stored in movement-title</span>
-    <span class="c1"># See https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
+    <span class="c1"># Title is usually stored in movement-title. See</span>
+    <span class="c1"># https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
     <span class="k">if</span> <span class="n">metadata</span><span class="o">.</span><span class="n">title</span><span class="p">:</span>
         <span class="n">meta</span><span class="o">.</span><span class="n">movementName</span> <span class="o">=</span> <span class="n">metadata</span><span class="o">.</span><span class="n">title</span>
 

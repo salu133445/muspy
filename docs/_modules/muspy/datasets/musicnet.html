@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>muspy.inputs.yaml &mdash; MusPy  documentation</title>
+  <title>muspy.datasets.musicnet &mdash; MusPy  documentation</title>
   
 
   
@@ -143,7 +143,7 @@
         
           <li><a href="../../index.html">Module code</a> &raquo;</li>
         
-      <li>muspy.inputs.yaml</li>
+      <li>muspy.datasets.musicnet</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -158,33 +158,51 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <h1>Source code for muspy.inputs.yaml</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;YAML input interface.&quot;&quot;&quot;</span>
+  <h1>Source code for muspy.datasets.musicnet</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;MusicNet Dataset.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">yaml</span>
-
+<span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">read_midi</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span><span class="p">,</span> <span class="n">RemoteFolderDataset</span>
+
+<span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;MusicNet Dataset&quot;</span>
+<span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">MusicNet is a collection of 330 freely-licensed classical music recordings, </span><span class="se">\</span>
+<span class="s2">together with over 1 million annotated labels indicating the precise time of </span><span class="se">\</span>
+<span class="s2">each note in every recording, the instrument that plays each note, and the </span><span class="se">\</span>
+<span class="s2">note&#39;s position in the metrical structure of the composition.&quot;&quot;&quot;</span>
+<span class="n">_HOMEPAGE</span> <span class="o">=</span> <span class="s2">&quot;https://homes.cs.washington.edu/~thickstn/musicnet.html&quot;</span>
+<span class="n">_CITATION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">@inproceedings{thickstun2017learning,</span>
+<span class="s2">  author={John Thickstun and Zaid Harchaoui and Sham M. Kakade},</span>
+<span class="s2">  title={Learning Features of Music from Scratch},</span>
+<span class="s2">  booktitle={International Conference on Learning Representations (ICLR)},</span>
+<span class="s2">  year=2017</span>
+<span class="s2">}&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="load_yaml"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load_yaml">[docs]</a><span class="k">def</span> <span class="nf">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Load a YAML file into a Music object.</span>
+<div class="viewcode-block" id="MusicNetDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MusicNetDataset">[docs]</a><span class="k">class</span> <span class="nc">MusicNetDataset</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MusicNet Dataset (MIDI only).&quot;&quot;&quot;</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the file to load.</span>
+    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">)</span>
+    <span class="n">_citation</span> <span class="o">=</span> <span class="n">_CITATION</span>
+    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;musicnet&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;musicnet_midis.tar.gz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://homes.cs.washington.edu/~thickstn/media/musicnet_midis.tar.gz&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">2601302</span><span class="p">,</span>
+            <span class="s2">&quot;md5&quot;</span><span class="p">:</span> <span class="s2">&quot;b5fa98a113bfc51c8a445def9f24dc7e&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="s2">&quot;943cc47731ec5f397bd6fbab4dff78342472890cd484bd30ffb2e16047eef908&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;mid&quot;</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    :class:`muspy.Music`</span>
-<span class="sd">        Loaded Music object.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Music</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+<div class="viewcode-block" id="MusicNetDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MusicNetDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

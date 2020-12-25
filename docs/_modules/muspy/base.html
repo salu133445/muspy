@@ -186,9 +186,6 @@
 <span class="k">class</span> <span class="nc">_OrderedDumper</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A dumper that supports OrderedDict.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">increase_indent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">indentless</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">increase_indent</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-
 
 <span class="k">def</span> <span class="nf">_dict_representer</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_mapping</span><span class="p">(</span>
@@ -634,7 +631,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>

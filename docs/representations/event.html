@@ -182,7 +182,7 @@
 events, including note-on, note-off, time-shift and velocity events.
 The output shape is M x 1, where M is the number of events. The
 values encode the events. The default configuration uses 0-127 to
-encode note-one events, 128-255 for note-off events, 256-355 for
+encode note-on events, 128-255 for note-off events, 256-355 for
 time-shift events, and 356 to 387 for velocity events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -216,13 +216,13 @@ decomposed into two or more time-shift events. Defaults to 100.</p></li>
 
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">duplicate_note_mode</span><span class="o">=</span><span class="default_value">'fifo'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/event.html#from_event_representation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Decode event-based representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Will be casted to
-integer if not of integer type.</p></li>
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Cast to integer
+if not of integer type.</p></li>
 <li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to
 <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
 <li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].
@@ -241,6 +241,17 @@ event. Time shifts larger than <cite>max_time_shift</cite> will be
 decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
 <li><p><strong>default_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Default velocity value to use when decoding. Defaults to 64.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off event
+is presetned while there are multiple correspoding note on
+events that have not yet been closed, we need a policy to decide
+which note on messages to close. This is only effective when
+<cite>use_single_note_off_event</cite> is False. Defaults to ‘fifo’.</p>
+<ul>
+<li><p>’fifo’ (first in first out): close the earliest note on</p></li>
+<li><p>’lifo’ (first in first out): close the latest note on</p></li>
+<li><p>’close_all’: close all note on messages</p></li>
+</ul>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
