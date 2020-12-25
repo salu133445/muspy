@@ -169,7 +169,8 @@ class EventRepresentationProcessor:
             vocab_list.append((EOS,))
 
         # Map human-readable tuples to integers
-        self.vocab = frozenbidict(enumerate(vocab_list)).inverse  # type: frozenbidict[Any, int]
+        self.vocab = frozenbidict(
+            enumerate(vocab_list)).inverse  # type: frozenbidict[Any, int]
 
     def encode(self, music: Music) -> ndarray:
         if music.resolution != self.resolution:
@@ -290,14 +291,17 @@ class EventRepresentationProcessor:
 
         # Decode events, keeping track of information for each track
         time = 0  # Time is common for all tracks
-        curr_velocity = defaultdict(lambda: self.default_velocity)  # type: DefaultDict[int, int]
+        curr_velocity = defaultdict(
+            lambda: self.default_velocity)  # type: DefaultDict[int, int]
         velocity_factor = 128 / self.velocity_bins
         tracks = defaultdict(lambda: Track(
-            program=self.default_program, is_drum=self.default_is_drum))  # type: DefaultDict[int, Track]
+            program=self.default_program,
+            is_drum=self.default_is_drum))  # type: DefaultDict[int, Track]
         program_is_set = defaultdict(bool)  # type: DefaultDict[int, bool]
 
         # Keep track of active note on messages for each track
-        active_notes = defaultdict(lambda: defaultdict(deque))  # type: DefaultDict[int, DefaultDict[int, deque]]
+        active_notes = defaultdict(lambda: defaultdict(deque)) \
+            # type: DefaultDict[int, DefaultDict[int, deque]]
 
         # Iterate over the events
         for (event, *args) in events:
@@ -333,9 +337,9 @@ class EventRepresentationProcessor:
                 if not active_notes[track_id][pitch]:
                     continue
 
-                # NOTE: There is no way to disambiguate duplicate notes of
-                # the same pitch. Thus, we need a policy for handling
-                # duplicate notes.
+                # NOTE: There is no way to disambiguate duplicate notes
+                # of the same pitch. Thus, we need a policy for
+                # handling duplicate notes.
 
                 # 'FIFO': (first in first out) close the earliest note
                 elif self.duplicate_note_mode.lower() == "fifo":

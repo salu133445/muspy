@@ -12,8 +12,11 @@ Classes
 
 """
 
-from .processors import *
+from .processors import (NoteRepresentationProcessor,
+                         PianoRollRepresentationProcessor,
+                         PitchRepresentationProcessor)
 from .event import EventRepresentationProcessor
+
 
 __all__ = [
     'NoteRepresentationProcessor',
