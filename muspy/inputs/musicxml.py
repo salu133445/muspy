@@ -30,7 +30,7 @@ def _gcd(a: int, b: int) -> int:
     return a
 
 
-def _lcm(a: int, b: int) -> int:
+def _lcm_two_args(a: int, b: int) -> int:
     """Return least common multiple.
 
     Code copied from https://stackoverflow.com/a/147539.
@@ -39,16 +39,16 @@ def _lcm(a: int, b: int) -> int:
     return a * b // _gcd(a, b)
 
 
-def lcm(*args: int) -> int:
+def _lcm(*args: int) -> int:
     """Return lcm of args.
 
     Code copied from https://stackoverflow.com/a/147539.
 
     """
-    return reduce(_lcm, args)  # type: ignore
+    return reduce(_lcm_two_args, args)  # type: ignore
 
 
-def get_text(
+def _get_text(
     element: Element,
     path: str,
     default: Optional[T] = None,
@@ -63,7 +63,7 @@ def get_text(
     return default  # type: ignore
 
 
-def get_required(element: Element, path: str) -> Element:
+def _get_required(element: Element, path: str) -> Element:
     """Return a required element; raise ValueError if not found."""
     elem = element.find(path)
     if elem is None:
@@ -71,7 +71,7 @@ def get_required(element: Element, path: str) -> Element:
     return elem
 
 
-def get_required_attr(element: Element, attr: str) -> str:
+def _get_required_attr(element: Element, attr: str) -> str:
     """Return a required attribute; raise MusicXMLError if not found."""
     attribute = element.get(attr)
     if attribute is None:
@@ -79,7 +79,7 @@ def get_required_attr(element: Element, attr: str) -> str:
     return attribute
 
 
-def get_required_text(
+def _get_required_text(
     element: Element, path: str, remove_newlines: bool = False
 ) -> str:
     """Return a required text; raise MusicXMLError if not found."""
@@ -101,9 +101,9 @@ def get_required_text(
 
 def parse_metronome_elem(elem: Element) -> Optional[float]:
     """Return a qpm value parsed from a metronome element."""
-    beat_unit = get_text(elem, "beat-unit")
+    beat_unit = _get_text(elem, "beat-unit")
     if beat_unit is not None:
-        per_minute = get_text(elem, "per-minute")
+        per_minute = _get_text(elem, "per-minute")
         if per_minute is not None and beat_unit in NOTE_TYPE_MAP:
             qpm = NOTE_TYPE_MAP[beat_unit] * float(per_minute)
             if elem.find("beat-unit-dot") is not None:
@@ -114,8 +114,8 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
 
 def parse_key_elem(elem: Element) -> Dict:
     """Return a dictionary with data parsed from a key element."""
-    mode = get_text(elem, "mode", "major")
-    fifths = int(get_required_text(elem, "fifths"))
+    mode = _get_text(elem, "mode", "major")
+    fifths = int(_get_required_text(elem, "fifths"))
     if mode is None:
         return {"fifths": fifths}
     idx = MODE_CENTERS[mode] + fifths
@@ -127,9 +127,9 @@ def parse_key_elem(elem: Element) -> Dict:
 
 def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
     """Return a (pitch, pitch_str) tuple parsed from a pitch element."""
-    step = get_required_text(elem, "step")
-    octave = int(get_required_text(elem, "octave"))
-    alter = int(get_text(elem, "alter", 0))
+    step = _get_required_text(elem, "step")
+    octave = int(_get_required_text(elem, "octave"))
+    alter = int(_get_text(elem, "alter", 0))
     pitch = 12 * (octave + 1) + NOTE_MAP[step] + alter
     if alter > 0:
         pitch_str = step + "#" * alter + str(octave)
@@ -186,9 +186,9 @@ def parse_part_elem(
                 transpose_elem = elem.find("transpose")
                 if transpose_elem is not None:
                     transpose_semitone = int(
-                        get_required_text(transpose_elem, "chromatic")
+                        _get_required_text(transpose_elem, "chromatic")
                     )
-                    octave_change = get_text(transpose_elem, "octave-change")
+                    octave_change = _get_text(transpose_elem, "octave-change")
                     if octave_change is not None:
                         transpose_octave = int(octave_change)
 
@@ -196,14 +196,14 @@ def parse_part_elem(
                 time_elem = elem.find("time")
                 if time_elem is not None:
                     # Numerator
-                    beats = get_required_text(time_elem, "beats")
+                    beats = _get_required_text(time_elem, "beats")
                     if "+" in beats:
                         numerator = sum(int(beat) for beat in beats.split("+"))
                     else:
                         numerator = int(beats)
 
                     # Denominator
-                    beat_type = get_required_text(time_elem, "beat-type")
+                    beat_type = _get_required_text(time_elem, "beat-type")
                     if "+" in beat_type:
                         raise RuntimeError(
                             "Compound time signatures with separate fractions "
@@ -294,7 +294,7 @@ def parse_part_elem(
                         position = last_note_position
 
                 # Get duration
-                duration = int(get_required_text(elem, "duration"))
+                duration = int(_get_required_text(elem, "duration"))
 
                 # Check if it is a rest
                 rest_elem = elem.find("rest")
@@ -304,7 +304,7 @@ def parse_part_elem(
 
                 # Compute pitch number
                 pitch, pitch_str = parse_pitch_elem(
-                    get_required(elem, "pitch")
+                    _get_required(elem, "pitch")
                 )
                 pitch += 12 * transpose_octave + transpose_semitone
 
@@ -317,7 +317,7 @@ def parse_part_elem(
                 # Get instrument information
                 instrument_elem = elem.find("instrument")
                 if instrument_elem is not None:
-                    instrument_id = get_required_text(instrument_elem, "id")
+                    instrument_id = _get_required_text(instrument_elem, "id")
                     if instrument_id not in instrument_info:
                         raise MusicXMLError(
                             "ID of an 'instrument' element must be predefined "
@@ -358,11 +358,11 @@ def parse_part_elem(
                 position += duration * factor
 
             elif elem.tag == "forward":
-                duration = int(get_required_text(elem, "duration"))
+                duration = int(_get_required_text(elem, "duration"))
                 position += duration * factor
 
             elif elem.tag == "backup":
-                duration = int(get_required_text(elem, "duration"))
+                duration = int(_get_required_text(elem, "duration"))
                 position -= duration * factor
 
         time += position
@@ -385,9 +385,9 @@ def parse_metadata(root: Element) -> Metadata:
     """Return a Metadata object parsed from a MusicXML file."""
     # Title is usually stored in movement-title. See
     # https://www.musicxml.com/tutorial/file-structure/score-header-entity/
-    title = get_text(root, "movement-title", remove_newlines=True)
+    title = _get_text(root, "movement-title", remove_newlines=True)
     if not title:
-        title = get_text(root, "work/work-title", remove_newlines=True)
+        title = _get_text(root, "work/work-title", remove_newlines=True)
 
     # Creators and copyrights
     creators = []
@@ -432,7 +432,7 @@ def _get_root(path: Union[str, Path], compressed: Optional[bool] = None):
             "Element 'rootfile' tag not found in the container file "
             "('container.xml')."
         )
-    filename = get_required_attr(rootfile, "full-path")
+    filename = _get_required_attr(rootfile, "full-path")
     return ET.fromstring(zip_file.read(filename))
 
 
@@ -453,24 +453,24 @@ def _get_divisions(root: Element):
 def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
     """Return part information parsed from a score part element."""
     # Part ID
-    part_id = get_required_attr(elem, "id")
+    part_id = _get_required_attr(elem, "id")
 
     # Part name
-    part_name = get_text(elem, "part-name", remove_newlines=True)
+    part_name = _get_text(elem, "part-name", remove_newlines=True)
 
     # Instruments
     part_info: OrderedDict = OrderedDict()
     for score_instrument_elem in elem.findall("score-instrument"):
-        instrument_id = get_required_attr(score_instrument_elem, "id")
+        instrument_id = _get_required_attr(score_instrument_elem, "id")
         part_info[instrument_id] = OrderedDict()
-        part_info[instrument_id]["name"] = get_text(
+        part_info[instrument_id]["name"] = _get_text(
             score_instrument_elem,
             "instrument-name",
             part_name,
             remove_newlines=True,
         )
     for midi_instrument_elem in elem.findall("midi-instrument"):
-        instrument_id = get_required_attr(midi_instrument_elem, "id")
+        instrument_id = _get_required_attr(midi_instrument_elem, "id")
         if instrument_id not in part_info:
             if instrument_id == part_id:
                 instrument_id = ""
@@ -481,10 +481,10 @@ def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
                     "in a 'score-instrument' element."
                 )
         part_info[instrument_id]["program"] = int(
-            get_text(midi_instrument_elem, "midi-program", 0)
+            _get_text(midi_instrument_elem, "midi-program", 0)
         )
         part_info[instrument_id]["is_drum"] = (
-            int(get_text(midi_instrument_elem, "midi-channel", 0)) == 10
+            int(_get_text(midi_instrument_elem, "midi-channel", 0)) == 10
         )
     if not part_info:
         part_info[""] = {"name": part_name}
@@ -529,7 +529,7 @@ def read_musicxml(
     # Set resolution to the least common multiple of all divisions
     # TODO: Support custom resolution
     divisions = _get_divisions(root)
-    resolution = lcm(*divisions) if divisions else 1
+    resolution = _lcm(*divisions) if divisions else 1
 
     # Part information
     part_info: OrderedDict = OrderedDict()
@@ -553,7 +553,7 @@ def read_musicxml(
             raise MusicXMLError(
                 "Part-list information is required for a multi-part piece."
             )
-        part_elem = get_required(root, "part")
+        part_elem = _get_required(root, "part")
         instrument_info = {"": {"program": 0, "is_drum": False}}
         part = parse_part_elem(part_elem, resolution, instrument_info)
 

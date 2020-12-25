@@ -12,7 +12,7 @@ First of all, let's import the MusPy library. ::
 
     import muspy
 
-Now, let's load the JSON file into a Music object. ::
+Now, let's load the example JSON file into a Music object. ::
 
     music = muspy.load("example.json")
     print(music)
@@ -32,39 +32,78 @@ Now here's what we got.
     metadata:
       schema_version: '0.0'
       title: Für Elise
-      creators: [Ludwig van Beethoven]
+      creators:
+      - Ludwig van Beethoven
       collection: Example dataset
       source_filename: example.json
     resolution: 4
     tempos:
-      - {time: 0, qpm: 72.0}
+    - time: 0
+      qpm: 72.0
     key_signatures:
-      - {time: 0, root: 9, mode: minor}
+    - time: 0
+      root: 9
+      mode: minor
     time_signatures:
-      - {time: 0, numerator: 3, denominator: 8}
-    downbeats: [4, 16]
+    - time: 0
+      numerator: 3
+      denominator: 8
+    downbeats:
+    - 4
+    - 16
     lyrics:
-      - {time: 0, lyric: Nothing but a lyric}
+    - time: 0
+      lyric: Nothing but a lyric
     annotations:
-      - {time: 0, annotation: Nothing but an annotation}
+    - time: 0
+      annotation: Nothing but an annotation
     tracks:
-      - program: 0
-        is_drum: false
-        name: Melody
-        notes:
-          - {time: 0, duration: 2, pitch: 76, velocity: 64}
-          - {time: 2, duration: 2, pitch: 75, velocity: 64}
-          - {time: 4, duration: 2, pitch: 76, velocity: 64}
-          - {time: 6, duration: 2, pitch: 75, velocity: 64}
-          - {time: 8, duration: 2, pitch: 76, velocity: 64}
-          - {time: 10, duration: 2, pitch: 71, velocity: 64}
-          - {time: 12, duration: 2, pitch: 74, velocity: 64}
-          - {time: 14, duration: 2, pitch: 72, velocity: 64}
-          - {time: 16, duration: 2, pitch: 69, velocity: 64}
-        lyrics:
-          - {time: 0, lyric: Nothing but a lyric}
-        annotations:
-          - {time: 0, annotation: Nothing but an annotation}
+    - program: 0
+      is_drum: false
+      name: Melody
+      notes:
+      - time: 0
+        pitch: 76
+        duration: 2
+        velocity: 64
+      - time: 2
+        pitch: 75
+        duration: 2
+        velocity: 64
+      - time: 4
+        pitch: 76
+        duration: 2
+        velocity: 64
+      - time: 6
+        pitch: 75
+        duration: 2
+        velocity: 64
+      - time: 8
+        pitch: 76
+        duration: 2
+        velocity: 64
+      - time: 10
+        pitch: 71
+        duration: 2
+        velocity: 64
+      - time: 12
+        pitch: 74
+        duration: 2
+        velocity: 64
+      - time: 14
+        pitch: 72
+        duration: 2
+        velocity: 64
+      - time: 16
+        pitch: 69
+        duration: 2
+        velocity: 64
+      lyrics:
+      - time: 0
+        lyric: Nothing but a lyric
+      annotations:
+      - time: 0
+        annotation: Nothing but an annotation
 
 You can use dot notation to assess the data. For example, ``music.metadata.title`` returns the song title, and ``music.tempos[0].qpm`` returns the first tempo in qpm (quarter notes per minute). If you want a list of all the pitches, you can do ::
 

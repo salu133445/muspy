@@ -191,7 +191,7 @@
     <span class="k">return</span> <span class="n">a</span>
 
 
-<span class="k">def</span> <span class="nf">_lcm</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_lcm_two_args</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return least common multiple.</span>
 
 <span class="sd">    Code copied from https://stackoverflow.com/a/147539.</span>
@@ -200,16 +200,16 @@
     <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">//</span> <span class="n">_gcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">lcm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_lcm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return lcm of args.</span>
 
 <span class="sd">    Code copied from https://stackoverflow.com/a/147539.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">_lcm</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">_lcm_two_args</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
 
-<span class="k">def</span> <span class="nf">get_text</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_get_text</span><span class="p">(</span>
     <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">default</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -224,7 +224,7 @@
     <span class="k">return</span> <span class="n">default</span>  <span class="c1"># type: ignore</span>
 
 
-<span class="k">def</span> <span class="nf">get_required</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_required</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a required element; raise ValueError if not found.&quot;&quot;&quot;</span>
     <span class="n">elem</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -232,7 +232,7 @@
     <span class="k">return</span> <span class="n">elem</span>
 
 
-<span class="k">def</span> <span class="nf">get_required_attr</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_required_attr</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a required attribute; raise MusicXMLError if not found.&quot;&quot;&quot;</span>
     <span class="n">attribute</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">attribute</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -240,7 +240,7 @@
     <span class="k">return</span> <span class="n">attribute</span>
 
 
-<span class="k">def</span> <span class="nf">get_required_text</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_get_required_text</span><span class="p">(</span>
     <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a required text; raise MusicXMLError if not found.&quot;&quot;&quot;</span>
@@ -262,9 +262,9 @@
 
 <span class="k">def</span> <span class="nf">parse_metronome_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a qpm value parsed from a metronome element.&quot;&quot;&quot;</span>
-    <span class="n">beat_unit</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;beat-unit&quot;</span><span class="p">)</span>
+    <span class="n">beat_unit</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;beat-unit&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">beat_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">per_minute</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;per-minute&quot;</span><span class="p">)</span>
+        <span class="n">per_minute</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;per-minute&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">per_minute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">beat_unit</span> <span class="ow">in</span> <span class="n">NOTE_TYPE_MAP</span><span class="p">:</span>
             <span class="n">qpm</span> <span class="o">=</span> <span class="n">NOTE_TYPE_MAP</span><span class="p">[</span><span class="n">beat_unit</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">per_minute</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;beat-unit-dot&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -275,8 +275,8 @@
 
 <span class="k">def</span> <span class="nf">parse_key_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a dictionary with data parsed from a key element.&quot;&quot;&quot;</span>
-    <span class="n">mode</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
-    <span class="n">fifths</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;fifths&quot;</span><span class="p">))</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
+    <span class="n">fifths</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;fifths&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;fifths&quot;</span><span class="p">:</span> <span class="n">fifths</span><span class="p">}</span>
     <span class="n">idx</span> <span class="o">=</span> <span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">+</span> <span class="n">fifths</span>
@@ -288,9 +288,9 @@
 
 <span class="k">def</span> <span class="nf">parse_pitch_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a (pitch, pitch_str) tuple parsed from a pitch element.&quot;&quot;&quot;</span>
-    <span class="n">step</span> <span class="o">=</span> <span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">)</span>
-    <span class="n">octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;octave&quot;</span><span class="p">))</span>
-    <span class="n">alter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;alter&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;step&quot;</span><span class="p">)</span>
+    <span class="n">octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;octave&quot;</span><span class="p">))</span>
+    <span class="n">alter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;alter&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
     <span class="n">pitch</span> <span class="o">=</span> <span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">octave</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">NOTE_MAP</span><span class="p">[</span><span class="n">step</span><span class="p">]</span> <span class="o">+</span> <span class="n">alter</span>
     <span class="k">if</span> <span class="n">alter</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">step</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">*</span> <span class="n">alter</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">octave</span><span class="p">)</span>
@@ -347,9 +347,9 @@
                 <span class="n">transpose_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;transpose&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">transpose_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">transpose_semitone</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-                        <span class="n">get_required_text</span><span class="p">(</span><span class="n">transpose_elem</span><span class="p">,</span> <span class="s2">&quot;chromatic&quot;</span><span class="p">)</span>
+                        <span class="n">_get_required_text</span><span class="p">(</span><span class="n">transpose_elem</span><span class="p">,</span> <span class="s2">&quot;chromatic&quot;</span><span class="p">)</span>
                     <span class="p">)</span>
-                    <span class="n">octave_change</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">transpose_elem</span><span class="p">,</span> <span class="s2">&quot;octave-change&quot;</span><span class="p">)</span>
+                    <span class="n">octave_change</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">transpose_elem</span><span class="p">,</span> <span class="s2">&quot;octave-change&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">octave_change</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                         <span class="n">transpose_octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">octave_change</span><span class="p">)</span>
 
@@ -357,14 +357,14 @@
                 <span class="n">time_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">time_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># Numerator</span>
-                    <span class="n">beats</span> <span class="o">=</span> <span class="n">get_required_text</span><span class="p">(</span><span class="n">time_elem</span><span class="p">,</span> <span class="s2">&quot;beats&quot;</span><span class="p">)</span>
+                    <span class="n">beats</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">time_elem</span><span class="p">,</span> <span class="s2">&quot;beats&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="s2">&quot;+&quot;</span> <span class="ow">in</span> <span class="n">beats</span><span class="p">:</span>
                         <span class="n">numerator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">beat</span><span class="p">)</span> <span class="k">for</span> <span class="n">beat</span> <span class="ow">in</span> <span class="n">beats</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">))</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">numerator</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">beats</span><span class="p">)</span>
 
                     <span class="c1"># Denominator</span>
-                    <span class="n">beat_type</span> <span class="o">=</span> <span class="n">get_required_text</span><span class="p">(</span><span class="n">time_elem</span><span class="p">,</span> <span class="s2">&quot;beat-type&quot;</span><span class="p">)</span>
+                    <span class="n">beat_type</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">time_elem</span><span class="p">,</span> <span class="s2">&quot;beat-type&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="s2">&quot;+&quot;</span> <span class="ow">in</span> <span class="n">beat_type</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                             <span class="s2">&quot;Compound time signatures with separate fractions &quot;</span>
@@ -455,7 +455,7 @@
                         <span class="n">position</span> <span class="o">=</span> <span class="n">last_note_position</span>
 
                 <span class="c1"># Get duration</span>
-                <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
 
                 <span class="c1"># Check if it is a rest</span>
                 <span class="n">rest_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;rest&quot;</span><span class="p">)</span>
@@ -465,7 +465,7 @@
 
                 <span class="c1"># Compute pitch number</span>
                 <span class="n">pitch</span><span class="p">,</span> <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">parse_pitch_elem</span><span class="p">(</span>
-                    <span class="n">get_required</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">)</span>
+                    <span class="n">_get_required</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
                 <span class="n">pitch</span> <span class="o">+=</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">transpose_octave</span> <span class="o">+</span> <span class="n">transpose_semitone</span>
 
@@ -478,7 +478,7 @@
                 <span class="c1"># Get instrument information</span>
                 <span class="n">instrument_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;instrument&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">instrument_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_text</span><span class="p">(</span><span class="n">instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+                    <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">instrument_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">instrument_info</span><span class="p">:</span>
                         <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
                             <span class="s2">&quot;ID of an &#39;instrument&#39; element must be predefined &quot;</span>
@@ -519,11 +519,11 @@
                 <span class="n">position</span> <span class="o">+=</span> <span class="n">duration</span> <span class="o">*</span> <span class="n">factor</span>
 
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;forward&quot;</span><span class="p">:</span>
-                <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
                 <span class="n">position</span> <span class="o">+=</span> <span class="n">duration</span> <span class="o">*</span> <span class="n">factor</span>
 
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;backup&quot;</span><span class="p">:</span>
-                <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
+                <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
                 <span class="n">position</span> <span class="o">-=</span> <span class="n">duration</span> <span class="o">*</span> <span class="n">factor</span>
 
         <span class="n">time</span> <span class="o">+=</span> <span class="n">position</span>
@@ -546,9 +546,9 @@
     <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MusicXML file.&quot;&quot;&quot;</span>
     <span class="c1"># Title is usually stored in movement-title. See</span>
     <span class="c1"># https://www.musicxml.com/tutorial/file-structure/score-header-entity/</span>
-    <span class="n">title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;movement-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;movement-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">title</span><span class="p">:</span>
-        <span class="n">title</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;work/work-title&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Creators and copyrights</span>
     <span class="n">creators</span> <span class="o">=</span> <span class="p">[]</span>
@@ -593,7 +593,7 @@
             <span class="s2">&quot;Element &#39;rootfile&#39; tag not found in the container file &quot;</span>
             <span class="s2">&quot;(&#39;container.xml&#39;).&quot;</span>
         <span class="p">)</span>
-    <span class="n">filename</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">rootfile</span><span class="p">,</span> <span class="s2">&quot;full-path&quot;</span><span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">rootfile</span><span class="p">,</span> <span class="s2">&quot;full-path&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
 
 
@@ -614,24 +614,24 @@
 <span class="k">def</span> <span class="nf">parse_score_part_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">OrderedDict</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return part information parsed from a score part element.&quot;&quot;&quot;</span>
     <span class="c1"># Part ID</span>
-    <span class="n">part_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+    <span class="n">part_id</span> <span class="o">=</span> <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
 
     <span class="c1"># Part name</span>
-    <span class="n">part_name</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;part-name&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">part_name</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;part-name&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Instruments</span>
     <span class="n">part_info</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">score_instrument_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;score-instrument&quot;</span><span class="p">):</span>
-        <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">score_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">score_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
         <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
-        <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_text</span><span class="p">(</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span>
             <span class="n">score_instrument_elem</span><span class="p">,</span>
             <span class="s2">&quot;instrument-name&quot;</span><span class="p">,</span>
             <span class="n">part_name</span><span class="p">,</span>
             <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="k">for</span> <span class="n">midi_instrument_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;midi-instrument&quot;</span><span class="p">):</span>
-        <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">get_required_attr</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="n">instrument_id</span> <span class="o">=</span> <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">instrument_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">part_info</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">instrument_id</span> <span class="o">==</span> <span class="n">part_id</span><span class="p">:</span>
                 <span class="n">instrument_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -642,10 +642,10 @@
                     <span class="s2">&quot;in a &#39;score-instrument&#39; element.&quot;</span>
                 <span class="p">)</span>
         <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
-            <span class="n">get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-program&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">_get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-program&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">part_info</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="s2">&quot;is_drum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="nb">int</span><span class="p">(</span><span class="n">get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-channel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="mi">10</span>
+            <span class="nb">int</span><span class="p">(</span><span class="n">_get_text</span><span class="p">(</span><span class="n">midi_instrument_elem</span><span class="p">,</span> <span class="s2">&quot;midi-channel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="mi">10</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">part_info</span><span class="p">:</span>
         <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">part_name</span><span class="p">}</span>
@@ -690,7 +690,7 @@
     <span class="c1"># Set resolution to the least common multiple of all divisions</span>
     <span class="c1"># TODO: Support custom resolution</span>
     <span class="n">divisions</span> <span class="o">=</span> <span class="n">_get_divisions</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
-    <span class="n">resolution</span> <span class="o">=</span> <span class="n">lcm</span><span class="p">(</span><span class="o">*</span><span class="n">divisions</span><span class="p">)</span> <span class="k">if</span> <span class="n">divisions</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="n">resolution</span> <span class="o">=</span> <span class="n">_lcm</span><span class="p">(</span><span class="o">*</span><span class="n">divisions</span><span class="p">)</span> <span class="k">if</span> <span class="n">divisions</span> <span class="k">else</span> <span class="mi">1</span>
 
     <span class="c1"># Part information</span>
     <span class="n">part_info</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
@@ -714,7 +714,7 @@
             <span class="k">raise</span> <span class="n">MusicXMLError</span><span class="p">(</span>
                 <span class="s2">&quot;Part-list information is required for a multi-part piece.&quot;</span>
             <span class="p">)</span>
-        <span class="n">part_elem</span> <span class="o">=</span> <span class="n">get_required</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;part&quot;</span><span class="p">)</span>
+        <span class="n">part_elem</span> <span class="o">=</span> <span class="n">_get_required</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;part&quot;</span><span class="p">)</span>
         <span class="n">instrument_info</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;program&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;is_drum&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}}</span>
         <span class="n">part</span> <span class="o">=</span> <span class="n">parse_part_elem</span><span class="p">(</span><span class="n">part_elem</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">instrument_info</span><span class="p">)</span>
 

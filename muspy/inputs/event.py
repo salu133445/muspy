@@ -118,12 +118,7 @@ def from_event_representation(
         if event < offset_note_off:
             pitch = event - offset_note_on
             active_notes[pitch].append(
-                Note(
-                    time=time,
-                    pitch=pitch,
-                    duration=-1,
-                    velocity=velocity,
-                )
+                Note(time=time, pitch=pitch, duration=-1, velocity=velocity)
             )
 
         # Note off events

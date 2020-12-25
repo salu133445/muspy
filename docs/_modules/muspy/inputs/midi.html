@@ -163,12 +163,16 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">tempo2bpm</span>
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Instrument</span>
-<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PrettyMIDINote</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">KeySignature</span> <span class="k">as</span> <span class="n">PmKeySignature</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Lyric</span> <span class="k">as</span> <span class="n">PmLyric</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">PmNote</span>
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
+<span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">PmTimeSignature</span>
 
 <span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Annotation</span><span class="p">,</span>
@@ -180,7 +184,7 @@
     <span class="n">TimeSignature</span><span class="p">,</span>
     <span class="n">Track</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">note_str_to_note_num</span>
 
 
@@ -472,73 +476,91 @@
     <span class="k">return</span> <span class="n">music</span>
 
 
-<span class="k">def</span> <span class="nf">parse_pretty_midi_key_signatures</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return KeySignature objects parsed from a PrettyMIDI object.</span>
+<span class="k">def</span> <span class="nf">from_pretty_midi_key_signature</span><span class="p">(</span>
+    <span class="n">key_signature</span><span class="p">:</span> <span class="n">PmKeySignature</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KeySignature</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a pretty_midi KeySignature object as a KeySignature.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
-<span class="sd">        PrettyMIDI object to convert.</span>
+<span class="sd">    key_signature : :class:`pretty_midi.KeySignature`</span>
+<span class="sd">        pretty_midi KeySignature object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.KeySignature`</span>
-<span class="sd">        Parsed key signatures.</span>
+<span class="sd">    :class:`muspy.KeySignature`</span>
+<span class="sd">        Converted key signature.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    The `time` attribute of the converted object will be of type float</span>
+<span class="sd">    as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">key_signature_changes</span><span class="p">:</span>
-        <span class="n">is_minor</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">key_number</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;minor&quot;</span> <span class="k">if</span> <span class="n">is_minor</span> <span class="k">else</span> <span class="s2">&quot;major&quot;</span>
-        <span class="n">key_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">KeySignature</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">mode</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">key_signatures</span>
+    <span class="n">is_minor</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">key_number</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;minor&quot;</span> <span class="k">if</span> <span class="n">is_minor</span> <span class="k">else</span> <span class="s2">&quot;major&quot;</span>
+    <span class="k">return</span> <span class="n">KeySignature</span><span class="p">(</span>
+        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">parse_pretty_midi_time_signatures</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return TimeSignature objects parsed from a PrettyMIDI object.</span>
+<span class="k">def</span> <span class="nf">from_pretty_midi_time_signature</span><span class="p">(</span>
+    <span class="n">time_signature</span><span class="p">:</span> <span class="n">PmTimeSignature</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSignature</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a pretty_midi TimeSignature object as a TimeSignature.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
-<span class="sd">        PrettyMIDI object to convert.</span>
+<span class="sd">    time_signature : :class:`pretty_midi.TimeSignature`</span>
+<span class="sd">        pretty_midi TimeSignature object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.TimeSignature`</span>
-<span class="sd">        Parsed time signatures.</span>
+<span class="sd">    :class:`muspy.TimeSignature`</span>
+<span class="sd">        Converted time signature.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    The `time` attribute of the converted object will be of type float</span>
+<span class="sd">    as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">time_signature_changes</span><span class="p">:</span>
-        <span class="n">time_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">TimeSignature</span><span class="p">(</span>
-                <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
-                <span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
-                <span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="n">time_signatures</span>
+    <span class="k">return</span> <span class="n">TimeSignature</span><span class="p">(</span>
+        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="n">numerator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+        <span class="n">denominator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">parse_pretty_midi_lyrics</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return Lyric objects parsed from a PrettyMIDI object.</span>
+<span class="k">def</span> <span class="nf">from_pretty_midi_lyric</span><span class="p">(</span><span class="n">lyric</span><span class="p">:</span> <span class="n">PmLyric</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lyric</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a pretty_midi Lyric object as a Lyric object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
-<span class="sd">        PrettyMIDI object to convert.</span>
+<span class="sd">    lyric : :class:`pretty_midi.Lyric`</span>
+<span class="sd">        pretty_midi Lyric object to convert.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of :class:`muspy.Lyric`</span>
-<span class="sd">        Parsed lyrics.</span>
+<span class="sd">    :class:`muspy.Lyric`</span>
+<span class="sd">        Converted lyric.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    The `time` attribute of the converted object will be of type float</span>
+<span class="sd">    as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">Lyric</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">Lyric</span><span class="p">(</span>
+        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="n">lyric</span><span class="o">=</span><span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+    <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">parse_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">PrettyMIDINote</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return pretty_midi Note object as a MusPy Note object.</span>
+<span class="k">def</span> <span class="nf">from_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">PmNote</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return pretty_midi Note object as a Note object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -548,13 +570,23 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :class:`muspy.Note`</span>
-<span class="sd">        Parsed note.</span>
+<span class="sd">        Converted note.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    The `time` and `duration` attributes of the converted object will be</span>
+<span class="sd">    of type float as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Note</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Note</span><span class="p">(</span>
+        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+        <span class="n">pitch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">),</span>
+        <span class="n">velocity</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">),</span>
+    <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">parse_pretty_midi_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">:</span> <span class="n">Instrument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">from_pretty_midi_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">:</span> <span class="n">Instrument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a pretty_midi Instrument object as a Track object.</span>
 
 <span class="sd">    Parameters</span>
@@ -565,22 +597,29 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    :class:`muspy.Track`</span>
-<span class="sd">        Parsed track.</span>
+<span class="sd">        Converted track.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="n">parse_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">instrument</span><span class="o">.</span><span class="n">notes</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">Track</span><span class="p">(</span>
-        <span class="n">instrument</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">instrument</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="n">instrument</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">notes</span>
+        <span class="n">program</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">instrument</span><span class="o">.</span><span class="n">program</span><span class="p">),</span>
+        <span class="n">is_drum</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">instrument</span><span class="o">.</span><span class="n">is_drum</span><span class="p">),</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">instrument</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">notes</span><span class="o">=</span><span class="p">[</span><span class="n">from_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">instrument</span><span class="o">.</span><span class="n">notes</span><span class="p">],</span>
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span>
+    <span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a pretty_midi PrettyMIDI object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
 <span class="sd">        PrettyMIDI object to convert.</span>
+<span class="sd">    resolution : int, optional</span>
+<span class="sd">        Time steps per quarter note. Defaults to</span>
+<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -588,17 +627,82 @@
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">key_signatures</span> <span class="o">=</span> <span class="n">parse_pretty_midi_key_signatures</span><span class="p">(</span><span class="n">midi</span><span class="p">)</span>
-    <span class="n">time_signatures</span> <span class="o">=</span> <span class="n">parse_pretty_midi_time_signatures</span><span class="p">(</span><span class="n">midi</span><span class="p">)</span>
-    <span class="n">lyrics</span> <span class="o">=</span> <span class="n">parse_pretty_midi_lyrics</span><span class="p">(</span><span class="n">midi</span><span class="p">)</span>
-    <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">parse_pretty_midi_instrument</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
+    <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">DEFAULT_RESOLUTION</span>
+
+    <span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span> <span class="o">=</span> <span class="n">midi</span><span class="o">.</span><span class="n">get_tempo_changes</span><span class="p">()</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+    <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="n">tempo</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">from_pretty_midi_key_signature</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">key_signature_changes</span>
+    <span class="p">]</span>
+    <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">from_pretty_midi_time_signature</span><span class="p">(</span><span class="n">time_signature</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">time_signature_changes</span>
+    <span class="p">]</span>
+    <span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_pretty_midi_lyric</span><span class="p">(</span><span class="n">lyric</span><span class="p">)</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">lyrics</span><span class="p">]</span>
+    <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span><span class="n">from_pretty_midi_instrument</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">midi</span><span class="o">.</span><span class="n">instruments</span><span class="p">]</span>
+    <span class="n">music</span> <span class="o">=</span> <span class="n">Music</span><span class="p">(</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">source_format</span><span class="o">=</span><span class="s2">&quot;midi&quot;</span><span class="p">),</span>
+        <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">,</span>
         <span class="n">key_signatures</span><span class="o">=</span><span class="n">key_signatures</span><span class="p">,</span>
         <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
         <span class="n">lyrics</span><span class="o">=</span><span class="n">lyrics</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
+
+    <span class="c1"># NOTE: pretty_midi uses the absolute timing system, so we have to</span>
+    <span class="c1"># convert all the timings into metrical timing.</span>
+
+    <span class="c1"># Remove unnecessary tempo changes to speed up the search</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">last_tempo</span> <span class="o">=</span> <span class="n">tempi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">last_time</span> <span class="o">=</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tempo_realtimes</span> <span class="o">=</span> <span class="n">tempo_realtimes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">tempi</span> <span class="o">=</span> <span class="n">tempi</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_tempo</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_time</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">last_tempo</span> <span class="o">=</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">tempo_realtimes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">)</span>
+        <span class="n">tempi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">map_time</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">time</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60.0</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Compute the tempo time in metrical timing of each tempo change</span>
+        <span class="n">tempo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">)</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60.0</span>
+        <span class="p">)</span>
+        <span class="n">tempo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">tempo_times</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">map_time</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">residual</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60.0</span>
+            <span class="k">return</span> <span class="n">tempo_times</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">residual</span> <span class="o">*</span> <span class="n">factor</span><span class="p">))</span>
+
+    <span class="c1"># Adjust timing</span>
+    <span class="n">music</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="n">func</span><span class="o">=</span><span class="n">map_time</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">music</span></div>
 
 
 <span class="k">def</span> <span class="nf">read_midi_pretty_midi</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>

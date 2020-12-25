@@ -2,9 +2,9 @@
 MusPy documentation
 ===================
 
-.. image:: https://img.shields.io/travis/com/salu133445/muspy
-    :target: https://travis-ci.com/salu133445/muspy
-    :alt: Travis
+.. image:: https://img.shields.io/github/workflow/status/salu133445/muspy/Testing
+    :target: https://github.com/salu133445/muspy/actions
+    :alt: GitHub workflow
 .. image:: https://img.shields.io/codecov/c/github/salu133445/muspy
     :target: https://codecov.io/gh/salu133445/muspy
     :alt: Codecov
