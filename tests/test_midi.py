@@ -288,3 +288,51 @@ def test_write():
     check_time_signatures(loaded.time_signatures)
     check_lyrics(loaded.lyrics)
     check_tracks(loaded.tracks)
+
+
+def test_read_pretty_midi_backend():
+    music = muspy.read(TEST_MIDI_DIR / "fur-elise.mid", backend="pretty_midi")
+
+    assert music.metadata.source_filename == "fur-elise.mid"
+    assert music.metadata.source_format == "midi"
+
+    assert len(music) == 2
+
+    # pretty_midi removes duplicate tempos at time 0
+    assert len(music.tempos) == 1
+    assert round(music.tempos[0].qpm) == 72
+
+    # pretty_midi removes duplicate key signatures at time 0
+    assert len(music.key_signatures) == 1
+    assert music.key_signatures[0].root == 0
+    assert music.key_signatures[0].mode == "major"
+
+    assert len(music.time_signatures), 7
+
+    numerators = (1, 3, 2, 1, 3, 3, 2)
+    for i, time_signature in enumerate(music.time_signatures):
+        assert time_signature.numerator == numerators[i]
+        assert time_signature.denominator == 8
+
+
+def test_write_pretty_midi_backend():
+    music = muspy.load(TEST_JSON_PATH)
+
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.mid", backend="pretty_midi")
+
+    loaded = muspy.read(temp_dir / "test.mid", backend="pretty_midi")
+
+    assert loaded.resolution == 24
+    assert loaded.metadata.source_filename == "test.mid"
+    assert loaded.metadata.source_format == "midi"
+
+    assert len(loaded.key_signatures) == 1
+    assert len(loaded.time_signatures) == 1
+    assert len(loaded.lyrics) == 1
+
+    assert len(loaded) == 1
+    assert len(loaded[0].notes) == 9
+    assert loaded[0].program == 0
+    assert not loaded[0].is_drum
+    assert loaded[0].name == "Melody"

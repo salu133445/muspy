@@ -2,12 +2,16 @@
 from collections import OrderedDict, defaultdict
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Union
+from typing import List, Optional, Union
 
+import numpy as np
 from mido import MidiFile, tempo2bpm
 from pretty_midi import Instrument
-from pretty_midi import Note as PrettyMIDINote
+from pretty_midi import KeySignature as PmKeySignature
+from pretty_midi import Lyric as PmLyric
+from pretty_midi import Note as PmNote
 from pretty_midi import PrettyMIDI
+from pretty_midi import TimeSignature as PmTimeSignature
 
 from ..classes import (
     Annotation,
@@ -19,7 +23,7 @@ from ..classes import (
     TimeSignature,
     Track,
 )
-from ..music import Music
+from ..music import DEFAULT_RESOLUTION, Music
 from ..utils import note_str_to_note_num
 
 
@@ -311,73 +315,91 @@ def read_midi_mido(
     return music
 
 
-def parse_pretty_midi_key_signatures(midi: PrettyMIDI) -> List[KeySignature]:
-    """Return KeySignature objects parsed from a PrettyMIDI object.
+def from_pretty_midi_key_signature(
+    key_signature: PmKeySignature,
+) -> KeySignature:
+    """Return a pretty_midi KeySignature object as a KeySignature.
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI`
-        PrettyMIDI object to convert.
+    key_signature : :class:`pretty_midi.KeySignature`
+        pretty_midi KeySignature object to convert.
 
     Returns
     -------
-    list of :class:`muspy.KeySignature`
-        Parsed key signatures.
+    :class:`muspy.KeySignature`
+        Converted key signature.
+
+    Note
+    ----
+    The `time` attribute of the converted object will be of type float
+    as pretty_midi uses the absolute timing system.
 
     """
-    key_signatures = []
-    for key_signature in midi.key_signature_changes:
-        is_minor, root = divmod(key_signature.key_number, 12)
-        mode = "minor" if is_minor else "major"
-        key_signatures.append(KeySignature(key_signature.time, root, mode))
-    return key_signatures
+    is_minor, root = divmod(key_signature.key_number, 12)
+    mode = "minor" if is_minor else "major"
+    return KeySignature(
+        time=float(key_signature.time),  # type: ignore
+        root=root,
+        mode=mode,
+    )
 
 
-def parse_pretty_midi_time_signatures(midi: PrettyMIDI) -> List[TimeSignature]:
-    """Return TimeSignature objects parsed from a PrettyMIDI object.
+def from_pretty_midi_time_signature(
+    time_signature: PmTimeSignature,
+) -> TimeSignature:
+    """Return a pretty_midi TimeSignature object as a TimeSignature.
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI`
-        PrettyMIDI object to convert.
+    time_signature : :class:`pretty_midi.TimeSignature`
+        pretty_midi TimeSignature object to convert.
 
     Returns
     -------
-    list of :class:`muspy.TimeSignature`
-        Parsed time signatures.
+    :class:`muspy.TimeSignature`
+        Converted time signature.
+
+    Note
+    ----
+    The `time` attribute of the converted object will be of type float
+    as pretty_midi uses the absolute timing system.
 
     """
-    time_signatures = []
-    for time_signature in midi.time_signature_changes:
-        time_signatures.append(
-            TimeSignature(
-                time_signature.time,
-                time_signature.numerator,
-                time_signature.denominator,
-            )
-        )
-    return time_signatures
+    return TimeSignature(
+        time=float(time_signature.time),  # type: ignore
+        numerator=time_signature.numerator,
+        denominator=time_signature.denominator,
+    )
 
 
-def parse_pretty_midi_lyrics(midi: PrettyMIDI) -> List[Lyric]:
-    """Return Lyric objects parsed from a PrettyMIDI object.
+def from_pretty_midi_lyric(lyric: PmLyric) -> Lyric:
+    """Return a pretty_midi Lyric object as a Lyric object.
 
     Parameters
     ----------
-    midi : :class:`pretty_midi.PrettyMIDI`
-        PrettyMIDI object to convert.
+    lyric : :class:`pretty_midi.Lyric`
+        pretty_midi Lyric object to convert.
 
     Returns
     -------
-    list of :class:`muspy.Lyric`
-        Parsed lyrics.
+    :class:`muspy.Lyric`
+        Converted lyric.
+
+    Note
+    ----
+    The `time` attribute of the converted object will be of type float
+    as pretty_midi uses the absolute timing system.
 
     """
-    return [Lyric(lyric.time, lyric.text) for lyric in midi.lyrics]
+    return Lyric(
+        time=float(lyric.time),  # type: ignore
+        lyric=lyric.text,
+    )
 
 
-def parse_pretty_midi_note(note: PrettyMIDINote) -> Note:
-    """Return pretty_midi Note object as a MusPy Note object.
+def from_pretty_midi_note(note: PmNote) -> Note:
+    """Return pretty_midi Note object as a Note object.
 
     Parameters
     ----------
@@ -387,13 +409,23 @@ def parse_pretty_midi_note(note: PrettyMIDINote) -> Note:
     Returns
     -------
     :class:`muspy.Note`
-        Parsed note.
+        Converted note.
+
+    Note
+    ----
+    The `time` and `duration` attributes of the converted object will be
+    of type float as pretty_midi uses the absolute timing system.
 
     """
-    return Note(note.start, note.duration, note.pitch, note.velocity)
+    return Note(
+        time=float(note.start),  # type: ignore
+        duration=float(note.duration),  # type: ignore
+        pitch=int(note.pitch),
+        velocity=int(note.velocity),
+    )
 
 
-def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
+def from_pretty_midi_instrument(instrument: Instrument) -> Track:
     """Return a pretty_midi Instrument object as a Track object.
 
     Parameters
@@ -404,22 +436,29 @@ def parse_pretty_midi_instrument(instrument: Instrument) -> Track:
     Returns
     -------
     :class:`muspy.Track`
-        Parsed track.
+        Converted track.
 
     """
-    notes = [parse_pretty_midi_note(note) for note in instrument.notes]
     return Track(
-        instrument.program, instrument.is_drum, instrument.name, notes
+        program=int(instrument.program),
+        is_drum=bool(instrument.is_drum),
+        name=instrument.name,
+        notes=[from_pretty_midi_note(note) for note in instrument.notes],
     )
 
 
-def from_pretty_midi(midi: PrettyMIDI) -> Music:
+def from_pretty_midi(
+    midi: PrettyMIDI, resolution: Optional[int] = None
+) -> Music:
     """Return a pretty_midi PrettyMIDI object as a Music object.
 
     Parameters
     ----------
     midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
+    resolution : int, optional
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
 
     Returns
     -------
@@ -427,17 +466,82 @@ def from_pretty_midi(midi: PrettyMIDI) -> Music:
         Converted Music object.
 
     """
-    key_signatures = parse_pretty_midi_key_signatures(midi)
-    time_signatures = parse_pretty_midi_time_signatures(midi)
-    lyrics = parse_pretty_midi_lyrics(midi)
-    tracks = [parse_pretty_midi_instrument(track) for track in midi.tracks]
-    return Music(
+    if resolution is None:
+        resolution = DEFAULT_RESOLUTION
+
+    tempo_realtimes, tempi = midi.get_tempo_changes()
+    assert len(tempi) > 0
+
+    tempos = [
+        Tempo(time=time, qpm=tempo)
+        for time, tempo in zip(tempo_realtimes, tempi)
+    ]
+
+    key_signatures = [
+        from_pretty_midi_key_signature(key_signature)
+        for key_signature in midi.key_signature_changes
+    ]
+    time_signatures = [
+        from_pretty_midi_time_signature(time_signature)
+        for time_signature in midi.time_signature_changes
+    ]
+    lyrics = [from_pretty_midi_lyric(lyric) for lyric in midi.lyrics]
+    tracks = [from_pretty_midi_instrument(track) for track in midi.instruments]
+    music = Music(
         metadata=Metadata(source_format="midi"),
+        tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
         lyrics=lyrics,
         tracks=tracks,
     )
+
+    # NOTE: pretty_midi uses the absolute timing system, so we have to
+    # convert all the timings into metrical timing.
+
+    # Remove unnecessary tempo changes to speed up the search
+    if len(tempi) > 1:
+        last_tempo = tempi[0]
+        last_time = tempo_realtimes[0]
+        tempo_realtimes = tempo_realtimes.tolist()
+        tempi = tempi.tolist()
+        i = 1
+        while i < len(tempo_realtimes):
+            if tempi[i] == last_tempo:
+                del tempo_realtimes[i]
+                del tempi[i]
+            elif tempo_realtimes[i] == last_time:
+                del tempo_realtimes[i - 1]
+                del tempi[i - 1]
+            else:
+                last_tempo = tempi[i]
+                i += 1
+        tempo_realtimes = np.array(tempo_realtimes)
+        tempi = np.array(tempi)
+
+    if len(tempi) == 1:
+
+        def map_time(time):
+            return int(round(time * resolution * tempi[0] / 60.0))
+
+    else:
+        # Compute the tempo time in metrical timing of each tempo change
+        tempo_times = np.cumsum(
+            np.diff(tempo_realtimes) * resolution * tempi[:-1] / 60.0
+        )
+        tempo_times = np.round(tempo_times).astype(int).tolist()
+        tempo_times.insert(0, 0)
+
+        def map_time(time):
+            idx = np.searchsorted(tempo_realtimes, time, side="right") - 1
+            residual = time - tempo_realtimes[idx]
+            factor = resolution * tempi[idx] / 60.0
+            return tempo_times[idx] + int(round(residual * factor))
+
+    # Adjust timing
+    music.adjust_time(func=map_time)
+
+    return music
 
 
 def read_midi_pretty_midi(path: Union[str, Path]) -> Music:

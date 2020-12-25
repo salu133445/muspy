@@ -2,7 +2,7 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Tuple, Union
 
-import pretty_midi
+import numpy as np
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
 from pretty_midi import Instrument
 from pretty_midi import KeySignature as PmKeySignature
@@ -10,6 +10,7 @@ from pretty_midi import Lyric as PmLyric
 from pretty_midi import Note as PmNote
 from pretty_midi import PrettyMIDI
 from pretty_midi import TimeSignature as PmTimeSignature
+from pretty_midi import key_name_to_key_number
 
 from ..classes import (
     DEFAULT_VELOCITY,
@@ -25,6 +26,7 @@ if TYPE_CHECKING:
     from ..music import Music
 
 PITCH_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
+DEFAULT_TEMPO = 120
 
 
 def to_delta_time(midi_track: MidiTrack):
@@ -66,9 +68,12 @@ def to_mido_key_signature(
     Timing is in absolute time, NOT in delta time.
 
     """
-    suffix = "m" if key_signature.mode == "minor" else ""
+    # TODO: `key_signature.root_str` might be given
     if key_signature.root is None:
         return None
+    if key_signature.mode not in ("major", "minor"):
+        return None
+    suffix = "m" if key_signature.mode == "minor" else ""
     return MetaMessage(
         "key_signature",
         time=key_signature.time,
@@ -316,13 +321,16 @@ def write_midi_mido(
 
 def to_pretty_midi_key_signature(
     key_signature: KeySignature,
-) -> PmKeySignature:
+) -> Optional[PmKeySignature]:
     """Return a KeySignature object as a pretty_midi KeySignature."""
+    # TODO: `key_signature.root_str` might be given
+    if key_signature.root is None:
+        return None
+    if key_signature.mode not in ("major", "minor"):
+        return None
+    key_name = PITCH_NAMES[key_signature.root] + " " + key_signature.mode
     return PmKeySignature(
-        pretty_midi.key_name_to_key_number(
-            "{} {}".format(key_signature.root, key_signature.mode)
-        ),
-        key_signature.time,
+        key_number=key_name_to_key_number(key_name), time=key_signature.time,
     )
 
 
@@ -375,15 +383,62 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
     :class:`pretty_midi.PrettyMIDI`
         Converted PrettyMIDI object.
 
+    Notes
+    -----
+    Tempo information will not be included in the output.
+
     """
     # Create an PrettyMIDI instance
     midi = PrettyMIDI()
 
+    # Compute tempos
+    tempo_times, tempi = [0], [float(DEFAULT_TEMPO)]
+    for tempo in music.tempos:
+        tempo_times.append(tempo.time)
+        tempi.append(tempo.qpm)
+
+    # Remove unnecessary tempo changes to speed up the search
+    if len(tempi) > 1:
+        last_tempo = tempi[0]
+        last_time = tempo_times[0]
+        i = 1
+        while i < len(tempo_times):
+            if tempi[i] == last_tempo:
+                del tempo_times[i]
+                del tempi[i]
+            elif tempo_times[i] == last_time:
+                del tempo_times[i - 1]
+                del tempi[i - 1]
+            else:
+                last_tempo = tempi[i]
+                i += 1
+        tempo_times = np.array(tempo_times)
+        tempi = np.array(tempi)
+
+    if len(tempi) == 1:
+
+        def map_time(time):
+            return time * 60.0 / (music.resolution * tempi[0])
+
+    else:
+        # Compute the tempo time in absolute timing of each tempo change
+        tempo_realtimes = np.cumsum(
+            np.diff(tempo_times) * 60.0 / (music.resolution * tempi[:-1])
+        ).tolist()
+        tempo_realtimes.insert(0, 0.0)
+
+        def map_time(time):
+            idx = np.searchsorted(tempo_times, time, side="right") - 1
+            residual = time - tempo_times[idx]
+            factor = 60.0 / (music.resolution * tempi[idx])
+            return tempo_realtimes[idx] + residual * factor
+
     # Key signatures
     for key_signature in music.key_signatures:
-        midi.key_signature_changes.append(
-            to_pretty_midi_key_signature(key_signature)
-        )
+        pm_key_signature = to_pretty_midi_key_signature(key_signature)
+        if pm_key_signature is not None:
+            pm_key_signature.time = map_time(pm_key_signature.time)
+            midi.key_signature_changes.append(pm_key_signature)
 
     # Time signatures
     for time_signature in music.time_signatures:
@@ -399,8 +454,6 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
     for track in music.tracks:
         midi.instruments.append(to_pretty_midi_instrument(track))
 
-    # TODO: Adjust timings
-
     return midi
 
 
@@ -415,6 +468,10 @@ def write_midi_pretty_midi(path: Union[str, Path], music: "Music"):
         Path to write the MIDI file.
     music : :class:`muspy.Music` object
         Music object to convert.
+
+    Notes
+    -----
+    Tempo information will not be included in the output.
 
     """
     midi = to_pretty_midi(music)
@@ -437,6 +494,14 @@ def write_midi(
         Music object to write.
     backend: {'mido', 'pretty_midi'}
         Backend to use. Defaults to 'mido'.
+
+    See Also
+    --------
+    write_midi_mido :
+        Write a Music object to a MIDI file using mido as backend.
+    write_midi_pretty_midi :
+        Write a Music object to a MIDI file using pretty_midi as
+        backend.
 
     """
     if backend == "mido":
