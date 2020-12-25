@@ -974,7 +974,7 @@ class FolderDataset(Dataset):
 
 
 class RemoteFolderDataset(FolderDataset, RemoteDataset):
-    """Base class for remote datasets stoting files in a folder.
+    """Base class for remote datasets storing files in a folder.
 
     Attributes
     ----------
@@ -1053,7 +1053,7 @@ class ABCFolderDataset(FolderDataset):
             for idx, line in enumerate(f):
                 if start <= idx < end and not line.startswith("%"):
                     data.append(line)
-        return read_abc_string("".join(data), number=0)  # type: ignore
+        return read_abc_string("".join(data))  # type: ignore
 
     def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
         """Enable on-the-fly mode and convert the data on the fly.
