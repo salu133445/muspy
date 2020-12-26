@@ -10,6 +10,7 @@ Classes
 
 """
 from collections import OrderedDict
+import copy
 from inspect import isclass
 from operator import attrgetter
 from typing import Any, Callable, List, Mapping, Optional, Type, TypeVar
@@ -124,6 +125,21 @@ class Base:
             if getattr(self, attr) != getattr(other, attr):
                 return False
         return True
+
+    def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
+        return self.from_dict(self.to_ordered_dict(skip_none=False))
+
+    def __iadd__(
+        self: BaseType,
+        other: BaseType
+    ) -> BaseType:
+        return self.merge(other)
+
+    def __add__(
+        self: BaseType,
+        other: BaseType
+    ) -> BaseType:
+        return copy.deepcopy(self).merge(other)
 
     @classmethod
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
@@ -473,6 +489,74 @@ class Base:
                 self._adjust_time(func, attribute, recursive)
         else:
             self._adjust_time(func, attr, recursive)
+        return self
+
+    def _merge_attr(
+        self: BaseType,
+        other: BaseType,
+        attr: str,
+        recursive: bool,
+        sort: bool
+    ):
+        value = getattr(self, attr)
+        other_value = getattr(other, attr)
+        if other_value is None:
+            return
+        attr_type = self._attributes[attr]
+        if value is not None:
+            if attr in self._list_attributes:
+                value.extend(copy.deepcopy(other_value))
+                if sort and isinstance(self, ComplexBase):
+                    self._sort(attr, recursive=False)
+                return
+            if (recursive
+                    and isclass(attr_type)
+                    and issubclass(attr_type, Base)):
+                value.merge(other_value, sort=sort)
+                return
+
+        setattr(self, attr, copy.deepcopy(other_value))
+
+    def merge(
+        self: BaseType,
+        other: BaseType,
+        attr: Optional[str] = None,
+        recursive: bool = True,
+        sort: bool = True,
+    ) -> BaseType:
+        """Merge another MusPy object into this object.
+
+        By default, all attributes shared by the two objects are
+        merged. Lists are merged with deep copies of lists from the
+        other object, MusPy objects are merged recursively; all other
+        values are deep-copied from the other object, except for `None'
+        values, which are ignored.
+
+        Parameters
+        ----------
+        other : Base
+            The object to merge into this object.
+        attr : str
+            Attribute to merge. Defaults to all shared attributes.
+        recursive : bool
+            Whether to recursively merge attributes that are MusPy
+            objects. Otherwise they are deep-copied from the other
+            object.
+        sort : bool
+            Whether to sort list attributes after concatenating.
+
+        Returns
+        -------
+        Object itself.
+        """
+        if attr is None:
+            attributes = sorted(set(self._attributes) | set(other._attributes))
+        else:
+            attributes = [attr]
+
+        for attr in attributes:
+            self._merge_attr(other, attr, recursive=recursive, sort=sort)
+
         return self
 
 
