@@ -315,10 +315,11 @@ def test_event_representation_multitrack():
 
     music[0].program = 0
     music[1].program = 1
+    music[1].is_drum = True
 
     processor = muspy.processors.EventRepresentationProcessor(
         encode_velocity=True, use_end_of_sequence_event=True,
-        num_tracks=4, encode_instrument=True, default_is_drum=True)
+        num_tracks=4, encode_instrument=True)
     decoded = processor.decode(processor.encode(music))
 
     assert len(decoded) == len(music)

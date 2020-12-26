@@ -22,7 +22,8 @@ __all__ = [
 NOTE_ON = "note_on"        # note_on(track_id, pitch)
 NOTE_OFF = "note_off"      # note_off(track_id, pitch)
 VELOCITY = "velocity"      # velocity(track_id, velocity)
-INSTRUMENT = "instrument"  # instrument(track_id, program, is_drum)
+PROGRAM = "program"        # program(track_id, program)
+DRUM = "drum"              # drum(track_id)
 TIME_SHIFT = "time_shift"  # time_shift(ticks)
 EOS = "eos"                # eos()
 
@@ -65,10 +66,6 @@ class EventRepresentationProcessor:
     encode_instrument: bool
         Whether to encode the `program` and `is_drum` attributes for
         each track. Defaults to False.
-    encode_drum_program: bool
-        Whether to encode `program` (drum kit) for drums. Defaults to
-        False, which means 0 (standard drum kit) will be used. Has no
-        effect if `encode_instrument` is False.
     default_program: int
         Default `program` value to use when decoding. Defaults to 0.
     default_is_drum: bool
@@ -105,7 +102,6 @@ class EventRepresentationProcessor:
         velocity_bins: int = 32,
         default_velocity: int = 64,
         encode_instrument: bool = False,
-        encode_drum_program: bool = False,
         default_program: int = 0,
         default_is_drum: bool = False,
         num_tracks: Optional[int] = None,
@@ -121,7 +117,6 @@ class EventRepresentationProcessor:
         self.velocity_bins = velocity_bins
         self.default_velocity = default_velocity
         self.encode_instrument = encode_instrument
-        self.encode_drum_program = encode_drum_program
         self.default_program = default_program
         self.default_is_drum = default_is_drum
         self.num_tracks = num_tracks
@@ -155,16 +150,10 @@ class EventRepresentationProcessor:
                 for tr in track_ids
                 for v in range(velocity_bins))
         if encode_instrument:
-            vocab_list.extend((INSTRUMENT, tr, pr, False)
+            vocab_list.extend((PROGRAM, tr, pr)
                               for tr in track_ids
                               for pr in range(128))
-            if encode_drum_program:
-                vocab_list.extend((INSTRUMENT, tr, pr, True)
-                                  for tr in track_ids
-                                  for pr in range(128))
-            else:
-                vocab_list.extend((INSTRUMENT, tr, 0, True)
-                                  for tr in track_ids)
+            vocab_list.extend((DRUM, tr) for tr in track_ids)
         if use_end_of_sequence_event:
             vocab_list.append((EOS,))
 
@@ -199,11 +188,9 @@ class EventRepresentationProcessor:
             # Create instrument events for all tracks
             if self.encode_instrument:
                 for track_id, track in enumerate(track_objs):
-                    if track.is_drum and not self.encode_drum_program:
-                        events.append((INSTRUMENT, track_id, 0, True))
-                    else:
-                        events.append((INSTRUMENT, track_id,
-                                       track.program, track.is_drum))
+                    if track.is_drum:
+                        events.append((DRUM, track_id))
+                    events.append((PROGRAM, track_id, track.program))
 
         # Flatten, store track index with each note
         notes = [(n, tr) for tr, notes in enumerate(tracks) for n in notes]
@@ -368,12 +355,15 @@ class EventRepresentationProcessor:
                 track_id, velocity = args
                 curr_velocity[track_id] = int(velocity * velocity_factor)
 
-            elif event == INSTRUMENT:
-                track_id, program, is_drum = args
+            elif event == PROGRAM:
+                track_id, program = args
                 if not program_is_set[track_id]:
                     tracks[track_id].program = program
-                    tracks[track_id].is_drum = is_drum
                     program_is_set[track_id] = True
+
+            elif event == DRUM:
+                track_id, = args
+                tracks[track_id].is_drum = True
 
         # Extend zero-duration notes to minimum length
         for track in tracks.values():
