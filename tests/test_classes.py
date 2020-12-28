@@ -29,6 +29,26 @@ def test_append():
     assert len(track) == 2
 
 
+def test_extend():
+    track = Track()
+    notes = [Note(time=0, duration=1, pitch=60), Note(time=1, duration=1, pitch=60)]
+    track.extend(notes)
+    assert len(track) == 2
+    assert len(track.notes) == 2
+    for a, b in zip(track.notes, notes):
+        assert a is b
+
+
+def test_extend_copy():
+    track = Track()
+    notes = [Note(time=0, duration=1, pitch=60), Note(time=1, duration=1, pitch=60)]
+    track.extend(notes, copy=True)
+    assert len(track.notes) == 2
+    for a, b in zip(track.notes, notes):
+        assert a == b
+        assert a is not b
+
+
 def test_remove_invalid():
     notes = [
         Note(time=-1, duration=1, pitch=60),
