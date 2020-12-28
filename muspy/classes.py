@@ -331,8 +331,7 @@ class Note(Base):
     def _adjust_time(
         self, func: Callable[[int], int], attr: str, recursive: bool
     ):
-        # Implemented in adjust_time directly
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def adjust_time(
         self,
@@ -357,13 +356,12 @@ class Note(Base):
         Object itself.
 
         """
-        if attr is not None and attr != 'time':
-            raise RuntimeError('Cannot adjust attribute ' + repr(attr))
+        if attr is not None and attr != "time":
+            raise AttributeError(f"'Note' object has no attribute '{attr}'")
 
         old_time = self.time
-        self.time = func(old_time)
+        self.time = func(self.time)
         self.duration = func(old_time + self.duration) - self.time
-
         return self
 
     def transpose(self, semitone: int) -> "Note":
@@ -486,8 +484,7 @@ class Chord(Base):
     def _adjust_time(
         self, func: Callable[[int], int], attr: str, recursive: bool
     ):
-        # Implemented in adjust_time directly
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def adjust_time(
         self,
@@ -512,13 +509,12 @@ class Chord(Base):
         Object itself.
 
         """
-        if attr is not None and attr != 'time':
-            raise RuntimeError('Cannot adjust attribute ' + repr(attr))
+        if attr is not None and attr != "time":
+            raise AttributeError(f"'Note' object has no attribute '{attr}'")
 
         old_time = self.time
-        self.time = func(old_time)
+        self.time = func(self.time)
         self.duration = func(old_time + self.duration) - self.time
-
         return self
 
     def transpose(self, semitone: int) -> "Chord":
