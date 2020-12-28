@@ -328,6 +328,12 @@ class Note(Base):
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
 
+    def _adjust_time(
+        self, func: Callable[[int], int], attr: str, recursive: bool
+    ):
+        # Implemented in adjust_time directly
+        raise NotImplementedError()
+
     def adjust_time(
         self,
         func: Callable[[int], int],
@@ -476,6 +482,12 @@ class Chord(Base):
             raise ValueError("`duration` must be nonnegative.")
         if attr == "velocity" and (self.velocity < 0 or self.velocity > 127):
             raise ValueError("`velocity` must be in between 0 to 127.")
+
+    def _adjust_time(
+        self, func: Callable[[int], int], attr: str, recursive: bool
+    ):
+        # Implemented in adjust_time directly
+        raise NotImplementedError()
 
     def adjust_time(
         self,
