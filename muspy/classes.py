@@ -334,7 +334,7 @@ class Note(Base):
         if attr == "time":
             self.time = func(self.time)
         elif attr == "duration":
-            self.duration = func(self.duration)
+            self.end = func(self.end)
 
     def transpose(self, semitone: int) -> "Note":
         """Transpose the note by a number of semitones.
@@ -459,7 +459,7 @@ class Chord(Base):
         if attr == "time":
             self.time = func(self.time)
         elif attr == "duration":
-            self.duration = func(self.duration)
+            self.end = func(self.end)
 
     def transpose(self, semitone: int) -> "Chord":
         """Transpose the notes by a number of semitones.
