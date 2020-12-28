@@ -332,9 +332,9 @@ class Note(Base):
         self, func: Callable[[int], int], attr: str, recursive: bool
     ):
         if attr == "time":
-            self.time = func(self.time)
-        elif attr == "duration":
-            self.end = func(self.end)
+            old_time = self.time
+            self.time = func(old_time)
+            self.duration = func(old_time + self.duration) - self.time
 
     def transpose(self, semitone: int) -> "Note":
         """Transpose the note by a number of semitones.
@@ -457,9 +457,9 @@ class Chord(Base):
         self, func: Callable[[int], int], attr: str, recursive: bool
     ):
         if attr == "time":
-            self.time = func(self.time)
-        elif attr == "duration":
-            self.end = func(self.end)
+            old_time = self.time
+            self.time = func(old_time)
+            self.duration = func(old_time + self.duration) - self.time
 
     def transpose(self, semitone: int) -> "Chord":
         """Transpose the notes by a number of semitones.
