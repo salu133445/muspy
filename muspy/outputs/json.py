@@ -29,5 +29,5 @@ def save_json(
 
     """
     with open(str(path), "w", encoding="utf-8") as f:
-        data = music.to_ordered_dict()
+        data = music.to_ordered_dict(copy=False)
         json.dump(data, f, ensure_ascii=ensure_ascii, indent=indent)
