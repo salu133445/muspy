@@ -10,10 +10,12 @@ Classes
 
 """
 from collections import OrderedDict
-import copy
+from copy import deepcopy
 from inspect import isclass
 from operator import attrgetter
-from typing import Any, Callable, List, Mapping, Optional, Type, TypeVar
+from typing import (
+    Any, Callable, Iterable, List, Mapping, Optional, Type, TypeVar, Union
+)
 
 import yaml
 
@@ -127,19 +129,7 @@ class Base:
         return True
 
     def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
-        return self.from_dict(self.to_ordered_dict(skip_none=False))
-
-    def __iadd__(
-        self: BaseType,
-        other: BaseType
-    ) -> BaseType:
-        return self.merge(other)
-
-    def __add__(
-        self: BaseType,
-        other: BaseType
-    ) -> BaseType:
-        return copy.deepcopy(self).merge(other)
+        return self.from_dict(self.to_ordered_dict(skip_none=False, copy=True))
 
     @classmethod
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
@@ -175,7 +165,9 @@ class Base:
                 kwargs[attr] = value
         return cls(**kwargs)
 
-    def to_ordered_dict(self, skip_none: bool = True) -> OrderedDict:
+    def to_ordered_dict(
+            self, skip_none: bool = True, copy: bool = True
+    ) -> OrderedDict:
         """Return the object as an OrderedDict.
 
         Return an ordered dictionary that stores the attributes and
@@ -186,6 +178,9 @@ class Base:
         skip_none : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
+        copy : bool
+            Whether to make deep copies of attributes whose type is not
+            a MusPy class. Defaults to True.
 
         Returns
         -------
@@ -202,17 +197,25 @@ class Base:
                     continue
                 if isclass(attr_type) and issubclass(attr_type, Base):
                     ordered_dict[attr] = [
-                        v.to_ordered_dict(skip_none=skip_none) for v in value
+                        v.to_ordered_dict(skip_none=skip_none, copy=copy)
+                        for v in value
                     ]
-                else:
-                    ordered_dict[attr] = value
-            elif value is None:
+                    continue
+            if value is None:
                 if not skip_none:
                     ordered_dict[attr] = None
-            elif isclass(attr_type) and issubclass(attr_type, Base):
-                ordered_dict[attr] = value.to_ordered_dict(skip_none=skip_none)
+                continue
+            if isclass(attr_type) and issubclass(attr_type, Base):
+                ordered_dict[attr] = value.to_ordered_dict(
+                    skip_none=skip_none, copy=copy)
+                continue
+
+            if attr in self._list_attributes:
+                # List of non-MusPy objects
+                ordered_dict[attr] = deepcopy(value) if copy else list(value)
             else:
-                ordered_dict[attr] = value
+                # Single non-MusPy object
+                ordered_dict[attr] = deepcopy(value) if copy else value
         return ordered_dict
 
     def pretty_str(self, skip_none: bool = True) -> str:
@@ -235,7 +238,8 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return _yaml_dump(self.to_ordered_dict(skip_none=skip_none))
+        return _yaml_dump(self.to_ordered_dict(
+            skip_none=skip_none, copy=False))
 
     def print(self, skip_none: bool = True):
         """Print the attributes in a YAML-like format.
@@ -491,74 +495,6 @@ class Base:
             self._adjust_time(func, attr, recursive)
         return self
 
-    def _merge_attr(
-        self: BaseType,
-        other: BaseType,
-        attr: str,
-        recursive: bool,
-        sort: bool
-    ):
-        value = getattr(self, attr)
-        other_value = getattr(other, attr)
-        if other_value is None:
-            return
-        attr_type = self._attributes[attr]
-        if value is not None:
-            if attr in self._list_attributes:
-                value.extend(copy.deepcopy(other_value))
-                if sort and isinstance(self, ComplexBase):
-                    self._sort(attr, recursive=False)
-                return
-            if (recursive
-                    and isclass(attr_type)
-                    and issubclass(attr_type, Base)):
-                value.merge(other_value, sort=sort)
-                return
-
-        setattr(self, attr, copy.deepcopy(other_value))
-
-    def merge(
-        self: BaseType,
-        other: BaseType,
-        attr: Optional[str] = None,
-        recursive: bool = True,
-        sort: bool = True,
-    ) -> BaseType:
-        """Merge another MusPy object into this object.
-
-        By default, all attributes shared by the two objects are
-        merged. Lists are merged with deep copies of lists from the
-        other object, MusPy objects are merged recursively; all other
-        values are deep-copied from the other object, except for `None'
-        values, which are ignored.
-
-        Parameters
-        ----------
-        other : Base
-            The object to merge into this object.
-        attr : str
-            Attribute to merge. Defaults to all shared attributes.
-        recursive : bool
-            Whether to recursively merge attributes that are MusPy
-            objects. Otherwise they are deep-copied from the other
-            object.
-        sort : bool
-            Whether to sort list attributes after concatenating.
-
-        Returns
-        -------
-        Object itself.
-        """
-        if attr is None:
-            attributes = sorted(set(self._attributes) | set(other._attributes))
-        else:
-            attributes = [attr]
-
-        for attr in attributes:
-            self._merge_attr(other, attr, recursive=recursive, sort=sort)
-
-        return self
-
 
 class ComplexBase(Base):
     """Base class that supports advanced operations on list attributes.
@@ -572,6 +508,22 @@ class ComplexBase(Base):
     :class:`muspy.Base` : Base class for MusPy classes.
 
     """
+
+    def __iadd__(
+        self: ComplexBaseType,
+        other: Union[ComplexBaseType, Iterable]
+    ) -> ComplexBaseType:
+        return self.extend(other)
+
+    def __add__(
+        self: ComplexBaseType,
+        other: ComplexBaseType
+    ) -> ComplexBaseType:
+        if type(other) is not type(self):
+            raise TypeError(f'second operand must be of type {type(self)!r}, '
+                            f'not {type(other)!r}')
+
+        return deepcopy(self).extend(other, copy=True)
 
     def _append(self, obj):
         for attr in self._list_attributes:
@@ -590,7 +542,7 @@ class ComplexBase(Base):
         )
 
     def append(self: ComplexBaseType, obj) -> ComplexBaseType:
-        """Append an object to the correseponding list.
+        """Append an object to the corresponding list.
 
         This will automatically determine the list attributes to append
         based on the type of the object.
@@ -602,6 +554,60 @@ class ComplexBase(Base):
 
         """
         self._append(obj)
+        return self
+
+    def extend(
+        self: ComplexBaseType,
+        other: Union[ComplexBaseType, Iterable],
+        copy: Optional[bool] = None
+    ) -> ComplexBaseType:
+        """Extend this object with values from another object or
+        iterable.
+
+        If a MusPy object is passed, it must be of the same type as
+        this object, and all of this object's list attributes will be
+        extended with copies of values from the corresponding list
+        attributes of the other object. For example,
+        `music1.extend(music2)` will extend `music1` with copies of all
+        notes, chords, time signatures etc. from `music2`.
+
+        Otherwise, the argument must be an iterable, and the result
+        will be the same as if :meth:`muspy.Base.append` was called for
+        each item of the iterable.
+
+        Parameters
+        ----------
+        other : Base
+            The object to merge into this object.
+        copy : bool
+            Whether to make deep copies of all the appended objects.
+            The default behavior is to make copies only when `other` is
+            a MusPy object.
+
+        Returns
+        -------
+        Object itself.
+        """
+        if isinstance(other, Base):
+            if type(other) is not type(self):
+                raise TypeError(f"`other` must be of type {type(self)!r} or "
+                                f'an iterable, not {type(other)!r}')
+
+            if copy is None:
+                copy = True
+
+            for attr in self._list_attributes:
+                other_value = getattr(other, attr)
+                getattr(self, attr).extend(
+                    deepcopy(other_value) if copy else other_value)
+        else:
+            if copy is None:
+                copy = False
+
+            assert isinstance(other, Iterable)
+            for item in other:
+                self._append(deepcopy(item) if copy else item)
+
         return self
 
     def _remove_invalid(self, attr: str, recursive: bool):

@@ -1,4 +1,9 @@
 """Test cases for MusPy classes."""
+from copy import deepcopy
+from inspect import isclass
+from operator import attrgetter
+from muspy.base import ComplexBase
+
 import muspy
 
 from .utils import TEST_JSON_PATH, check_tracks
@@ -58,3 +63,38 @@ def test_transpose():
     music.transpose(-1)
     for note, pitch in zip(music[0].notes, pitches):
         assert note.pitch == pitch
+
+
+def test_deepcopy():
+    music = muspy.load(TEST_JSON_PATH)
+    music2 = deepcopy(music)
+
+    assert music2 == music
+    assert music2 is not music
+    assert music2.tracks[0][0] is not music.tracks[0][0]
+    assert music2.downbeats is not music.downbeats
+
+
+def test_obj_extend():
+    music = muspy.load(TEST_JSON_PATH)
+    music2 = deepcopy(music).transpose(2)
+    merged = deepcopy(music).extend(music2)
+
+    for attr in music._list_attributes:
+        g = attrgetter(attr)
+        assert g(merged) == g(music) + g(music2)
+
+        for a, b in zip(g(merged)[::-1], g(music2)[::-1]):
+            assert a == b
+            assert not isclass(a) or a is not b
+
+
+def test_obj_extend_no_copy():
+    music = muspy.load(TEST_JSON_PATH)
+    music2 = deepcopy(music).transpose(2)
+    music.extend(music2, copy=False)
+
+    for attr in music._list_attributes:
+        g = attrgetter(attr)
+        for a, b in zip(g(music)[::-1], g(music2)[::-1]):
+            assert a is b
