@@ -8,19 +8,45 @@ import muspy
 from .utils import TEST_JSON_PATH, TEST_YAML_PATH, check_music
 
 
-def test_load_save_json():
+def test_load_json():
     music = muspy.load(TEST_JSON_PATH)
     check_music(music)
 
-    test_dir = Path(tempfile.mkdtemp())
-    music.save(test_dir / "test.json")
-    shutil.rmtree(test_dir)
 
-
-def test_load_save_yaml():
+def test_load_yaml():
     music = muspy.load(TEST_YAML_PATH)
     check_music(music)
 
-    test_dir = Path(tempfile.mkdtemp())
-    music.save(test_dir / "test.yaml")
-    shutil.rmtree(test_dir)
+
+def test_save_json_path(tmp_path):
+    music = muspy.load(TEST_JSON_PATH)
+    music.save(tmp_path / "test.json")
+
+    loaded = muspy.load(tmp_path / "test.json")
+    check_music(loaded)
+
+
+def test_save_json_file(tmp_path):
+    music = muspy.load(TEST_JSON_PATH)
+    with open(tmp_path / "test.json", "w", encoding="utf-8") as f:
+        music.save_json(f)
+
+    loaded = muspy.load(tmp_path / "test.json")
+    check_music(loaded)
+
+
+def test_save_yaml_path(tmp_path):
+    music = muspy.load(TEST_JSON_PATH)
+    music.save(tmp_path / "test.yaml")
+
+    loaded = muspy.load(tmp_path / "test.yaml")
+    check_music(loaded)
+
+
+def test_save_yaml_file(tmp_path):
+    music = muspy.load(TEST_JSON_PATH)
+    with open(tmp_path / "test.yaml", "w", encoding="utf-8") as f:
+        music.save_yaml(f)
+
+    loaded = muspy.load(tmp_path / "test.yaml")
+    check_music(loaded)

@@ -1,5 +1,8 @@
 """Utility functions."""
+from collections import OrderedDict
 from typing import Dict, List, Tuple
+
+import yaml
 
 NOTE_MAP: Dict[str, int] = {
     "C": 0,
@@ -101,3 +104,28 @@ def note_str_to_note_num(note_str: str):
     if note_num > 11 or note_num < 0:
         return note_num % 12
     return note_num
+
+
+class OrderedDumper(yaml.SafeDumper):
+    """A dumper that supports OrderedDict."""
+
+
+def _dict_representer(dumper, data):
+    return dumper.represent_mapping(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
+    )
+
+
+OrderedDumper.add_representer(OrderedDict, _dict_representer)
+
+
+def yaml_dump(data, Dumper=None, allow_unicode: bool = True, **kwargs):
+    """Dump data to YAML, which supports OrderedDict.
+
+    Code adapted from https://stackoverflow.com/a/21912744.
+    """
+    if Dumper is None:
+        Dumper = OrderedDumper
+    return yaml.dump(
+        data, Dumper=Dumper, allow_unicode=allow_unicode, **kwargs
+    )

@@ -1,6 +1,6 @@
 """Wrapper functions for output interface."""
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -28,7 +28,7 @@ def save(
     path: Union[str, Path],
     music: "Music",
     kind: Optional[str] = None,
-    **kwargs: Any
+    **kwargs,
 ):
     """Save a Music object loselessly to a JSON or a YAML file.
 
@@ -55,26 +55,31 @@ def save(
 
     """
     if kind is None:
+        if not isinstance(path, (str, Path)):
+            raise ValueError("Cannot infer file format from a file object.")
         if str(path).lower().endswith(".json"):
             kind = "json"
         elif str(path).lower().endswith((".yaml", ".yml")):
             kind = "yaml"
         else:
             raise ValueError(
-                "Got unsupported file format (expect JSON or YAML)."
+                "Cannot infer file format from the extension (expect JSON or "
+                "YAML)."
             )
-    if kind == "json":
-        return save_json(path, music, **kwargs)  # type: ignore
-    if kind == "yaml":
-        return save_yaml(path, music, **kwargs)  # type: ignore
-    raise ValueError("`kind` must be either 'json' or 'yaml'.")
+    if kind.lower() == "json":
+        return save_json(path, music, **kwargs)
+    if kind.lower() == "yaml":
+        return save_yaml(path, music, **kwargs)
+    raise ValueError(
+        f"Expect `kind` to be 'json' or 'yaml', but got : {kind}."
+    )
 
 
 def write(
     path: Union[str, Path],
     music: "Music",
     kind: Optional[str] = None,
-    **kwargs: Any
+    **kwargs,
 ):
     """Write a Music object to a MIDI/MusicXML/ABC/audio file.
 
@@ -107,22 +112,25 @@ def write(
             kind = "audio"
         else:
             raise ValueError(
-                "Got unsupported file format (expect MIDI, MusicXML, ABC, "
-                "WAV, AIFF, FLAC or OGA)."
+                "Cannot infer file format from the extension (expect MIDI, "
+                "MusicXML, ABC, WAV, AIFF, FLAC or OGA)."
             )
-    if kind == "midi":
+    if kind.lower() == "midi":
         return write_midi(path, music, **kwargs)
-    if kind == "musicxml":
+    if kind.lower() == "musicxml":
         return write_musicxml(path, music, **kwargs)
-    if kind == "abc":
+    if kind.lower() == "abc":
         return write_abc(path, music)
-    if kind == "audio":
+    if kind.lower() == "audio":
         return write_audio(path, music, **kwargs)
-    raise ValueError("`kind` must be 'midi', 'musicxml', 'abc' or 'audio'.")
+    raise ValueError(
+        "Expect `kind` to be 'midi', 'musicxml', 'abc' or 'audio', but"
+        f"got : {kind}."
+    )
 
 
 def to_object(
-    music: "Music", kind: str, **kwargs: Any
+    music: "Music", kind: str, **kwargs
 ) -> Union[Stream, MidiFile, PrettyMIDI, Multitrack]:
     """Return a Music object as an object in other libraries.
 
@@ -153,12 +161,12 @@ def to_object(
     if kind.lower() == "pypianoroll":
         return to_pypianoroll(music)
     raise ValueError(
-        "`kind` must be one of 'music21', 'mido', 'pretty_midi' or "
-        "'pypianoroll'."
+        "Expect `kind` to be 'music21', 'mido', 'pretty_midi' or "
+        f"'pypianoroll', but got : {kind}."
     )
 
 
-def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
+def to_representation(music: "Music", kind: str, **kwargs) -> ndarray:
     """Return a Music object in a specific representation.
 
     Parameters
@@ -183,5 +191,6 @@ def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
     if kind.lower() in ("note", "note-based"):
         return to_note_representation(music, **kwargs)
     raise ValueError(
-        "`kind` must be one of 'pitch', 'piano-roll', 'event' and 'note'."
+        "Expect `kind` to be 'pitch', 'pianoroll', 'event' or 'note', but"
+        f"got : {kind}."
     )

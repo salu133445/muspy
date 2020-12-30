@@ -331,10 +331,38 @@ class Note(Base):
     def _adjust_time(
         self, func: Callable[[int], int], attr: str, recursive: bool
     ):
-        if attr == "time":
-            self.time = func(self.time)
-        elif attr == "duration":
-            self.duration = func(self.duration)
+        raise NotImplementedError
+
+    def adjust_time(
+        self,
+        func: Callable[[int], int],
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> "Note":
+        """Adjust the timing of the note.
+
+        Parameters
+        ----------
+        func : callable
+            The function used to compute the new timing from the old
+            timing, i.e., `new_time = func(old_time)`.
+        attr : str
+            Attribute to adjust. Defaults to adjust all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        if attr is not None and attr != "time":
+            raise AttributeError(f"'Note' object has no attribute '{attr}'")
+
+        old_time = self.time
+        self.time = func(self.time)
+        self.duration = func(old_time + self.duration) - self.time
+        return self
 
     def transpose(self, semitone: int) -> "Note":
         """Transpose the note by a number of semitones.
@@ -456,10 +484,38 @@ class Chord(Base):
     def _adjust_time(
         self, func: Callable[[int], int], attr: str, recursive: bool
     ):
-        if attr == "time":
-            self.time = func(self.time)
-        elif attr == "duration":
-            self.duration = func(self.duration)
+        raise NotImplementedError
+
+    def adjust_time(
+        self,
+        func: Callable[[int], int],
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> "Chord":
+        """Adjust the timing of the chord.
+
+        Parameters
+        ----------
+        func : callable
+            The function used to compute the new timing from the old
+            timing, i.e., `new_time = func(old_time)`.
+        attr : str
+            Attribute to adjust. Defaults to adjust all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        if attr is not None and attr != "time":
+            raise AttributeError(f"'Note' object has no attribute '{attr}'")
+
+        old_time = self.time
+        self.time = func(self.time)
+        self.duration = func(old_time + self.duration) - self.time
+        return self
 
     def transpose(self, semitone: int) -> "Chord":
         """Transpose the notes by a number of semitones.

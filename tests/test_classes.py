@@ -31,7 +31,10 @@ def test_append():
 
 def test_extend():
     track = Track(notes=[Note(time=2, duration=1, pitch=60)])
-    notes = [Note(time=1, duration=1, pitch=60), Note(time=2, duration=1, pitch=60)]
+    notes = [
+        Note(time=1, duration=1, pitch=60),
+        Note(time=2, duration=1, pitch=60),
+    ]
     track.extend(notes)
     assert len(track) == 1 + len(notes)
     assert track.notes[1:] == notes
@@ -41,7 +44,10 @@ def test_extend():
 
 def test_extend_copy():
     track = Track(notes=[Note(time=2, duration=1, pitch=60)])
-    notes = [Note(time=1, duration=1, pitch=60), Note(time=2, duration=1, pitch=60)]
+    notes = [
+        Note(time=1, duration=1, pitch=60),
+        Note(time=2, duration=1, pitch=60),
+    ]
     track.extend(notes, copy=True)
     assert track.notes[1:] == notes
     for a, b in zip(track.notes[1:], notes):
@@ -50,7 +56,10 @@ def test_extend_copy():
 
 def test_iadd():
     track = Track(notes=[Note(time=2, duration=1, pitch=60)])
-    notes = [Note(time=1, duration=1, pitch=60), Note(time=2, duration=1, pitch=60)]
+    notes = [
+        Note(time=1, duration=1, pitch=60),
+        Note(time=2, duration=1, pitch=60),
+    ]
     track += notes
     assert track.notes[1:] == notes
     for a, b in zip(track.notes[1:], notes):
@@ -59,7 +68,12 @@ def test_iadd():
 
 def test_add_obj():
     track1 = Track(notes=[Note(time=0, duration=1, pitch=60)])
-    track2 = Track(notes=[Note(time=1, duration=1, pitch=60), Note(time=2, duration=1, pitch=60)])
+    track2 = Track(
+        notes=[
+            Note(time=1, duration=1, pitch=60),
+            Note(time=2, duration=1, pitch=60),
+        ]
+    )
     merged = track1 + track2
     assert merged.notes == track1.notes + track2.notes
     for a, b in zip(merged.notes, track1.notes + track2.notes):

@@ -1,6 +1,6 @@
 """Wrapper functions for input interface."""
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -22,9 +22,7 @@ from .pitch import from_pitch_representation
 from .yaml import load_yaml
 
 
-def load(
-    path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
-) -> Music:
+def load(path: Union[str, Path], kind: Optional[str] = None) -> Music:
     """Load a JSON or a YAML file into a Music object.
 
     Parameters
@@ -34,10 +32,6 @@ def load(
     kind : {'json', 'yaml'}, optional
         Format to save (case-insensitive). Defaults to infer the format
         from the extension.
-    **kwargs : dict
-        Keyword arguments to pass to the target function. See
-        :func:`muspy.load_json` or :func:`muspy.load_yaml` for available
-        arguments.
 
     Returns
     -------
@@ -58,17 +52,20 @@ def load(
             kind = "yaml"
         else:
             raise ValueError(
-                "Got unsupported file format (expect JSON or YAML)."
+                "Cannot infer file format from the extension (expect JSON or "
+                "YAML)."
             )
-    if kind == "json":
+    if kind.lower() == "json":
         return load_json(path)
-    if kind == "yaml":
+    if kind.lower() == "yaml":
         return load_yaml(path)
-    raise ValueError("`kind` must be either 'json' or 'yaml'.")
+    raise ValueError(
+        f"Expect `kind` to be 'json' or 'yaml', but got : {kind}."
+    )
 
 
 def read(
-    path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
+    path: Union[str, Path], kind: Optional[str] = None, **kwargs
 ) -> Union[Music, List[Music]]:
     """Read a MIDI/MusicXML/ABC file into a Music object.
 
@@ -79,6 +76,9 @@ def read(
     kind : {'midi', 'musicxml', 'abc'}, optional
         Format to save (case-insensitive). Defaults to infer the format
         from the extension.
+    **kwargs
+        Keyword arguments to pass to :func:`muspy.read_midi`,
+        :func:`muspy.read_musicxml` or :func:`read_abc`.
 
     Returns
     -------
@@ -99,19 +99,22 @@ def read(
             kind = "abc"
         else:
             raise ValueError(
-                "Got unsupported file format (expect MIDI, MusicXML or ABC)."
+                "Cannot infer file format from the extension (expect MIDI, "
+                "MusicXML or ABC)."
             )
-    if kind == "midi":
+    if kind.lower() == "midi":
         return read_midi(path, **kwargs)
-    if kind == "musicxml":
+    if kind.lower() == "musicxml":
         return read_musicxml(path, **kwargs)
-    if kind == "abc":
+    if kind.lower() == "abc":
         return read_abc(path, **kwargs)
-    raise ValueError("`kind` must be one of 'midi', 'musicxml' and 'abc'.")
+    raise ValueError(
+        f"Expect `kind` to be 'midi', 'musicxml' or 'abc', but got : {kind}."
+    )
 
 
 def from_object(
-    obj: Union[Stream, MidiFile, PrettyMIDI, Multitrack], **kwargs: Any
+    obj: Union[Stream, MidiFile, PrettyMIDI, Multitrack], **kwargs
 ) -> Union[Music, List[Music], Track, List[Track]]:
     """Return an outside object as a Music object.
 
@@ -121,6 +124,10 @@ def from_object(
         Object to convert. Supported objects are `music21.Stream`,
         :class:`mido.MidiTrack`, :class:`pretty_midi.PrettyMIDI`, and
         :class:`pypianoroll.Multitrack` objects.
+    **kwargs
+        Keyword arguments to pass to :func:`muspy.from_music21`,
+        :func:`muspy.from_mido`, :func:`from_pretty_midi` or
+        :func:`from_pypianoroll`.
 
     Returns
     -------
@@ -133,7 +140,7 @@ def from_object(
     if isinstance(obj, MidiFile):
         return from_mido(obj, **kwargs)
     if isinstance(obj, PrettyMIDI):
-        return from_pretty_midi(obj)
+        return from_pretty_midi(obj, **kwargs)
     if isinstance(obj, Multitrack):
         return from_pypianoroll(obj, **kwargs)
     raise TypeError(
@@ -142,7 +149,7 @@ def from_object(
     )
 
 
-def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
+def from_representation(array: ndarray, kind: str, **kwargs) -> Music:
     """Update with the given representation.
 
     Parameters
@@ -151,6 +158,12 @@ def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
         Array in a supported representation.
     kind : str, {'pitch', 'pianoroll', 'event', 'note'}
         Data representation type (case-insensitive).
+    **kwargs
+        Keyword arguments to pass to
+        :func:`muspy.from_pitch_representation`,
+        :func:`muspy.from_pianoroll_representation`,
+        :func:`from_event_representation` or
+        :func:`from_note_representation`.
 
     Returns
     -------
@@ -167,5 +180,6 @@ def from_representation(array: ndarray, kind: str, **kwargs: Any) -> Music:
     if kind.lower() in ("note", "note-based"):
         return from_note_representation(array, **kwargs)
     raise ValueError(
-        "`kind` must be one of 'pitch', 'pianoroll', 'event' and 'note'."
+        "Expect `kind` to be 'pitch', 'pianoroll', 'event' or 'note', but"
+        f"got : {kind}."
     )

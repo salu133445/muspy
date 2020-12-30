@@ -202,7 +202,7 @@ def sort(obj: ComplexBase) -> ComplexBase:
 
 
 def to_ordered_dict(
-    obj: Base, ignore_null: bool = True, copy: bool = True
+    obj: Base, skip_missing: bool = True, copy: bool = True
 ) -> OrderedDict:
     """Return an OrderedDict converted from a Music object.
 
@@ -210,7 +210,7 @@ def to_ordered_dict(
     ----------
     obj : :class:`muspy.Base`
         Object to convert.
-    ignore_null : bool
+    skip_missing : bool
         Whether to skip attributes with value None or those that are
         empty lists. Defaults to True.
     copy : bool
@@ -223,7 +223,7 @@ def to_ordered_dict(
         Converted OrderedDict.
 
     """
-    return obj.to_ordered_dict(skip_none=ignore_null, copy=copy)
+    return obj.to_ordered_dict(skip_missing=skip_missing, copy=copy)
 
 
 def transpose(

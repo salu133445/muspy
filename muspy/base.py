@@ -14,36 +14,23 @@ from copy import deepcopy
 from inspect import isclass
 from operator import attrgetter
 from typing import (
-    Any, Callable, Iterable, List, Mapping, Optional, Type, TypeVar, Union
+    Any,
+    Callable,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
 )
 
-import yaml
+from .utils import yaml_dump
 
 __all__ = ["Base", "ComplexBase"]
 
 BaseType = TypeVar("BaseType", bound="Base")
 ComplexBaseType = TypeVar("ComplexBaseType", bound="ComplexBase")
-
-
-class _OrderedDumper(yaml.SafeDumper):
-    """A dumper that supports OrderedDict."""
-
-
-def _dict_representer(dumper, data):
-    return dumper.represent_mapping(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
-    )
-
-
-_OrderedDumper.add_representer(OrderedDict, _dict_representer)
-
-
-def _yaml_dump(data):
-    """Dump data to YAML, which supports OrderedDict.
-
-    Code adapted from https://stackoverflow.com/a/21912744.
-    """
-    return yaml.dump(data, Dumper=_OrderedDumper, allow_unicode=True)
 
 
 def _get_type_string(attr_type):
@@ -129,7 +116,9 @@ class Base:
         return True
 
     def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
-        return self.from_dict(self.to_ordered_dict(skip_none=False, copy=True))
+        return self.from_dict(
+            self.to_ordered_dict(skip_missing=False, copy=True)
+        )
 
     @classmethod
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
@@ -166,7 +155,7 @@ class Base:
         return cls(**kwargs)
 
     def to_ordered_dict(
-            self, skip_none: bool = True, copy: bool = True
+        self, skip_missing: bool = True, copy: bool = False
     ) -> OrderedDict:
         """Return the object as an OrderedDict.
 
@@ -175,7 +164,7 @@ class Base:
 
         Parameters
         ----------
-        skip_none : bool
+        skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
         copy : bool
@@ -193,37 +182,32 @@ class Base:
         for attr, attr_type in self._attributes.items():
             value = getattr(self, attr)
             if attr in self._list_attributes:
-                if not value and skip_none:
+                if not value and skip_missing:
                     continue
                 if isclass(attr_type) and issubclass(attr_type, Base):
                     ordered_dict[attr] = [
-                        v.to_ordered_dict(skip_none=skip_none, copy=copy)
+                        v.to_ordered_dict(skip_missing=skip_missing, copy=copy)
                         for v in value
                     ]
-                    continue
-            if value is None:
-                if not skip_none:
+                else:
+                    ordered_dict[attr] = deepcopy(value) if copy else value
+            elif value is None:
+                if not skip_missing:
                     ordered_dict[attr] = None
-                continue
-            if isclass(attr_type) and issubclass(attr_type, Base):
+            elif isclass(attr_type) and issubclass(attr_type, Base):
                 ordered_dict[attr] = value.to_ordered_dict(
-                    skip_none=skip_none, copy=copy)
-                continue
-
-            if attr in self._list_attributes:
-                # List of non-MusPy objects
-                ordered_dict[attr] = deepcopy(value) if copy else list(value)
+                    skip_missing=skip_missing, copy=copy
+                )
             else:
-                # Single non-MusPy object
                 ordered_dict[attr] = deepcopy(value) if copy else value
         return ordered_dict
 
-    def pretty_str(self, skip_none: bool = True) -> str:
+    def pretty_str(self, skip_missing: bool = True) -> str:
         """Return the attributes as a string in a YAML-like format.
 
         Parameters
         ----------
-        skip_none : bool
+        skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -238,15 +222,16 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return _yaml_dump(self.to_ordered_dict(
-            skip_none=skip_none, copy=False))
+        return yaml_dump(
+            self.to_ordered_dict(skip_missing=skip_missing, copy=False)
+        )
 
-    def print(self, skip_none: bool = True):
+    def print(self, skip_missing: bool = True):
         """Print the attributes in a YAML-like format.
 
         Parameters
         ----------
-        skip_none : bool
+        skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -256,7 +241,7 @@ class Base:
             Return the the attributes as a string in a YAML-like format.
 
         """
-        print(self.pretty_str(skip_none=skip_none))
+        print(self.pretty_str(skip_missing=skip_missing))
 
     def _validate_attr_type(self, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
@@ -510,18 +495,18 @@ class ComplexBase(Base):
     """
 
     def __iadd__(
-        self: ComplexBaseType,
-        other: Union[ComplexBaseType, Iterable]
+        self: ComplexBaseType, other: Union[ComplexBaseType, Iterable]
     ) -> ComplexBaseType:
         return self.extend(other)
 
     def __add__(
-        self: ComplexBaseType,
-        other: ComplexBaseType
+        self: ComplexBaseType, other: ComplexBaseType
     ) -> ComplexBaseType:
         if type(other) is not type(self):
-            raise TypeError(f'second operand must be of type {type(self)!r}, '
-                            f'not {type(other)!r}')
+            raise TypeError(
+                f"second operand must be of type {type(self)!r}, "
+                f"not {type(other)!r}"
+            )
 
         return deepcopy(self).extend(other, copy=True)
 
@@ -559,7 +544,7 @@ class ComplexBase(Base):
     def extend(
         self: ComplexBaseType,
         other: Union[ComplexBaseType, Iterable],
-        copy: Optional[bool] = None
+        copy: Optional[bool] = None,
     ) -> ComplexBaseType:
         """Extend this object with values from another object or
         iterable.
@@ -590,8 +575,10 @@ class ComplexBase(Base):
         """
         if isinstance(other, Base):
             if type(other) is not type(self):
-                raise TypeError(f"`other` must be of type {type(self)!r} or "
-                                f'an iterable, not {type(other)!r}')
+                raise TypeError(
+                    f"`other` must be of type {type(self)!r} or "
+                    f"an iterable, not {type(other)!r}"
+                )
 
             if copy is None:
                 copy = True
@@ -599,7 +586,8 @@ class ComplexBase(Base):
             for attr in self._list_attributes:
                 other_value = getattr(other, attr)
                 getattr(self, attr).extend(
-                    deepcopy(other_value) if copy else other_value)
+                    deepcopy(other_value) if copy else other_value
+                )
         else:
             if copy is None:
                 copy = False
