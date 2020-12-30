@@ -28,7 +28,7 @@ def test_save_json_path(tmp_path):
 
 def test_save_json_file(tmp_path):
     music = muspy.load(TEST_JSON_PATH)
-    with open(tmp_path / "test.json", "w") as f:
+    with open(tmp_path / "test.json", "w", encoding="utf-8") as f:
         music.save_json(f)
 
     loaded = muspy.load(tmp_path / "test.json")
@@ -45,7 +45,7 @@ def test_save_yaml_path(tmp_path):
 
 def test_save_yaml_file(tmp_path):
     music = muspy.load(TEST_JSON_PATH)
-    with open(tmp_path / "test.yaml", "w") as f:
+    with open(tmp_path / "test.yaml", "w", encoding="utf-8") as f:
         music.save_yaml(f)
 
     loaded = muspy.load(tmp_path / "test.yaml")
