@@ -138,7 +138,7 @@ class Base:
                 kwargs[attr] = value
         return cls(**kwargs)
 
-    def to_ordered_dict(self, skip_none: bool = True) -> OrderedDict:
+    def to_ordered_dict(self, skip_missing: bool = True) -> OrderedDict:
         """Return the object as an OrderedDict.
 
         Return an ordered dictionary that stores the attributes and
@@ -146,7 +146,7 @@ class Base:
 
         Parameters
         ----------
-        skip_none : bool
+        skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -161,29 +161,32 @@ class Base:
         for attr, attr_type in self._attributes.items():
             value = getattr(self, attr)
             if attr in self._list_attributes:
-                if not value and skip_none:
+                if not value and skip_missing:
                     continue
                 if isclass(attr_type) and issubclass(attr_type, Base):
                     ordered_dict[attr] = [
-                        v.to_ordered_dict(skip_none=skip_none) for v in value
+                        v.to_ordered_dict(skip_missing=skip_missing)
+                        for v in value
                     ]
                 else:
                     ordered_dict[attr] = value
             elif value is None:
-                if not skip_none:
+                if not skip_missing:
                     ordered_dict[attr] = None
             elif isclass(attr_type) and issubclass(attr_type, Base):
-                ordered_dict[attr] = value.to_ordered_dict(skip_none=skip_none)
+                ordered_dict[attr] = value.to_ordered_dict(
+                    skip_missing=skip_missing
+                )
             else:
                 ordered_dict[attr] = value
         return ordered_dict
 
-    def pretty_str(self, skip_none: bool = True) -> str:
+    def pretty_str(self, skip_missing: bool = True) -> str:
         """Return the attributes as a string in a YAML-like format.
 
         Parameters
         ----------
-        skip_none : bool
+        skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -198,14 +201,14 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return yaml_dump(self.to_ordered_dict(skip_none=skip_none))
+        return yaml_dump(self.to_ordered_dict(skip_missing=skip_missing))
 
-    def print(self, skip_none: bool = True):
+    def print(self, skip_missing: bool = True):
         """Print the attributes in a YAML-like format.
 
         Parameters
         ----------
-        skip_none : bool
+        skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -215,7 +218,7 @@ class Base:
             Return the the attributes as a string in a YAML-like format.
 
         """
-        print(self.pretty_str(skip_none=skip_none))
+        print(self.pretty_str(skip_missing=skip_missing))
 
     def _validate_attr_type(self, attr: str, recursive: bool):
         attr_type = self._attributes[attr]

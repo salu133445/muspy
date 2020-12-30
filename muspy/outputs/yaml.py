@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 def save_yaml(
     path: Union[str, Path, TextIO],
     music: "Music",
-    skip_none: bool = True,
+    skip_missing: bool = True,
     allow_unicode: bool = True,
     **kwargs
 ):
@@ -23,7 +23,7 @@ def save_yaml(
         Path or file to save the YAML data.
     music : :class:`muspy.Music`
         Music object to save.
-    skip_none : bool
+    skip_missing : bool
         Whether to skip attributes with value None or those that are
         empty lists. Defaults to True.
     allow_unicode : bool
@@ -33,7 +33,7 @@ def save_yaml(
         Keyword arguments to pass to :py:func:`json.dumps`.
 
     """
-    ordered_dict = music.to_ordered_dict(skip_none=skip_none)
+    ordered_dict = music.to_ordered_dict(skip_missing=skip_missing)
     data = yaml_dump(ordered_dict, allow_unicode=allow_unicode, **kwargs)
 
     if isinstance(path, (str, Path)):

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 def save_json(
     path: Union[str, Path, TextIO],
     music: "Music",
-    skip_none: bool = True,
+    skip_missing: bool = True,
     ensure_ascii: bool = False,
     **kwargs
 ):
@@ -22,7 +22,7 @@ def save_json(
         Path or file to save the JSON data.
     music : :class:`muspy.Music`
         Music object to save.
-    skip_none : bool
+    skip_missing : bool
         Whether to skip attributes with value None or those that are
         empty lists. Defaults to True.
     ensure_ascii : bool
@@ -32,7 +32,7 @@ def save_json(
         Keyword arguments to pass to :py:func:`json.dumps`.
 
     """
-    ordered_dict = music.to_ordered_dict(skip_none=skip_none)
+    ordered_dict = music.to_ordered_dict(skip_missing=skip_missing)
     data = json.dumps(ordered_dict, ensure_ascii=ensure_ascii, **kwargs)
 
     if isinstance(path, (str, Path)):
