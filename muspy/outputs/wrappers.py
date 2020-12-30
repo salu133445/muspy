@@ -28,7 +28,7 @@ def save(
     path: Union[str, Path],
     music: "Music",
     kind: Optional[str] = None,
-    **kwargs: Any
+    **kwargs
 ):
     """Save a Music object loselessly to a JSON or a YAML file.
 
@@ -55,6 +55,8 @@ def save(
 
     """
     if kind is None:
+        if not isinstance(path, (str, Path)):
+            raise ValueError("Cannot infer file format from a file object.")
         if str(path).lower().endswith(".json"):
             kind = "json"
         elif str(path).lower().endswith((".yaml", ".yml")):
@@ -64,9 +66,9 @@ def save(
                 "Got unsupported file format (expect JSON or YAML)."
             )
     if kind == "json":
-        return save_json(path, music, **kwargs)  # type: ignore
+        return save_json(path, music, **kwargs)
     if kind == "yaml":
-        return save_yaml(path, music, **kwargs)  # type: ignore
+        return save_yaml(path, music, **kwargs)
     raise ValueError("`kind` must be either 'json' or 'yaml'.")
 
 
@@ -74,7 +76,7 @@ def write(
     path: Union[str, Path],
     music: "Music",
     kind: Optional[str] = None,
-    **kwargs: Any
+    **kwargs
 ):
     """Write a Music object to a MIDI/MusicXML/ABC/audio file.
 
@@ -122,7 +124,7 @@ def write(
 
 
 def to_object(
-    music: "Music", kind: str, **kwargs: Any
+    music: "Music", kind: str, **kwargs
 ) -> Union[Stream, MidiFile, PrettyMIDI, Multitrack]:
     """Return a Music object as an object in other libraries.
 
@@ -158,7 +160,7 @@ def to_object(
     )
 
 
-def to_representation(music: "Music", kind: str, **kwargs: Any) -> ndarray:
+def to_representation(music: "Music", kind: str, **kwargs) -> ndarray:
     """Return a Music object in a specific representation.
 
     Parameters

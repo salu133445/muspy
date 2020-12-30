@@ -14,33 +14,12 @@ from inspect import isclass
 from operator import attrgetter
 from typing import Any, Callable, List, Mapping, Optional, Type, TypeVar
 
-import yaml
+from .utils import yaml_dump
 
 __all__ = ["Base", "ComplexBase"]
 
 BaseType = TypeVar("BaseType", bound="Base")
 ComplexBaseType = TypeVar("ComplexBaseType", bound="ComplexBase")
-
-
-class _OrderedDumper(yaml.SafeDumper):
-    """A dumper that supports OrderedDict."""
-
-
-def _dict_representer(dumper, data):
-    return dumper.represent_mapping(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.items()
-    )
-
-
-_OrderedDumper.add_representer(OrderedDict, _dict_representer)
-
-
-def _yaml_dump(data):
-    """Dump data to YAML, which supports OrderedDict.
-
-    Code adapted from https://stackoverflow.com/a/21912744.
-    """
-    return yaml.dump(data, Dumper=_OrderedDumper, allow_unicode=True)
 
 
 def _get_type_string(attr_type):
@@ -219,7 +198,7 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return _yaml_dump(self.to_ordered_dict(skip_none=skip_none))
+        return yaml_dump(self.to_ordered_dict(skip_none=skip_none))
 
     def print(self, skip_none: bool = True):
         """Print the attributes in a YAML-like format.
