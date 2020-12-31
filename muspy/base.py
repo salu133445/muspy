@@ -9,8 +9,8 @@ Classes
 - ComplexBase
 
 """
+import copy
 from collections import OrderedDict
-from copy import deepcopy
 from inspect import isclass
 from operator import attrgetter
 from typing import (
@@ -115,10 +115,17 @@ class Base:
                 return False
         return True
 
-    def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
-        return self.from_dict(
-            self.to_ordered_dict(skip_missing=False, copy=True)
-        )
+    def __copy__(self: BaseType) -> BaseType:
+        # NOTE: We need skip_missing=False to avoid creating a new
+        # empty list
+        ordered_dict = self.to_ordered_dict(skip_missing=False)
+        return self.from_dict(ordered_dict)
+
+    def __deepcopy__(self: BaseType, memo: Optional[dict]) -> BaseType:
+        # NOTE: We need skip_missing=False to avoid creating a new
+        # empty list
+        ordered_dict = self.to_ordered_dict(skip_missing=False, deepcopy=True)
+        return self.from_dict(ordered_dict)
 
     @classmethod
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
@@ -155,7 +162,7 @@ class Base:
         return cls(**kwargs)
 
     def to_ordered_dict(
-        self, skip_missing: bool = True, copy: bool = False
+        self, skip_missing: bool = True, deepcopy: bool = False,
     ) -> OrderedDict:
         """Return the object as an OrderedDict.
 
@@ -167,7 +174,7 @@ class Base:
         skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
-        copy : bool
+        deepcopy : bool
             Whether to make deep copies of attributes whose type is not
             a MusPy class. Defaults to True.
 
@@ -186,21 +193,35 @@ class Base:
                     continue
                 if isclass(attr_type) and issubclass(attr_type, Base):
                     ordered_dict[attr] = [
-                        v.to_ordered_dict(skip_missing=skip_missing, copy=copy)
+                        v.to_ordered_dict(
+                            skip_missing=skip_missing, deepcopy=deepcopy
+                        )
                         for v in value
                     ]
                 else:
-                    ordered_dict[attr] = deepcopy(value) if copy else value
+                    ordered_dict[attr] = (
+                        copy.deepcopy(value) if deepcopy else value
+                    )
             elif value is None:
                 if not skip_missing:
                     ordered_dict[attr] = None
             elif isclass(attr_type) and issubclass(attr_type, Base):
                 ordered_dict[attr] = value.to_ordered_dict(
-                    skip_missing=skip_missing, copy=copy
+                    skip_missing=skip_missing, deepcopy=deepcopy
                 )
             else:
-                ordered_dict[attr] = deepcopy(value) if copy else value
+                ordered_dict[attr] = (
+                    copy.deepcopy(value) if deepcopy else value
+                )
         return ordered_dict
+
+    def copy(self: BaseType) -> BaseType:
+        """Return a shallow copy of the object."""
+        return self.__copy__()
+
+    def deepcopy(self: BaseType) -> BaseType:
+        """Return a deep copy of the object."""
+        return self.__deepcopy__(memo=None)
 
     def pretty_str(self, skip_missing: bool = True) -> str:
         """Return the attributes as a string in a YAML-like format.
@@ -222,9 +243,7 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return yaml_dump(
-            self.to_ordered_dict(skip_missing=skip_missing, copy=False)
-        )
+        return yaml_dump(self.to_ordered_dict(skip_missing=skip_missing))
 
     def print(self, skip_missing: bool = True):
         """Print the attributes in a YAML-like format.
@@ -502,13 +521,12 @@ class ComplexBase(Base):
     def __add__(
         self: ComplexBaseType, other: ComplexBaseType
     ) -> ComplexBaseType:
-        if type(other) is not type(self):
+        if not isinstance(other, type(self)):
             raise TypeError(
-                f"second operand must be of type {type(self)!r}, "
-                f"not {type(other)!r}"
+                "Expect the second operand to be of type "
+                f"{type(self).__name__}, but got {type(other).__name__}."
             )
-
-        return deepcopy(self).extend(other, copy=True)
+        return self.deepcopy().extend(other, deepcopy=True)
 
     def _append(self, obj):
         for attr in self._list_attributes:
@@ -521,9 +539,7 @@ class ComplexBase(Base):
                         getattr(self, attr).append(obj)
                     return
         raise TypeError(
-            "Cannot find a list attribute for type {}.".format(
-                type(obj).__name__
-            )
+            f"Cannot find a list attribute for type {type(obj).__name__}."
         )
 
     def append(self: ComplexBaseType, obj) -> ComplexBaseType:
@@ -544,58 +560,41 @@ class ComplexBase(Base):
     def extend(
         self: ComplexBaseType,
         other: Union[ComplexBaseType, Iterable],
-        copy: Optional[bool] = None,
+        deepcopy: bool = False,
     ) -> ComplexBaseType:
-        """Extend this object with values from another object or
-        iterable.
-
-        If a MusPy object is passed, it must be of the same type as
-        this object, and all of this object's list attributes will be
-        extended with copies of values from the corresponding list
-        attributes of the other object. For example,
-        `music1.extend(music2)` will extend `music1` with copies of all
-        notes, chords, time signatures etc. from `music2`.
-
-        Otherwise, the argument must be an iterable, and the result
-        will be the same as if :meth:`muspy.Base.append` was called for
-        each item of the iterable.
+        """Extend the list(s) with another object or iterable.
 
         Parameters
         ----------
-        other : Base
-            The object to merge into this object.
-        copy : bool
-            Whether to make deep copies of all the appended objects.
-            The default behavior is to make copies only when `other` is
-            a MusPy object.
+        other : :class:`muspy.ComplexBase` or iterable
+            If an object of the same type is given, extend the
+            list attributes with the corresponding list attributes of
+            the other object. If an iterable is given, call
+            :meth:`muspy.ComplexBase.append` for each item.
+        deepcopy : bool
+            Whether to make deep copies of the appended objects.
+            Defaults to False.
 
         Returns
         -------
         Object itself.
+
         """
-        if isinstance(other, Base):
-            if type(other) is not type(self):
+        if isinstance(other, ComplexBase):
+            if not isinstance(other, type(self)):
                 raise TypeError(
-                    f"`other` must be of type {type(self)!r} or "
-                    f"an iterable, not {type(other)!r}"
+                    f"Expect `other` to be of type {type(self).__name__}, "
+                    f"but got {type(other).__name__}."
                 )
-
-            if copy is None:
-                copy = True
-
             for attr in self._list_attributes:
                 other_value = getattr(other, attr)
                 getattr(self, attr).extend(
-                    deepcopy(other_value) if copy else other_value
+                    copy.deepcopy(other_value) if deepcopy else other_value
                 )
-        else:
-            if copy is None:
-                copy = False
+            return self
 
-            assert isinstance(other, Iterable)
-            for item in other:
-                self._append(deepcopy(item) if copy else item)
-
+        for item in other:  # type: ignore
+            self._append(copy.deepcopy(item) if deepcopy else item)
         return self
 
     def _remove_invalid(self, attr: str, recursive: bool):

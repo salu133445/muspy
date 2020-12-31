@@ -32,7 +32,7 @@ def save_json(
         Keyword arguments to pass to :py:func:`json.dumps`.
 
     """
-    ordered_dict = music.to_ordered_dict(skip_missing=skip_missing, copy=False)
+    ordered_dict = music.to_ordered_dict(skip_missing=skip_missing)
     data = json.dumps(ordered_dict, ensure_ascii=ensure_ascii, **kwargs)
 
     if isinstance(path, (str, Path)):

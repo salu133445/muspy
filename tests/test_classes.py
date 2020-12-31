@@ -48,7 +48,7 @@ def test_extend_copy():
         Note(time=1, duration=1, pitch=60),
         Note(time=2, duration=1, pitch=60),
     ]
-    track.extend(notes, copy=True)
+    track.extend(notes, deepcopy=True)
     assert track.notes[1:] == notes
     for a, b in zip(track.notes[1:], notes):
         assert a is not b

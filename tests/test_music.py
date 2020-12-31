@@ -2,9 +2,9 @@
 from copy import deepcopy
 from inspect import isclass
 from operator import attrgetter
-from muspy.base import ComplexBase
 
 import muspy
+from muspy.base import ComplexBase
 
 from .utils import TEST_JSON_PATH, check_tracks
 
@@ -92,7 +92,7 @@ def test_obj_extend():
 def test_obj_extend_no_copy():
     music = muspy.load(TEST_JSON_PATH)
     music2 = deepcopy(music).transpose(2)
-    music.extend(music2, copy=False)
+    music.extend(music2, deepcopy=False)
 
     for attr in music._list_attributes:
         g = attrgetter(attr)
