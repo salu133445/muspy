@@ -175,8 +175,8 @@ class Base:
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
         deepcopy : bool
-            Whether to make deep copies of attributes whose type is not
-            a MusPy class. Defaults to True.
+            Whether to make deep copies of the attributes. Defaults to
+            False.
 
         Returns
         -------
@@ -198,10 +198,10 @@ class Base:
                         )
                         for v in value
                     ]
+                elif deepcopy:
+                    ordered_dict[attr] = copy.deepcopy(value)
                 else:
-                    ordered_dict[attr] = (
-                        copy.deepcopy(value) if deepcopy else value
-                    )
+                    ordered_dict[attr] = value
             elif value is None:
                 if not skip_missing:
                     ordered_dict[attr] = None
@@ -209,10 +209,10 @@ class Base:
                 ordered_dict[attr] = value.to_ordered_dict(
                     skip_missing=skip_missing, deepcopy=deepcopy
                 )
+            elif deepcopy:
+                ordered_dict[attr] = copy.deepcopy(value)
             else:
-                ordered_dict[attr] = (
-                    copy.deepcopy(value) if deepcopy else value
-                )
+                ordered_dict[attr] = value
         return ordered_dict
 
     def copy(self: BaseType) -> BaseType:
