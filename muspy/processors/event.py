@@ -129,7 +129,7 @@ class EventRepresentationProcessor:
                 'Cannot encode instruments when num_tracks is None')
 
         # Create vocabulary of events
-        vocab_list = []  # type: list
+        vocab_list: list = []
         track_ids = [0] if num_tracks is None else range(num_tracks)
         vocab_list.extend(
             (NOTE_ON, tr, i)
@@ -158,8 +158,8 @@ class EventRepresentationProcessor:
             vocab_list.append((EOS,))
 
         # Map human-readable tuples to integers
-        self.vocab = frozenbidict(
-            enumerate(vocab_list)).inverse  # type: frozenbidict[Any, int]
+        self.vocab: frozenbidict[Any, int] = frozenbidict(
+            enumerate(vocab_list)).inverse
 
     def encode(self, music: Music) -> ndarray:
         if music.resolution != self.resolution:
@@ -169,7 +169,7 @@ class EventRepresentationProcessor:
                 RuntimeWarning)
 
         # Create a list for all events
-        events = []  # type: List[tuple]
+        events: List[tuple] = []
 
         # Collect notes by track
         if self.num_tracks is None:
@@ -278,17 +278,17 @@ class EventRepresentationProcessor:
 
         # Decode events, keeping track of information for each track
         time = 0  # Time is common for all tracks
-        curr_velocity = defaultdict(
-            lambda: self.default_velocity)  # type: DefaultDict[int, int]
+        curr_velocity: DefaultDict[int, int] = defaultdict(
+            lambda: self.default_velocity)
         velocity_factor = 128 / self.velocity_bins
-        tracks = defaultdict(lambda: Track(
+        tracks: DefaultDict[int, Track] = defaultdict(lambda: Track(
             program=self.default_program,
-            is_drum=self.default_is_drum))  # type: DefaultDict[int, Track]
-        program_is_set = defaultdict(bool)  # type: DefaultDict[int, bool]
+            is_drum=self.default_is_drum))
+        program_is_set: DefaultDict[int, bool] = defaultdict(bool)
 
         # Keep track of active note on messages for each track
-        active_notes = defaultdict(lambda: defaultdict(deque)) \
-            # type: DefaultDict[int, DefaultDict[int, deque]]
+        active_notes: DefaultDict[int, DefaultDict[int, deque]] = \
+            defaultdict(lambda: defaultdict(deque))
 
         # Iterate over the events
         for (event, *args) in events:
