@@ -115,17 +115,8 @@ class Base:
                 return False
         return True
 
-    def __copy__(self: BaseType) -> BaseType:
-        # NOTE: We need skip_missing=False to avoid creating a new
-        # empty list
-        ordered_dict = self.to_ordered_dict(skip_missing=False)
-        return self.from_dict(ordered_dict)
-
     def __deepcopy__(self: BaseType, memo: Optional[dict]) -> BaseType:
-        # NOTE: We need skip_missing=False to avoid creating a new
-        # empty list
-        ordered_dict = self.to_ordered_dict(skip_missing=False, deepcopy=True)
-        return self.from_dict(ordered_dict)
+        return self.from_dict(self.to_ordered_dict())
 
     @classmethod
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
@@ -162,7 +153,7 @@ class Base:
         return cls(**kwargs)
 
     def to_ordered_dict(
-        self, skip_missing: bool = True, deepcopy: bool = False,
+        self, skip_missing: bool = True, deepcopy: bool = True,
     ) -> OrderedDict:
         """Return the object as an OrderedDict.
 
@@ -176,7 +167,7 @@ class Base:
             empty lists. Defaults to True.
         deepcopy : bool
             Whether to make deep copies of the attributes. Defaults to
-            False.
+            True.
 
         Returns
         -------
@@ -216,12 +207,28 @@ class Base:
         return ordered_dict
 
     def copy(self: BaseType) -> BaseType:
-        """Return a shallow copy of the object."""
-        return self.__copy__()
+        """Return a shallow copy of the object.
+
+        This is equivalent to :py:func:`copy.copy(self)`.
+
+        Returns
+        -------
+        Shallow copy of the object.
+
+        """
+        return copy.copy(self)
 
     def deepcopy(self: BaseType) -> BaseType:
-        """Return a deep copy of the object."""
-        return self.__deepcopy__(memo=None)
+        """Return a deep copy of the object.
+
+        This is equivalent to :py:func:`copy.deepcopy(self)`
+
+        Returns
+        -------
+        Deep copy of the object.
+
+        """
+        return copy.deepcopy(self)
 
     def pretty_str(self, skip_missing: bool = True) -> str:
         """Return the attributes as a string in a YAML-like format.
@@ -243,7 +250,9 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return yaml_dump(self.to_ordered_dict(skip_missing=skip_missing))
+        return yaml_dump(
+            self.to_ordered_dict(skip_missing=skip_missing, deepcopy=False)
+        )
 
     def print(self, skip_missing: bool = True):
         """Print the attributes in a YAML-like format.
