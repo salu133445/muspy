@@ -32,6 +32,7 @@ class MIDIError(Exception):
 
 
 def _is_drum(channel):
+    # Mido numbers channels 0 to 15 instead of 1 to 16
     return channel == 9
 
 

@@ -168,7 +168,7 @@ def to_mido_lyric(lyric: Lyric) -> MetaMessage:
 
 
 def to_mido_note_on_note_off(
-    note: Note, channel: int, use_note_on_as_note_off: bool = True
+    note: Note, channel: int, use_note_off_message: bool = False
 ) -> Tuple[Message, Message]:
     """Return a Note object as mido Message objects.
 
@@ -180,9 +180,12 @@ def to_mido_note_on_note_off(
         Note object to convert.
     channel : int
         Channel of the MIDI message.
-    use_note_on_as_note_off : bool
-        Whether to use a note on message with zero velocity instead of a
-        note off message. Defaults to True.
+    use_note_off_message : bool, optional
+        Whether to use note-off messages. If False, note-on messages
+        with zero velocity are used instead. The advantage to using
+        note-on messages at zero velocity is that it can avoid sending
+        additional status bytes when Running Status is employed.
+        Defaults to False.
 
     Returns
     -------
@@ -200,7 +203,15 @@ def to_mido_note_on_note_off(
         velocity=velocity,
         channel=channel,
     )
-    if use_note_on_as_note_off:
+    if use_note_off_message:
+        note_off_msg = Message(
+            "note_off",
+            time=note.end,
+            note=note.pitch,
+            velocity=64,
+            channel=channel,
+        )
+    else:
         note_off_msg = Message(
             "note_on",
             time=note.end,
@@ -208,20 +219,14 @@ def to_mido_note_on_note_off(
             velocity=0,
             channel=channel,
         )
-    else:
-        note_off_msg = Message(
-            "note_off",
-            time=note.end,
-            note=note.pitch,
-            velocity=velocity,
-            channel=channel,
-        )
 
     return note_on_msg, note_off_msg
 
 
 def to_mido_track(
-    track: Track, use_note_on_as_note_off: bool = True
+    track: Track,
+    channel: Optional[int] = None,
+    use_note_off_message: bool = False,
 ) -> MidiTrack:
     """Return a Track object as a mido MidiTrack object.
 
@@ -229,9 +234,15 @@ def to_mido_track(
     ----------
     track : :class:`muspy.Track` object
         Track object to convert.
-    use_note_on_as_note_off : bool
-        Whether to use a note on message with zero velocity instead of a
-        note off message.
+    use_note_off_message : bool, optional
+        Whether to use note-off messages. If False, note-on messages
+        with zero velocity are used instead. The advantage to using
+        note-on messages at zero velocity is that it can avoid sending
+        additional status bytes when Running Status is employed.
+        Defaults to False.
+    channel : int, optional
+        Channel number. Defaults to 10 for drums and 0 for other
+        instruments.
 
     Returns
     -------
@@ -239,6 +250,9 @@ def to_mido_track(
         Converted mido MidiTrack object.
 
     """
+    if channel is None:
+        channel = 9 if track.is_drum else 0
+
     # Create a new MIDI track
     midi_track = MidiTrack()
 
@@ -247,15 +261,18 @@ def to_mido_track(
         midi_track.append(MetaMessage("track_name", name=track.name))
 
     # Program change messages
-    channel = 9 if track.is_drum else 0
     midi_track.append(
-        Message("program_change", program=track.program, channel=channel,)
+        Message("program_change", program=track.program, channel=channel)
     )
 
     # Note on and note off messages
     for note in track.notes:
         midi_track.extend(
-            to_mido_note_on_note_off(note, channel, use_note_on_as_note_off)
+            to_mido_note_on_note_off(
+                note,
+                channel=channel,
+                use_note_off_message=use_note_off_message,
+            )
         )
 
     # End of track message
@@ -267,16 +284,19 @@ def to_mido_track(
     return midi_track
 
 
-def to_mido(music: "Music", use_note_on_as_note_off: bool = True):
+def to_mido(music: "Music", use_note_off_message: bool = False):
     """Return a Music object as a MidiFile object.
 
     Parameters
     ----------
     music : :class:`muspy.Music` object
         Music object to convert.
-    use_note_on_as_note_off : bool
-        Whether to use a note on message with zero velocity instead of a
-        note off message.
+    use_note_off_message : bool, optional
+        Whether to use note-off messages. If False, note-on messages
+        with zero velocity are used instead. The advantage to using
+        note-on messages at zero velocity is that it can avoid sending
+        additional status bytes when Running Status is employed.
+        Defaults to False.
 
     Returns
     -------
@@ -291,16 +311,38 @@ def to_mido(music: "Music", use_note_on_as_note_off: bool = True):
     midi.tracks.append(to_mido_meta_track(music))
 
     # Iterate over music tracks
-    for track in music.tracks:
-        midi.tracks.append(to_mido_track(track, use_note_on_as_note_off))
+    for i, track in enumerate(music.tracks):
+        # NOTE: Many softwares use the same instrument for messages of
+        # the same channel in different tracks. Thus, we want to assign
+        # a unique channel number for each track. MIDI has 15 channels
+        # for instruments other than drums, so we increment the channel
+        # number for each track (skipping the drum channel) and go back
+        # to 0 once we run out of channels.
+
+        # Assign channel number
+        if track.is_drum:
+            # Mido numbers channels 0 to 15 instead of 1 to 16
+            channel = 9
+        else:
+            # MIDI has 15 channels for instruments other than drums
+            channel = i % 15
+            # Avoid drum channel
+            if channel > 8:
+                channel += 1
+
+        midi.tracks.append(
+            to_mido_track(
+                track,
+                channel=channel,
+                use_note_off_message=use_note_off_message,
+            )
+        )
 
     return midi
 
 
 def write_midi_mido(
-    path: Union[str, Path],
-    music: "Music",
-    use_note_on_as_note_off: bool = True,
+    path: Union[str, Path], music: "Music", use_note_off_message: bool = False,
 ):
     """Write a Music object to a MIDI file using mido as backend.
 
@@ -310,12 +352,15 @@ def write_midi_mido(
         Path to write the MIDI file.
     music : :class:`muspy.Music` object
         Music object to write.
-    use_note_on_as_note_off : bool
-        Whether to use a note on message with zero velocity instead of a
-        note off message.
+    use_note_off_message : bool, optional
+        Whether to use note-off messages. If False, note-on messages
+        with zero velocity are used instead. The advantage to using
+        note-on messages at zero velocity is that it can avoid sending
+        additional status bytes when Running Status is employed.
+        Defaults to False.
 
     """
-    midi = to_mido(music, use_note_on_as_note_off=use_note_on_as_note_off)
+    midi = to_mido(music, use_note_off_message=use_note_off_message)
     midi.save(str(path))
 
 
@@ -492,7 +537,7 @@ def write_midi(
         Path to write the MIDI file.
     music : :class:`muspy.Music`
         Music object to write.
-    backend: {'mido', 'pretty_midi'}
+    backend: {'mido', 'pretty_midi'}, optional
         Backend to use. Defaults to 'mido'.
 
     See Also
