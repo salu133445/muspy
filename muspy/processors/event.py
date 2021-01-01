@@ -204,10 +204,6 @@ class EventRepresentationProcessor:
         # Flatten, store track index with each note
         notes = [(n, tr) for tr, notes in enumerate(tracks) for n in notes]
 
-        # Raise an error if no notes is found
-        if not notes and not self.use_end_of_sequence_event:
-            raise RuntimeError("No notes found.")
-
         # Sort the notes
         note_key_fn = attrgetter("time", "pitch", "duration", "velocity")
         notes.sort(key=lambda n_tr: (note_key_fn(n_tr[0]), n_tr[1]))
