@@ -22,16 +22,23 @@ from .pitch import from_pitch_representation
 from .yaml import load_yaml
 
 
-def load(path: Union[str, Path, TextIO], kind: Optional[str] = None) -> Music:
+def load(
+    path: Union[str, Path, TextIO], kind: Optional[str] = None, **kwargs
+) -> Music:
     """Load a JSON or a YAML file into a Music object.
+
+    This is a wrapper function for :func:`muspy.load_json` and
+    :func:`muspy.load_yaml`.
 
     Parameters
     ----------
     path : str, Path or TextIO
         Path to the file or the file to to load.
     kind : {'json', 'yaml'}, optional
-        Format to save (case-insensitive). Defaults to infer the format
-        from the extension.
+        Format to save. Defaults to infer from the extension.
+    **kwargs
+        Keyword arguments to pass to :func:`muspy.load_json` or
+        :func:`muspy.load_yaml`.
 
     Returns
     -------
@@ -40,15 +47,19 @@ def load(path: Union[str, Path, TextIO], kind: Optional[str] = None) -> Music:
 
     See Also
     --------
+    :func:`muspy.load_json` : Load a JSON file into a Music object.
+    :func:`muspy.load_yaml` : Load a YAML file into a Music object.
     :func:`muspy.read` :
         Read a MIDI/MusicXML/ABC file into a Music object.
 
     """
-    # pylint: disable=unused-argument
     if kind is None:
-        if str(path).lower().endswith(".json"):
+        if not isinstance(path, (str, Path)):
+            raise ValueError("Cannot infer file format from a file object.")
+        path_str = str(path).lower()
+        if path_str.endswith((".json", ".json.gz")):
             kind = "json"
-        elif str(path).lower().endswith((".yaml", ".yml")):
+        elif path_str.endswith((".yaml", ".yml", ".yaml.gz", ".yml.gz")):
             kind = "yaml"
         else:
             raise ValueError(
@@ -56,9 +67,9 @@ def load(path: Union[str, Path, TextIO], kind: Optional[str] = None) -> Music:
                 "YAML)."
             )
     if kind.lower() == "json":
-        return load_json(path)
+        return load_json(path, **kwargs)
     if kind.lower() == "yaml":
-        return load_yaml(path)
+        return load_yaml(path, **kwargs)
     raise ValueError(
         f"Expect `kind` to be 'json' or 'yaml', but got : {kind}."
     )
@@ -74,8 +85,7 @@ def read(
     path : str or Path
         Path to the file to read.
     kind : {'midi', 'musicxml', 'abc'}, optional
-        Format to save (case-insensitive). Defaults to infer the format
-        from the extension.
+        Format to save. Defaults to infer from the extension.
     **kwargs
         Keyword arguments to pass to :func:`muspy.read_midi`,
         :func:`muspy.read_musicxml` or :func:`read_abc`.
@@ -157,7 +167,7 @@ def from_representation(array: ndarray, kind: str, **kwargs) -> Music:
     array : :class:`numpy.ndarray`
         Array in a supported representation.
     kind : str, {'pitch', 'pianoroll', 'event', 'note'}
-        Data representation type (case-insensitive).
+        Data representation.
     **kwargs
         Keyword arguments to pass to
         :func:`muspy.from_pitch_representation`,

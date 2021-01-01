@@ -1,7 +1,8 @@
 """JSON output interface."""
+import gzip
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, TextIO, Union
+from typing import TYPE_CHECKING, Optional, TextIO, Union
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -12,6 +13,7 @@ def save_json(
     music: "Music",
     skip_missing: bool = True,
     ensure_ascii: bool = False,
+    compressed: Optional[bool] = None,
     **kwargs
 ):
     """Save a Music object to a JSON file.
@@ -28,16 +30,34 @@ def save_json(
     ensure_ascii : bool
         Whether to escape non-ASCII characters. Will be passed to
         PyYAML's `yaml.dump`. Defaults to False.
+    compressed : bool, optional
+        Whether to save as a compressed JSON file (`.json.gz`). Has no
+        effect when `path` is a file object. Defaults to infer from the
+        extension (`.gz`).
     **kwargs
         Keyword arguments to pass to :py:func:`json.dumps`.
+
+    Notes
+    -----
+    When a path is given, use UTF-8 encoding and gzip compression if
+    `compressed=True`.
 
     """
     ordered_dict = music.to_ordered_dict(skip_missing=skip_missing)
     data = json.dumps(ordered_dict, ensure_ascii=ensure_ascii, **kwargs)
 
     if isinstance(path, (str, Path)):
-        with open(str(path), "w", encoding="utf-8") as f:
-            f.write(data)
+        if compressed is None:
+            if str(path).lower().endswith(".gz"):
+                compressed = True
+            else:
+                compressed = False
+        if compressed:
+            with gzip.open(path, "wt", encoding="utf-8") as f:
+                f.write(data)
+        else:
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(data)
         return
 
     path.write(data)

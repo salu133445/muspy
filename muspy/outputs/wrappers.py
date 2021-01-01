@@ -32,6 +32,9 @@ def save(
 ):
     """Save a Music object loselessly to a JSON or a YAML file.
 
+    This is a wrapper function for :func:`muspy.save_json` and
+    :func:`muspy.save_yaml`.
+
     Parameters
     ----------
     path : str, Path or TextIO
@@ -39,11 +42,15 @@ def save(
     music : :class:`muspy.Music`
         Music object to save.
     kind : {'json', 'yaml'}, optional
-        Format to save (case-insensitive). Defaults to infer the format
-        from the extension.
+        Format to save. Defaults to infer from the extension.
+    **kwargs
+        Keyword arguments to pass to :func:`muspy.save_json` or
+        :func:`muspy.save_yaml`.
 
     See Also
     --------
+    :func:`muspy.save_json` : Save a Music object to a JSON file.
+    :func:`muspy.save_yaml` : Save a Music object to a YAML file.
     :func:`muspy.write` :
         Write a Music object to a MIDI/MusicXML/ABC/audio file.
 
@@ -57,9 +64,10 @@ def save(
     if kind is None:
         if not isinstance(path, (str, Path)):
             raise ValueError("Cannot infer file format from a file object.")
-        if str(path).lower().endswith(".json"):
+        path_str = str(path).lower()
+        if path_str.endswith((".json", ".json.gz")):
             kind = "json"
-        elif str(path).lower().endswith((".yaml", ".yml")):
+        elif path_str.endswith((".yaml", ".yml", ".yaml.gz", ".yml.gz")):
             kind = "yaml"
         else:
             raise ValueError(
@@ -90,8 +98,7 @@ def write(
     music : :class:`muspy.Music`
         Music object to convert.
     kind : {'midi', 'musicxml', 'abc', 'audio'}, optional
-        Format to save (case-insensitive). Defaults to infer the format
-        from the extension.
+        Format to save. Defaults to infer from the extension.
 
     See Also
     --------
@@ -142,7 +149,7 @@ def to_object(
     music : :class:`muspy.Music`
         Music object to convert.
     kind : str, {'music21', 'mido', 'pretty_midi', 'pypianoroll'}
-        Target class (case-insensitive).
+        Target class.
 
     Returns
     -------
@@ -174,7 +181,7 @@ def to_representation(music: "Music", kind: str, **kwargs) -> ndarray:
     music : :class:`muspy.Music`
         Music object to convert.
     kind : str, {'pitch', 'piano-roll', 'event', 'note'}
-        Target representation (case-insensitive).
+        Target representation.
 
     Returns
     -------
