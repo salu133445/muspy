@@ -1,9 +1,9 @@
 from collections import defaultdict, deque
+import copy
 from operator import attrgetter, itemgetter
 from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Any, DefaultDict, List
-import warnings
 
 from bidict import frozenbidict
 import numpy as np
@@ -71,9 +71,6 @@ class EventRepresentationProcessor:
     default_is_drum: bool
         Default `is_drum` value to use when decoding. Defaults to
         False.
-    resolution: int
-        Time steps per quarter note to use when decoding. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
     num_tracks: int or None
         The maximum number of tracks. Defaults to None, which means
         single-track mode (encode all events as if they were in one
@@ -81,6 +78,13 @@ class EventRepresentationProcessor:
     ignore_empty_tracks: bool
         Whether empty tracks should be ignored when encoding and deleted
         when decoding. Defaults to False.
+    resolution: int
+        Time steps per quarter note to use when decoding. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
+    force_resolution: bool
+        Whether to adjust the resolution of the music when encoding.
+        If False and if the resolution is not correct, an error will be
+        raised. Defaults to False.
     duplicate_note_mode : {'fifo', 'lifo', 'close_all'}
         Policy for dealing with duplicate notes. When a note off event
         is presetned while there are multiple correspoding note on
@@ -107,6 +111,7 @@ class EventRepresentationProcessor:
         num_tracks: Optional[int] = None,
         ignore_empty_tracks: bool = False,
         resolution: int = DEFAULT_RESOLUTION,
+        force_resolution: bool = False,
         duplicate_note_mode: str = "fifo",
     ):
         self.use_single_note_off_event = use_single_note_off_event
@@ -122,6 +127,7 @@ class EventRepresentationProcessor:
         self.num_tracks = num_tracks
         self.ignore_empty_tracks = ignore_empty_tracks
         self.resolution = resolution
+        self.force_resolution = force_resolution
         self.duplicate_note_mode = duplicate_note_mode
 
         if encode_instrument and num_tracks is None:
@@ -163,10 +169,13 @@ class EventRepresentationProcessor:
 
     def encode(self, music: Music) -> ndarray:
         if music.resolution != self.resolution:
-            warnings.warn(
-                'Expected a resolution of {} TPQN, got {}'.format(
-                    self.resolution, music.resolution),
-                RuntimeWarning)
+            if self.force_resolution:
+                music = copy.deepcopy(music)
+                music.adjust_resolution(target=self.resolution)
+            else:
+                raise ValueError(
+                    'Expected a resolution of {} TPQN, got {}'.format(
+                        self.resolution, music.resolution))
 
         # Create a list for all events
         events: List[tuple] = []
