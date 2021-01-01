@@ -174,8 +174,9 @@ class EventRepresentationProcessor:
                 music.adjust_resolution(target=self.resolution)
             else:
                 raise ValueError(
-                    'Expected a resolution of {} TPQN, got {}'.format(
-                        self.resolution, music.resolution))
+                    'Expected a resolution of {} TPQN, got {}. '.format(
+                        self.resolution, music.resolution)
+                    + 'Set force_resolution=True to convert the resolution')
 
         # Create a list for all events
         events: List[tuple] = []
