@@ -8,13 +8,25 @@ import muspy
 from .utils import TEST_JSON_PATH, TEST_YAML_PATH, check_music
 
 
-def test_load_json():
+def test_load_json_path():
     music = muspy.load(TEST_JSON_PATH)
     check_music(music)
 
 
-def test_load_yaml():
+def test_load_file():
+    with open(TEST_JSON_PATH, encoding="utf-8") as f:
+        music = muspy.load_json(f)
+    check_music(music)
+
+
+def test_load_yaml_path():
     music = muspy.load(TEST_YAML_PATH)
+    check_music(music)
+
+
+def test_load_yaml_file():
+    with open(TEST_YAML_PATH, encoding="utf-8") as f:
+        music = muspy.load_yaml(f)
     check_music(music)
 
 

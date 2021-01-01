@@ -1,6 +1,6 @@
 """Wrapper functions for input interface."""
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Optional, TextIO, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -22,13 +22,13 @@ from .pitch import from_pitch_representation
 from .yaml import load_yaml
 
 
-def load(path: Union[str, Path], kind: Optional[str] = None) -> Music:
+def load(path: Union[str, Path, TextIO], kind: Optional[str] = None) -> Music:
     """Load a JSON or a YAML file into a Music object.
 
     Parameters
     ----------
-    path : str or Path
-        Path to the file to load.
+    path : str, Path or TextIO
+        Path to the file or the file to to load.
     kind : {'json', 'yaml'}, optional
         Format to save (case-insensitive). Defaults to infer the format
         from the extension.

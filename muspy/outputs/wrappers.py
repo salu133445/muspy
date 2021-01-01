@@ -1,6 +1,6 @@
 """Wrapper functions for output interface."""
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, TextIO, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 
 def save(
-    path: Union[str, Path],
+    path: Union[str, Path, TextIO],
     music: "Music",
     kind: Optional[str] = None,
     **kwargs,
@@ -34,8 +34,8 @@ def save(
 
     Parameters
     ----------
-    path : str or Path
-        Path to save the file.
+    path : str, Path or TextIO
+        Path or file to save the data.
     music : :class:`muspy.Music`
         Music object to save.
     kind : {'json', 'yaml'}, optional

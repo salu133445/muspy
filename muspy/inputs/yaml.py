@@ -1,19 +1,19 @@
 """YAML input interface."""
 from pathlib import Path
-from typing import Union
+from typing import TextIO, Union
 
 import yaml
 
 from ..music import Music
 
 
-def load_yaml(path: Union[str, Path]) -> Music:
+def load_yaml(path: Union[str, Path, TextIO]) -> Music:
     """Load a YAML file into a Music object.
 
     Parameters
     ----------
-    path : str or Path
-        Path to the file to load.
+    path : str, Path or TextIO
+        Path to the file or the file to load.
 
     Returns
     -------
@@ -21,6 +21,8 @@ def load_yaml(path: Union[str, Path]) -> Music:
         Loaded Music object.
 
     """
-    with open(str(path), encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-    return Music.from_dict(data)
+    if isinstance(path, (str, Path)):
+        with open(str(path), encoding="utf-8") as f:
+            return Music.from_dict(yaml.safe_load(f))
+
+    return Music.from_dict(yaml.safe_load(path))
