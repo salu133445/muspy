@@ -138,8 +138,7 @@ class Dataset:
             raise TypeError("`kind` must be either 'json' or 'yaml'.")
 
         root = Path(root).expanduser().resolve()
-        if not root.exists():
-            raise ValueError("`root` must be an existing path.")
+        root.mkdir(exist_ok=True)
 
         def _saver(idx):
             prefix = "0" * (n_digits - len(str(idx)))
@@ -486,10 +485,7 @@ class RemoteDataset(Dataset):
     ):
         super().__init__()
         self.root = Path(root).expanduser().resolve()
-        if not self.root.exists():
-            raise ValueError("`root` must be an existing path.")
-        if not self.root.is_dir():
-            raise ValueError("`root` must be a directory.")
+        self.root.mkdir(exist_ok=True)
 
         if download_and_extract:
             self.download_and_extract(cleanup)
@@ -700,10 +696,7 @@ class MusicDataset(Dataset):
 
     def __init__(self, root: Union[str, Path], kind: str = "json"):
         self.root = Path(root).expanduser().resolve()
-        if not self.root.exists():
-            raise ValueError("`root` must be an existing path.")
-        if not self.root.is_dir():
-            raise ValueError("`root` must be a directory.")
+        self.root.mkdir(exist_ok=True)
 
         self.kind = kind
         self.filenames = sorted(self.root.rglob("*." + self.kind))
