@@ -62,7 +62,7 @@ class Music21Dataset(Dataset):
             self.filenames = corpus.getComposer(composer, self._extensions)
 
     def __repr__(self) -> str:
-        return "{}(composer={})".format(type(self).__name__, self.composer)
+        return f"{type(self).__name__}(composer={self.composer})"
 
     def __getitem__(self, index) -> Music:
         if str(self.filenames[index]).lower().endswith(".abc"):

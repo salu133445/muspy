@@ -1,6 +1,7 @@
 """Utility functions for dataset classes."""
 import gzip
 import hashlib
+import lzma
 import os
 import os.path
 import shutil
@@ -11,8 +12,6 @@ from typing import Optional, Union
 from urllib.request import urlretrieve
 
 from tqdm import tqdm
-
-# TODO: Add SHA checksum supports
 
 
 class _ProgressBar:
@@ -33,15 +32,29 @@ class _ProgressBar:
         self.pbar.update(downloaded)
 
 
-def compute_md5(path: Union[str, Path], chunk_size: int):
-    """Return the MD5 checksum of a file, calculated chunk by chunk.
+def check_size(path: Union[str, Path], size: int):
+    """Check if the size of a file matches the expected one.
 
     Parameters
     ----------
     path : str or Path
-        Path to the file to be read.
+        Path to the file.
+    size : str
+        Expected size of the file.
+
+    """
+    return Path(path).stat().st_size == size
+
+
+def compute_md5(path: Union[str, Path], chunk_size: int):
+    """Return the MD5 hash of a file, calculated chunk by chunk.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the file.
     chunk_size : int
-        Chunk size used to calculate the MD5 checksum.
+        Chunk size used to calculate the MD5 hash.
 
     """
     md5 = hashlib.md5()
@@ -52,23 +65,65 @@ def compute_md5(path: Union[str, Path], chunk_size: int):
 
 
 def check_md5(path: Union[str, Path], md5: str, chunk_size: int = 1024 * 1024):
-    """Check if the MD5 checksum of a file matches the expected one.
+    """Check if the MD5 hash of a file matches the expected one.
 
     Parameters
     ----------
     path : str or Path
-        Path to the file to be check.
+        Path to the file.
     md5 : str
-        Expected MD5 checksum of the file.
+        Expected MD5 hash of the file.
     chunk_size : int, optional
-        Chunk size used to calculate the MD5 checksum. Defaults to 2^20.
+        Chunk size used to compute the MD5 hash. Defaults to 2^20.
 
     """
-    return md5 == compute_md5(path, chunk_size)
+    return compute_md5(path, chunk_size) == md5
+
+
+def compute_sha256(path: Union[str, Path], chunk_size: int):
+    """Return the MD5 checksum of a file, calculated chunk by chunk.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the file.
+    chunk_size : int
+        Chunk size used to calculate the MD5 checksum.
+
+    """
+    sha256 = hashlib.sha256()
+    with open(str(path), "rb") as f:
+        for chunk in iter(lambda: f.read(chunk_size), b""):
+            sha256.update(chunk)
+    return sha256.hexdigest()
+
+
+def check_sha256(
+    path: Union[str, Path], sha256: str, chunk_size: int = 1024 * 1024
+):
+    """Check if the sha256 hash of a file matches the expected one.
+
+    Parameters
+    ----------
+    path : str or Path
+        Path to the file.
+    sha256 : str
+        Expected sha256 hash of the file.
+    chunk_size : int, optional
+        Chunk size used to compute the sha256 hash. Defaults to 2^20.
+
+    """
+    return compute_sha256(path, chunk_size) == sha256
 
 
 def download_url(
-    url: str, path: Union[str, Path], md5: Optional[str] = None,
+    url: str,
+    path: Union[str, Path],
+    overwrite: bool = True,
+    size: Optional[int] = None,
+    md5: Optional[str] = None,
+    sha256: Optional[str] = None,
+    verbose: bool = True,
 ):
     """Download a file from a URL.
 
@@ -78,14 +133,62 @@ def download_url(
         URL to the file to download.
     path : str or Path
         Path to save the downloaded file.
-    md5 : str, optional
-        Expected MD5 checksum of the downloaded file. If None, do not
+    overwrite : bool, optional
+        Whether to overwrite existing downloaded file. Defaults to True.
+    size : int, optional
+        Expected size of the downloaded file. Defaults to skip size
         check.
+    md5 : str, optional
+        Expected MD5 checksum of the downloaded file. Defaults to skip
+        MD5 check.
+    sha256 : str, optional
+        Expected sha256 checksum of the downloaded file. Defaults to
+        skip sha256 check.
+    verbose : bool, optional
+        Whether to be verbose. Defaults to True.
 
     """
-    urlretrieve(url, str(path), reporthook=_ProgressBar())
+    path = Path(path)
+    if not overwrite and path.is_file():
+        if size is not None and path.stat().st_size != size:
+            raise RuntimeError(
+                "Existing file has a different size from the expected one."
+            )
+        if md5 is not None and not check_md5(path, md5):
+            raise RuntimeError(
+                "Existing file has a different md5 hash from the expected one."
+            )
+        if sha256 is not None and not check_sha256(path, sha256):
+            raise RuntimeError(
+                "Existing file has a different sha256 hash from the expected "
+                "one."
+            )
+        if verbose:
+            print(f"Found existing downloaded file : {path} .")
+        return
+
+    # Download the file
+    if verbose:
+        print(f"Downloading source : {url} ...")
+        urlretrieve(url, path, reporthook=_ProgressBar())
+        print(f"Successfully downloaded source : {path} .")
+    else:
+        urlretrieve(url, path)
+
+    # Run checks
+    if size is not None and path.stat().st_size != size:
+        raise RuntimeError(
+            "Downloaded file has a different size from the expected one."
+        )
     if md5 is not None and not check_md5(path, md5):
-        raise RuntimeError("Downloaded file is corrupted.")
+        raise RuntimeError(
+            "Downloaded file has a different md5 hash from the expected one."
+        )
+    if sha256 is not None and not check_sha256(path, sha256):
+        raise RuntimeError(
+            "Downloaded file has a different sha256 hash from the expected "
+            "one."
+        )
 
 
 def _get_confirm_token(response):
@@ -111,65 +214,100 @@ def extract_archive(
     root: Optional[Union[str, Path]] = None,
     kind: Optional[str] = None,
     cleanup: bool = False,
+    verbose: bool = True,
 ):
-    """Extract an archive in TAR, TGZ, TXZ, GZ or ZIP format.
+    """Extract an archive in ZIP, TAR, TGZ, TXZ, GZ or XZ format.
 
     Parameters
     ----------
     path : str or Path
-        Path to the archive to be extracted.
+        Path to the archive.
     root : str or Path, optional
-        Root directory to save the extracted file. If None, use the
-        dirname of ``path``.
-    kind : {'tar', 'tgz', 'txz', 'gz', 'zip'}, optional
-        Fromat of the archive to be extracted. If None, infer the format
-        from the extension of ``path``.
+        Root directory to save the extracted file. Defaults to the
+        directory that contains the archive.
+    kind : {'zip', 'tar', 'tgz', 'txz', 'gz', 'xz'}, optional
+        Fromat of the archive. Defaults to infer from the extension.
     cleanup : bool, optional
-        Whether to remove the original archive. Defaults to False.
+        Whether to remove the source archive after extraction.
+        Defaults to False.
+    verbose : bool, optional
+        Whether to be verbose. Defaults to True.
 
     """
-    path = str(path)
-    if root is None:
-        root = os.path.dirname(str(path))
+    path = Path(path)
+    root = Path(root) if root is not None else path.parent
     if kind is None:
-        if path.lower().endswith(".tar"):
-            kind = "tar"
-        elif path.lower().endswith((".tar.gz", ".tgz")):
-            kind = "tgz"
-        elif path.lower().endswith((".tar.xz", ".txz")):
-            kind = "txz"
-        elif path.lower().endswith(".gz"):
-            kind = "gz"
-        elif path.lower().endswith(".zip"):
+        std_path = str(path)
+        if std_path.endswith(".zip"):
             kind = "zip"
+        elif std_path.endswith(".tar"):
+            kind = "tar"
+        elif std_path.endswith((".tar.gz", ".tgz")):
+            kind = "tgz"
+        elif std_path.endswith((".tar.xz", ".txz")):
+            kind = "txz"
+        elif std_path.endswith(".gz"):
+            kind = "gz"
+        elif std_path.endswith(".xz"):
+            kind = "xz"
         else:
             raise ValueError(
-                "Got unsupported file format (expect TAR, TGZ, TXZ, GZ or "
-                "ZIP)."
+                "Cannot infer file format from the extension (expect ZIP, "
+                "TAR, TGZ, TXZ, GZ or XZ)."
             )
 
-    if kind == "tar":
-        with tarfile.open(str(path), "r") as f:
-            f.extractall(path=root)
-    elif kind == "tgz":
-        with tarfile.open(str(path), "r:gz") as f:
-            f.extractall(path=root)
-    elif kind == "txz":
-        with tarfile.open(str(path), "r:xz") as f:
-            f.extractall(path=root)
-    elif kind == "gz":
-        filename = os.path.join(
-            root, os.path.splitext(os.path.basename(path))[0]
-        )
-        with gzip.open(str(path), "rb") as f_in, open(filename, "wb") as f_out:
-            shutil.copyfileobj(f_in, f_out)
-    elif kind == "zip":
-        with zipfile.ZipFile(str(path), "r") as zip_file:
-            zip_file.extractall(root)
+    # Extract archive
+    if kind in ("zip", "tar", "tgz", "txz"):
+
+        if verbose:
+            print(f"Extracting archive : {path} ...")
+
+        # zip file
+        if kind == "zip":
+            with zipfile.ZipFile(path, "r") as zip_file:
+                zip_file.extractall(root)
+
+        # tar file
+        else:
+            if kind == "tar":
+                mode = "r"
+            elif kind == "tgz":
+                mode = "r:gz"
+            elif kind == "txz":
+                mode = "r:xz"
+            with tarfile.open(path, mode) as f:
+                f.extractall(root)
+
+        if verbose:
+            print(f"Successfully extracted archive : {root} .")
+
+    elif kind in ("gz", "xz"):
+
+        if verbose:
+            print(f"Extracting archive : {path} ...")
+        filename = root / path.stem
+
+        # gzip file
+        if kind == "gz":
+            with gzip.open(path, "rb") as f_in, open(filename, "wb") as f_out:
+                shutil.copyfileobj(f_in, f_out)
+
+        # xz file
+        else:
+            with lzma.open(path, "rb") as f_in_, open(filename, "wb") as f_out:
+                shutil.copyfileobj(f_in_, f_out)
+
+        if verbose:
+            print(f"Successfully extracted archive : {filename} .")
+
     else:
         raise ValueError(
-            "`kind` must be one of 'tar', 'tgz', 'txz', 'gz' and 'zip'."
+            "Expect `kind` to be one of 'zip', 'tar', 'tgz', 'txz', 'gz', "
+            f"'xz' or , but got : {kind}."
         )
 
+    # Cleanup source archive
     if cleanup:
         os.remove(path)
+        if verbose:
+            print("Removed source archive : {path} .")

@@ -109,6 +109,8 @@ class Dataset:
         kind: Optional[str] = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
+        verbose: bool = True,
+        **kwargs,
     ):
         """Save all the music objects to a directory.
 
@@ -125,6 +127,11 @@ class Dataset:
             Whether to ignore errors and skip failed conversions. This
             can be helpful if some source files are known to be
             corrupted. Defaults to True.
+        verbose : bool, optional
+            Whether to be verbose. Defaults to True.
+        **kwargs
+            Keyword arguments to pass to :func:`muspy.save_json` or
+            :func:`muspy.save_yaml`
 
         Notes
         -----
@@ -142,22 +149,22 @@ class Dataset:
 
         def _saver(idx):
             prefix = "0" * (n_digits - len(str(idx)))
+            filename = root / (prefix + str(idx) + "." + kind)
             if ignore_exceptions:
                 try:
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore")
-                        self[idx].save(
-                            root / (prefix + str(idx) + "." + kind), kind
-                        )
+                        self[idx].save(filename, kind, **kwargs)
                 except Exception:  # pylint: disable=broad-except
                     return False
                 return True
-            self[idx].save(root / (prefix + str(idx) + "." + kind), kind)
+            self[idx].save(filename, kind, **kwargs)
             return True
 
         n_digits = len(str(len(self)))
 
-        print("Start converting and saving the dataset.")
+        if verbose:
+            print("Start converting and saving the dataset.")
         if n_jobs == 1:
             count = 0
             for idx in tqdm(range(len(self))):  # type: ignore
@@ -174,9 +181,8 @@ class Dataset:
                 delayed(_saver)(idx) for idx in range(len(self))
             )
             count = results.count(True)
-        print(
-            "{} out of {} files successfully saved.".format(count, len(self))
-        )
+        if verbose:
+            print(f"{count} out of {len(self)} files successfully saved.")
         (root / ".muspy.success").touch(exist_ok=True)
 
     def split(
@@ -257,7 +263,7 @@ class Dataset:
         split_filename: Optional[Union[str, Path]] = None,
         splits: Optional[Sequence[float]] = None,
         random_state: Any = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Union["TorchDataset", Dict[str, "TorchDataset"]]:
         """Return the dataset as a PyTorch dataset.
 
@@ -333,7 +339,7 @@ class Dataset:
         split_filename: Optional[Union[str, Path]] = None,
         splits: Optional[Sequence[float]] = None,
         random_state: Any = None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> Union["TFDataset", Dict[str, "TFDataset"]]:
         """Return the dataset as a TensorFlow dataset.
 
@@ -428,8 +434,13 @@ class RemoteDataset(Dataset):
     ----------
     download_and_extract : bool, optional
         Whether to download and extract the dataset. Defaults to False.
+    overwrite : bool, optional
+        Whether to overwrite existing downloaded files. Defaults to
+        True.
     cleanup : bool, optional
-        Whether to remove the original archive(s). Defaults to False.
+        Whether to remove the source archive(s). Defaults to False.
+    verbose : bool, optional
+        Whether to be verbose. Defaults to True.
 
     Raises
     ------
@@ -480,15 +491,26 @@ class RemoteDataset(Dataset):
     def __init__(
         self,
         root: Union[str, Path],
-        download_and_extract: bool = False,
-        cleanup: bool = False,
+        download_and_extract: Optional[bool] = None,
+        overwrite: Optional[bool] = None,
+        cleanup: Optional[bool] = None,
+        verbose: bool = True,
     ):
+        if download_and_extract is None:
+            download_and_extract = False
+        if overwrite is None:
+            overwrite = True
+        if cleanup is None:
+            cleanup = False
+
         super().__init__()
         self.root = Path(root).expanduser().resolve()
         self.root.mkdir(exist_ok=True)
 
         if download_and_extract:
-            self.download_and_extract(cleanup)
+            self.download_and_extract(
+                overwrite=overwrite, cleanup=cleanup, verbose=verbose
+            )
 
         if not self.exists():
             raise RuntimeError(
@@ -521,8 +543,17 @@ class RemoteDataset(Dataset):
                 return False
         return True
 
-    def download(self: RemoteDatasetType) -> RemoteDatasetType:
+    def download(
+        self: RemoteDatasetType, overwrite: bool = True, verbose: bool = True
+    ) -> RemoteDatasetType:
         """Download the source datasets.
+
+        Parameters
+        ----------
+        overwrite : bool, optional
+            Whether to overwrite existing files. Defaults to True.
+        verbose : bool, optional
+            Whether to be verbose. Defaults to True.
 
         Returns
         -------
@@ -530,33 +561,29 @@ class RemoteDataset(Dataset):
 
         """
         for source in self._sources.values():
-            filename = self.root / source["filename"]
-            md5 = source.get("md5")
-
-            if filename.is_file():
-                if (
-                    "size" not in source
-                    or filename.stat().st_size == source["size"]
-                ):
-                    print(
-                        "Skip existing source : {}.".format(source["filename"])
-                    )
-                    continue
-                print("Source file is found but corrupted.")
-
-            print("Start downloading source : {}.".format(source["filename"]))
-            download_url(source["url"], filename, md5)
+            download_url(
+                source["url"],
+                self.root / source["filename"],
+                overwrite=overwrite,
+                size=source.get("size"),
+                md5=source.get("md5"),
+                sha256=source.get("sha256"),
+                verbose=verbose,
+            )
         return self
 
     def extract(
-        self: RemoteDatasetType, cleanup: bool = False
+        self: RemoteDatasetType, cleanup: bool = False, verbose: bool = True
     ) -> RemoteDatasetType:
         """Extract the downloaded archive(s).
 
         Parameters
         ----------
         cleanup : bool, optional
-            Whether to remove the original archive. Defaults to False.
+            Whether to remove the source archive after extraction.
+            Defaults to False.
+        verbose : bool, optional
+            Whether to be verbose. Defaults to True.
 
         Returns
         -------
@@ -566,33 +593,37 @@ class RemoteDataset(Dataset):
         for source in self._sources.values():
             filename = self.root / source["filename"]
             if source["archive"]:
-                print(
-                    "Start extracting archive : {}.".format(source["filename"])
+                extract_archive(
+                    filename, self.root, cleanup=cleanup, verbose=verbose
                 )
-                extract_archive(filename, self.root, cleanup=cleanup)
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self
 
     def download_and_extract(
-        self: RemoteDatasetType, cleanup: bool = False
+        self: RemoteDatasetType,
+        overwrite: bool = True,
+        cleanup: bool = False,
+        verbose: bool = True,
     ) -> RemoteDatasetType:
-        """Extract the downloaded archives.
+        """Download source datasets and extract the downloaded archives.
 
         Parameters
         ----------
+        overwrite : bool, optional
+            Whether to overwrite existing files. Defaults to True.
         cleanup : bool, optional
-            Whether to remove the original archive. Defaults to False.
+            Whether to remove the source archive. Defaults to False.
+        verbose : bool, optional
+            Whether to be verbose. Defaults to True.
 
         Returns
         -------
         Object itself.
 
-        Notes
-        -----
-        Equivalent to ``RemoteDataset.download().extract(cleanup)``.
-
         """
-        return self.download().extract(cleanup)
+        return self.download(overwrite=overwrite, verbose=verbose).extract(
+            cleanup=cleanup, verbose=verbose
+        )
 
 
 if HAS_TORCH:
@@ -628,8 +659,8 @@ if HAS_TORCH:
 
         def __repr__(self) -> str:
             return (
-                "TorchMusicFactoryDataset(dataset={}, factory={}, subset={})"
-                "".format(self.dataset, self.subset, self.factory)
+                f"TorchMusicFactoryDataset(dataset={self.dataset}, "
+                f"factory={self.subset}, subset={self.factory})"
             )
 
         def __getitem__(self, index):
@@ -660,21 +691,21 @@ if HAS_TORCH:
             representation: str,
             subset: str = "Full",
             indices: Optional[Sequence[int]] = None,
-            **kwargs: Any
+            **kwargs: Any,
         ):
             self.representation = representation
 
             def factory(music):
                 return music.to_representation(representation, **kwargs)
 
-            super().__init__(dataset, factory, subset, indices)
+            super().__init__(
+                dataset, factory=factory, subset=subset, indices=indices
+            )
 
         def __repr__(self) -> str:
             return (
-                "TorchRepresentationDataset(dataset={}, representation={}, "
-                "subset={})".format(
-                    self.dataset, self.representation, self.subset
-                )
+                f"TorchRepresentationDataset(dataset={self.dataset}, "
+                f"representation={self.representation}, subset={self.subset})"
             )
 
 
@@ -702,7 +733,7 @@ class MusicDataset(Dataset):
         self.filenames = sorted(self.root.rglob("*." + self.kind))
 
     def __repr__(self) -> str:
-        return "{}(root={})".format(type(self).__name__, self.root)
+        return f"{type(self).__name__}(root={self.root})"
 
     def __getitem__(self, index) -> Music:
         return load(self.root / self.filenames[index], self.kind)
@@ -726,7 +757,7 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
     download_and_extract : bool, optional
         Whether to download and extract the dataset. Defaults to False.
     cleanup : bool, optional
-        Whether to remove the original archive(s). Defaults to False.
+        Whether to remove the source archive(s). Defaults to False.
 
     See Also
     --------
@@ -740,11 +771,20 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
-        cleanup: bool = False,
+        overwrite: Optional[bool] = None,
+        cleanup: Optional[bool] = None,
         kind: str = "json",
+        verbose: bool = True,
     ):
-        RemoteDataset.__init__(self, root, download_and_extract, cleanup)
-        MusicDataset.__init__(self, root, kind)
+        RemoteDataset.__init__(
+            self,
+            root,
+            download_and_extract=download_and_extract,
+            overwrite=overwrite,
+            cleanup=cleanup,
+            verbose=verbose,
+        )
+        MusicDataset.__init__(self, root, kind=kind)
 
 
 class FolderDataset(Dataset):
@@ -812,12 +852,17 @@ class FolderDataset(Dataset):
     def __init__(
         self,
         root: Union[str, Path],
-        convert: bool = False,
+        convert: Optional[bool] = None,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = True,
+        ignore_exceptions: Optional[bool] = None,
         use_converted: Optional[bool] = None,
     ):
+        if convert is None:
+            convert = False
+        if ignore_exceptions is None:
+            ignore_exceptions = True
+
         self.root = Path(root).expanduser().resolve()
         self.kind = kind
 
@@ -852,7 +897,7 @@ class FolderDataset(Dataset):
         return self.root / "_converted"
 
     def __repr__(self) -> str:
-        return "{}(root={})".format(type(self).__name__, self.root)
+        return f"{type(self).__name__}(root={self.root})"
 
     def __getitem__(self, index) -> Music:
         return self._factory(self._filenames[index])
@@ -930,6 +975,7 @@ class FolderDataset(Dataset):
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
+        verbose: bool = True,
     ) -> FolderDatasetType:
         """Convert and save the Music objects.
 
@@ -949,6 +995,8 @@ class FolderDataset(Dataset):
             Whether to ignore errors and skip failed conversions. This
             can be helpful if some source files are known to be
             corrupted. Defaults to True.
+        verbose : bool, optional
+            Whether to be verbose. Defaults to True.
 
         Returns
         -------
@@ -956,11 +1004,18 @@ class FolderDataset(Dataset):
 
         """
         if self.converted_exists():
-            print("Skip conversion as the target folder exists.")
+            if verbose:
+                print("Skip conversion as the converted folder exists.")
             return self
         self.on_the_fly()
         self.converted_dir.mkdir(exist_ok=True)
-        self.save(self.converted_dir, kind, n_jobs, ignore_exceptions)
+        self.save(
+            self.converted_dir,
+            kind=kind,
+            n_jobs=n_jobs,
+            ignore_exceptions=ignore_exceptions,
+            verbose=verbose,
+        )
         self.use_converted()
         self.kind = kind
         return self
@@ -979,7 +1034,7 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
     download_and_extract : bool, optional
         Whether to download and extract the dataset. Defaults to False.
     cleanup : bool, optional
-        Whether to remove the original archive(s). Defaults to False.
+        Whether to remove the source archive(s). Defaults to False.
     convert : bool, optional
         Whether to convert the dataset to MusPy JSON/YAML files. If
         False, will check if converted data exists. If so, disable
@@ -1009,16 +1064,31 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
-        cleanup: bool = False,
-        convert: bool = False,
+        overwrite: Optional[bool] = None,
+        cleanup: Optional[bool] = None,
+        convert: Optional[bool] = None,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = True,
+        ignore_exceptions: Optional[bool] = None,
         use_converted: Optional[bool] = None,
+        verbose: bool = True,
     ):
-        RemoteDataset.__init__(self, root, download_and_extract, cleanup)
+        RemoteDataset.__init__(
+            self,
+            root,
+            download_and_extract=download_and_extract,
+            overwrite=overwrite,
+            cleanup=cleanup,
+            verbose=verbose,
+        )
         FolderDataset.__init__(
-            self, root, convert, kind, n_jobs, ignore_exceptions, use_converted
+            self,
+            root,
+            convert=convert,
+            kind=kind,
+            n_jobs=n_jobs,
+            ignore_exceptions=ignore_exceptions,
+            use_converted=use_converted,
         )
 
     def read(self, filename: str) -> Music:
@@ -1106,14 +1176,29 @@ class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
-        cleanup: bool = False,
-        convert: bool = False,
+        overwrite: Optional[bool] = None,
+        cleanup: Optional[bool] = None,
+        convert: Optional[bool] = None,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: bool = True,
+        ignore_exceptions: Optional[bool] = None,
         use_converted: Optional[bool] = None,
+        verbose: bool = True,
     ):
-        RemoteDataset.__init__(self, root, download_and_extract, cleanup)
+        RemoteDataset.__init__(
+            self,
+            root,
+            download_and_extract=download_and_extract,
+            overwrite=overwrite,
+            cleanup=cleanup,
+            verbose=verbose,
+        )
         ABCFolderDataset.__init__(
-            self, root, convert, kind, n_jobs, ignore_exceptions, use_converted
+            self,
+            root,
+            convert=convert,
+            kind=kind,
+            n_jobs=n_jobs,
+            ignore_exceptions=ignore_exceptions,
+            use_converted=use_converted,
         )

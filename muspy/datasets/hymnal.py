@@ -77,9 +77,7 @@ class HymnalDataset(FolderDataset):
             # the tolerance
             while consecutive_failure_count < tolerance:
                 # Send a HEAD request to check if content type is MIDI
-                url = "https://www.hymnal.net/en/hymn/{}/{}/f={}".format(
-                    key, idx, self._type
-                )
+                url = f"https://www.hymnal.net/en/hymn/{key}/{idx}/f={self._type}"
                 req = requests.head(url)
                 if req.headers["Content-Type"] != "audio/midi":
                     consecutive_failure_count += 1
@@ -111,7 +109,7 @@ class HymnalDataset(FolderDataset):
                 idx += 1
 
                 if idx % 100 == 0:
-                    print("Successfully downloaded {} files.".format(idx))
+                    print(f"Successfully downloaded {idx} files.")
 
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self
@@ -179,9 +177,7 @@ class HymnalTuneDataset(FolderDataset):
             # the tolerance
             while consecutive_failure_count < tolerance:
                 # Send a HEAD request to check if content type is MIDI
-                url = "https://www.hymnal.net/en/hymn/{}/{}/f={}".format(
-                    key, idx, self._type
-                )
+                url = f"https://www.hymnal.net/en/hymn/{key}/{idx}/f={self._type}"
                 req = requests.head(url)
                 if req.headers["Content-Type"] != "audio/midi":
                     consecutive_failure_count += 1
@@ -213,7 +209,7 @@ class HymnalTuneDataset(FolderDataset):
                 idx += 1
 
                 if idx % 100 == 0:
-                    print("Successfully downloaded {} files.".format(idx))
+                    print(f"Successfully downloaded {idx} files.")
 
         (self.root / ".muspy.success").touch(exist_ok=True)
         return self

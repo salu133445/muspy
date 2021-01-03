@@ -35,7 +35,6 @@ class MAESTRODatasetV1(RemoteFolderDataset):
             "url": "https://storage.googleapis.com/magentadata/datasets/maestro/v1.0.0/maestro-v1.0.0-midi.zip",
             "archive": True,
             "size": 46579421,
-            "md5": "c4d922a6ccc4464814b49e91ff81554e",
             "sha256": "f620f9e1eceaab8beea10617599add2e9c83234199b550382a2f603098ae7135",
         }
     }
@@ -57,7 +56,6 @@ class MAESTRODatasetV2(RemoteFolderDataset):
             "url": "https://storage.googleapis.com/magentadata/datasets/maestro/v2.0.0/maestro-v2.0.0-midi.zip",
             "archive": True,
             "size": 59243107,
-            "md5": "8a45cc678a8b23cd7bad048b1e9034c5",
             "sha256": "ec2cc9d94886c6b376db1eaa2b8ad1ce62ff9f0a28b3744782b13163295dadf3",
         }
     }

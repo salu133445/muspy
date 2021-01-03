@@ -93,4 +93,4 @@ def get_dataset(key: str) -> Type[Dataset]:
         return NottinghamDatabase
     if key == "wikifonia":
         return WikifoniaDataset
-    raise ValueError("Unrecognized dataset key : {}.".format(key))
+    raise ValueError(f"Unrecognized dataset key : {key}.")
