@@ -163,6 +163,9 @@ def parse_notes_and_chords(
         # Parse note
         time = int(round(float(item.offset * resolution)))
         duration = int(round(float(item.quarterLength) * resolution))
+        velocity = item.volume.velocity
+        if velocity is not None:
+            velocity = int(velocity)
 
         if item.isNote:
             pitch = int(item.pitch.midi)
@@ -178,15 +181,22 @@ def parse_notes_and_chords(
                     del ties[pitch]
             else:
                 note = Note(
-                    time=time, pitch=int(item.pitch.midi), duration=duration
+                    time=time,
+                    pitch=int(item.pitch.midi),
+                    duration=duration,
+                    velocity=velocity,
                 )
                 notes.append(note)
                 if is_outgoing_tie:
                     ties[pitch] = len(notes) - 1
 
         elif item.isChord:
-            pitches = [note.pitch.midi for note in item.notes]
-            chord = Chord(time=time, pitches=pitches, duration=duration)
+            chord = Chord(
+                time=time,
+                pitches=[int(note.pitch.midi) for note in item.notes],
+                duration=duration,
+                velocity=velocity,
+            )
             chords.append(chord)
 
     return notes, chords
