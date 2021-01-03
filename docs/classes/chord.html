@@ -296,6 +296,28 @@
 
 <dl class="py method">
 <dt>
+<code class="sig-name descname">adjust_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Chord.adjust_time"><span class="viewcode-link">[source]</span></a></dt>
+<dd><p>Adjust the timing of the chord.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>callable</em>) – The function used to compute the new timing from the old
+timing, i.e., <cite>new_time = func(old_time)</cite>.</p></li>
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to adjust. Defaults to adjust all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
 <code class="sig-name descname">transpose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">semitone</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Chord.transpose"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Transpose the notes by a number of semitones.</p>
 <dl class="field-list simple">
@@ -335,22 +357,30 @@ pitches.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">adjust_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">func</span></em>, <em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Adjust the timing of time-stamped objects.</p>
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Return a shallow copy of the object.</p>
+<p>This is equivalent to <code class="xref py py-func docutils literal notranslate"><span class="pre">copy.copy(self)()</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>func</strong> (<em>callable</em>) – The function used to compute the new timing from the old
-timing, i.e., <cite>new_time = func(old_time)</cite>.</p></li>
-<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Attribute to adjust. Defaults to adjust all attributes.</p></li>
-<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to apply recursively. Defaults to True.</p></li>
-</ul>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Shallow copy of the object.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Object itself.</p>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">deepcopy</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Return a deep copy of the object.</p>
+<p>This is equivalent to <code class="xref py py-func docutils literal notranslate"><span class="pre">copy.deepcopy(self)()</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Deep copy of the object.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -438,11 +468,11 @@ key-value pairs, e.g., <cite>{“attr1”: value1, “attr2”: value2}</cite>.<
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">pretty_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_none</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">pretty_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_missing</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return the attributes as a string in a YAML-like format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>skip_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
+<dd class="field-odd"><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
 empty lists. Defaults to True.</p>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -463,11 +493,11 @@ empty lists. Defaults to True.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">print</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_none</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">print</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_missing</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Print the attributes in a YAML-like format.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>skip_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
+<dd class="field-odd"><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
 empty lists. Defaults to True.</p>
 </dd>
 </dl>
@@ -482,14 +512,18 @@ empty lists. Defaults to True.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">to_ordered_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_none</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">to_ordered_dict</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">skip_missing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">deepcopy</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return the object as an OrderedDict.</p>
 <p>Return an ordered dictionary that stores the attributes and
 their values as key-value pairs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>skip_none</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
-empty lists. Defaults to True.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
+empty lists. Defaults to True.</p></li>
+<li><p><strong>deepcopy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to make deep copies of the attributes. Defaults to
+True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A dictionary that stores the attributes and their values as

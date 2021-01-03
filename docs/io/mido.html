@@ -210,14 +210,17 @@ decide which note on messages to close. Defaults to ‘fifo’.</p>
 
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_mido</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_note_on_as_note_off</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/midi.html#to_mido"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_mido</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_note_off_message</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/midi.html#to_mido"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Return a Music object as a MidiFile object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
-<li><p><strong>use_note_on_as_note_off</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a note on message with zero velocity instead of a
-note off message.</p></li>
+<li><p><strong>use_note_off_message</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use note-off messages. If False, note-on messages
+with zero velocity are used instead. The advantage to using
+note-on messages at zero velocity is that it can avoid sending
+additional status bytes when Running Status is employed.
+Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

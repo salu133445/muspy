@@ -161,7 +161,7 @@
   <h1>Source code for muspy.inputs.wrappers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Wrapper functions for input interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">MidiFile</span>
 <span class="kn">from</span> <span class="nn">music21.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
@@ -184,21 +184,22 @@
 
 
 <div class="viewcode-block" id="load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Load a JSON or a YAML file into a Music object.</span>
 
+<span class="sd">    This is a wrapper function for :func:`muspy.load_json` and</span>
+<span class="sd">    :func:`muspy.load_yaml`.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to the file to load.</span>
+<span class="sd">    path : str, Path or TextIO</span>
+<span class="sd">        Path to the file or the file to to load.</span>
 <span class="sd">    kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
-<span class="sd">        Format to save (case-insensitive). Defaults to infer the format</span>
-<span class="sd">        from the extension.</span>
-<span class="sd">    **kwargs : dict</span>
-<span class="sd">        Keyword arguments to pass to the target function. See</span>
-<span class="sd">        :func:`muspy.load_json` or :func:`muspy.load_yaml` for available</span>
-<span class="sd">        arguments.</span>
+<span class="sd">        Format to save. Defaults to infer from the extension.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass to :func:`muspy.load_json` or</span>
+<span class="sd">        :func:`muspy.load_yaml`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -207,29 +208,36 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :func:`muspy.load_json` : Load a JSON file into a Music object.</span>
+<span class="sd">    :func:`muspy.load_yaml` : Load a YAML file into a Music object.</span>
 <span class="sd">    :func:`muspy.read` :</span>
 <span class="sd">        Read a MIDI/MusicXML/ABC file into a Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># pylint: disable=unused-argument</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.json&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot infer file format from a file object.&quot;</span><span class="p">)</span>
+        <span class="n">path_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">path_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.json&quot;</span><span class="p">,</span> <span class="s2">&quot;.json.gz&quot;</span><span class="p">)):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span>
-        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yml&quot;</span><span class="p">)):</span>
+        <span class="k">elif</span> <span class="n">path_str</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.yaml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;.yaml.gz&quot;</span><span class="p">,</span> <span class="s2">&quot;.yml.gz&quot;</span><span class="p">)):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;yaml&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Got unsupported file format (expect JSON or YAML).&quot;</span>
+                <span class="s2">&quot;Cannot infer file format from the extension (expect JSON or &quot;</span>
+                <span class="s2">&quot;YAML).&quot;</span>
             <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">load_json</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;json&#39; or &#39;yaml&#39;.&quot;</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_json</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;yaml&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">load_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Expect `kind` to be &#39;json&#39; or &#39;yaml&#39;, but got : </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Read a MIDI/MusicXML/ABC file into a Music object.</span>
 
@@ -238,8 +246,10 @@
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the file to read.</span>
 <span class="sd">    kind : {&#39;midi&#39;, &#39;musicxml&#39;, &#39;abc&#39;}, optional</span>
-<span class="sd">        Format to save (case-insensitive). Defaults to infer the format</span>
-<span class="sd">        from the extension.</span>
+<span class="sd">        Format to save. Defaults to infer from the extension.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass to :func:`muspy.read_midi`,</span>
+<span class="sd">        :func:`muspy.read_musicxml` or :func:`read_abc`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -260,19 +270,22 @@
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;Got unsupported file format (expect MIDI, MusicXML or ABC).&quot;</span>
+                <span class="s2">&quot;Cannot infer file format from the extension (expect MIDI, &quot;</span>
+                <span class="s2">&quot;MusicXML or ABC).&quot;</span>
             <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;midi&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;midi&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_abc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`kind` must be one of &#39;midi&#39;, &#39;musicxml&#39; and &#39;abc&#39;.&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Expect `kind` to be &#39;midi&#39;, &#39;musicxml&#39; or &#39;abc&#39;, but got : </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">.&quot;</span>
+    <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="from_object"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_object">[docs]</a><span class="k">def</span> <span class="nf">from_object</span><span class="p">(</span>
-    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stream</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stream</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Music</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Music</span><span class="p">],</span> <span class="n">Track</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]:</span>
     <span class="sd">&quot;&quot;&quot;Return an outside object as a Music object.</span>
 
@@ -282,6 +295,10 @@
 <span class="sd">        Object to convert. Supported objects are `music21.Stream`,</span>
 <span class="sd">        :class:`mido.MidiTrack`, :class:`pretty_midi.PrettyMIDI`, and</span>
 <span class="sd">        :class:`pypianoroll.Multitrack` objects.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass to :func:`muspy.from_music21`,</span>
+<span class="sd">        :func:`muspy.from_mido`, :func:`from_pretty_midi` or</span>
+<span class="sd">        :func:`from_pypianoroll`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -294,7 +311,7 @@
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">from_mido</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">from_pretty_midi</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">from_pypianoroll</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -303,7 +320,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="from_representation"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_representation">[docs]</a><span class="k">def</span> <span class="nf">from_representation</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_representation"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_representation">[docs]</a><span class="k">def</span> <span class="nf">from_representation</span><span class="p">(</span><span class="n">array</span><span class="p">:</span> <span class="n">ndarray</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Update with the given representation.</span>
 
 <span class="sd">    Parameters</span>
@@ -311,7 +328,13 @@
 <span class="sd">    array : :class:`numpy.ndarray`</span>
 <span class="sd">        Array in a supported representation.</span>
 <span class="sd">    kind : str, {&#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39;, &#39;note&#39;}</span>
-<span class="sd">        Data representation type (case-insensitive).</span>
+<span class="sd">        Data representation.</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass to</span>
+<span class="sd">        :func:`muspy.from_pitch_representation`,</span>
+<span class="sd">        :func:`muspy.from_pianoroll_representation`,</span>
+<span class="sd">        :func:`from_event_representation` or</span>
+<span class="sd">        :func:`from_note_representation`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -328,7 +351,8 @@
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;note&quot;</span><span class="p">,</span> <span class="s2">&quot;note-based&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">from_note_representation</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="s2">&quot;`kind` must be one of &#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39; and &#39;note&#39;.&quot;</span>
+        <span class="s2">&quot;Expect `kind` to be &#39;pitch&#39;, &#39;pianoroll&#39;, &#39;event&#39; or &#39;note&#39;, but&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;got : </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">.&quot;</span>
     <span class="p">)</span></div>
 </pre></div>
 

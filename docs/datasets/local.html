@@ -178,7 +178,7 @@
 <p>Here are the classes for local datasets.</p>
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#FolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">FolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#FolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Class for datasets storing files in a folder.</p>
 <p>This class extends <a class="reference internal" href="../doc/muspy.html#muspy.Dataset" title="muspy.Dataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Dataset</span></code></a> to support folder
 datasets. To build a custom folder dataset, please refer to the
@@ -299,7 +299,7 @@ sample is loaded from the precomputed converted data.</p>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#FolderDataset.convert"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#FolderDataset.convert"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Convert and save the Music objects.</p>
 <p>The converted files will be named by its index and saved to
 <code class="docutils literal notranslate"><span class="pre">root/_converted</span></code>. The original filenames can be found in the
@@ -314,6 +314,7 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -339,7 +340,7 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -351,6 +352,9 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> or
+<a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -503,7 +507,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -515,6 +519,9 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> or
+<a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -622,7 +629,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">ABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#ABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">ABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#ABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Class for datasets storing ABC files in a folder.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -659,7 +666,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Convert and save the Music objects.</p>
 <p>The converted files will be named by its index and saved to
 <code class="docutils literal notranslate"><span class="pre">root/_converted</span></code>. The original filenames can be found in the
@@ -674,6 +681,7 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -717,7 +725,7 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -729,6 +737,9 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> or
+<a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>

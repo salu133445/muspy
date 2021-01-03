@@ -329,7 +329,7 @@
 
 
 <span class="k">def</span> <span class="nf">to_mido_note_on_note_off</span><span class="p">(</span>
-    <span class="n">note</span><span class="p">:</span> <span class="n">Note</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_note_on_as_note_off</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">note</span><span class="p">:</span> <span class="n">Note</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Message</span><span class="p">,</span> <span class="n">Message</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return a Note object as mido Message objects.</span>
 
@@ -341,9 +341,12 @@
 <span class="sd">        Note object to convert.</span>
 <span class="sd">    channel : int</span>
 <span class="sd">        Channel of the MIDI message.</span>
-<span class="sd">    use_note_on_as_note_off : bool</span>
-<span class="sd">        Whether to use a note on message with zero velocity instead of a</span>
-<span class="sd">        note off message. Defaults to True.</span>
+<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
+<span class="sd">        with zero velocity are used instead. The advantage to using</span>
+<span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
+<span class="sd">        additional status bytes when Running Status is employed.</span>
+<span class="sd">        Defaults to False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -361,7 +364,15 @@
         <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
         <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">use_note_on_as_note_off</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">use_note_off_message</span><span class="p">:</span>
+        <span class="n">note_off_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
+            <span class="s2">&quot;note_off&quot;</span><span class="p">,</span>
+            <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
+            <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span>
+            <span class="n">velocity</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
+            <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">note_off_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
             <span class="s2">&quot;note_on&quot;</span><span class="p">,</span>
             <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
@@ -369,20 +380,14 @@
             <span class="n">velocity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
             <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">note_off_msg</span> <span class="o">=</span> <span class="n">Message</span><span class="p">(</span>
-            <span class="s2">&quot;note_off&quot;</span><span class="p">,</span>
-            <span class="n">time</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span>
-            <span class="n">note</span><span class="o">=</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span>
-            <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
-            <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
-        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">note_on_msg</span><span class="p">,</span> <span class="n">note_off_msg</span>
 
 
 <span class="k">def</span> <span class="nf">to_mido_track</span><span class="p">(</span>
-    <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span> <span class="n">use_note_on_as_note_off</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MidiTrack</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Track object as a mido MidiTrack object.</span>
 
@@ -390,9 +395,15 @@
 <span class="sd">    ----------</span>
 <span class="sd">    track : :class:`muspy.Track` object</span>
 <span class="sd">        Track object to convert.</span>
-<span class="sd">    use_note_on_as_note_off : bool</span>
-<span class="sd">        Whether to use a note on message with zero velocity instead of a</span>
-<span class="sd">        note off message.</span>
+<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
+<span class="sd">        with zero velocity are used instead. The advantage to using</span>
+<span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
+<span class="sd">        additional status bytes when Running Status is employed.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">    channel : int, optional</span>
+<span class="sd">        Channel number. Defaults to 10 for drums and 0 for other</span>
+<span class="sd">        instruments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -400,6 +411,9 @@
 <span class="sd">        Converted mido MidiTrack object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="mi">9</span> <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span> <span class="k">else</span> <span class="mi">0</span>
+
     <span class="c1"># Create a new MIDI track</span>
     <span class="n">midi_track</span> <span class="o">=</span> <span class="n">MidiTrack</span><span class="p">()</span>
 
@@ -408,15 +422,18 @@
         <span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MetaMessage</span><span class="p">(</span><span class="s2">&quot;track_name&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 
     <span class="c1"># Program change messages</span>
-    <span class="n">channel</span> <span class="o">=</span> <span class="mi">9</span> <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span> <span class="k">else</span> <span class="mi">0</span>
     <span class="n">midi_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;program_change&quot;</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,)</span>
+        <span class="n">Message</span><span class="p">(</span><span class="s2">&quot;program_change&quot;</span><span class="p">,</span> <span class="n">program</span><span class="o">=</span><span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Note on and note off messages</span>
     <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
         <span class="n">midi_track</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
-            <span class="n">to_mido_note_on_note_off</span><span class="p">(</span><span class="n">note</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">use_note_on_as_note_off</span><span class="p">)</span>
+            <span class="n">to_mido_note_on_note_off</span><span class="p">(</span>
+                <span class="n">note</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                <span class="n">use_note_off_message</span><span class="o">=</span><span class="n">use_note_off_message</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="p">)</span>
 
     <span class="c1"># End of track message</span>
@@ -428,16 +445,19 @@
     <span class="k">return</span> <span class="n">midi_track</span>
 
 
-<div class="viewcode-block" id="to_mido"><a class="viewcode-back" href="../../../io/mido.html#muspy.to_mido">[docs]</a><span class="k">def</span> <span class="nf">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_note_on_as_note_off</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="to_mido"><a class="viewcode-back" href="../../../io/mido.html#muspy.to_mido">[docs]</a><span class="k">def</span> <span class="nf">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return a Music object as a MidiFile object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to convert.</span>
-<span class="sd">    use_note_on_as_note_off : bool</span>
-<span class="sd">        Whether to use a note on message with zero velocity instead of a</span>
-<span class="sd">        note off message.</span>
+<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
+<span class="sd">        with zero velocity are used instead. The advantage to using</span>
+<span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
+<span class="sd">        additional status bytes when Running Status is employed.</span>
+<span class="sd">        Defaults to False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -452,16 +472,38 @@
     <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_mido_meta_track</span><span class="p">(</span><span class="n">music</span><span class="p">))</span>
 
     <span class="c1"># Iterate over music tracks</span>
-    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-        <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_mido_track</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">use_note_on_as_note_off</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
+        <span class="c1"># NOTE: Many softwares use the same instrument for messages of</span>
+        <span class="c1"># the same channel in different tracks. Thus, we want to assign</span>
+        <span class="c1"># a unique channel number for each track. MIDI has 15 channels</span>
+        <span class="c1"># for instruments other than drums, so we increment the channel</span>
+        <span class="c1"># number for each track (skipping the drum channel) and go back</span>
+        <span class="c1"># to 0 once we run out of channels.</span>
+
+        <span class="c1"># Assign channel number</span>
+        <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
+            <span class="c1"># Mido numbers channels 0 to 15 instead of 1 to 16</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="mi">9</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># MIDI has 15 channels for instruments other than drums</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">15</span>
+            <span class="c1"># Avoid drum channel</span>
+            <span class="k">if</span> <span class="n">channel</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="p">:</span>
+                <span class="n">channel</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">midi</span><span class="o">.</span><span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">to_mido_track</span><span class="p">(</span>
+                <span class="n">track</span><span class="p">,</span>
+                <span class="n">channel</span><span class="o">=</span><span class="n">channel</span><span class="p">,</span>
+                <span class="n">use_note_off_message</span><span class="o">=</span><span class="n">use_note_off_message</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">midi</span></div>
 
 
 <span class="k">def</span> <span class="nf">write_midi_mido</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
-    <span class="n">use_note_on_as_note_off</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI file using mido as backend.</span>
 
@@ -471,12 +513,15 @@
 <span class="sd">        Path to write the MIDI file.</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to write.</span>
-<span class="sd">    use_note_on_as_note_off : bool</span>
-<span class="sd">        Whether to use a note on message with zero velocity instead of a</span>
-<span class="sd">        note off message.</span>
+<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
+<span class="sd">        with zero velocity are used instead. The advantage to using</span>
+<span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
+<span class="sd">        additional status bytes when Running Status is employed.</span>
+<span class="sd">        Defaults to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">midi</span> <span class="o">=</span> <span class="n">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">use_note_on_as_note_off</span><span class="o">=</span><span class="n">use_note_on_as_note_off</span><span class="p">)</span>
+    <span class="n">midi</span> <span class="o">=</span> <span class="n">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="o">=</span><span class="n">use_note_off_message</span><span class="p">)</span>
     <span class="n">midi</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
 
 
@@ -653,7 +698,7 @@
 <span class="sd">        Path to write the MIDI file.</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to write.</span>
-<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}</span>
+<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}, optional</span>
 <span class="sd">        Backend to use. Defaults to &#39;mido&#39;.</span>
 
 <span class="sd">    See Also</span>

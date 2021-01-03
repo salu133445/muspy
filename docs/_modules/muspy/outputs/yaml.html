@@ -160,26 +160,72 @@
             
   <h1>Source code for muspy.outputs.yaml</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;YAML output interface.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">gzip</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">yaml_dump</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
 
-<div class="viewcode-block" id="save_yaml"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.save_yaml">[docs]</a><span class="k">def</span> <span class="nf">save_yaml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="save_yaml"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.save_yaml">[docs]</a><span class="k">def</span> <span class="nf">save_yaml</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">],</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">allow_unicode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">compressed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save a Music object to a YAML file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    path : str or Path</span>
-<span class="sd">        Path to save the YAML file.</span>
+<span class="sd">    path : str, Path or TextIO</span>
+<span class="sd">        Path or file to save the YAML data.</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to save.</span>
+<span class="sd">    skip_missing : bool</span>
+<span class="sd">        Whether to skip attributes with value None or those that are</span>
+<span class="sd">        empty lists. Defaults to True.</span>
+<span class="sd">    allow_unicode : bool</span>
+<span class="sd">        Whether to escape non-ASCII characters. Will be passed to</span>
+<span class="sd">        :py:func:`json.dumps`. Defaults to False.</span>
+<span class="sd">    compressed : bool, optional</span>
+<span class="sd">        Whether to save as a compressed YAML file (`.yaml.gz`). Has no</span>
+<span class="sd">        effect when `path` is a file object. Defaults to infer from the</span>
+<span class="sd">        extension (`.gz`).</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Keyword arguments to pass to `yaml.dump`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When a path is given, use UTF-8 encoding and gzip compression if</span>
+<span class="sd">    `compressed=True`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">())</span></div>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">yaml_dump</span><span class="p">(</span>
+        <span class="n">music</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+        <span class="n">allow_unicode</span><span class="o">=</span><span class="n">allow_unicode</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.gz&quot;</span><span class="p">):</span>
+                <span class="n">compressed</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">compressed</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">compressed</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;wt&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">path</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

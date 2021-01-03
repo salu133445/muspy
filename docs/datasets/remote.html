@@ -178,7 +178,7 @@
 <p>Here are the classes for remote datasets.</p>
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Base class for remote datasets storing files in a folder.</p>
 <dl class="py attribute">
 <dt>
@@ -195,7 +195,7 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to download and extract the dataset. Defaults to False.</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive(s). Defaults to False.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive(s). Defaults to False.</p></li>
 <li><p><strong>convert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to convert the dataset to MusPy JSON/YAML files. If
 False, will check if converted data exists. If so, disable
 on-the-fly mode. If not, enable on-the-fly mode and warns.
@@ -233,7 +233,7 @@ Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Convert and save the Music objects.</p>
 <p>The converted files will be named by its index and saved to
 <code class="docutils literal notranslate"><span class="pre">root/_converted</span></code>. The original filenames can be found in the
@@ -248,6 +248,7 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -273,25 +274,14 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">download</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Download the source datasets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Extract the downloaded archives.</p>
-<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to overwrite existing files. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -300,8 +290,27 @@ corrupted. Defaults to True.</p></li>
 <dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">RemoteDataset.download().extract(cleanup)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Download source datasets and extract the downloaded archives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to overwrite existing files. Defaults to True.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive. Defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -312,11 +321,15 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Extract the downloaded archive(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive after extraction.
+Defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -355,7 +368,7 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -367,6 +380,9 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> or
+<a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -494,7 +510,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteMusicDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteMusicDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Base class for remote datasets of MusPy JSON/YAML files.</p>
 <dl class="py attribute">
 <dt>
@@ -522,7 +538,7 @@ RandomState, it will be used to create the splits.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to download and extract the dataset. Defaults to False.</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive(s). Defaults to False.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive(s). Defaults to False.</p></li>
 </ul>
 </dd>
 </dl>
@@ -543,25 +559,14 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">download</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Download the source datasets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Extract the downloaded archives.</p>
-<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to overwrite existing files. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -570,8 +575,27 @@ RandomState, it will be used to create the splits.</p></li>
 <dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">RemoteDataset.download().extract(cleanup)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Download source datasets and extract the downloaded archives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to overwrite existing files. Defaults to True.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive. Defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -582,11 +606,15 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Extract the downloaded archive(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive after extraction.
+Defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -605,7 +633,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -617,6 +645,9 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> or
+<a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -730,7 +761,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py class">
 <dt>
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteABCFolderDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">convert</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">use_converted</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteABCFolderDataset"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Base class for remote datasets storing ABC files in a folder.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -749,7 +780,7 @@ RandomState, it will be used to create the splits.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">convert</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Convert and save the Music objects.</p>
 <p>The converted files will be named by its index and saved to
 <code class="docutils literal notranslate"><span class="pre">root/_converted</span></code>. The original filenames can be found in the
@@ -764,6 +795,7 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -789,25 +821,14 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">download</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Download the source datasets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt>
-<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span></dt>
-<dd><p>Extract the downloaded archives.</p>
-<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to overwrite existing files. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -816,8 +837,27 @@ corrupted. Defaults to True.</p></li>
 <dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">RemoteDataset.download().extract(cleanup)</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt>
+<code class="sig-name descname">download_and_extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<dd><p>Download source datasets and extract the downloaded archives.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to overwrite existing files. Defaults to True.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive. Defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -828,11 +868,15 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">extract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Extract the downloaded archive(s).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the original archive. Defaults to False.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to remove the source archive after extraction.
+Defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>
@@ -877,7 +921,7 @@ corrupted. Defaults to True.</p></li>
 
 <dl class="py method">
 <dt>
-<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span></dt>
+<code class="sig-name descname">save</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">n_jobs</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">ignore_exceptions</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -889,6 +933,9 @@ disable multiprocessing. Defaults to 1.</p></li>
 <li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted. Defaults to True.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to be verbose. Defaults to True.</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="../doc/muspy.html#muspy.save_json" title="muspy.save_json"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_json()</span></code></a> or
+<a class="reference internal" href="../doc/muspy.html#muspy.save_yaml" title="muspy.save_yaml"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save_yaml()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>

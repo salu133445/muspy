@@ -181,11 +181,16 @@
 <h1>JSON Interface<a class="headerlink" href="#json-interface" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">load_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/json.html#load_json"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">load_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/json.html#load_json"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Load a JSON file into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the file to load.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Path</em><em> or </em><em>TextIO</em>) – Path to the file or the file to load.</p></li>
+<li><p><strong>compressed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether the file is a compressed JSON file (<cite>.json.gz</cite>). Has no
+effect when <cite>path</cite> is a file object. Defaults to infer from the
+extension (<cite>.gz</cite>).</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Loaded Music object.</p>
@@ -194,23 +199,34 @@
 <dd class="field-odd"><p><a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a></p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>When a path is given, assume UTF-8 encoding and gzip compression if
+<cite>compressed=True</cite>.</p>
 </dd></dl>
 
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">save_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">ensure_ascii</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">indent</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/json.html#save_json"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">save_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">skip_missing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">ensure_ascii</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/json.html#save_json"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Save a Music object to a JSON file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to save the JSON file.</p></li>
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Path</em><em> or </em><em>TextIO</em>) – Path or file to save the JSON data.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to save.</p></li>
-<li><p><strong>ensure_ascii</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to escape non-ASCII characters. Defaults to False. See
-<a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>.</p></li>
-<li><p><strong>indent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Indent level. See <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>.</p></li>
+<li><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
+empty lists. Defaults to True.</p></li>
+<li><p><strong>ensure_ascii</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to escape non-ASCII characters. Will be passed to
+PyYAML’s <cite>yaml.dump</cite>. Defaults to False.</p></li>
+<li><p><strong>compressed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to save as a compressed JSON file (<cite>.json.gz</cite>). Has no
+effect when <cite>path</cite> is a file object. Defaults to infer from the
+extension (<cite>.gz</cite>).</p></li>
+<li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>When a path is given, use UTF-8 encoding and gzip compression if
+<cite>compressed=True</cite>.</p>
 </dd></dl>
 
 <div class="admonition note">

@@ -170,38 +170,28 @@
 <span class="sd">- ComplexBase</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isclass</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Mapping</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Type</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">yaml_dump</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Base&quot;</span><span class="p">,</span> <span class="s2">&quot;ComplexBase&quot;</span><span class="p">]</span>
 
 <span class="n">BaseType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;BaseType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Base&quot;</span><span class="p">)</span>
 <span class="n">ComplexBaseType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ComplexBaseType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;ComplexBase&quot;</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">_OrderedDumper</span><span class="p">(</span><span class="n">yaml</span><span class="o">.</span><span class="n">SafeDumper</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A dumper that supports OrderedDict.&quot;&quot;&quot;</span>
-
-
-<span class="k">def</span> <span class="nf">_dict_representer</span><span class="p">(</span><span class="n">dumper</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">dumper</span><span class="o">.</span><span class="n">represent_mapping</span><span class="p">(</span>
-        <span class="n">yaml</span><span class="o">.</span><span class="n">resolver</span><span class="o">.</span><span class="n">BaseResolver</span><span class="o">.</span><span class="n">DEFAULT_MAPPING_TAG</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="p">)</span>
-
-
-<span class="n">_OrderedDumper</span><span class="o">.</span><span class="n">add_representer</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">,</span> <span class="n">_dict_representer</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_yaml_dump</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Dump data to YAML, which supports OrderedDict.</span>
-
-<span class="sd">    Code adapted from https://stackoverflow.com/a/21912744.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Dumper</span><span class="o">=</span><span class="n">_OrderedDumper</span><span class="p">,</span> <span class="n">allow_unicode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_type_string</span><span class="p">(</span><span class="n">attr_type</span><span class="p">):</span>
@@ -286,6 +276,9 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">())</span>
+
 <div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseType</span><span class="p">],</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
@@ -320,7 +313,9 @@
                 <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the object as an OrderedDict.</span>
 
 <span class="sd">        Return an ordered dictionary that stores the attributes and</span>
@@ -328,9 +323,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        skip_none : bool</span>
+<span class="sd">        skip_missing : bool</span>
 <span class="sd">            Whether to skip attributes with value None or those that are</span>
 <span class="sd">            empty lists. Defaults to True.</span>
+<span class="sd">        deepcopy : bool</span>
+<span class="sd">            Whether to make deep copies of the attributes. Defaults to</span>
+<span class="sd">            True.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -343,29 +341,62 @@
         <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">skip_none</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">value</span> <span class="ow">and</span> <span class="n">skip_missing</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
                     <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-                        <span class="n">v</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_none</span><span class="o">=</span><span class="n">skip_none</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span>
+                        <span class="n">v</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span>
+                            <span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span>
                     <span class="p">]</span>
+                <span class="k">elif</span> <span class="n">deepcopy</span><span class="p">:</span>
+                    <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
             <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_none</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_missing</span><span class="p">:</span>
                     <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
-                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_none</span><span class="o">=</span><span class="n">skip_none</span><span class="p">)</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span>
+                    <span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">deepcopy</span><span class="p">:</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
-<div class="viewcode-block" id="Base.pretty_str"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.pretty_str">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.copy"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a shallow copy of the object.</span>
+
+<span class="sd">        This is equivalent to :py:func:`copy.copy(self)`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Shallow copy of the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base.deepcopy"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.deepcopy">[docs]</a>    <span class="k">def</span> <span class="nf">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a deep copy of the object.</span>
+
+<span class="sd">        This is equivalent to :py:func:`copy.deepcopy(self)`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Deep copy of the object.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base.pretty_str"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.pretty_str">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return the attributes as a string in a YAML-like format.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        skip_none : bool</span>
+<span class="sd">        skip_missing : bool</span>
 <span class="sd">            Whether to skip attributes with value None or those that are</span>
 <span class="sd">            empty lists. Defaults to True.</span>
 
@@ -380,14 +411,16 @@
 <span class="sd">            Print the attributes in a YAML-like format.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">_yaml_dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_none</span><span class="o">=</span><span class="n">skip_none</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">yaml_dump</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_none</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Print the attributes in a YAML-like format.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        skip_none : bool</span>
+<span class="sd">        skip_missing : bool</span>
 <span class="sd">            Whether to skip attributes with value None or those that are</span>
 <span class="sd">            empty lists. Defaults to True.</span>
 
@@ -397,7 +430,7 @@
 <span class="sd">            Return the the attributes as a string in a YAML-like format.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">(</span><span class="n">skip_none</span><span class="o">=</span><span class="n">skip_none</span><span class="p">))</span></div>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pretty_str</span><span class="p">(</span><span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">))</span></div>
 
     <span class="k">def</span> <span class="nf">_validate_attr_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
@@ -650,6 +683,21 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">ComplexBaseType</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;Expect the second operand to be of type &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
             <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
@@ -661,13 +709,11 @@
                         <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
                     <span class="k">return</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;Cannot find a list attribute for type </span><span class="si">{}</span><span class="s2">.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span>
-            <span class="p">)</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot find a list attribute for type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ComplexBase.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
+        <span class="sd">&quot;&quot;&quot;Append an object to the corresponding list.</span>
 
 <span class="sd">        This will automatically determine the list attributes to append</span>
 <span class="sd">        based on the type of the object.</span>
@@ -679,6 +725,46 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="ComplexBase.extend"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">],</span>
+        <span class="n">deepcopy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Extend the list(s) with another object or iterable.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : :class:`muspy.ComplexBase` or iterable</span>
+<span class="sd">            If an object of the same type is given, extend the</span>
+<span class="sd">            list attributes with the corresponding list attributes of</span>
+<span class="sd">            the other object. If an iterable is given, call</span>
+<span class="sd">            :meth:`muspy.ComplexBase.append` for each item.</span>
+<span class="sd">        deepcopy : bool</span>
+<span class="sd">            Whether to make deep copies of the appended objects.</span>
+<span class="sd">            Defaults to False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Object itself.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">ComplexBase</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Expect `other` to be of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
+                <span class="n">other_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">other_value</span><span class="p">)</span> <span class="k">if</span> <span class="n">deepcopy</span> <span class="k">else</span> <span class="n">other_value</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">other</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">if</span> <span class="n">deepcopy</span> <span class="k">else</span> <span class="n">item</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_invalid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>

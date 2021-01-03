@@ -254,10 +254,12 @@
 <div class="viewcode-block" id="append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.append">[docs]</a><span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">obj1</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">,</span> <span class="n">obj2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Append an object to the correseponding list.</span>
 
+<span class="sd">    This will automatically determine the list attributes to append</span>
+<span class="sd">    based on the type of the object.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or \</span>
-<span class="sd">            :class:`muspy.Tempo`</span>
+<span class="sd">    obj1 : :class:`muspy.ComplexBase`</span>
 <span class="sd">        Object to which `obj2` to append.</span>
 <span class="sd">    obj2</span>
 <span class="sd">        Object to be appended to `obj1`.</span>
@@ -265,17 +267,43 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    - If `obj1` is of type :class:`muspy.Music`, `obj2` can be</span>
-<span class="sd">      :class:`muspy.KeySignature`, :class:`muspy.TimeSignature`,</span>
-<span class="sd">      :class:`muspy.Lyric`, :class:`muspy.Annotation` or</span>
-<span class="sd">      :class:`muspy.Track`.</span>
+<span class="sd">      :class:`muspy.Tempo`, :class:`muspy.KeySignature`,</span>
+<span class="sd">      :class:`muspy.TimeSignature`, :class:`muspy.Lyric`,</span>
+<span class="sd">      :class:`muspy.Annotation` or :class:`muspy.Track`.</span>
 <span class="sd">    - If `obj1` is of type :class:`muspy.Track`, `obj2` can be</span>
-<span class="sd">      :class:`muspy.Note`, :class:`muspy.Lyric` or</span>
-<span class="sd">      :class:`muspy.Annotation`.</span>
-<span class="sd">    - If `obj1` is of type :class:`muspy.Timing`, `obj2` can be</span>
-<span class="sd">      :class:`muspy.Tempo`.</span>
+<span class="sd">      :class:`muspy.Note`, :class:`muspy.Chord`,</span>
+<span class="sd">      :class:`muspy.Lyric` or :class:`muspy.Annotation`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.ComplexBase.append` : Equivalent function.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj2</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="n">obj1</span><span class="p">:</span> <span class="n">ComplexBase</span><span class="p">,</span> <span class="n">obj2</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Extend the list(s) with another object or iterable.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj1 : :class:`muspy.ComplexBase`</span>
+<span class="sd">        Object to extend.</span>
+<span class="sd">    obj2</span>
+<span class="sd">        If an object of the same type as `obj1` is given, extend the</span>
+<span class="sd">        list attributes with the corresponding list attributes of</span>
+<span class="sd">        `obj2`. If an iterable is given, call `obj1.append` on each</span>
+<span class="sd">        item.</span>
+<span class="sd">    deepcopy : bool</span>
+<span class="sd">        Whether to make deep copies of the appended objects. Defaults</span>
+<span class="sd">        to False.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :class:`muspy.ComplexBase.extend` : Equivalent function.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">obj1</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">obj2</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.clip">[docs]</a><span class="k">def</span> <span class="nf">clip</span><span class="p">(</span>
@@ -362,13 +390,21 @@
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.to_ordered_dict">[docs]</a><span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ignore_null</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+<div class="viewcode-block" id="to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.to_ordered_dict">[docs]</a><span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Base</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return an OrderedDict converted from a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Base`</span>
 <span class="sd">        Object to convert.</span>
+<span class="sd">    skip_missing : bool</span>
+<span class="sd">        Whether to skip attributes with value None or those that are</span>
+<span class="sd">        empty lists. Defaults to True.</span>
+<span class="sd">    deepcopy : bool</span>
+<span class="sd">        Whether to make deep copies of the attributes. Defaults to</span>
+<span class="sd">        False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -376,7 +412,7 @@
 <span class="sd">        Converted OrderedDict.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">ignore_null</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span><span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.transpose">[docs]</a><span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span>
