@@ -9,10 +9,21 @@ Classes
 - ComplexBase
 
 """
+import copy
 from collections import OrderedDict
 from inspect import isclass
 from operator import attrgetter
-from typing import Any, Callable, List, Mapping, Optional, Type, TypeVar
+from typing import (
+    Any,
+    Callable,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from .utils import yaml_dump
 
@@ -104,6 +115,9 @@ class Base:
                 return False
         return True
 
+    def __deepcopy__(self: BaseType, memo: Optional[dict]) -> BaseType:
+        return self.from_dict(self.to_ordered_dict())
+
     @classmethod
     def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
         """Return an instance constructed from a dictionary.
@@ -138,7 +152,9 @@ class Base:
                 kwargs[attr] = value
         return cls(**kwargs)
 
-    def to_ordered_dict(self, skip_missing: bool = True) -> OrderedDict:
+    def to_ordered_dict(
+        self, skip_missing: bool = True, deepcopy: bool = True,
+    ) -> OrderedDict:
         """Return the object as an OrderedDict.
 
         Return an ordered dictionary that stores the attributes and
@@ -149,6 +165,9 @@ class Base:
         skip_missing : bool
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
+        deepcopy : bool
+            Whether to make deep copies of the attributes. Defaults to
+            True.
 
         Returns
         -------
@@ -165,9 +184,13 @@ class Base:
                     continue
                 if isclass(attr_type) and issubclass(attr_type, Base):
                     ordered_dict[attr] = [
-                        v.to_ordered_dict(skip_missing=skip_missing)
+                        v.to_ordered_dict(
+                            skip_missing=skip_missing, deepcopy=deepcopy
+                        )
                         for v in value
                     ]
+                elif deepcopy:
+                    ordered_dict[attr] = copy.deepcopy(value)
                 else:
                     ordered_dict[attr] = value
             elif value is None:
@@ -175,11 +198,37 @@ class Base:
                     ordered_dict[attr] = None
             elif isclass(attr_type) and issubclass(attr_type, Base):
                 ordered_dict[attr] = value.to_ordered_dict(
-                    skip_missing=skip_missing
+                    skip_missing=skip_missing, deepcopy=deepcopy
                 )
+            elif deepcopy:
+                ordered_dict[attr] = copy.deepcopy(value)
             else:
                 ordered_dict[attr] = value
         return ordered_dict
+
+    def copy(self: BaseType) -> BaseType:
+        """Return a shallow copy of the object.
+
+        This is equivalent to :py:func:`copy.copy(self)`.
+
+        Returns
+        -------
+        Shallow copy of the object.
+
+        """
+        return copy.copy(self)
+
+    def deepcopy(self: BaseType) -> BaseType:
+        """Return a deep copy of the object.
+
+        This is equivalent to :py:func:`copy.deepcopy(self)`
+
+        Returns
+        -------
+        Deep copy of the object.
+
+        """
+        return copy.deepcopy(self)
 
     def pretty_str(self, skip_missing: bool = True) -> str:
         """Return the attributes as a string in a YAML-like format.
@@ -201,7 +250,9 @@ class Base:
             Print the attributes in a YAML-like format.
 
         """
-        return yaml_dump(self.to_ordered_dict(skip_missing=skip_missing))
+        return yaml_dump(
+            self.to_ordered_dict(skip_missing=skip_missing, deepcopy=False)
+        )
 
     def print(self, skip_missing: bool = True):
         """Print the attributes in a YAML-like format.
@@ -471,6 +522,21 @@ class ComplexBase(Base):
 
     """
 
+    def __iadd__(
+        self: ComplexBaseType, other: Union[ComplexBaseType, Iterable]
+    ) -> ComplexBaseType:
+        return self.extend(other)
+
+    def __add__(
+        self: ComplexBaseType, other: ComplexBaseType
+    ) -> ComplexBaseType:
+        if not isinstance(other, type(self)):
+            raise TypeError(
+                "Expect the second operand to be of type "
+                f"{type(self).__name__}, but got {type(other).__name__}."
+            )
+        return self.deepcopy().extend(other, deepcopy=True)
+
     def _append(self, obj):
         for attr in self._list_attributes:
             attr_type = self._attributes[attr]
@@ -482,13 +548,11 @@ class ComplexBase(Base):
                         getattr(self, attr).append(obj)
                     return
         raise TypeError(
-            "Cannot find a list attribute for type {}.".format(
-                type(obj).__name__
-            )
+            f"Cannot find a list attribute for type {type(obj).__name__}."
         )
 
     def append(self: ComplexBaseType, obj) -> ComplexBaseType:
-        """Append an object to the correseponding list.
+        """Append an object to the corresponding list.
 
         This will automatically determine the list attributes to append
         based on the type of the object.
@@ -500,6 +564,46 @@ class ComplexBase(Base):
 
         """
         self._append(obj)
+        return self
+
+    def extend(
+        self: ComplexBaseType,
+        other: Union[ComplexBaseType, Iterable],
+        deepcopy: bool = False,
+    ) -> ComplexBaseType:
+        """Extend the list(s) with another object or iterable.
+
+        Parameters
+        ----------
+        other : :class:`muspy.ComplexBase` or iterable
+            If an object of the same type is given, extend the
+            list attributes with the corresponding list attributes of
+            the other object. If an iterable is given, call
+            :meth:`muspy.ComplexBase.append` for each item.
+        deepcopy : bool
+            Whether to make deep copies of the appended objects.
+            Defaults to False.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        if isinstance(other, ComplexBase):
+            if not isinstance(other, type(self)):
+                raise TypeError(
+                    f"Expect `other` to be of type {type(self).__name__}, "
+                    f"but got {type(other).__name__}."
+                )
+            for attr in self._list_attributes:
+                other_value = getattr(other, attr)
+                getattr(self, attr).extend(
+                    copy.deepcopy(other_value) if deepcopy else other_value
+                )
+            return self
+
+        for item in other:  # type: ignore
+            self._append(copy.deepcopy(item) if deepcopy else item)
         return self
 
     def _remove_invalid(self, attr: str, recursive: bool):

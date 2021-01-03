@@ -93,10 +93,12 @@ def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
 def append(obj1: ComplexBase, obj2) -> ComplexBase:
     """Append an object to the correseponding list.
 
+    This will automatically determine the list attributes to append
+    based on the type of the object.
+
     Parameters
     ----------
-    obj1 : :class:`muspy.Music`, :class:`muspy.Track` or \
-            :class:`muspy.Tempo`
+    obj1 : :class:`muspy.ComplexBase`
         Object to which `obj2` to append.
     obj2
         Object to be appended to `obj1`.
@@ -104,17 +106,43 @@ def append(obj1: ComplexBase, obj2) -> ComplexBase:
     Notes
     -----
     - If `obj1` is of type :class:`muspy.Music`, `obj2` can be
-      :class:`muspy.KeySignature`, :class:`muspy.TimeSignature`,
-      :class:`muspy.Lyric`, :class:`muspy.Annotation` or
-      :class:`muspy.Track`.
+      :class:`muspy.Tempo`, :class:`muspy.KeySignature`,
+      :class:`muspy.TimeSignature`, :class:`muspy.Lyric`,
+      :class:`muspy.Annotation` or :class:`muspy.Track`.
     - If `obj1` is of type :class:`muspy.Track`, `obj2` can be
-      :class:`muspy.Note`, :class:`muspy.Lyric` or
-      :class:`muspy.Annotation`.
-    - If `obj1` is of type :class:`muspy.Timing`, `obj2` can be
-      :class:`muspy.Tempo`.
+      :class:`muspy.Note`, :class:`muspy.Chord`,
+      :class:`muspy.Lyric` or :class:`muspy.Annotation`.
+
+    See Also
+    --------
+    :class:`muspy.ComplexBase.append` : Equivalent function.
 
     """
     return obj1.append(obj2)
+
+
+def extend(obj1: ComplexBase, obj2, deepcopy: bool = False) -> ComplexBase:
+    """Extend the list(s) with another object or iterable.
+
+    Parameters
+    ----------
+    obj1 : :class:`muspy.ComplexBase`
+        Object to extend.
+    obj2
+        If an object of the same type as `obj1` is given, extend the
+        list attributes with the corresponding list attributes of
+        `obj2`. If an iterable is given, call `obj1.append` on each
+        item.
+    deepcopy : bool
+        Whether to make deep copies of the appended objects. Defaults
+        to False.
+
+    See Also
+    --------
+    :class:`muspy.ComplexBase.extend` : Equivalent function.
+
+    """
+    return obj1.extend(obj2, deepcopy=deepcopy)
 
 
 def clip(
@@ -201,13 +229,21 @@ def sort(obj: ComplexBase) -> ComplexBase:
     return obj.sort()
 
 
-def to_ordered_dict(obj: Base, ignore_null: bool = True) -> OrderedDict:
+def to_ordered_dict(
+    obj: Base, skip_missing: bool = True, deepcopy: bool = True
+) -> OrderedDict:
     """Return an OrderedDict converted from a Music object.
 
     Parameters
     ----------
     obj : :class:`muspy.Base`
         Object to convert.
+    skip_missing : bool
+        Whether to skip attributes with value None or those that are
+        empty lists. Defaults to True.
+    deepcopy : bool
+        Whether to make deep copies of the attributes. Defaults to
+        False.
 
     Returns
     -------
@@ -215,7 +251,7 @@ def to_ordered_dict(obj: Base, ignore_null: bool = True) -> OrderedDict:
         Converted OrderedDict.
 
     """
-    return obj.to_ordered_dict(ignore_null)
+    return obj.to_ordered_dict(skip_missing=skip_missing, deepcopy=deepcopy)
 
 
 def transpose(

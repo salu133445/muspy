@@ -43,8 +43,11 @@ def save_json(
     `compressed=True`.
 
     """
-    ordered_dict = music.to_ordered_dict(skip_missing=skip_missing)
-    data = json.dumps(ordered_dict, ensure_ascii=ensure_ascii, **kwargs)
+    data = json.dumps(
+        music.to_ordered_dict(skip_missing=skip_missing, deepcopy=False),
+        ensure_ascii=ensure_ascii,
+        **kwargs
+    )
 
     if isinstance(path, (str, Path)):
         if compressed is None:

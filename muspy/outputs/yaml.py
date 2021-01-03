@@ -44,8 +44,11 @@ def save_yaml(
     `compressed=True`.
 
     """
-    ordered_dict = music.to_ordered_dict(skip_missing=skip_missing)
-    data = yaml_dump(ordered_dict, allow_unicode=allow_unicode, **kwargs)
+    data = yaml_dump(
+        music.to_ordered_dict(skip_missing=skip_missing, deepcopy=False),
+        allow_unicode=allow_unicode,
+        **kwargs
+    )
 
     if isinstance(path, (str, Path)):
         if compressed is None:
