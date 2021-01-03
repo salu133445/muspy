@@ -4,6 +4,7 @@ from operator import attrgetter, itemgetter
 from typing import Optional, TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Any, DefaultDict, List
+import warnings
 
 from bidict import frozenbidict
 import numpy as np
@@ -187,10 +188,13 @@ class EventRepresentationProcessor:
             tracks = [[n for track in music.tracks for n in track.notes]]
         else:
             # Keep only num_tracks non-empty tracks
-            # TODO: Maybe warn or throw exception if too many tracks
             track_objs = music.tracks
             if self.ignore_empty_tracks:
                 track_objs = [track for track in track_objs if track.notes]
+            if len(track_objs) > self.num_tracks:
+                warnings.warn(
+                    f'Number of tracks ({len(track_objs)}) exceeds num_tracks '
+                    f'({self.num_tracks}). ', RuntimeWarning)
             track_objs = track_objs[:self.num_tracks]
 
             tracks = [[n for n in track.notes] for track in track_objs]
