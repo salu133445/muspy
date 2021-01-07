@@ -259,7 +259,7 @@ class EventRepresentationProcessor:
             events.append((EOS,))
 
         ids = [self.vocab[e] for e in events]
-        return np.array(ids, np.uint16).reshape(-1, 1)
+        return np.array(ids).reshape(-1, 1)
 
     def decode(self, array: ndarray) -> Music:
         """Decode event-based representation into a Music object.
