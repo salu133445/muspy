@@ -245,7 +245,9 @@ class Annotation(Base):
 
     """
 
-    _attributes = OrderedDict([("time", int), ("annotation", str)])
+    _attributes = OrderedDict([
+        ("time", int), ("annotation", object), ("group", str)
+    ])
     _optional_attributes = ["group"]
 
     def __init__(
