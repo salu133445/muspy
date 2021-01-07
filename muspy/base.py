@@ -29,6 +29,7 @@ from .utils import yaml_dump
 
 __all__ = ["Base", "ComplexBase"]
 
+T = TypeVar("T")
 BaseType = TypeVar("BaseType", bound="Base")
 ComplexBaseType = TypeVar("ComplexBaseType", bound="ComplexBase")
 
@@ -513,8 +514,8 @@ class ComplexBase(Base):
     """Base class that supports advanced operations on list attributes.
 
     This class extend the Base class with advanced operations on list
-    attributes, including `append`, `remove_invalid`, `remove_duplicate`
-    and `sort`.
+    attributes, including `append`, `remove_invalid`,
+    `remove_duplicate`, `sort`, `map` and `filter`.
 
     See Also
     --------
@@ -536,6 +537,34 @@ class ComplexBase(Base):
                 f"{type(self).__name__}, but got {type(other).__name__}."
             )
         return self.deepcopy().extend(other, deepcopy=True)
+
+    def _apply_list_op(
+        self,
+        fn: Callable[[str, Type[T], List[T]], None],
+        attr: Optional[str],
+        recursive: bool
+    ):
+        """Call the given function `fn(attr, attr_type, value) on all
+        list attributes."""
+        if attr is None:
+            for attribute in self._list_attributes:
+                self._apply_list_op(fn, attribute, recursive)
+            return
+        if attr not in self._list_attributes:
+            raise TypeError("`attr` must be a list attribute.")
+        attr_type = self._attributes[attr]
+
+        # Apply recursively using post-order traversal
+        # (first children, then self)
+        if (
+            recursive
+            and isclass(attr_type)
+            and issubclass(attr_type, ComplexBase)
+        ):
+            for item in getattr(self, attr):
+                item._apply_list_op(fn, attr=None, recursive=recursive)
+
+        fn(attr, attr_type, getattr(self, attr))
 
     def _append(self, obj):
         for attr in self._list_attributes:
@@ -606,32 +635,6 @@ class ComplexBase(Base):
             self._append(copy.deepcopy(item) if deepcopy else item)
         return self
 
-    def _remove_invalid(self, attr: str, recursive: bool):
-        # Skip it if empty
-        if not getattr(self, attr):
-            return
-
-        attr_type = self._attributes[attr]
-        value = getattr(self, attr)
-        is_class = isclass(attr_type)
-
-        # NOTE: The ordering mathers here. We first apply recursively
-        # and later check to the currect object so that something that
-        # can be fixed in a lower level would not make the high-level
-        # object to be removed.
-
-        # Apply recursively
-        if recursive and is_class and issubclass(attr_type, ComplexBase):
-            for value in getattr(self, attr):
-                value.remove_invalid(recursive=recursive)
-
-        # Replace the old list with a new list of only valid items
-        if is_class and issubclass(attr_type, Base):
-            new_value = [item for item in value if item.is_valid()]
-        else:
-            new_value = [item for item in value if isinstance(item, attr_type)]
-        setattr(self, attr, new_value)
-
     def remove_invalid(
         self: ComplexBaseType,
         attr: Optional[str] = None,
@@ -651,37 +654,28 @@ class ComplexBase(Base):
         Object itself.
 
         """
-        if attr is None:
-            for attribute in self._list_attributes:
-                self._remove_invalid(attribute, recursive)
-        elif attr in self._list_attributes:
-            self._remove_invalid(attr, recursive)
-        else:
-            raise TypeError("`{}` must be a list attribute.")
+        def _remove_invalid(attr: str, attr_type: Type, value: list):
+            # Skip it if empty
+            if not value:
+                return
+
+            if isclass(attr_type) and issubclass(attr_type, Base):
+                value[:] = [
+                    item for item in value
+                    if isinstance(item, attr_type) and item.is_valid()
+                ]
+            else:
+                value[:] = [item for item in value
+                            if isinstance(item, attr_type)]
+
+        # NOTE: We depend on the fact that _apply_list_op uses
+        # post-order traversal. This way, we first apply recursively
+        # and later check the currect object so that something that
+        # can be fixed in a lower level would not make the high-level
+        # object to be removed.
+
+        self._apply_list_op(_remove_invalid, attr, recursive)
         return self
-
-    def _remove_duplicate(self, attr: str, recursive: bool):
-        # Skip it if empty
-        if not getattr(self, attr):
-            return
-
-        # Replace the old lis with a new list without duplicates
-        attr_type = self._attributes[attr]
-        value = getattr(self, attr)
-        new_value = [value[0]]
-        for item, next_item in zip(value[:-1], value[1:]):
-            if item != next_item:
-                new_value.append(next_item)
-        setattr(self, attr, new_value)
-
-        # Apply recursively
-        if (
-            recursive
-            and isclass(attr_type)
-            and issubclass(attr_type, ComplexBase)
-        ):
-            for value in getattr(self, attr):
-                value.remove_duplicate(recursive=recursive)
 
     def remove_duplicate(
         self: ComplexBaseType,
@@ -702,30 +696,15 @@ class ComplexBase(Base):
         Object itself.
 
         """
-        if attr is None:
-            for attribute in self._list_attributes:
-                self._remove_duplicate(attribute, recursive)
-        elif attr in self._list_attributes:
-            self._remove_duplicate(attr, recursive)
-        else:
-            raise TypeError("`{}` must be a list attribute.")
+        def _remove_duplicate(attr: str, attr_type: Type[T], value: List[T]):
+            new_value = []
+            for item in value:
+                if item not in new_value:
+                    new_value.append(item)
+            value[:] = new_value
+
+        self._apply_list_op(_remove_duplicate, attr, recursive)
         return self
-
-    def _sort(self, attr: str, recursive: bool):
-        # Skip it if empty
-        if not getattr(self, attr):
-            return
-
-        # Sort the list
-        attr_type = self._attributes[attr]
-        if isclass(attr_type) and issubclass(attr_type, Base):
-            # pylint: disable=protected-access
-            if "time" in attr_type._attributes:
-                getattr(self, attr).sort(key=attrgetter("time"))
-            # Apply recursively
-            if recursive and issubclass(attr_type, ComplexBase):
-                for value in getattr(self, attr):
-                    value.sort(recursive=recursive)
 
     def sort(
         self: ComplexBaseType,
@@ -746,11 +725,100 @@ class ComplexBase(Base):
         Object itself.
 
         """
-        if attr is None:
-            for attribute in self._list_attributes:
-                self._sort(attribute, recursive)
-        elif attr in self._list_attributes:
-            self._sort(attr, recursive)
-        else:
-            raise TypeError("`{}` must be a list attribute.")
+        def _sort(attr: str, attr_type: Type[T], value: List[T]):
+            if value and "time" in getattr(attr_type, "_attributes"):
+                value.sort(key=attrgetter("time"))
+
+        self._apply_list_op(_sort, attr, recursive)
+        return self
+
+    def each(
+        self: ComplexBaseType,
+        fn: Callable,
+        attr: Optional[str] = None,
+        recursive: bool = True
+    ) -> ComplexBaseType:
+        """Call a given function `fn` on every item in a list
+        attribute.
+
+        Parameters
+        ----------
+        fn: Callable
+            Function to apply to the list items.
+        attr : str
+            Attribute to apply `fn` to. Defaults to all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        def _each(attr: str, attr_type: Type[T], value: List[T]):
+            for item in value:
+                fn(item)
+
+        self._apply_list_op(_each, attr, recursive)
+        return self
+
+    def map(
+        self: ComplexBaseType,
+        fn: Callable,
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> ComplexBaseType:
+        """Map items in list attributes using a given function `fn`.
+
+        The old list items will be replaced by the respective return
+        values of `fn`.
+
+        Parameters
+        ----------
+        fn: Callable
+            Function to apply to the list items.
+        attr : str
+            Attribute to apply `fn` to. Defaults to all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        def _map(attr: str, attr_type: Type[T], value: List[T]):
+            value[:] = [fn(item) for item in value]
+
+        self._apply_list_op(_map, attr, recursive)
+        return self
+
+    def filter(
+        self: ComplexBaseType,
+        fn: Callable,
+        attr: Optional[str] = None,
+        recursive: bool = True,
+    ) -> ComplexBaseType:
+        """Filter list attributes in place using a given function `fn`.
+
+        Items for which `fn` returns a falsy value will be removed.
+
+        Parameters
+        ----------
+        fn: Callable
+            Function to use to filter the lists.
+        attr : str
+            Attribute to apply `fn` to. Defaults to all attributes.
+        recursive : bool
+            Whether to apply recursively. Defaults to True.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        def _filter(attr: str, attr_type: Type[T], value: List[T]):
+            value[:] = filter(fn, value)
+
+        self._apply_list_op(_filter, attr, recursive)
         return self
