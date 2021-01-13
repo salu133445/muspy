@@ -618,6 +618,7 @@ class Track(ComplexBase):
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
     ):
+        ComplexBase.__init__(self)
         self.program = program if program is not None else 0
         self.is_drum = is_drum if program is not None else False
         self.name = name

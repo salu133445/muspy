@@ -17,12 +17,15 @@ from typing import (
     Any,
     Callable,
     Iterable,
+    Iterator,
     List,
     Mapping,
     Optional,
+    Tuple,
     Type,
     TypeVar,
     Union,
+    cast,
 )
 
 from .utils import yaml_dump
@@ -523,6 +526,10 @@ class ComplexBase(Base):
 
     """
 
+    def __init__(self, **kwargs):
+        Base.__init__(self, **kwargs)
+        self._flat = self._flat_generator()
+
     def __iadd__(
         self: ComplexBaseType, other: Union[ComplexBaseType, Iterable]
     ) -> ComplexBaseType:
@@ -538,17 +545,17 @@ class ComplexBase(Base):
             )
         return self.deepcopy().extend(other, deepcopy=True)
 
-    def _apply_list_op(
+    def _traverse_lists(
         self,
-        fn: Callable[[str, Type[T], List[T]], None],
         attr: Optional[str],
         recursive: bool
-    ):
-        """Call the given function `fn(attr, attr_type, value) on all
-        list attributes."""
+    ) -> Iterator[Tuple[str, Type[T], List[T]]]:
+        """A generator yielding a tuple `(attr, attr_type, value)`
+        for all list attributes."""
         if attr is None:
             for attribute in self._list_attributes:
-                self._apply_list_op(fn, attribute, recursive)
+                yield from self._traverse_lists(  # type: ignore
+                    attribute, recursive)
             return
         if attr not in self._list_attributes:
             raise TypeError("`attr` must be a list attribute.")
@@ -562,9 +569,10 @@ class ComplexBase(Base):
             and issubclass(attr_type, ComplexBase)
         ):
             for item in getattr(self, attr):
-                item._apply_list_op(fn, attr=None, recursive=recursive)
+                yield from item._traverse_lists(  # type: ignore
+                    attr=None, recursive=recursive)
 
-        fn(attr, attr_type, getattr(self, attr))
+        yield (attr, attr_type, getattr(self, attr))
 
     def _append(self, obj):
         for attr in self._list_attributes:
@@ -654,27 +662,27 @@ class ComplexBase(Base):
         Object itself.
 
         """
-        def _remove_invalid(attr: str, attr_type: Type, value: list):
-            # Skip it if empty
-            if not value:
-                return
-
-            if isclass(attr_type) and issubclass(attr_type, Base):
-                value[:] = [
-                    item for item in value
-                    if isinstance(item, attr_type) and item.is_valid()
-                ]
-            else:
-                value[:] = [item for item in value
-                            if isinstance(item, attr_type)]
-
-        # NOTE: We depend on the fact that _apply_list_op uses
+        # NOTE: We depend on the fact that _traverse_lists uses
         # post-order traversal. This way, we first apply recursively
         # and later check the currect object so that something that
         # can be fixed in a lower level would not make the high-level
         # object to be removed.
 
-        self._apply_list_op(_remove_invalid, attr, recursive)
+        attr_type: Type
+        value: list
+        for _, attr_type, value in self._traverse_lists(attr, recursive):
+            # Skip it if empty
+            if not value:
+                continue
+
+            if isclass(attr_type) and issubclass(attr_type, Base):
+                value[:] = [item for item in value  # type: ignore
+                            if (isinstance(item, attr_type)
+                                and cast(Base, item).is_valid())]
+            else:
+                value[:] = [item for item in value  # type: ignore
+                            if isinstance(item, attr_type)]
+
         return self
 
     def remove_duplicate(
@@ -696,14 +704,14 @@ class ComplexBase(Base):
         Object itself.
 
         """
-        def _remove_duplicate(attr: str, attr_type: Type[T], value: List[T]):
+        value: list
+        for _, _, value in self._traverse_lists(attr, recursive):
             new_value = []
-            for item in value:
+            for item in value:  # type: ignore
                 if item not in new_value:
                     new_value.append(item)
             value[:] = new_value
 
-        self._apply_list_op(_remove_duplicate, attr, recursive)
         return self
 
     def sort(
@@ -725,100 +733,23 @@ class ComplexBase(Base):
         Object itself.
 
         """
-        def _sort(attr: str, attr_type: Type[T], value: List[T]):
+        attr_type: Type
+        value: list
+        for _, attr_type, value in self._traverse_lists(attr, recursive):
             if value and "time" in getattr(attr_type, "_attributes"):
                 value.sort(key=attrgetter("time"))
 
-        self._apply_list_op(_sort, attr, recursive)
         return self
 
-    def each(
-        self: ComplexBaseType,
-        fn: Callable,
-        attr: Optional[str] = None,
-        recursive: bool = True
-    ) -> ComplexBaseType:
-        """Call a given function `fn` on every item in a list
-        attribute.
-
-        Parameters
-        ----------
-        fn: Callable
-            Function to apply to the list items.
-        attr : str
-            Attribute to apply `fn` to. Defaults to all attributes.
-        recursive : bool
-            Whether to apply recursively. Defaults to True.
-
-        Returns
-        -------
-        Object itself.
-
+    @property
+    def flat(self) -> Iterable:
+        """A flat representation of this object. Iterating over it
+        yields all items in all list attributes inside this object
+        (recursively). Non-list attributes are not included.
         """
-        def _each(attr: str, attr_type: Type[T], value: List[T]):
-            for item in value:
-                fn(item)
+        return self._flat
 
-        self._apply_list_op(_each, attr, recursive)
-        return self
-
-    def map(
-        self: ComplexBaseType,
-        fn: Callable,
-        attr: Optional[str] = None,
-        recursive: bool = True,
-    ) -> ComplexBaseType:
-        """Map items in list attributes using a given function `fn`.
-
-        The old list items will be replaced by the respective return
-        values of `fn`.
-
-        Parameters
-        ----------
-        fn: Callable
-            Function to apply to the list items.
-        attr : str
-            Attribute to apply `fn` to. Defaults to all attributes.
-        recursive : bool
-            Whether to apply recursively. Defaults to True.
-
-        Returns
-        -------
-        Object itself.
-
-        """
-        def _map(attr: str, attr_type: Type[T], value: List[T]):
-            value[:] = [fn(item) for item in value]
-
-        self._apply_list_op(_map, attr, recursive)
-        return self
-
-    def filter(
-        self: ComplexBaseType,
-        fn: Callable,
-        attr: Optional[str] = None,
-        recursive: bool = True,
-    ) -> ComplexBaseType:
-        """Filter list attributes in place using a given function `fn`.
-
-        Items for which `fn` returns a falsy value will be removed.
-
-        Parameters
-        ----------
-        fn: Callable
-            Function to use to filter the lists.
-        attr : str
-            Attribute to apply `fn` to. Defaults to all attributes.
-        recursive : bool
-            Whether to apply recursively. Defaults to True.
-
-        Returns
-        -------
-        Object itself.
-
-        """
-        def _filter(attr: str, attr_type: Type[T], value: List[T]):
-            value[:] = filter(fn, value)
-
-        self._apply_list_op(_filter, attr, recursive)
-        return self
+    def _flat_generator(self) -> Iterable:
+        value: list
+        for _, _, value in self._traverse_lists(attr=None, recursive=True):
+            yield from value
