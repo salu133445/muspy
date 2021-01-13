@@ -612,25 +612,26 @@ class ComplexBase(Base):
             return
 
         attr_type = self._attributes[attr]
-        value = getattr(self, attr)
         is_class = isclass(attr_type)
+        is_base = is_class and issubclass(attr_type, Base)
+        is_complexbase = is_class and issubclass(attr_type, ComplexBase)
+        value = getattr(self, attr)
 
         # NOTE: The ordering mathers here. We first apply recursively
-        # and later check to the currect object so that something that
-        # can be fixed in a lower level would not make the high-level
-        # object to be removed.
+        # and later check the currect object so that something that can
+        # be fixed in a lower level would not make the high-level object
+        # removed.
 
         # Apply recursively
-        if recursive and is_class and issubclass(attr_type, ComplexBase):
-            for value in getattr(self, attr):
-                value.remove_invalid(recursive=recursive)
+        if recursive and is_complexbase:
+            for item in value:
+                item.remove_invalid(recursive=recursive)
 
         # Replace the old list with a new list of only valid items
-        if is_class and issubclass(attr_type, Base):
-            new_value = [item for item in value if item.is_valid()]
+        if is_base:
+            value[:] = [item for item in value if item.is_valid()]
         else:
-            new_value = [item for item in value if isinstance(item, attr_type)]
-        setattr(self, attr, new_value)
+            value[:] = [item for item in value if isinstance(item, attr_type)]
 
     def remove_invalid(
         self: ComplexBaseType,
@@ -665,24 +666,29 @@ class ComplexBase(Base):
         if not getattr(self, attr):
             return
 
+        attr_type = self._attributes[attr]
+        is_complexbase = isclass(attr_type) and issubclass(
+            attr_type, ComplexBase
+        )
+        value = getattr(self, attr)
+
+        # NOTE: The ordering mathers here. We first apply recursively
+        # and later check the currect object so that something that can
+        # be fixed in a lower level would not make the high-level object
+        # removed.
+
+        # Apply recursively
+        if recursive and is_complexbase:
+            for item in value:
+                item.remove_duplicate(recursive=recursive)
+
         # Replace the old list with a new list without duplicates
         # TODO: Speed this up by grouping by time.
-        attr_type = self._attributes[attr]
-        value = getattr(self, attr)
         new_value = []
         for item in value:
             if item not in new_value:
                 new_value.append(item)
-        setattr(self, attr, new_value)
-
-        # Apply recursively
-        if (
-            recursive
-            and isclass(attr_type)
-            and issubclass(attr_type, ComplexBase)
-        ):
-            for value in getattr(self, attr):
-                value.remove_duplicate(recursive=recursive)
+        value[:] = new_value
 
     def remove_duplicate(
         self: ComplexBaseType,

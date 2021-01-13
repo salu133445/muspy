@@ -90,6 +90,17 @@ def test_remove_invalid():
     assert len(track) == 1
 
 
+def test_remove_invalid_recursive():
+    notes = [
+        Note(time=-1, duration=1, pitch=60),
+        Note(time=0, duration=1, pitch=60),
+    ]
+    music = Music(tracks=[Track(notes=notes)])
+    music.remove_invalid()
+    assert len(music) == 1
+    assert len(music[0]) == 1
+
+
 def test_remove_duplicate():
     notes = [
         Note(time=0, duration=1, pitch=60),
@@ -98,6 +109,17 @@ def test_remove_duplicate():
     track = Track(notes=notes)
     track.remove_duplicate()
     assert len(track) == 1
+
+
+def test_remove_duplicate_recursive():
+    notes = [
+        Note(time=0, duration=1, pitch=60),
+        Note(time=0, duration=1, pitch=60),
+    ]
+    music = Music(tracks=[Track(notes=notes)])
+    music.remove_duplicate()
+    assert len(music) == 1
+    assert len(music[0]) == 1
 
 
 def test_sort_track():
