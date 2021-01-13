@@ -706,6 +706,8 @@ class ComplexBase(Base):
         """
         value: list
         for _, _, value in self._traverse_lists(attr, recursive):
+            # Replace the old list with a new list without duplicates
+            # TODO: Speed this up by grouping by time.
             new_value = []
             for item in value:  # type: ignore
                 if item not in new_value:
