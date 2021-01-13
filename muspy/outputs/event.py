@@ -17,6 +17,7 @@ def to_event_representation(
     force_velocity_event: bool = True,
     max_time_shift: int = 100,
     velocity_bins: int = 32,
+    dtype=int,
 ) -> ndarray:
     """Encode a Music object into event-based representation.
 
@@ -52,13 +53,18 @@ def to_event_representation(
         decomposed into two or more time-shift events. Defaults to 100.
     velocity_bins : int
         Number of velocity bins to use. Defaults to 32.
+    dtype : np.dtype, type or str
+        Data type of the return array. Defaults to int.
 
     Returns
     -------
-    ndarray, dtype=uint16, shape=(?, 1)
+    ndarray, shape=(?, 1)
         Encoded array in event-based representation.
 
     """
+    if dtype is None:
+        dtype = int
+
     # Collect notes
     notes = []
     for track in music.tracks:
@@ -88,7 +94,8 @@ def to_event_representation(
             quantized_velocity = int(note.velocity * velocity_bins / 128)
             if force_velocity_event or quantized_velocity != last_velocity:
                 note_events.append(
-                    (note.time, offset_velocity + quantized_velocity))
+                    (note.time, offset_velocity + quantized_velocity)
+                )
             last_velocity = quantized_velocity
         # Note on event
         note_events.append((note.time, offset_note_on + note.pitch))
@@ -123,4 +130,4 @@ def to_event_representation(
     if use_end_of_sequence_event:
         events.append(offset_eos)
 
-    return np.array(events, np.uint16).reshape(-1, 1)
+    return np.array(events, dtype=dtype).reshape(-1, 1)

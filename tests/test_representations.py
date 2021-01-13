@@ -65,7 +65,6 @@ def test_pitch_representation():
     encoded = muspy.to_representation(music, "pitch")
 
     assert encoded.shape == (18, 1)
-    assert encoded.dtype == np.uint8
 
     answer = [
         76,
@@ -87,7 +86,7 @@ def test_pitch_representation():
         69,
         69,
     ]
-    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8))
+    assert np.all(encoded.flatten() == np.array(answer))
 
     # Decoding
     decoded = muspy.from_representation(encoded, "pitch")
@@ -101,7 +100,6 @@ def test_pitch_representation_hold_state():
     encoded = muspy.to_representation(music, "pitch", use_hold_state=True)
 
     assert encoded.shape == (18, 1)
-    assert encoded.dtype == np.uint8
 
     answer = [
         76,
@@ -123,7 +121,7 @@ def test_pitch_representation_hold_state():
         69,
         129,
     ]
-    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint8))
+    assert np.all(encoded.flatten() == np.array(answer))
 
     # Decoding
     decoded = muspy.from_representation(encoded, "pitch", use_hold_state=True)
@@ -137,7 +135,6 @@ def test_event_representation():
     encoded = muspy.to_representation(music, "event", encode_velocity=True)
 
     assert encoded.shape == (36, 1)
-    assert encoded.dtype == np.uint16
 
     answer = [
         372,
@@ -177,7 +174,7 @@ def test_event_representation():
         257,
         197,
     ]
-    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
+    assert np.all(encoded.flatten() == np.array(answer))
 
     # Decoding
     decoded = muspy.from_representation(encoded, "event")
@@ -192,8 +189,7 @@ def test_event_representation_single_note_off():
         music, "event", use_single_note_off_event=True, encode_velocity=True
     )
 
-    # assert encoded.shape == (36, 1)
-    assert encoded.dtype == np.uint16
+    assert encoded.shape == (36, 1)
 
     answer = [
         245,
@@ -233,7 +229,7 @@ def test_event_representation_single_note_off():
         130,
         128,
     ]
-    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
+    assert np.all(encoded.flatten() == np.array(answer))
 
     # Decoding
     decoded = muspy.from_representation(
@@ -251,7 +247,6 @@ def test_event_representation_force_velocity_event():
     )
 
     assert encoded.shape == (28, 1)
-    assert encoded.dtype == np.uint16
 
     answer = [
         372,
@@ -283,7 +278,7 @@ def test_event_representation_force_velocity_event():
         257,
         197,
     ]
-    assert np.all(encoded.flatten() == np.array(answer, dtype=np.uint16))
+    assert np.all(encoded.flatten() == np.array(answer))
 
     # Decoding
     decoded = muspy.from_event_representation(encoded, "event")
@@ -299,7 +294,6 @@ def test_event_representation_end_of_sequence_event():
     )
 
     assert encoded.shape == (37, 1)
-    assert encoded.dtype == np.uint16
     assert encoded[-1] == 388
 
     # Decoding
@@ -316,7 +310,6 @@ def test_pianoroll_representation():
     encoded = muspy.to_representation(music, "pianoroll")
 
     assert encoded.shape == (19, 128)
-    assert encoded.dtype == np.uint8
     assert encoded.sum() == 2 * 9 * 64
 
     answer = [
@@ -339,7 +332,7 @@ def test_pianoroll_representation():
         69,
         69,
     ]
-    assert np.all(encoded.nonzero()[1] == np.array(answer, dtype=np.uint8))
+    assert np.all(encoded.nonzero()[1] == np.array(answer))
 
     # Decoding
     decoded = muspy.from_representation(encoded, "pianoroll")

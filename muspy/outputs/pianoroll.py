@@ -1,6 +1,6 @@
 """Piano-roll output interface."""
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
 import numpy as np
 from numpy import ndarray
@@ -49,8 +49,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     if not music.tempos:
         tempo_arr = None
     else:
-        last_tempo_time = max((tempo.time for tempo in music.tempos))
-        tempo_arr = 120.0 * np.ones(last_tempo_time + 1)
+        tempo_arr = np.full(length, 120.0)
         qpm = 120.0
         position = 0
         for tempo in music.tempos:
@@ -58,21 +57,31 @@ def to_pypianoroll(music: "Music") -> Multitrack:
             tempo_arr[tempo.time] = tempo.qpm
             position = tempo.time + 1
             qpm = tempo.qpm
+        tempo_arr[position:] = qpm
 
-    if music.metadata is not None:
-        name = music.metadata.title if music.metadata.title is not None else ""
+    # Downbeats
+    if not music.downbeats:
+        downbeat_arr = None
+    else:
+        downbeat_arr = np.ones(length, bool)
+        for downbeat in music.downbeats:
+            downbeat_arr[downbeat] = True
+
+    has_title = music.metadata is not None and music.metadata.title is not None
 
     return Multitrack(
+        name=music.metadata.title if has_title else None,
         resolution=music.resolution,
-        tracks=tracks,
         tempo=tempo_arr,
-        # downbeat=music.downbeats if music.downbeats else None,
-        name=name,
+        downbeat=downbeat_arr,
+        tracks=tracks,
     )
 
 
 def to_pianoroll_representation(
-    music: "Music", encode_velocity: bool = True
+    music: "Music",
+    encode_velocity: bool = True,
+    dtype: Optional[Union[np.dtype, type, str]] = None,
 ) -> ndarray:
     """Encode notes into piano-roll representation.
 
@@ -84,13 +93,19 @@ def to_pianoroll_representation(
         Whether to encode velocities. If True, a binary-valued array
         will be return. Otherwise, an integer array will be return.
         Defaults to True.
+    dtype : np.dtype, type or str
+        Data type of the return array. Defaults to uint8 if
+        `encode_velocity` is True, otherwise bool.
 
     Returns
     -------
-    ndarray, dtype=uint8 or bool, shape=(?, 128)
+    ndarray, shape=(?, 128)
         Encoded array in piano-roll representation.
 
     """
+    if dtype is None:
+        dtype = np.uint8 if encode_velocity else bool
+
     # Collect notes
     notes = []
     for track in music.tracks:
@@ -104,14 +119,11 @@ def to_pianoroll_representation(
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
 
     if not notes:
-        return np.zeros((1, 128), np.uint8)
+        return np.zeros((0, 128), dtype)
 
     # Initialize the array
     length = max((note.end for note in notes))
-    if encode_velocity:
-        array = np.zeros((length + 1, 128), np.uint8)
-    else:
-        array = np.zeros((length + 1, 128), np.bool)
+    array = np.zeros((length + 1, 128), dtype)
 
     # Encode notes
     for note in notes:

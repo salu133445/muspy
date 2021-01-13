@@ -1,6 +1,6 @@
 """Pitch-based representation output interface."""
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from numpy import ndarray
@@ -10,7 +10,9 @@ if TYPE_CHECKING:
 
 
 def to_pitch_representation(
-    music: "Music", use_hold_state: bool = False
+    music: "Music",
+    use_hold_state: bool = False,
+    dtype: Union[np.dtype, type, str] = int,
 ) -> ndarray:
     """Encode a Music object into pitch-based representation.
 
@@ -27,10 +29,12 @@ def to_pitch_representation(
         Music object to encode.
     use_hold_state : bool
         Whether to use a special state for holds. Defaults to False.
+    dtype : np.dtype, type or str
+        Data type of the return array. Defaults to int.
 
     Returns
     -------
-    ndarray, dtype=uint8, shape=(?, 1)
+    ndarray, shape=(?, 1)
         Encoded array in pitch-based representation.
 
     """
@@ -48,7 +52,7 @@ def to_pitch_representation(
 
     # Initialize the array
     length = max((note.end for note in notes))
-    array = np.zeros((length, 1), np.uint8)
+    array = np.zeros((length, 1), dtype)
 
     # Fill the array with rests
     if use_hold_state:

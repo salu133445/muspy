@@ -36,9 +36,8 @@ def to_note_representation(
         than 'time' and 'duration'. Defaults to False.
     encode_velocity : bool
         Whether to encode note velocities. Defaults to True.
-    dtype : dtype, type or str
+    dtype : np.dtype, type or str
         Data type of the return array. Defaults to int.
-
 
     Returns
     -------
