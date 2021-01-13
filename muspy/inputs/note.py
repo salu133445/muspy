@@ -22,8 +22,7 @@ def from_note_representation(
     Parameters
     ----------
     array : ndarray
-        Array in note-based representation to decode. Will be casted to
-        integer if not of integer type.
+        Array in note-based representation to decode.
     resolution : int
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
@@ -54,7 +53,7 @@ def from_note_representation(
 
     """
     if not np.issubdtype(array.dtype, np.integer):
-        array = array.astype(np.int)
+        raise TypeError("Array must be of type int.")
 
     notes = []
     velocity = default_velocity

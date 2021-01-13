@@ -22,8 +22,7 @@ def from_pitch_representation(
     Parameters
     ----------
     array : ndarray
-        Array in pitch-based representation to decode. Will be casted to
-        integer if not of integer type.
+        Array in pitch-based representation to decode.
     resolution : int
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
@@ -49,9 +48,8 @@ def from_pitch_representation(
     [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
 
     """
-    # Cast the array to integer
     if not np.issubdtype(array.dtype, np.integer):
-        array = array.astype(np.int)
+        raise TypeError("Array must be of type int.")
 
     # Find the note boundaries
     notes: List[Note] = []

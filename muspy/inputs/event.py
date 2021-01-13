@@ -26,8 +26,7 @@ def from_event_representation(
     Parameters
     ----------
     array : ndarray
-        Array in event-based representation to decode. Cast to integer
-        if not of integer type.
+        Array in event-based representation to decode.
     resolution : int
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
@@ -77,7 +76,7 @@ def from_event_representation(
     """
     # Cast the array to integer
     if not np.issubdtype(array.dtype, np.integer):
-        array = array.astype(np.int)
+        raise TypeError("Array must be of type int.")
 
     # Compute offsets
     offset_note_on = 0

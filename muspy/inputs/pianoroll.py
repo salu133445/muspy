@@ -111,14 +111,12 @@ def from_pianoroll_representation(
     encode_velocity: bool = True,
     default_velocity: int = 64,
 ) -> Music:
-    """Decode pitch-based representation into a Music object.
+    """Decode piano-roll representation into a Music object.
 
     Parameters
     ----------
     array : ndarray
-        Array in piano-roll representation to decode. Will be casted to
-        integer if not of integer type. If `encode_velocity` is True,
-        will be casted to boolean if not of boolean type.
+        Array in piano-roll representation to decode.
     resolution : int
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
@@ -145,9 +143,13 @@ def from_pianoroll_representation(
 
     """
     if encode_velocity and not np.issubdtype(array.dtype, np.integer):
-        array = array.astype(np.int)
-    elif not encode_velocity and not np.issubdtype(array.dtype, np.bool):
-        array = array.astype(np.bool)
+        raise TypeError(
+            "Array must be of type int when `encode_velocity` is True."
+        )
+    if not encode_velocity and not np.issubdtype(array.dtype, np.bool):
+        raise TypeError(
+            "Array must be of type bool when `encode_velocity` is False."
+        )
 
     # Convert piano roll to notes
     notes = _pianoroll_to_notes(array, encode_velocity, default_velocity)
