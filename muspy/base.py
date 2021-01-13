@@ -665,13 +665,14 @@ class ComplexBase(Base):
         if not getattr(self, attr):
             return
 
-        # Replace the old lis with a new list without duplicates
+        # Replace the old list with a new list without duplicates
+        # TODO: Speed this up by grouping by time.
         attr_type = self._attributes[attr]
         value = getattr(self, attr)
-        new_value = [value[0]]
-        for item, next_item in zip(value[:-1], value[1:]):
-            if item != next_item:
-                new_value.append(next_item)
+        new_value = []
+        for item in value:
+            if item not in new_value:
+                new_value.append(item)
         setattr(self, attr, new_value)
 
         # Apply recursively
