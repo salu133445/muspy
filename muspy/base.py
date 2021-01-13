@@ -518,7 +518,7 @@ class ComplexBase(Base):
 
     This class extend the Base class with advanced operations on list
     attributes, including `append`, `remove_invalid`,
-    `remove_duplicate`, `sort`, `map` and `filter`.
+    `remove_duplicate` and `sort`.
 
     See Also
     --------
