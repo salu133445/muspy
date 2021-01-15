@@ -107,7 +107,7 @@ class Dataset:
     def save(
         self,
         root: Union[str, Path],
-        kind: Optional[str] = "json",
+        kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
         verbose: bool = True,
@@ -164,7 +164,7 @@ class Dataset:
         n_digits = len(str(len(self)))
 
         if verbose:
-            print("Start converting and saving the dataset.")
+            print("Converting and saving the dataset...")
         if n_jobs == 1:
             count = 0
             for idx in tqdm(range(len(self))):  # type: ignore
@@ -182,7 +182,7 @@ class Dataset:
             )
             count = results.count(True)
         if verbose:
-            print(f"{count} out of {len(self)} files successfully saved.")
+            print(f"Successfully saved {count} out of {len(self)} files.")
         (root / ".muspy.success").touch(exist_ok=True)
 
     def split(
@@ -435,8 +435,7 @@ class RemoteDataset(Dataset):
     download_and_extract : bool, optional
         Whether to download and extract the dataset. Defaults to False.
     overwrite : bool, optional
-        Whether to overwrite existing downloaded files. Defaults to
-        True.
+        Whether to overwrite existing file(s). Defaults to False.
     cleanup : bool, optional
         Whether to remove the source archive(s). Defaults to False.
     verbose : bool, optional
@@ -491,18 +490,11 @@ class RemoteDataset(Dataset):
     def __init__(
         self,
         root: Union[str, Path],
-        download_and_extract: Optional[bool] = None,
-        overwrite: Optional[bool] = None,
-        cleanup: Optional[bool] = None,
+        download_and_extract: bool = False,
+        overwrite: bool = False,
+        cleanup: bool = False,
         verbose: bool = True,
     ):
-        if download_and_extract is None:
-            download_and_extract = False
-        if overwrite is None:
-            overwrite = True
-        if cleanup is None:
-            cleanup = False
-
         super().__init__()
         self.root = Path(root).expanduser().resolve()
         self.root.mkdir(exist_ok=True)
@@ -544,14 +536,14 @@ class RemoteDataset(Dataset):
         return True
 
     def download(
-        self: RemoteDatasetType, overwrite: bool = True, verbose: bool = True
+        self: RemoteDatasetType, overwrite: bool = False, verbose: bool = True
     ) -> RemoteDatasetType:
         """Download the source datasets.
 
         Parameters
         ----------
         overwrite : bool, optional
-            Whether to overwrite existing files. Defaults to True.
+            Whether to overwrite existing file(s). Defaults to False.
         verbose : bool, optional
             Whether to be verbose. Defaults to True.
 
@@ -601,7 +593,7 @@ class RemoteDataset(Dataset):
 
     def download_and_extract(
         self: RemoteDatasetType,
-        overwrite: bool = True,
+        overwrite: bool = False,
         cleanup: bool = False,
         verbose: bool = True,
     ) -> RemoteDatasetType:
@@ -610,9 +602,9 @@ class RemoteDataset(Dataset):
         Parameters
         ----------
         overwrite : bool, optional
-            Whether to overwrite existing files. Defaults to True.
+            Whether to overwrite existing file(s). Defaults to False.
         cleanup : bool, optional
-            Whether to remove the source archive. Defaults to False.
+            Whether to remove the source archive(s). Defaults to False.
         verbose : bool, optional
             Whether to be verbose. Defaults to True.
 
@@ -756,6 +748,8 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
     ----------
     download_and_extract : bool, optional
         Whether to download and extract the dataset. Defaults to False.
+    overwrite : bool, optional
+        Whether to overwrite existing file(s). Defaults to False.
     cleanup : bool, optional
         Whether to remove the source archive(s). Defaults to False.
 
@@ -771,8 +765,8 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
-        overwrite: Optional[bool] = None,
-        cleanup: Optional[bool] = None,
+        overwrite: bool = False,
+        cleanup: bool = False,
         kind: str = "json",
         verbose: bool = True,
     ):
@@ -820,7 +814,7 @@ class FolderDataset(Dataset):
         be helpful if some source files are known to be corrupted.
         Defaults to True.
     use_converted : bool, optional
-        Force to disable on-the-fly mode and use stored converted data
+        Force to disable on-the-fly mode and use converted data.
 
     Important
     ---------
@@ -852,17 +846,12 @@ class FolderDataset(Dataset):
     def __init__(
         self,
         root: Union[str, Path],
-        convert: Optional[bool] = None,
+        convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: Optional[bool] = None,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
     ):
-        if convert is None:
-            convert = False
-        if ignore_exceptions is None:
-            ignore_exceptions = True
-
         self.root = Path(root).expanduser().resolve()
         self.kind = kind
 
@@ -1068,12 +1057,12 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
-        overwrite: Optional[bool] = None,
-        cleanup: Optional[bool] = None,
-        convert: Optional[bool] = None,
+        overwrite: bool = False,
+        cleanup: bool = False,
+        convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: Optional[bool] = None,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
         verbose: bool = True,
     ):
@@ -1180,12 +1169,12 @@ class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):
         self,
         root: Union[str, Path],
         download_and_extract: bool = False,
-        overwrite: Optional[bool] = None,
-        cleanup: Optional[bool] = None,
-        convert: Optional[bool] = None,
+        overwrite: bool = False,
+        cleanup: bool = False,
+        convert: bool = False,
         kind: str = "json",
         n_jobs: int = 1,
-        ignore_exceptions: Optional[bool] = None,
+        ignore_exceptions: bool = True,
         use_converted: Optional[bool] = None,
         verbose: bool = True,
     ):

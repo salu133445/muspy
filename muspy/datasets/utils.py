@@ -119,7 +119,7 @@ def check_sha256(
 def download_url(
     url: str,
     path: Union[str, Path],
-    overwrite: bool = True,
+    overwrite: bool = False,
     size: Optional[int] = None,
     md5: Optional[str] = None,
     sha256: Optional[str] = None,
@@ -134,7 +134,7 @@ def download_url(
     path : str or Path
         Path to save the downloaded file.
     overwrite : bool, optional
-        Whether to overwrite existing downloaded file. Defaults to True.
+        Whether to overwrite existing downloaded file. Defaults to False.
     size : int, optional
         Expected size of the downloaded file. Defaults to skip size
         check.
@@ -189,24 +189,6 @@ def download_url(
             "Downloaded file has a different sha256 hash from the expected "
             "one."
         )
-
-
-def _get_confirm_token(response):
-    for key, value in response.cookies.items():
-        if key.startswith("download_warning"):
-            return value
-    return None
-
-
-def _save_response_content(response, destination, chunk_size=32768):
-    with open(destination, "wb") as f:
-        pbar = tqdm(total=None)
-        progress = 0
-        for chunk in response.iter_content(chunk_size):
-            if chunk:  # filter out keep-alive new chunks
-                f.write(chunk)
-                progress += len(chunk)
-                pbar.update(progress - pbar.n)
 
 
 def extract_archive(
