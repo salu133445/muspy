@@ -176,7 +176,7 @@
 <h1>Piano-roll Representation<a class="headerlink" href="#piano-roll-representation" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Encode notes into piano-roll representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -185,13 +185,15 @@
 <li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode velocities. If True, a binary-valued array
 will be return. Otherwise, an integer array will be return.
 Defaults to True.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to uint8 if
+<cite>encode_velocity</cite> is True, otherwise bool.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Encoded array in piano-roll representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, dtype=uint8 or <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>, shape=(?, 128)</p>
+<dd class="field-odd"><p>ndarray, shape=(?, 128)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -199,13 +201,11 @@ Defaults to True.</p></li>
 <dl class="py function">
 <dt>
 <code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">from_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">array</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">24</span></em>, <em class="sig-param"><span class="n">program</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">is_drum</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">default_velocity</span><span class="o">=</span><span class="default_value">64</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/pianoroll.html#from_pianoroll_representation"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Decode pitch-based representation into a Music object.</p>
+<dd><p>Decode piano-roll representation into a Music object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>ndarray</em>) – Array in piano-roll representation to decode. Will be casted to
-integer if not of integer type. If <cite>encode_velocity</cite> is True,
-will be casted to boolean if not of boolean type.</p></li>
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in piano-roll representation to decode.</p></li>
 <li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to
 <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
 <li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].

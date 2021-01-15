@@ -187,8 +187,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    array : ndarray</span>
-<span class="sd">        Array in event-based representation to decode. Cast to integer</span>
-<span class="sd">        if not of integer type.</span>
+<span class="sd">        Array in event-based representation to decode.</span>
 <span class="sd">    resolution : int</span>
 <span class="sd">        Time steps per quarter note. Defaults to</span>
 <span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
@@ -238,7 +237,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Cast the array to integer</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="n">array</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Array must be of type int.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Compute offsets</span>
     <span class="n">offset_note_on</span> <span class="o">=</span> <span class="mi">0</span>

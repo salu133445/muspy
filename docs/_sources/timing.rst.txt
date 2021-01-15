@@ -8,7 +8,7 @@ In a metrical timing system, the smallest unit of time is a factor of a beat, wh
 
 Here is the formula relating the metrical and the absolute timing systems.
 
-.. math:: absolute\_time = \frac{60 \times tempo}{resolution} \times metrical\_time
+.. math:: absolute\_time = \frac{60}{tempo \times resolution} \times metrical\_time
 
 Here, *resolution* is the number of time steps per beat and *tempo* is the current tempo (in quarters per minute, or qpm). These two values are stored in a :class:`muspy.Music` object as attributes ``music.resolution`` and ``music.tempos``.
 

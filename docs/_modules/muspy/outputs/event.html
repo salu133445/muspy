@@ -178,6 +178,7 @@
     <span class="n">force_velocity_event</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">max_time_shift</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
     <span class="n">velocity_bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">32</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Encode a Music object into event-based representation.</span>
 
@@ -213,13 +214,18 @@
 <span class="sd">        decomposed into two or more time-shift events. Defaults to 100.</span>
 <span class="sd">    velocity_bins : int</span>
 <span class="sd">        Number of velocity bins to use. Defaults to 32.</span>
+<span class="sd">    dtype : np.dtype, type or str</span>
+<span class="sd">        Data type of the return array. Defaults to int.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ndarray, dtype=uint16, shape=(?, 1)</span>
+<span class="sd">    ndarray, shape=(?, 1)</span>
 <span class="sd">        Encoded array in event-based representation.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="nb">int</span>
+
     <span class="c1"># Collect notes</span>
     <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
@@ -249,7 +255,8 @@
             <span class="n">quantized_velocity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span> <span class="o">*</span> <span class="n">velocity_bins</span> <span class="o">/</span> <span class="mi">128</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">force_velocity_event</span> <span class="ow">or</span> <span class="n">quantized_velocity</span> <span class="o">!=</span> <span class="n">last_velocity</span><span class="p">:</span>
                 <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">offset_velocity</span> <span class="o">+</span> <span class="n">quantized_velocity</span><span class="p">))</span>
+                    <span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">offset_velocity</span> <span class="o">+</span> <span class="n">quantized_velocity</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="n">last_velocity</span> <span class="o">=</span> <span class="n">quantized_velocity</span>
         <span class="c1"># Note on event</span>
         <span class="n">note_events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">offset_note_on</span> <span class="o">+</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
@@ -284,7 +291,7 @@
     <span class="k">if</span> <span class="n">use_end_of_sequence_event</span><span class="p">:</span>
         <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_eos</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

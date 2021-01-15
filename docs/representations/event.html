@@ -176,7 +176,7 @@
 <h1>Event-based Representation<a class="headerlink" href="#event-based-representation" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt>
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param">music</em>, <em class="sig-param">use_single_note_off_event=False</em>, <em class="sig-param">use_end_of_sequence_event=False</em>, <em class="sig-param">encode_velocity=False</em>, <em class="sig-param">force_velocity_event=True</em>, <em class="sig-param">max_time_shift=100</em>, <em class="sig-param">velocity_bins=32</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Encode a Music object into event-based representation.</p>
 <p>The event-based represetantion represents music as a sequence of
 events, including note-on, note-off, time-shift and velocity events.
@@ -203,13 +203,14 @@ True.</p></li>
 event. Time shifts larger than <cite>max_time_shift</cite> will be
 decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Encoded array in event-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, dtype=uint16, shape=(?, 1)</p>
+<dd class="field-odd"><p>ndarray, shape=(?, 1)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,8 +222,7 @@ decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode. Cast to integer
-if not of integer type.</p></li>
+<li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode.</p></li>
 <li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Time steps per quarter note. Defaults to
 <cite>muspy.DEFAULT_RESOLUTION</cite>.</p></li>
 <li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Program number according to General MIDI specification [1].

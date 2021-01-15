@@ -773,25 +773,26 @@
             <span class="k">return</span>
 
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="n">is_class</span> <span class="o">=</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span>
+        <span class="n">is_base</span> <span class="o">=</span> <span class="n">is_class</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span>
+        <span class="n">is_complexbase</span> <span class="o">=</span> <span class="n">is_class</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">ComplexBase</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
 
         <span class="c1"># NOTE: The ordering mathers here. We first apply recursively</span>
-        <span class="c1"># and later check to the currect object so that something that</span>
-        <span class="c1"># can be fixed in a lower level would not make the high-level</span>
-        <span class="c1"># object to be removed.</span>
+        <span class="c1"># and later check the currect object so that something that can</span>
+        <span class="c1"># be fixed in a lower level would not make the high-level object</span>
+        <span class="c1"># removed.</span>
 
         <span class="c1"># Apply recursively</span>
-        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">is_class</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">ComplexBase</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                <span class="n">value</span><span class="o">.</span><span class="n">remove_invalid</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">is_complexbase</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">remove_invalid</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
         <span class="c1"># Replace the old list with a new list of only valid items</span>
-        <span class="k">if</span> <span class="n">is_class</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
-            <span class="n">new_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="n">is_base</span><span class="p">:</span>
+            <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">is_valid</span><span class="p">()]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">)]</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+            <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="ComplexBase.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>
@@ -826,23 +827,29 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
             <span class="k">return</span>
 
-        <span class="c1"># Replace the old lis with a new list without duplicates</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+        <span class="n">is_complexbase</span> <span class="o">=</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span>
+            <span class="n">attr_type</span><span class="p">,</span> <span class="n">ComplexBase</span>
+        <span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-        <span class="n">new_value</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
-        <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">next_item</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">value</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
-            <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="n">next_item</span><span class="p">:</span>
-                <span class="n">new_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_item</span><span class="p">)</span>
-        <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">new_value</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: The ordering mathers here. We first apply recursively</span>
+        <span class="c1"># and later check the currect object so that something that can</span>
+        <span class="c1"># be fixed in a lower level would not make the high-level object</span>
+        <span class="c1"># removed.</span>
 
         <span class="c1"># Apply recursively</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">recursive</span>
-            <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">ComplexBase</span><span class="p">)</span>
-        <span class="p">):</span>
-            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                <span class="n">value</span><span class="o">.</span><span class="n">remove_duplicate</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">is_complexbase</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">remove_duplicate</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+
+        <span class="c1"># Replace the old list with a new list without duplicates</span>
+        <span class="c1"># TODO: Speed this up by grouping by time.</span>
+        <span class="n">new_value</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">new_value</span><span class="p">:</span>
+                <span class="n">new_value</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_value</span>
 
 <div class="viewcode-block" id="ComplexBase.remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>

@@ -294,7 +294,7 @@ extension (<cite>.gz</cite>).</p></li>
 
 <dl class="py function">
 <dt id="muspy.outputs.to_event_representation">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_single_note_off_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">use_end_of_sequence_event</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">force_velocity_event</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">max_time_shift</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">velocity_bins</span><span class="o">=</span><span class="default_value">32</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_event_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_event_representation</code><span class="sig-paren">(</span><em class="sig-param">music</em>, <em class="sig-param">use_single_note_off_event=False</em>, <em class="sig-param">use_end_of_sequence_event=False</em>, <em class="sig-param">encode_velocity=False</em>, <em class="sig-param">force_velocity_event=True</em>, <em class="sig-param">max_time_shift=100</em>, <em class="sig-param">velocity_bins=32</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_event_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode a Music object into event-based representation.</p>
 <p>The event-based represetantion represents music as a sequence of
 events, including note-on, note-off, time-shift and velocity events.
@@ -321,13 +321,14 @@ True.</p></li>
 event. Time shifts larger than <cite>max_time_shift</cite> will be
 decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Encoded array in event-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, dtype=uint16, shape=(?, 1)</p>
+<dd class="field-odd"><p>ndarray, shape=(?, 1)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -391,7 +392,7 @@ duration and velocity (discarded when <cite>encode_velocity</cite> is False).</p
 <li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather
 than ‘time’ and ‘duration’. Defaults to False.</p></li>
 <li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -427,7 +428,7 @@ than ‘time’ and ‘duration’. Defaults to False.</p></li>
 
 <dl class="py function">
 <dt id="muspy.outputs.to_pianoroll_representation">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pianoroll_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">encode_velocity</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">dtype</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pianoroll.html#to_pianoroll_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pianoroll_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode notes into piano-roll representation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -436,20 +437,22 @@ than ‘time’ and ‘duration’. Defaults to False.</p></li>
 <li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode velocities. If True, a binary-valued array
 will be return. Otherwise, an integer array will be return.
 Defaults to True.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to uint8 if
+<cite>encode_velocity</cite> is True, otherwise bool.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Encoded array in piano-roll representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, dtype=uint8 or <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)">bool</a>, shape=(?, 128)</p>
+<dd class="field-odd"><p>ndarray, shape=(?, 128)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.outputs.to_pitch_representation">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pitch_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">use_hold_state</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pitch.html#to_pitch_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pitch_representation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_pitch_representation</code><span class="sig-paren">(</span><em class="sig-param">music</em>, <em class="sig-param">use_hold_state=False</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/pitch.html#to_pitch_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_pitch_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode a Music object into pitch-based representation.</p>
 <p>The pitch-based represetantion represents music as a sequence of
 pitch, rest and (optional) hold tokens. Only monophonic melodies are
@@ -462,13 +465,14 @@ hold (129).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to encode.</p></li>
 <li><p><strong>use_hold_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a special state for holds. Defaults to False.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Encoded array in pitch-based representation.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, dtype=uint8, shape=(?, 1)</p>
+<dd class="field-odd"><p>ndarray, shape=(?, 1)</p>
 </dd>
 </dl>
 </dd></dl>
