@@ -150,7 +150,7 @@ def download_url(
     """
     path = Path(path)
     if not overwrite and path.is_file():
-        if size is not None and path.stat().st_size != size:
+        if size is not None and not check_size(path, size):
             raise RuntimeError(
                 "Existing file has a different size from the expected one."
             )
@@ -176,7 +176,7 @@ def download_url(
         urlretrieve(url, path)
 
     # Run checks
-    if size is not None and path.stat().st_size != size:
+    if size is not None and not check_size(path, size):
         raise RuntimeError(
             "Downloaded file has a different size from the expected one."
         )

@@ -15,13 +15,20 @@ from typing import (
 )
 
 import numpy as np
+from joblib import Parallel, delayed
 from numpy.random import RandomState, permutation
 from tqdm import tqdm
 
 from ..inputs import load, read_abc_string
 from ..music import Music
 from ..outputs import save
-from .utils import download_url, extract_archive
+from .utils import (
+    check_md5,
+    check_sha256,
+    check_size,
+    download_url,
+    extract_archive,
+)
 
 try:
     from torch.utils.data import Dataset as TorchDataset
@@ -38,12 +45,6 @@ try:
 except ImportError:
     HAS_TENSORFLOW = False
 
-try:
-    from joblib import Parallel, delayed
-
-    HAS_JOBLIB = True
-except ImportError:
-    HAS_JOBLIB = False
 
 RemoteDatasetType = TypeVar("RemoteDatasetType", bound="RemoteDataset")
 FolderDatasetType = TypeVar("FolderDatasetType", bound="FolderDataset")
@@ -133,13 +134,6 @@ class Dataset:
         **kwargs
             Keyword arguments to pass to :func:`muspy.save`.
 
-        Notes
-        -----
-        The converted files will be named by its index. The original
-        filenames can be found in the ``filenames`` attribute. For
-        example, the file at ``filenames[i]`` will be converted and
-        saved to ``{i}.json``.
-
         """
         if kind not in ("json", "yaml"):
             raise TypeError("`kind` must be either 'json' or 'yaml'.")
@@ -171,11 +165,6 @@ class Dataset:
                 if _saver(idx):
                     count += 1
         else:
-            if not HAS_JOBLIB:
-                raise ValueError(
-                    "Optional package joblib is required for multiprocessing "
-                    "(n_jobs > 1)."
-                )
             # TODO: This is slow as `self` is passed between workers.
             results = Parallel(n_jobs=n_jobs, backend="threading", verbose=5)(
                 delayed(_saver)(idx) for idx in range(len(self))
@@ -183,7 +172,6 @@ class Dataset:
             count = results.count(True)
         if verbose:
             print(f"Successfully saved {count} out of {len(self)} files.")
-        (root / ".muspy.success").touch(exist_ok=True)
 
     def split(
         self,
@@ -531,14 +519,20 @@ class RemoteDataset(Dataset):
             filename = self.root / source["filename"]
             if not filename.is_file():
                 return False
-            if "size" in source and filename.stat().st_size != source["size"]:
+            if "size" in source and not check_size(filename, source["size"]):
+                return False
+            if "md5" in source and not check_md5(filename, source["md5"]):
+                return False
+            if "sha256" in source and not check_sha256(
+                filename, source["sha256"]
+            ):
                 return False
         return True
 
     def download(
         self: RemoteDatasetType, overwrite: bool = False, verbose: bool = True
     ) -> RemoteDatasetType:
-        """Download the source datasets.
+        """Download the dataset source(s).
 
         Parameters
         ----------
@@ -552,6 +546,13 @@ class RemoteDataset(Dataset):
         Object itself.
 
         """
+        if self.exists():
+            if verbose:
+                print(
+                    "Skip downloading as the `.muspy.success` file is found."
+                )
+            return self
+
         for source in self._sources.values():
             download_url(
                 source["url"],
@@ -582,6 +583,11 @@ class RemoteDataset(Dataset):
         Object itself.
 
         """
+        if self.exists():
+            if verbose:
+                print("Skip extracting as the `.muspy.success` file is found.")
+            return self
+
         for source in self._sources.values():
             filename = self.root / source["filename"]
             if source["archive"]:
@@ -997,7 +1003,7 @@ class FolderDataset(Dataset):
         """
         if self.converted_exists():
             if verbose:
-                print("Skip conversion as the converted folder exists.")
+                print("Skip conversion as the `.muspy.success` file is found.")
             return self
         self.on_the_fly()
         self.converted_dir.mkdir(exist_ok=True)
@@ -1009,6 +1015,7 @@ class FolderDataset(Dataset):
             verbose=verbose,
             **kwargs,
         )
+        (self.converted_dir / ".muspy.success").touch(exist_ok=True)
         self.use_converted()
         self.kind = kind
         return self

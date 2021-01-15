@@ -176,13 +176,20 @@
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
 <span class="kn">from</span> <span class="nn">numpy.random</span> <span class="kn">import</span> <span class="n">RandomState</span><span class="p">,</span> <span class="n">permutation</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="kn">from</span> <span class="nn">..inputs</span> <span class="kn">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">read_abc_string</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">..outputs</span> <span class="kn">import</span> <span class="n">save</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">download_url</span><span class="p">,</span> <span class="n">extract_archive</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">check_md5</span><span class="p">,</span>
+    <span class="n">check_sha256</span><span class="p">,</span>
+    <span class="n">check_size</span><span class="p">,</span>
+    <span class="n">download_url</span><span class="p">,</span>
+    <span class="n">extract_archive</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span> <span class="k">as</span> <span class="n">TorchDataset</span>
@@ -199,12 +206,6 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">HAS_TENSORFLOW</span> <span class="o">=</span> <span class="kc">False</span>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">joblib</span> <span class="kn">import</span> <span class="n">Parallel</span><span class="p">,</span> <span class="n">delayed</span>
-
-    <span class="n">HAS_JOBLIB</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">HAS_JOBLIB</span> <span class="o">=</span> <span class="kc">False</span>
 
 <span class="n">RemoteDatasetType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RemoteDatasetType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;RemoteDataset&quot;</span><span class="p">)</span>
 <span class="n">FolderDatasetType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;FolderDatasetType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;FolderDataset&quot;</span><span class="p">)</span>
@@ -294,13 +295,6 @@
 <span class="sd">        **kwargs</span>
 <span class="sd">            Keyword arguments to pass to :func:`muspy.save`.</span>
 
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">        The converted files will be named by its index. The original</span>
-<span class="sd">        filenames can be found in the ``filenames`` attribute. For</span>
-<span class="sd">        example, the file at ``filenames[i]`` will be converted and</span>
-<span class="sd">        saved to ``{i}.json``.</span>
-
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;json&quot;</span><span class="p">,</span> <span class="s2">&quot;yaml&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`kind` must be either &#39;json&#39; or &#39;yaml&#39;.&quot;</span><span class="p">)</span>
@@ -332,19 +326,13 @@
                 <span class="k">if</span> <span class="n">_saver</span><span class="p">(</span><span class="n">idx</span><span class="p">):</span>
                     <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">HAS_JOBLIB</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Optional package joblib is required for multiprocessing &quot;</span>
-                    <span class="s2">&quot;(n_jobs &gt; 1).&quot;</span>
-                <span class="p">)</span>
             <span class="c1"># TODO: This is slow as `self` is passed between workers.</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">&quot;threading&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">5</span><span class="p">)(</span>
                 <span class="n">delayed</span><span class="p">(</span><span class="n">_saver</span><span class="p">)(</span><span class="n">idx</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="p">)</span>
             <span class="n">count</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully saved </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> out of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> files.&quot;</span><span class="p">)</span>
-        <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully saved </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2"> out of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2"> files.&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Dataset.split"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.split">[docs]</a>    <span class="k">def</span> <span class="nf">split</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -692,14 +680,20 @@
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
                 <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="s2">&quot;size&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">!=</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="s2">&quot;size&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_size</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;size&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="s2">&quot;md5&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_md5</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;md5&quot;</span><span class="p">]):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="s2">&quot;sha256&quot;</span> <span class="ow">in</span> <span class="n">source</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_sha256</span><span class="p">(</span>
+                <span class="n">filename</span><span class="p">,</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;sha256&quot;</span><span class="p">]</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Download the source datasets.</span>
+        <span class="sd">&quot;&quot;&quot;Download the dataset source(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -713,6 +707,13 @@
 <span class="sd">        Object itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="s2">&quot;Skip downloading as the `.muspy.success` file is found.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">download_url</span><span class="p">(</span>
                 <span class="n">source</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">],</span>
@@ -743,6 +744,11 @@
 <span class="sd">        Object itself.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip extracting as the `.muspy.success` file is found.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span>
+
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;archive&quot;</span><span class="p">]:</span>
@@ -1158,7 +1164,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">converted_exists</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip conversion as the converted folder exists.&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip conversion as the `.muspy.success` file is found.&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_the_fly</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1170,6 +1176,7 @@
             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">touch</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">use_converted</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
