@@ -20,6 +20,7 @@ from tqdm import tqdm
 
 from ..inputs import load, read_abc_string
 from ..music import Music
+from ..outputs import save
 from .utils import download_url, extract_archive
 
 try:
@@ -130,8 +131,7 @@ class Dataset:
         verbose : bool, optional
             Whether to be verbose. Defaults to True.
         **kwargs
-            Keyword arguments to pass to :func:`muspy.save_json` or
-            :func:`muspy.save_yaml`
+            Keyword arguments to pass to :func:`muspy.save`.
 
         Notes
         -----
@@ -154,11 +154,11 @@ class Dataset:
                 try:
                     with warnings.catch_warnings():
                         warnings.simplefilter("ignore")
-                        self[idx].save(filename, kind, **kwargs)
+                        save(filename, self[idx], kind, **kwargs)
                 except Exception:  # pylint: disable=broad-except
                     return False
                 return True
-            self[idx].save(filename, kind, **kwargs)
+            save(filename, self[idx], kind, **kwargs)
             return True
 
         n_digits = len(str(len(self)))
@@ -976,6 +976,7 @@ class FolderDataset(Dataset):
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
         verbose: bool = True,
+        **kwargs,
     ) -> FolderDatasetType:
         """Convert and save the Music objects.
 
@@ -997,6 +998,8 @@ class FolderDataset(Dataset):
             corrupted. Defaults to True.
         verbose : bool, optional
             Whether to be verbose. Defaults to True.
+        **kwargs
+            Keyword arguments to pass to :func:`muspy.save`.
 
         Returns
         -------
@@ -1015,6 +1018,7 @@ class FolderDataset(Dataset):
             n_jobs=n_jobs,
             ignore_exceptions=ignore_exceptions,
             verbose=verbose,
+            **kwargs,
         )
         self.use_converted()
         self.kind = kind
