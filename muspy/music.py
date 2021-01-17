@@ -139,6 +139,7 @@ class Music(ComplexBase):
         annotations: Optional[List[Annotation]] = None,
         tracks: Optional[List[Track]] = None,
     ):
+        ComplexBase.__init__(self)
         self.metadata = metadata if metadata is not None else Metadata()
         self.resolution = (
             resolution if resolution is not None else DEFAULT_RESOLUTION
