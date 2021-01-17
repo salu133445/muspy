@@ -526,10 +526,6 @@ class ComplexBase(Base):
 
     """
 
-    def __init__(self, **kwargs):
-        Base.__init__(self, **kwargs)
-        self._flat = _GeneratorIterable(self._flat_generator)
-
     def __iadd__(
         self: ComplexBaseType, other: Union[ComplexBaseType, Iterable]
     ) -> ComplexBaseType:
@@ -743,25 +739,46 @@ class ComplexBase(Base):
 
         return self
 
-    @property
-    def flat(self) -> Iterable:
-        """A flat representation of this object. Iterating over it
-        yields all items in all list attributes inside this object
-        (recursively). Non-list attributes are not included.
+    def lists(self, recursive: bool = False) -> Iterator[Tuple[str, list]]:
+        """Return an iterator over the names and values of all list
+        attributes.
+
+        Parameters
+        ----------
+        recursive: bool
+            Whether to apply recursively to all list attributes.
+            Defaults to False.
+
+        Returns
+        -------
+        An iterator over `(attr_name, attr_value)` tuples.
         """
-        return self._flat
+        def generator():
+            attr: str
+            value: list
+            for attr, _, value in self._traverse_lists(attr=None,
+                                                       recursive=recursive):
+                yield attr, value
 
-    def _flat_generator(self) -> Iterable:
-        value: list
-        for _, _, value in self._traverse_lists(attr=None, recursive=True):
-            yield from value
+        return generator()
 
+    def list_items(self, recursive: bool = False) -> Iterator:
+        """Return a flat iterator over the items of all list attributes.
 
-class _GeneratorIterable:
-    """Turns a generator function into a reusable iterable."""
+        Parameters
+        ----------
+        recursive: bool
+            Whether to apply recursively to all list attributes.
+            Defaults to False.
 
-    def __init__(self, generator_fn: Callable[[], Iterable]):
-        self._generator_fn = generator_fn
+        Returns
+        -------
+        An iterator over `(attr_name, attr_value)` tuples.
+        """
+        def generator():
+            value: list
+            for _, _, value in self._traverse_lists(attr=None,
+                                                    recursive=recursive):
+                yield from value
 
-    def __iter__(self):
-        return self._generator_fn()
+        return generator()
