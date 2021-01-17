@@ -773,7 +773,7 @@ class ComplexBase(Base):
 
         Returns
         -------
-        An iterator over `(attr_name, attr_value)` tuples.
+        A flat iterator over list items.
         """
         def generator():
             value: list
