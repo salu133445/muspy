@@ -317,7 +317,7 @@ def test_event_representation_multitrack():
     music[1].program = 1
     music[1].is_drum = True
 
-    processor = muspy.processors.EventRepresentationProcessor(
+    processor = muspy.processors.AdvancedEventRepresentationProcessor(
         encode_velocity=True, use_end_of_sequence_event=True,
         num_tracks=4, encode_instrument=True,
         resolution=music.resolution)
