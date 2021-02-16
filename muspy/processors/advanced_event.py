@@ -15,7 +15,7 @@ from ..music import DEFAULT_RESOLUTION, Music
 
 
 __all__ = [
-    "EventRepresentationProcessor",
+    "AdvancedEventRepresentationProcessor",
 ]
 
 
@@ -31,7 +31,7 @@ EOS = "eos"                # eos()
 ALL_NOTES = -1
 
 
-class EventRepresentationProcessor:
+class AdvancedEventRepresentationProcessor:
     """Event-based representation processor.
     The event-based represetantion represents music as a sequence of
     events, including note-on, note-off, time-shift and velocity events.
