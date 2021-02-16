@@ -14,8 +14,8 @@ Classes
 
 from .processors import (NoteRepresentationProcessor,
                          PianoRollRepresentationProcessor,
-                         PitchRepresentationProcessor)
-from .event import EventRepresentationProcessor
+                         PitchRepresentationProcessor,
+                         EventRepresentationProcessor)
 
 
 __all__ = [

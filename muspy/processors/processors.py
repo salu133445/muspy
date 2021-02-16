@@ -1,15 +1,30 @@
+"""Representation processors.
+
+This module defines the processors for commonly used representations.
+
+Classes
+-------
+
+- NoteRepresentationProcessor
+- EventRepresentationProcessor
+- PianoRollRepresentationProcessor
+- PitchRepresentationProcessor
+
+"""
 from typing import Union
 
 import numpy as np
 from numpy import ndarray
 
 from ..inputs import (
+    from_event_representation,
     from_note_representation,
     from_pianoroll_representation,
     from_pitch_representation,
 )
 from ..music import Music
 from ..outputs import (
+    to_event_representation,
     to_note_representation,
     to_pianoroll_representation,
     to_pitch_representation,
@@ -17,6 +32,7 @@ from ..outputs import (
 
 __all__ = [
     "NoteRepresentationProcessor",
+    "EventRepresentationProcessor",
     "PianoRollRepresentationProcessor",
     "PitchRepresentationProcessor",
 ]
@@ -111,6 +127,122 @@ class NoteRepresentationProcessor:
             array,
             use_start_end=self.use_start_end,
             encode_velocity=self.encode_velocity,
+            default_velocity=self.default_velocity,
+        )
+
+
+class EventRepresentationProcessor:
+    """Event-based representation processor.
+
+    The event-based represetantion represents music as a sequence of
+    events, including note-on, note-off, time-shift and velocity events.
+    The output shape is M x 1, where M is the number of events. The
+    values encode the events. The default configuration uses 0-127 to
+    encode note-one events, 128-255 for note-off events, 256-355 for
+    time-shift events, and 356 to 387 for velocity events.
+
+    Attributes
+    ----------
+    use_single_note_off_event : bool
+        Whether to use a single note-off event for all the pitches. If
+        True, the note-off event will close all active notes, which can
+        lead to lossy conversion for polyphonic music. Defaults to
+        False.
+    use_end_of_sequence_event : bool
+        Whether to append an end-of-sequence event to the encoded
+        sequence. Defaults to False.
+    encode_velocity : bool
+        Whether to encode velocities.
+    force_velocity_event : bool
+        Whether to add a velocity event before every note-on event. If
+        False, velocity events are only used when the note velocity is
+        changed (i.e., different from the previous one). Defaults to
+        True.
+    max_time_shift : int
+        Maximum time shift (in ticks) to be encoded as an separate
+        event. Time shifts larger than `max_time_shift` will be
+        decomposed into two or more time-shift events. Defaults to 100.
+    velocity_bins : int
+        Number of velocity bins to use. Defaults to 32.
+    default_velocity : int
+        Default velocity value to use when decoding. Defaults to 64.
+
+    """
+
+    def __init__(
+        self,
+        use_single_note_off_event: bool = False,
+        use_end_of_sequence_event: bool = False,
+        encode_velocity: bool = False,
+        force_velocity_event: bool = True,
+        max_time_shift: int = 100,
+        velocity_bins: int = 32,
+        default_velocity: int = 64,
+    ):
+        self.use_single_note_off_event = use_single_note_off_event
+        self.use_end_of_sequence_event = use_end_of_sequence_event
+        self.encode_velocity = encode_velocity
+        self.force_velocity_event = force_velocity_event
+        self.max_time_shift = max_time_shift
+        self.velocity_bins = velocity_bins
+        self.default_velocity = default_velocity
+
+    def encode(self, music: Music) -> ndarray:
+        """Encode a Music object into event-based representation.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        ndarray (np.uint16)
+            Encoded array in event-based representation.
+
+        See Also
+        --------
+        :func:`muspy.to_event_representation` :
+            Convert a Music object into event-based representation.
+
+        """
+        return to_event_representation(
+            music,
+            use_single_note_off_event=self.use_single_note_off_event,
+            use_end_of_sequence_event=self.use_end_of_sequence_event,
+            encode_velocity=self.encode_velocity,
+            force_velocity_event=self.force_velocity_event,
+            max_time_shift=self.max_time_shift,
+            velocity_bins=self.velocity_bins,
+        )
+
+    def decode(self, array: ndarray) -> Music:
+        """Decode event-based representation into a Music object.
+
+        Parameters
+        ----------
+        array : ndarray
+            Array in event-based representation to decode. Cast to
+            integer if not of integer type.
+
+        Returns
+        -------
+        :class:`muspy.Music` object
+            Decoded Music object.
+
+        See Also
+        --------
+        :func:`muspy.from_event_representation` :
+            Return a Music object converted from event-based
+            representation.
+
+        """
+        return from_event_representation(
+            array,
+            use_single_note_off_event=self.use_single_note_off_event,
+            use_end_of_sequence_event=self.use_end_of_sequence_event,
+            max_time_shift=self.max_time_shift,
+            velocity_bins=self.velocity_bins,
             default_velocity=self.default_velocity,
         )
 
