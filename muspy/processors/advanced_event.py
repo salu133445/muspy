@@ -1,14 +1,9 @@
 from collections import defaultdict, deque
-import copy
 from operator import attrgetter, itemgetter
-from typing import Optional, TYPE_CHECKING
-if TYPE_CHECKING:
-    from typing import Any, DefaultDict, List
+from typing import DefaultDict, List, Optional, Sequence, Tuple, Union, cast
 import warnings
 
 from bidict import frozenbidict
-import numpy as np
-from numpy import ndarray
 
 from ..classes import Note, Track
 from ..music import DEFAULT_RESOLUTION, Music
@@ -29,6 +24,18 @@ TIME_SHIFT = "time_shift"  # time_shift(ticks)
 EOS = "eos"                # eos()
 
 ALL_NOTES = -1
+
+Event = Tuple
+
+
+def _event_to_str(event: Event) -> str:
+    return ":".join(str(x) for x in event)
+
+
+def _event_from_str(s: str) -> Event:
+    event, *str_args = s.split(":")
+    args = [int(x) for x in str_args]
+    return event, *args
 
 
 class AdvancedEventRepresentationProcessor:
@@ -136,7 +143,7 @@ class AdvancedEventRepresentationProcessor:
                 'Cannot encode instruments when num_tracks is None')
 
         # Create vocabulary of events
-        vocab_list: list = []
+        vocab_list: List[Event] = []
         track_ids = [0] if num_tracks is None else range(num_tracks)
         vocab_list.extend(
             (NOTE_ON, tr, i)
@@ -163,18 +170,18 @@ class AdvancedEventRepresentationProcessor:
             vocab_list.append((EOS,))
 
         # Map human-readable tuples to integers
-        self.vocab: frozenbidict[Any, int] = frozenbidict(
+        self.vocab: frozenbidict[Event, int] = frozenbidict(
             enumerate(vocab_list)).inverse
 
-    def encode(self, music: Music) -> ndarray:
+    def encode_as_tuples(self, music: Music) -> List[Event]:
         if self.check_resolution and music.resolution != self.resolution:
             raise ValueError(
-                'Expected a resolution of {} TPQN, got {}. '.format(
+                "Expected a resolution of {} TPQN, got {}. ".format(
                     self.resolution, music.resolution)
-                + 'Set check_resolution=False to disable this check')
+                + "Set check_resolution=False to disable this check")
 
         # Create a list for all events
-        events: List[tuple] = []
+        events: List[Event] = []
 
         # Collect notes by track
         if self.num_tracks is None:
@@ -187,8 +194,8 @@ class AdvancedEventRepresentationProcessor:
                 track_objs = [track for track in track_objs if track.notes]
             if len(track_objs) > self.num_tracks:
                 warnings.warn(
-                    f'Number of tracks ({len(track_objs)}) exceeds num_tracks '
-                    f'({self.num_tracks}). ', RuntimeWarning)
+                    f"Number of tracks ({len(track_objs)}) exceeds num_tracks "
+                    f"({self.num_tracks}). ", RuntimeWarning)
             track_objs = track_objs[:self.num_tracks]
 
             tracks = [[n for n in track.notes] for track in track_objs]
@@ -208,7 +215,7 @@ class AdvancedEventRepresentationProcessor:
         notes.sort(key=lambda n_tr: (note_key_fn(n_tr[0]), n_tr[1]))
 
         # Collect note-related events
-        note_events = []
+        note_events: List[Tuple[int, Event]] = []
         last_velocity = {tr: -1 for tr in range(len(tracks))}
         for note, track_id in notes:
             # Velocity event
@@ -252,10 +259,17 @@ class AdvancedEventRepresentationProcessor:
         if self.use_end_of_sequence_event:
             events.append((EOS,))
 
-        ids = [self.vocab[e] for e in events]
-        return np.array(ids).reshape(-1, 1)
+        return events
 
-    def decode(self, array: ndarray) -> Music:
+    def encode(self, music: Music) -> List[int]:
+        return [self.vocab[e] for e in self.encode_as_tuples(music)]
+
+    def encode_as_strings(self, music: Music) -> List[str]:
+        return [_event_to_str(e) for e in self.encode_as_tuples(music)]
+
+    def decode(
+        self, events: Union[Sequence[Event], Sequence[int], Sequence[str]]
+    ) -> Music:
         """Decode event-based representation into a Music object.
         Parameters
         ----------
@@ -272,13 +286,15 @@ class AdvancedEventRepresentationProcessor:
             Return a Music object converted from event-based
             representation.
         """
-        # Cast the array to integer
-        if not np.issubdtype(array.dtype, np.integer):
-            array = array.astype(np.int)
-
-        # Convert integers to events, skip unknown
-        vocab_inv = self.vocab.inverse
-        events = [vocab_inv[e] for e in array.flat if e in vocab_inv]
+        if len(events) > 0:
+            if isinstance(events[0], int):
+                # Convert integers to events, skip unknown
+                vocab_inv = self.vocab.inverse
+                events = [vocab_inv[e] for e in cast(Sequence[int], events)
+                          if e in vocab_inv]
+            elif isinstance(events[0], str):
+                events = [_event_from_str(s)
+                          for s in cast(Sequence[str], events)]
 
         # Decode events, keeping track of information for each track
         time = 0  # Time is common for all tracks
@@ -295,7 +311,10 @@ class AdvancedEventRepresentationProcessor:
             defaultdict(lambda: defaultdict(deque))
 
         # Iterate over the events
-        for (event, *args) in events:
+        for (event, *args) in cast(Sequence[Event], events):
+            if (event, *args) not in self.vocab:
+                raise ValueError(f'Event {(event, *args):!r} not found in vocabulary')
+
             if event == EOS:
                 break
 

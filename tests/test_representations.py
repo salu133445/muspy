@@ -2,6 +2,7 @@
 import copy
 
 import numpy as np
+import pytest
 
 import muspy
 
@@ -314,8 +315,6 @@ def test_advanced_event_representation_compat():
         resolution=music.resolution)
     encoded = processor.encode(music)
 
-    assert encoded.shape == (36, 1)
-
     answer = [
         372,
         76,
@@ -354,14 +353,14 @@ def test_advanced_event_representation_compat():
         257,
         197,
     ]
-    assert np.all(encoded.flatten() == np.array(answer))
+    assert encoded == answer
 
     # Decoding
     decoded = processor.decode(encoded)
     assert decoded[0].notes == music[0].notes
 
-
-def test_advanced_event_representation_multitrack():
+@pytest.mark.parametrize("encode_fn", ["encode", "encode_as_tuples", "encode_as_strings"])
+def test_advanced_event_representation_multitrack(encode_fn):
     music = muspy.load(TEST_JSON_PATH)
 
     # Add a new track, transposed and time-shifted
@@ -377,7 +376,7 @@ def test_advanced_event_representation_multitrack():
         encode_velocity=True, use_end_of_sequence_event=True,
         num_tracks=4, encode_instrument=True,
         resolution=music.resolution)
-    decoded = processor.decode(processor.encode(music))
+    decoded = processor.decode(getattr(processor, encode_fn)(music))
 
     assert len(decoded) == len(music)
     for tr in range(len(music)):
