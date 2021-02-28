@@ -305,7 +305,63 @@ def test_event_representation_end_of_sequence_event():
     assert decoded[0].notes == music[0].notes
 
 
-def test_event_representation_multitrack():
+def test_advanced_event_representation_compat():
+    music = muspy.load(TEST_JSON_PATH)
+
+    # Encoding
+    processor = muspy.processors.AdvancedEventRepresentationProcessor(
+        encode_velocity=True, num_tracks=None,
+        resolution=music.resolution)
+    encoded = processor.encode(music)
+
+    assert encoded.shape == (36, 1)
+
+    answer = [
+        372,
+        76,
+        257,
+        204,
+        372,
+        75,
+        257,
+        203,
+        372,
+        76,
+        257,
+        204,
+        372,
+        75,
+        257,
+        203,
+        372,
+        76,
+        257,
+        204,
+        372,
+        71,
+        257,
+        199,
+        372,
+        74,
+        257,
+        202,
+        372,
+        72,
+        257,
+        200,
+        372,
+        69,
+        257,
+        197,
+    ]
+    assert np.all(encoded.flatten() == np.array(answer))
+
+    # Decoding
+    decoded = processor.decode(encoded)
+    assert decoded[0].notes == music[0].notes
+
+
+def test_advanced_event_representation_multitrack():
     music = muspy.load(TEST_JSON_PATH)
 
     # Add a new track, transposed and time-shifted
