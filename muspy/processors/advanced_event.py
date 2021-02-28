@@ -82,10 +82,10 @@ class AdvancedEventRepresentationProcessor:
     resolution: int
         Time steps per quarter note to use when decoding. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
-    force_resolution: bool
-        Whether to adjust the resolution of the music when encoding.
-        If False and if the resolution is not correct, an error will be
-        raised. Defaults to False.
+    check_resolution: bool
+        Whether to check the resolution of the music when encoding.
+        If True and if the resolution is not correct, an error will be
+        raised. Defaults to True.
     duplicate_note_mode : {'fifo', 'lifo', 'close_all'}
         Policy for dealing with duplicate notes. When a note off event
         is presetned while there are multiple correspoding note on
@@ -112,7 +112,7 @@ class AdvancedEventRepresentationProcessor:
         num_tracks: Optional[int] = None,
         ignore_empty_tracks: bool = False,
         resolution: int = DEFAULT_RESOLUTION,
-        force_resolution: bool = False,
+        check_resolution: bool = True,
         duplicate_note_mode: str = "fifo",
     ):
         self.use_single_note_off_event = use_single_note_off_event
@@ -128,7 +128,7 @@ class AdvancedEventRepresentationProcessor:
         self.num_tracks = num_tracks
         self.ignore_empty_tracks = ignore_empty_tracks
         self.resolution = resolution
-        self.force_resolution = force_resolution
+        self.check_resolution = check_resolution
         self.duplicate_note_mode = duplicate_note_mode
 
         if encode_instrument and num_tracks is None:
@@ -167,15 +167,11 @@ class AdvancedEventRepresentationProcessor:
             enumerate(vocab_list)).inverse
 
     def encode(self, music: Music) -> ndarray:
-        if music.resolution != self.resolution:
-            if self.force_resolution:
-                music = copy.deepcopy(music)
-                music.adjust_resolution(target=self.resolution)
-            else:
-                raise ValueError(
-                    'Expected a resolution of {} TPQN, got {}. '.format(
-                        self.resolution, music.resolution)
-                    + 'Set force_resolution=True to convert the resolution')
+        if self.check_resolution and music.resolution != self.resolution:
+            raise ValueError(
+                'Expected a resolution of {} TPQN, got {}. '.format(
+                    self.resolution, music.resolution)
+                + 'Set check_resolution=False to disable this check')
 
         # Create a list for all events
         events: List[tuple] = []
