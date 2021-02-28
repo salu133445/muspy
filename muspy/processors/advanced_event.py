@@ -149,9 +149,7 @@ class AdvancedEventRepresentationProcessor:
                 [ALL_NOTES] if use_single_note_off_event else range(128)))
         vocab_list.extend(
             (TIME_SHIFT, t) for t in range(1, max_time_shift + 1))
-        if encode_velocity or num_tracks is None:
-            # In single-track mode, always include velocity tokens
-            # for backwards compatibility
+        if encode_velocity:
             vocab_list.extend(
                 (VELOCITY, tr, v)
                 for tr in track_ids
