@@ -35,7 +35,7 @@ def _event_to_str(event: Event) -> str:
 def _event_from_str(s: str) -> Event:
     event, *str_args = s.split(":")
     args = [int(x) for x in str_args]
-    return event, *args
+    return (event, *args)
 
 
 class AdvancedEventRepresentationProcessor:
