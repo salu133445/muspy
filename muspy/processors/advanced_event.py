@@ -39,13 +39,37 @@ def _event_from_str(s: str) -> Event:
 
 
 class AdvancedEventRepresentationProcessor:
-    """Event-based representation processor.
-    The event-based represetantion represents music as a sequence of
-    events, including note-on, note-off, time-shift and velocity events.
-    The output shape is M x 1, where M is the number of events. The
-    values encode the events. The default configuration uses 0-127 to
-    encode note-one events, 128-255 for note-off events, 256-355 for
-    time-shift events, and 356 to 387 for velocity events.
+    """Advanced event-based representation processor with multi-track
+    support.
+
+    The advanced event-based represetantion represents music as a
+    sequence of events, including note-on, note-off, time-shift and
+    velocity events. Compared to :class:`EventRepresentationProcessor`,
+    it has support for multiple tracks and provides 3 different
+    encoding formats: tuples, strings and integers.
+
+    The following events are possible (written in the tuple format, as
+    returned by :meth:`encode_as_tuples`):
+
+    * `("note_on", track_id, pitch)` – note onset
+    * `("note_off", track_id, pitch)` – note offset
+    * `("velocity", track_id, velocity)` – set velocity for the
+      following notes
+    * `("program", track_id, program)` – set the :class:`Track`'s
+      `program`
+    * `("drum", track_id)` – set :class:`Track`'s `is_drum` to `True`
+    * `("time_shift", ticks)` – move forward in time by the given
+      number of ticks
+
+    The :meth:`encode_as_strings` method equivalently formats these
+    tuples as strings. The :meth:`encode` method returns a list of
+    integer IDs, mapped according to the `vocab` dictionary.
+    `vocab` is a bidirectional dictionary which allows accessing
+    the inverse mapping as `vocab.inverse`.
+
+    With `encode_velocity=True`, :class:`EventRepresentationProcessor`
+    and :class:`AdvancedEventRepresentationProcessor` are equivalent.
+
     Attributes
     ----------
     use_single_note_off_event : bool
@@ -174,6 +198,19 @@ class AdvancedEventRepresentationProcessor:
             enumerate(vocab_list)).inverse
 
     def encode_as_tuples(self, music: Music) -> List[Event]:
+        """Encode a Music object into event-based representation
+        encoded as a list of tuples.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        list of tuples
+            List of event tuples.
+        """
         if self.check_resolution and music.resolution != self.resolution:
             raise ValueError(
                 "Expected a resolution of {} TPQN, got {}. ".format(
@@ -262,29 +299,54 @@ class AdvancedEventRepresentationProcessor:
         return events
 
     def encode(self, music: Music) -> List[int]:
+        """Encode a Music object into event-based representation
+        encoded as a list of integers.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        list of integers
+            List of integer IDs.
+        """
         return [self.vocab[e] for e in self.encode_as_tuples(music)]
 
     def encode_as_strings(self, music: Music) -> List[str]:
+        """Encode a Music object into event-based representation
+        encoded as a list of string tokens.
+
+        Each token is formed from an event tuple by joining its items
+        with a colon.
+
+        Parameters
+        ----------
+        music : :class:`muspy.Music` object
+            Music object to encode.
+
+        Returns
+        -------
+        list of strings
+            List of event tokens.
+        """
         return [_event_to_str(e) for e in self.encode_as_tuples(music)]
 
     def decode(
-        self, events: Union[Sequence[Event], Sequence[int], Sequence[str]]
+        self, events: Sequence[Union[Event, str, int]]
     ) -> Music:
         """Decode event-based representation into a Music object.
+
         Parameters
         ----------
-        array : ndarray
-            Array in event-based representation to decode. Cast to
-            integer if not of integer type.
+        list
+            List of event tuples, strings or integers.
+
         Returns
         -------
         :class:`muspy.Music` object
             Decoded Music object.
-        See Also
-        --------
-        :func:`muspy.from_event_representation` :
-            Return a Music object converted from event-based
-            representation.
         """
         if len(events) > 0:
             if isinstance(events[0], int):
