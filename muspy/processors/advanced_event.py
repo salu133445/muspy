@@ -393,7 +393,6 @@ class AdvancedEventRepresentationProcessor:
 
             elif event == NOTE_OFF:
                 track_id, pitch = args
-                velocity = curr_velocity[track_id]
 
                 # Close all notes
                 if pitch == ALL_NOTES:
