@@ -32,4 +32,5 @@ MusPy's representation module supports two types of two APIs---Functional API an
     pitch
     pianoroll
     event
+    advanced_event
     note

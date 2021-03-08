@@ -1,5 +1,8 @@
 """Test cases for representations."""
+import copy
+
 import numpy as np
+import pytest
 
 import muspy
 
@@ -301,6 +304,85 @@ def test_event_representation_end_of_sequence_event():
         encoded, "event", use_end_of_sequence_event=True
     )
     assert decoded[0].notes == music[0].notes
+
+
+def test_advanced_event_representation_compat():
+    music = muspy.load(TEST_JSON_PATH)
+
+    # Encoding
+    processor = muspy.processors.AdvancedEventRepresentationProcessor(
+        encode_velocity=True, num_tracks=None,
+        resolution=music.resolution)
+    encoded = processor.encode(music)
+
+    answer = [
+        372,
+        76,
+        257,
+        204,
+        372,
+        75,
+        257,
+        203,
+        372,
+        76,
+        257,
+        204,
+        372,
+        75,
+        257,
+        203,
+        372,
+        76,
+        257,
+        204,
+        372,
+        71,
+        257,
+        199,
+        372,
+        74,
+        257,
+        202,
+        372,
+        72,
+        257,
+        200,
+        372,
+        69,
+        257,
+        197,
+    ]
+    assert encoded == answer
+
+    # Decoding
+    decoded = processor.decode(encoded)
+    assert decoded[0].notes == music[0].notes
+
+@pytest.mark.parametrize("encode_fn", ["encode", "encode_as_tuples", "encode_as_strings"])
+def test_advanced_event_representation_multitrack(encode_fn):
+    music = muspy.load(TEST_JSON_PATH)
+
+    # Add a new track, transposed and time-shifted
+    music.append(copy.deepcopy(music[0]))
+    music[1].transpose(-5)
+    music[1].adjust_time(lambda t: t + music.resolution)
+
+    music[0].program = 0
+    music[1].program = 1
+    music[1].is_drum = True
+
+    processor = muspy.processors.AdvancedEventRepresentationProcessor(
+        encode_velocity=True, use_end_of_sequence_event=True,
+        num_tracks=4, encode_instrument=True,
+        resolution=music.resolution)
+    decoded = processor.decode(getattr(processor, encode_fn)(music))
+
+    assert len(decoded) == len(music)
+    for tr in range(len(music)):
+        assert decoded[tr].notes == music[tr].notes
+        assert decoded[tr].program == music[tr].program
+        assert decoded[tr].is_drum == music[tr].is_drum
 
 
 def test_pianoroll_representation():

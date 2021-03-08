@@ -16,14 +16,14 @@ from typing import Union
 import numpy as np
 from numpy import ndarray
 
-from .inputs import (
+from ..inputs import (
     from_event_representation,
     from_note_representation,
     from_pianoroll_representation,
     from_pitch_representation,
 )
-from .music import Music
-from .outputs import (
+from ..music import Music
+from ..outputs import (
     to_event_representation,
     to_note_representation,
     to_pianoroll_representation,
