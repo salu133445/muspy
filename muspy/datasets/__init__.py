@@ -50,8 +50,8 @@ from .base import (
     RemoteFolderDataset,
     RemoteMusicDataset,
 )
-from .essen import EssenFolkSongDatabase
 from .emopia import EMOPIADataset
+from .essen import EssenFolkSongDatabase
 from .haydn import HaydnOp20Dataset
 from .hymnal import HymnalDataset, HymnalTuneDataset
 from .jsb import JSBChoralesDataset
@@ -72,8 +72,8 @@ __all__ = [
     "ABCFolderDataset",
     "Dataset",
     "DatasetInfo",
-    "EssenFolkSongDatabase",
     "EMOPIADataset",
+    "EssenFolkSongDatabase",
     "FolderDataset",
     "HaydnOp20Dataset",
     "HymnalDataset",

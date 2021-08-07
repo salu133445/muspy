@@ -1,34 +1,28 @@
 """EMOPIA Dataset."""
 from pathlib import Path
-import pandas as pd
-import os
+from typing import Union
 
-from typing import (
-    Optional,
-    Union,
-    List,
-)
-
+from ..classes import Annotation
 from ..inputs import read_midi
 from ..music import Music
-from ..classes import Annotation
 from .base import DatasetInfo, RemoteFolderDataset
 
 _NAME = "EMOPIA Dataset"
 _DESCRIPTION = """\
-EMOPIA (pronounced ‘yee-mò-pi-uh’) dataset is a shared multi-modal (audio and MIDI) \
-database focusing on perceived emotion in pop piano music,\
-to facilitate research on various tasks related to music emotion. \
-The dataset contains 1,087 music clips from 387 songs \
-and clip-level emotion labels annotated by four dedicated annotators. """
+EMOPIA (pronounced ‘yee-mò-pi-uh’) dataset is a shared multi-modal (audio and \
+MIDI) database focusing on perceived emotion in pop piano music, to \
+facilitate research on various tasks related to music emotion. The dataset \
+contains 1,087 music clips from 387 songs and clip-level emotion labels \
+annotated by four dedicated annotators."""
 _HOMEPAGE = "https://annahung31.github.io/EMOPIA/"
 _LICENSE = "Creative Commons Attribution 4.0 International License (CC-By 4.0)"
 _CITATION = """\
-@inproceedings{{EMOPIA},
-         author = {Hung, Hsiao-Tzu and Ching, Joann and Doh, Seungheon and Kim, Nabin and Nam, Juhan and Yang, Yi-Hsuan},
-         title = {{MOPIA}: A Multi-Modal Pop Piano Dataset For Emotion Recognition and Emotion-based Music Generation},
-         booktitle = {Proc. Int. Society for Music Information Retrieval Conf.},
-         year = {2021}}"""
+@inproceedings{hung2021emopia,
+  author={Hung, Hsiao-Tzu and Ching, Joann and Doh, Seungheon and Kim, Nabin and Nam, Juhan and Yang, Yi-Hsuan},
+  title={{EMOPIA}: A Multi-Modal Pop Piano Dataset For Emotion Recognition and Emotion-based Music Generation},
+  booktitle={Proceedings of the 22nd International Society for Music Information Retrieval Conference (ISMIR)},
+  year=2021
+}"""
 
 
 class EMOPIADataset(RemoteFolderDataset):
@@ -48,28 +42,33 @@ class EMOPIADataset(RemoteFolderDataset):
 
     _extension = "mid"
 
+    def get_raw_filenames(self):
+        """Return a list of raw filenames."""
+        return sorted(
+            (
+                filename
+                for filename in self.root.rglob("*." + self._extension)
+                if not str(filename.relative_to(self.root)).startswith(
+                    "_converted/"
+                )
+                and not str(filename.relative_to(self.root)).startswith(
+                    "__MACOSX/"
+                )
+            )
+        )
 
     def read(self, filename: Union[str, Path]) -> Music:
-        
         """Read a file into a Music object."""
         music = read_midi(self.root / filename)
-        annotations = get_annotations(str(filename))
-        music.annotations = annotations
+        music.annotations = [parse_annotation(Path(filename).name)]
         return music
 
 
-def get_annotations(filename: str) -> List[Annotation]:
-    """return the emotion class as an annotation object"""
-    f = os.path.basename(os.path.normpath(filename))
-    annotations = []
+def parse_annotation(filename: str) -> Annotation:
+    """Parse the annotation from the filename."""
     annotation = {
-            
-            "emo_class": f[1],
-            "YouTube_ID": f[3:14],
-            "seg_id": f.split('_')[-1][:-4]
-            
+        "emo_class": filename[1],
+        "YouTube_ID": filename[3:14],
+        "seg_id": filename.split("_")[-1][:-4],
     }
-    annotations.append(Annotation(time=0, annotation=annotation))
-    
-
-    return annotations
+    return Annotation(time=0, annotation=annotation)

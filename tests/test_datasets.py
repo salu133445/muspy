@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 import tensorflow as tf
 
-import muspy
 from muspy import (
+    EMOPIADataset,
     EssenFolkSongDatabase,
     HaydnOp20Dataset,
     HymnalDataset,
@@ -31,6 +31,7 @@ from muspy import (
 def test_get_dataset():
     answers = [
         ("essen", EssenFolkSongDatabase),
+        ("emopia", EMOPIADataset),
         ("haydn", HaydnOp20Dataset),
         ("hymnal", HymnalDataset),
         ("hymnal-tune", HymnalTuneDataset),
@@ -56,7 +57,7 @@ def test_get_dataset():
 
 
 def test_list_datasets():
-    assert len(list_datasets()) == 15
+    assert len(list_datasets()) == 16
 
 
 def test_music21():

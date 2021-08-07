@@ -920,6 +920,10 @@ class FolderDataset(Dataset):
             return False
         return True
 
+    def get_converted_filenames(self):
+        """Return a list of converted filenames."""
+        return sorted(self.converted_dir.rglob("*." + self.kind))
+
     def use_converted(self: FolderDatasetType) -> FolderDatasetType:
         """Disable on-the-fly mode and use converted data.
 
@@ -934,13 +938,23 @@ class FolderDataset(Dataset):
                 "the dataset."
             )
         if not self.converted_filenames:
-            self.converted_filenames = sorted(
-                self.converted_dir.rglob("*." + self.kind)
-            )
+            self.converted_filenames = self.get_raw_filenames()
         self._filenames = self.converted_filenames
         self._use_converted = True
         self._factory = self.load
         return self
+
+    def get_raw_filenames(self):
+        """Return a list of raw filenames."""
+        return sorted(
+            (
+                filename
+                for filename in self.root.rglob("*." + self._extension)
+                if not str(filename.relative_to(self.root)).startswith(
+                    "_converted/"
+                )
+            )
+        )
 
     def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
         """Enable on-the-fly mode and convert the data on the fly.
@@ -951,15 +965,7 @@ class FolderDataset(Dataset):
 
         """
         if not self.raw_filenames:
-            self.raw_filenames = sorted(
-                (
-                    filename
-                    for filename in self.root.rglob("*." + self._extension)
-                    if not str(filename.relative_to(self.root)).startswith(
-                        "_converted/"
-                    )
-                )
-            )
+            self.raw_filenames = self.get_raw_filenames()
         self._filenames = self.raw_filenames
         self._use_converted = False
         self._factory = self.read
