@@ -25,13 +25,13 @@ _CITATION = """\
 
 
 class MAESTRODatasetV1(RemoteFolderDataset):
-    """MAESTRO Dataset (MIDI only)."""
+    """MAESTRO Dataset V1 (MIDI only)."""
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
     _citation = _CITATION
     _sources = {
         "maestro": {
-            "filename": "maestro-v2.0.0-midi.zip",
+            "filename": "maestro-v1.0.0-midi.zip",
             "url": "https://storage.googleapis.com/magentadata/datasets/maestro/v1.0.0/maestro-v1.0.0-midi.zip",
             "archive": True,
             "size": 46579421,
@@ -46,7 +46,7 @@ class MAESTRODatasetV1(RemoteFolderDataset):
 
 
 class MAESTRODatasetV2(RemoteFolderDataset):
-    """MAESTRO Dataset (MIDI only)."""
+    """MAESTRO Dataset V2 (MIDI only)."""
 
     _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
     _citation = _CITATION
@@ -57,6 +57,27 @@ class MAESTRODatasetV2(RemoteFolderDataset):
             "archive": True,
             "size": 59243107,
             "sha256": "ec2cc9d94886c6b376db1eaa2b8ad1ce62ff9f0a28b3744782b13163295dadf3",
+        }
+    }
+    _extension = "midi"
+
+    def read(self, filename: Union[str, Path]) -> Music:
+        """Read a file into a Music object."""
+        return read_midi(self.root / filename)
+
+
+class MAESTRODatasetV3(RemoteFolderDataset):
+    """MAESTRO Dataset V3 (MIDI only)."""
+
+    _info = DatasetInfo(_NAME, _DESCRIPTION, _HOMEPAGE, _LICENSE)
+    _citation = _CITATION
+    _sources = {
+        "maestro": {
+            "filename": "maestro-v3.0.0-midi.zip",
+            "url": "https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.0-midi.zip",
+            "archive": True,
+            "size": 58416533,
+            "sha256": "70470ee253295c8d2c71e6d9d4a815189e35c89624b76d22fce5a019d5dde12c",
         }
     }
     _extension = "midi"

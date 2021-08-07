@@ -58,7 +58,7 @@ from .lmd import (
     LakhMIDIDataset,
     LakhMIDIMatchedDataset,
 )
-from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
+from .maestro import MAESTRODatasetV1, MAESTRODatasetV2, MAESTRODatasetV3
 from .music21 import Music21Dataset
 from .musicnet import MusicNetDataset
 from .nes import NESMusicDatabase
@@ -81,6 +81,7 @@ __all__ = [
     "LakhMIDIMatchedDataset",
     "MAESTRODatasetV1",
     "MAESTRODatasetV2",
+    "MAESTRODatasetV3",
     "Music21Dataset",
     "MusicDataset",
     "MusicNetDataset",

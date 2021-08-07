@@ -17,6 +17,7 @@ from muspy import (
     LakhMIDIMatchedDataset,
     MAESTRODatasetV1,
     MAESTRODatasetV2,
+    MAESTRODatasetV3,
     Music21Dataset,
     MusicDataset,
     MusicNetDataset,
@@ -39,9 +40,10 @@ def test_get_dataset():
         ("lmd-full", LakhMIDIDataset),
         ("lmd-matched", LakhMIDIMatchedDataset),
         ("lmd-aligned", LakhMIDIAlignedDataset),
-        ("maestro", MAESTRODatasetV2),
-        ("maestro-v2", MAESTRODatasetV2),
+        ("maestro", MAESTRODatasetV3),
         ("maestro-v1", MAESTRODatasetV1),
+        ("maestro-v2", MAESTRODatasetV2),
+        ("maestro-v3", MAESTRODatasetV3),
         ("music21", Music21Dataset),
         ("musicnet", MusicNetDataset),
         ("nes", NESMusicDatabase),
@@ -56,7 +58,7 @@ def test_get_dataset():
 
 
 def test_list_datasets():
-    assert len(list_datasets()) == 15
+    assert len(list_datasets()) == 16
 
 
 def test_music21():

@@ -11,7 +11,7 @@ from .lmd import (
     LakhMIDIDataset,
     LakhMIDIMatchedDataset,
 )
-from .maestro import MAESTRODatasetV1, MAESTRODatasetV2
+from .maestro import MAESTRODatasetV1, MAESTRODatasetV2, MAESTRODatasetV3
 from .music21 import Music21Dataset
 from .musicnet import MusicNetDataset
 from .nes import NESMusicDatabase
@@ -38,6 +38,7 @@ def list_datasets():
         LakhMIDIMatchedDataset,
         MAESTRODatasetV1,
         MAESTRODatasetV2,
+        MAESTRODatasetV3,
         Music21Dataset,
         MusicNetDataset,
         NESMusicDatabase,
@@ -79,7 +80,9 @@ def get_dataset(key: str) -> Type[Dataset]:
         if key == "lmd-aligned":
             return LakhMIDIAlignedDataset
     if key.startswith("maestro"):
-        if key in ("maestro", "maestro-v2"):
+        if key in ("maestro", "maestro-v3"):
+            return MAESTRODatasetV3
+        if key == "maestro-v2":
             return MAESTRODatasetV2
         if key == "maestro-v1":
             return MAESTRODatasetV1
