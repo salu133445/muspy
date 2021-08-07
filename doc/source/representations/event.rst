@@ -1,6 +1,6 @@
-==========================
-Event-based Representation
-==========================
+================================
+Basic Event-based Representation
+================================
 
 .. autofunction:: muspy.to_event_representation
     :noindex:
