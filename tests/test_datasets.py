@@ -59,7 +59,7 @@ def test_get_dataset():
 
 
 def test_list_datasets():
-    assert len(list_datasets()) == 16
+    assert len(list_datasets()) == 17
 
 
 def test_music21():
