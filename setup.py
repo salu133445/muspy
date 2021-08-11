@@ -58,7 +58,7 @@ setup(
             "black>=19.0",
             "flake8-docstrings>=1.5",
             "flake8>=3.8",
-            "mypy>=0.770",
+            "mypy>=0.900",
             "pylint>=2.5",
             "sphinx-rtd-theme>=0.5",
             "sphinx>=3.0",
