@@ -1,8 +1,9 @@
 """Event-based representation output interface."""
 from operator import attrgetter, itemgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable, List, Optional
 
 import numpy as np
+from bidict import bidict
 from numpy import ndarray
 
 if TYPE_CHECKING:
@@ -131,3 +132,404 @@ def to_event_representation(
         events.append(offset_eos)
 
     return np.array(events, dtype=dtype).reshape(-1, 1)
+
+
+class EventSequence(list):
+    """A class for handling an event sequence.
+
+    The EventSequence inherits from the builtin list. The elements are
+    integer codes of the events defined by its `indexer` attribute. The
+    corresponding events can be accessed by calling `events(idx)`.
+
+    Attributes
+    ----------
+    indexer : bidict
+        Indexer that defines the mapping between events and their codes.
+
+    """
+
+    def __init__(
+        self,
+        iterable: Optional[Iterable] = None,
+        indexer: Optional[bidict] = None,
+    ):
+        if iterable is not None:
+            super().__init__(iterable)
+        else:
+            super().__init__()
+        self.indexer = indexer if indexer is not None else bidict()
+
+    def event(self, idx: int) -> str:
+        """Return the event at a given index."""
+        return self.indexer.inverse[self[idx]]
+
+    def events(self) -> List[str]:
+        """Return a list of all events."""
+        return [self.indexer.inverse[elem] for elem in self]
+
+    def append_event(self, event: str):
+        """Append an event to the event sequence."""
+        # pylint: disable=unsubscriptable-object
+        self.append(self.indexer[event])
+
+    def extend_events(self, events: List[str]):
+        """Extend the event sequence by a list of events."""
+        # pylint: disable=unsubscriptable-object
+        self.extend(self.indexer[event] for event in events)
+
+    def inverse(self, idx) -> str:
+        """Return the corresponding event by its code."""
+        return self.indexer.inverse[idx]
+
+
+def get_default_indexer() -> bidict:
+    """Return the default indexer."""
+    indexer = {}
+    idx = 0
+    # Note-on events
+    for i in range(128):
+        indexer[f"note_on_{i}"] = idx
+        idx += 1
+    # Note-off events
+    for i in range(128):
+        indexer[f"note_off_{i}"] = idx
+        idx += 1
+    # Time-shift events
+    for i in range(1, 101):
+        indexer[f"time_shift_{i}"] = idx
+        idx += 1
+    return bidict(indexer)
+
+
+class DefaultEventSequence(EventSequence):
+    """A class for handling a MIDI-like event sequence.
+
+    Attributes
+    ----------
+    indexer : bidict
+        Indexer that defines the mapping between events and their codes.
+
+    """
+
+    def __init__(
+        self,
+        iterable: Optional[Iterable] = None,
+        indexer: Optional[bidict] = None,
+    ):
+        if indexer is not None:
+            super().__init__(iterable, indexer)
+        else:
+            super().__init__(iterable, get_default_indexer())
+
+    @classmethod
+    def to_note_on_event(cls, pitch) -> str:
+        """Return a note-on event for a given pitch."""
+        return f"note_on_{pitch}"
+
+    @classmethod
+    def to_note_off_event(cls, pitch) -> str:
+        """Return a note-off event for a given pitch."""
+        return f"note_off_{pitch}"
+
+    @classmethod
+    def to_time_shift_events(cls, time_shift) -> List[str]:
+        """Return a list of time-shift events for a given time-shift."""
+        if time_shift <= 100:
+            return [f"time_shift_{time_shift}"]
+        events = []
+        div, mod = divmod(time_shift, 100)
+        for _ in range(div):
+            events.append("time_shift_100")
+        if mod > 0:
+            events.append(f"time_shift_{mod}")
+        return events
+
+
+def to_default_event_sequence(music: "Music") -> DefaultEventSequence:
+    """Return a Music object as a DefaultEventSequence object."""
+    # Collect notes
+    notes = []
+    for track in music.tracks:
+        notes.extend(track.notes)
+
+    # Raise an error if no notes is found
+    if not notes:
+        raise RuntimeError("No notes found.")
+
+    # Create a DefaultEventSequence object
+    seq = DefaultEventSequence()
+
+    # Collect events
+    events = []
+    for note in notes:
+        events.append((note.time, seq.to_note_on_event(note.pitch)))
+        events.append((note.end, seq.to_note_off_event(note.pitch)))
+
+    # Sort the events by time
+    events.sort(key=itemgetter(0))
+
+    # Create event sequence
+    last_event_time = 0
+    for event in events:
+        if event[0] > last_event_time:
+            time_shift = event[0] - last_event_time
+            seq.extend_events(seq.to_time_shift_events(time_shift))
+        seq.append_event(event[1])
+        last_event_time = event[0]
+
+    return seq
+
+
+def to_default_event_representation(music: "Music", dtype=int) -> ndarray:
+    """Encode a Music object into the default event representation."""
+    seq = to_default_event_sequence(music)
+    return np.array(seq, dtype=dtype)
+
+
+def get_performance_indexer() -> bidict:
+    """Return the default indexer."""
+    indexer = {}
+    idx = 0
+    # Note-on events
+    for i in range(128):
+        indexer[f"note_on_{i}"] = idx
+        idx += 1
+    # Note-off events
+    for i in range(128):
+        indexer[f"note_off_{i}"] = idx
+        idx += 1
+    # Time-shift events
+    for i in range(1, 101):
+        indexer[f"time_shift_{i}"] = idx
+        idx += 1
+    # Velocity events
+    for i in range(32):
+        indexer[f"velocity_{i}"] = idx
+        idx += 1
+    return bidict(indexer)
+
+
+class PerformanceEventSequence(EventSequence):
+    """A class for handling a MIDI-like event sequence.
+
+    Attributes
+    ----------
+    indexer : bidict
+        Indexer that defines the mapping between events and their codes.
+
+    """
+
+    def __init__(
+        self,
+        iterable: Optional[Iterable] = None,
+        indexer: Optional[bidict] = None,
+    ):
+        if indexer is not None:
+            super().__init__(iterable, indexer)
+        else:
+            super().__init__(iterable, get_performance_indexer())
+
+    @classmethod
+    def to_note_on_event(cls, pitch) -> str:
+        """Return a note-on event for a given pitch."""
+        return f"note_on_{pitch}"
+
+    @classmethod
+    def to_note_off_event(cls, pitch) -> str:
+        """Return a note-off event for a given pitch."""
+        return f"note_off_{pitch}"
+
+    @classmethod
+    def to_velocity_event(cls, velocity) -> str:
+        """Return a velocity event for a given velocity."""
+        return f"velocity_{velocity//4}"
+
+    @classmethod
+    def to_time_shift_events(cls, time_shift) -> List[str]:
+        """Return a list of time-shift events for a given time-shift."""
+        if time_shift <= 100:
+            return [f"time_shift_{time_shift}"]
+        events = []
+        div, mod = divmod(time_shift, 100)
+        for _ in range(div):
+            events.append("time_shift_100")
+        if mod > 0:
+            events.append(f"time_shift_{mod}")
+        return events
+
+
+def to_performance_event_sequence(music: "Music") -> PerformanceEventSequence:
+    """Return a Music object as a PerformanceEventSequence object."""
+    # Collect notes
+    notes = []
+    for track in music.tracks:
+        notes.extend(track.notes)
+
+    # Raise an error if no notes is found
+    if not notes:
+        raise RuntimeError("No notes found.")
+
+    # Create a PerformanceEventSequence object
+    seq = PerformanceEventSequence()
+
+    # Collect events
+    events = []
+    for note in notes:
+        events.append((note.time, seq.to_velocity_event(note.velocity)))
+        events.append((note.time, seq.to_note_on_event(note.pitch)))
+        events.append((note.end, seq.to_note_off_event(note.pitch)))
+
+    # Sort the events by time
+    events.sort(key=itemgetter(0))
+
+    # Create event sequence
+    last_event_time = 0
+    for event in events:
+        if event[0] > last_event_time:
+            time_shift = event[0] - last_event_time
+            seq.extend_events(seq.to_time_shift_events(time_shift))
+        seq.append_event(event[1])
+        last_event_time = event[0]
+
+    return seq
+
+
+def to_performance_event_representation(music: "Music", dtype=int) -> ndarray:
+    """Encode a Music object into the performance event representation."""
+    seq = to_performance_event_sequence(music)
+    return np.array(seq, dtype=dtype)
+
+
+def get_remi_indexer() -> bidict:
+    """Return the REMI indexer."""
+    indexer = {}
+    idx = 0
+    # Note-on events
+    for i in range(128):
+        indexer[f"note_on_{i}"] = idx
+        idx += 1
+    # Note-duration events
+    for i in range(1, 65):
+        indexer[f"note_duration_{i}"] = idx
+        idx += 1
+    # Position events
+    for i in range(0, 24):
+        indexer[f"position_{i}"] = idx
+        idx += 1
+    # Beat event
+    indexer["beat"] = idx
+    idx += 1
+    # Tempo events
+    for i in range(30, 210):
+        indexer[f"tempo_{i}"] = idx
+        idx += 1
+    return bidict(indexer)
+
+
+class REMIEventSequence(EventSequence):
+    """A class for handling a MIDI-like event sequence.
+
+    Attributes
+    ----------
+    indexer : bidict
+        Indexer that defines the mapping between events and their codes.
+
+    Note
+    ----
+    Bar events are replaced by beat events. Chord events are currently
+    not supported.
+
+    """
+
+    def __init__(
+        self,
+        iterable: Optional[Iterable] = None,
+        indexer: Optional[bidict] = None,
+    ):
+        if indexer is not None:
+            super().__init__(iterable, indexer)
+        else:
+            super().__init__(iterable, get_remi_indexer())
+
+    @classmethod
+    def to_note_on_event(cls, pitch) -> str:
+        """Return a note-on event for a given pitch."""
+        return f"note_on_{pitch}"
+
+    @classmethod
+    def to_note_duration_event(cls, duration) -> str:
+        """Return a note-duration event for a given pitch."""
+        return f"note_duration_{duration}"
+
+    @classmethod
+    def to_position_event(cls, position) -> str:
+        """Return a position event for a given position."""
+        return f"position_{position}"
+
+    @classmethod
+    def to_beat_event(cls) -> str:
+        """Return a beat event."""
+        return "beat"
+
+    @classmethod
+    def to_tempo_event(cls, tempo) -> str:
+        """Return a position event for a given position."""
+        return f"tempo_{int(tempo)}"
+
+
+def to_remi_event_sequence(music: "Music") -> REMIEventSequence:
+    """Return a Music object as a REMIEventSequence object."""
+    # Collect notes
+    notes = []
+    for track in music.tracks:
+        notes.extend(track.notes)
+
+    # Raise an error if no notes is found
+    if not notes:
+        raise RuntimeError("No notes found.")
+
+    # Create a REMIEventSequence object
+    seq = REMIEventSequence()
+
+    # Collect events
+    events = []
+    for tempo in music.tempos:
+        events.append((tempo.time, seq.to_tempo_event(tempo.qpm)))
+    for note in notes:
+        events.append((note.time, seq.to_note_on_event(note.pitch)))
+        events.append((note.end, seq.to_note_duration_event(note.duration)))
+
+    # Sort the events by time
+    events.sort(key=itemgetter(0))
+
+    # Create event sequence
+    last_beat = -1
+    last_position = -1
+    for event in events:
+        beat, position = divmod(event[0], music.resolution)
+        if beat > last_beat:
+            seq.append_event(seq.to_beat_event())
+        if position > last_position:
+            seq.append_event(
+                seq.to_position_event(24 * position // music.resolution)
+            )
+        seq.append_event(event[1])
+
+    return seq
+
+
+def to_remi_event_representation(music: "Music", dtype=int) -> ndarray:
+    """Encode a Music object into the remi event representation."""
+    seq = to_remi_event_sequence(music)
+    return np.array(seq, dtype=dtype)
+
+
+def get_indexer(preset=None) -> bidict:
+    """Return a preset indexer."""
+    if preset is None or preset.lower() == "midi":
+        return get_default_indexer()
+    if preset.lower() == "remi":
+        return get_remi_indexer()
+    if preset.lower() == "performance":
+        return get_performance_indexer()
+    raise ValueError(f"Unknown preset : {preset}")
