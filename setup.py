@@ -63,7 +63,6 @@ setup(
             "sphinx-rtd-theme>=0.5",
             "sphinx>=3.0",
         ],
-        "optional": ["tensorflow>=2.0", "torch>=1.0"],
         "schema": ["jsonschema>=3.0", "xmlschema>=1.0", "yamale>=2.0"],
         "test": ["pytest>=6.0", "pytest-cov>=2.0"],
     },

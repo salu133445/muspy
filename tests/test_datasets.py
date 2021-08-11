@@ -3,9 +3,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
-import tensorflow as tf
 
-import muspy
 from muspy import (
     EssenFolkSongDatabase,
     HaydnOp20Dataset,
@@ -79,16 +77,3 @@ def test_split():
     dataset = Music21Dataset("demos")
     temp_dir = Path(tempfile.mkdtemp())
     dataset.split(filename=temp_dir / "splits.txt", splits=(0.8, 0.1, 0.1))
-
-
-def test_to_pytorch_dataset():
-    dataset = Music21Dataset("demos")
-    pytorch_dataset = dataset.to_pytorch_dataset(representation="pitch")
-    pytorch_dataset[0]
-
-
-def test_to_tensorflow_dataset():
-    tf.config.set_visible_devices([], "GPU")
-    dataset = Music21Dataset("demos")
-    tensorflow_dataset = dataset.to_tensorflow_dataset(representation="pitch")
-    tensorflow_dataset.take(1)
