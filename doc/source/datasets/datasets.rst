@@ -16,6 +16,7 @@ MusicNet Dataset             MIDI      30.36     323 classical               \*
 Hymnal Tune Dataset          MIDI      18.74   1,756 hymn      O
 Hymnal Dataset               MIDI      17.50   1,723 hymn
 music21's Corpus             misc      16.86     613 misc      \*            \*
+EMOPIA Dataset               MIDI      10.98     387 pop
 Nottingham Database          ABC       10.54   1,036 folk      O      O
 music21's JSBach Corpus      MusicXML   3.46     410 classical               O
 JSBach Chorale Dataset       MIDI       3.21     382 classical               O
