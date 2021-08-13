@@ -110,7 +110,7 @@ class Metadata(Base):
 
 
 class Tempo(Base):
-    """A container for key signature.
+    """A container for key signatures.
 
     Attributes
     ----------
@@ -127,9 +127,6 @@ class Tempo(Base):
         self.time = time
         self.qpm = float(qpm)
 
-    def __eq__(self, other):
-        return self.time == other.time and self.qpm == other.qpm
-
     def _validate(self, attr: str, recursive: bool):
         super()._validate(attr, recursive)
         if attr == "qpm" and self.qpm <= 0:
@@ -137,7 +134,7 @@ class Tempo(Base):
 
 
 class KeySignature(Base):
-    """A container for key signature.
+    """A container for key signatures.
 
     Attributes
     ----------
@@ -182,7 +179,7 @@ class KeySignature(Base):
 
 
 class TimeSignature(Base):
-    """A container for time signature.
+    """A container for time signatures.
 
     Attributes
     ----------
@@ -213,7 +210,7 @@ class TimeSignature(Base):
 
 
 class Lyric(Base):
-    """A container for lyric.
+    """A container for lyrics.
 
     Attributes
     ----------
@@ -232,7 +229,7 @@ class Lyric(Base):
 
 
 class Annotation(Base):
-    """A container for annotation.
+    """A container for annotations.
 
     Attributes
     ----------
@@ -245,9 +242,9 @@ class Annotation(Base):
 
     """
 
-    _attributes = OrderedDict([
-        ("time", int), ("annotation", object), ("group", str)
-    ])
+    _attributes = OrderedDict(
+        [("time", int), ("annotation", object), ("group", str)]
+    )
     _optional_attributes = ["group"]
 
     def __init__(
@@ -259,7 +256,7 @@ class Annotation(Base):
 
 
 class Note(Base):
-    """A container for note.
+    """A container for notes.
 
     Attributes
     ----------
@@ -407,7 +404,7 @@ class Note(Base):
 
 
 class Chord(Base):
-    """A container for chord.
+    """A container for chords.
 
     Attributes
     ----------
