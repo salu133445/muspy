@@ -21,6 +21,7 @@ Base Classes
 Dataset Classes
 ---------------
 - EssenFolkSongDatabase
+- EMOPIADataset
 - HaydnOp20Dataset
 - HymnalDataset
 - HymnalTuneDataset
@@ -49,6 +50,7 @@ from .base import (
     RemoteFolderDataset,
     RemoteMusicDataset,
 )
+from .emopia import EMOPIADataset
 from .essen import EssenFolkSongDatabase
 from .haydn import HaydnOp20Dataset
 from .hymnal import HymnalDataset, HymnalTuneDataset
@@ -70,6 +72,7 @@ __all__ = [
     "ABCFolderDataset",
     "Dataset",
     "DatasetInfo",
+    "EMOPIADataset",
     "EssenFolkSongDatabase",
     "FolderDataset",
     "HaydnOp20Dataset",

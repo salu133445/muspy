@@ -2,6 +2,7 @@
 from typing import Type
 
 from .base import Dataset
+from .emopia import EMOPIADataset
 from .essen import EssenFolkSongDatabase
 from .haydn import HaydnOp20Dataset
 from .hymnal import HymnalDataset, HymnalTuneDataset
@@ -28,6 +29,7 @@ def list_datasets():
 
     """
     return [
+        EMOPIADataset,
         EssenFolkSongDatabase,
         HaydnOp20Dataset,
         HymnalDataset,
@@ -61,6 +63,8 @@ def get_dataset(key: str) -> Type[Dataset]:
 
     """
     key = key.lower()
+    if key == "emopia":
+        return EMOPIADataset
     if key == "essen":
         return EssenFolkSongDatabase
     if key == "haydn":
