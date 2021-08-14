@@ -159,28 +159,3 @@ def test_chords():
     for note, pitch in zip(music[0].notes, pitches):
         assert note.pitch == pitch
         assert note.duration == int(0.5 * music.resolution)
-
-
-def test_keys_and_modes():
-    music = muspy.read(TEST_ABC_DIR / "keys_and_modes.abc")
-
-    # TODO: Support changing keys in the middle
-    return
-
-    # Answers
-    modes = (
-        ["major", "major", "major"] * 2
-        + ["lydian", "ionian", "mixolydian"]
-        + ["dorian", "minor", "minor"]
-        + ["aeolian", "phrygian", "locrian"]
-    )
-
-    for key_signature, mode in zip(music.key_signatures, modes):
-        assert key_signature.mode == mode
-
-
-def test_write():
-    music = muspy.load(TEST_JSON_PATH)
-
-    temp_dir = Path(tempfile.mkdtemp())
-    music.write(temp_dir / "test.abc")

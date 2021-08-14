@@ -24,13 +24,12 @@ Functions
 - to_remi_event_representation
 - to_representation
 - write
-- write_abc
+-
 - write_audio
 - write_midi
 - write_musicxml
 
 """
-from .abc import write_abc
 from .audio import synthesize, write_audio
 from .event import (
     to_default_event_representation,
@@ -67,7 +66,6 @@ __all__ = [
     "to_remi_event_representation",
     "to_representation",
     "write",
-    "write_abc",
     "write_audio",
     "write_midi",
     "write_musicxml",
