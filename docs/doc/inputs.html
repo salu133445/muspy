@@ -237,21 +237,21 @@ commonly-used representations in music generation.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>ndarray</em>) – Array in event-based representation to decode.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
-<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em><em>)</em>) – Program number, according to General MIDI specification [1].
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
+<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em>) – Program number, according to General MIDI specification [1].
 Valid values are 0 to 127.</p></li>
-<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether it is a percussion track.</p></li>
-<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use a single note-off event for all the pitches. If
+<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether it is a percussion track.</p></li>
+<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to use a single note-off event for all the pitches. If
 True, a note-off event will close all active notes, which can
 lead to lossy conversion for polyphonic music.</p></li>
-<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to append an end-of-sequence event to the encoded
+<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to append an end-of-sequence event to the encoded
 sequence.</p></li>
-<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 100</em><em>)</em>) – Maximum time shift (in ticks) to be encoded as an separate
+<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 100</em>) – Maximum time shift (in ticks) to be encoded as an separate
 event. Time shifts larger than <cite>max_time_shift</cite> will be
 decomposed into two or more time-shift events.</p></li>
-<li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 32</em><em>)</em>) – Number of velocity bins to use.</p></li>
-<li><p><strong>default_velocity</strong> (int (default: <cite>muspy.DEFAULT_VELOCITY</cite>)) – Default velocity value to use when decoding.</p></li>
-<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'all'}</em><em> (</em><em>default: 'fifo'</em><em>)</em>) – <p>Policy for dealing with duplicate notes. When a note off event
+<li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 32</em>) – Number of velocity bins to use.</p></li>
+<li><p><strong>default_velocity</strong> (int, default: <cite>muspy.DEFAULT_VELOCITY</cite> (64)) – Default velocity value to use when decoding.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'all'}</em><em>, </em><em>default: 'fifo'</em>) – <p>Policy for dealing with duplicate notes. When a note off event
 is presetned while there are multiple correspoding note on
 events that have not yet been closed, we need a policy to decide
 which note on messages to close. This is only effective when
@@ -283,7 +283,7 @@ which note on messages to close. This is only effective when
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>midi</strong> (<a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiFile" title="(in Mido v1.2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiFile</span></code></a>) – Mido MidiFile object to convert.</p></li>
-<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'all'}</em><em> (</em><em>default: 'fifo'</em><em>)</em>) – <p>Policy for dealing with duplicate notes. When a note off
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo'</em><em>, </em><em>'all'}</em><em>, </em><em>default: 'fifo'</em>) – <p>Policy for dealing with duplicate notes. When a note off
 message is presetned while there are multiple correspoding note
 on messages that have not yet been closed, we need a policy to
 decide which note on messages to close.</p>
@@ -312,7 +312,7 @@ decide which note on messages to close.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>stream</strong> (<cite>music21.stream.Stream</cite>) – Stream object to convert.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -332,7 +332,7 @@ decide which note on messages to close.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>opus</strong> (<cite>music21.stream.Opus</cite>) – Opus object to convert.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note. D</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -352,7 +352,7 @@ decide which note on messages to close.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>part</strong> (<cite>music21.stream.Part</cite>) – Part object to parse.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -372,7 +372,7 @@ decide which note on messages to close.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>score</strong> (<cite>music21.stream.Score</cite>) – Score object to convert.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -392,14 +392,14 @@ decide which note on messages to close.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>ndarray</em>) – Array in note-based representation to decode.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
-<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em><em>)</em>) – Program number, according to General MIDI specification [1].
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
+<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em>) – Program number, according to General MIDI specification [1].
 Valid values are 0 to 127.</p></li>
-<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether it is a percussion track.</p></li>
-<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather
+<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether it is a percussion track.</p></li>
+<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather
 than ‘time’ and ‘duration’.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to encode note velocities.</p></li>
-<li><p><strong>default_velocity</strong> (int (default: <cite>muspy.DEFAULT_VELOCITY</cite>)) – Default velocity value to use when decoding. Only used when
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to encode note velocities.</p></li>
+<li><p><strong>default_velocity</strong> (int, default: <cite>muspy.DEFAULT_VELOCITY</cite> (64)) – Default velocity value to use when decoding. Only used when
 <cite>encode_velocity</cite> is True.</p></li>
 </ul>
 </dd>
@@ -446,12 +446,12 @@ than ‘time’ and ‘duration’.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>ndarray</em>) – Array in piano-roll representation to decode.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
-<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em><em>)</em>) – Program number, according to General MIDI specification [1].
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
+<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em>) – Program number, according to General MIDI specification [1].
 Valid values are 0 to 127.</p></li>
-<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether it is a percussion track.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to encode velocities.</p></li>
-<li><p><strong>default_velocity</strong> (int (default: <cite>muspy.DEFAULT_VELOCITY</cite>)) – Default velocity value to use when decoding. Only used when
+<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether it is a percussion track.</p></li>
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to encode velocities.</p></li>
+<li><p><strong>default_velocity</strong> (int, default: <cite>muspy.DEFAULT_VELOCITY</cite> (64)) – Default velocity value to use when decoding. Only used when
 <cite>encode_velocity</cite> is True.</p></li>
 </ul>
 </dd>
@@ -474,12 +474,12 @@ Valid values are 0 to 127.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>array</strong> (<em>ndarray</em>) – Array in pitch-based representation to decode.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
-<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em><em>)</em>) – Program number, according to General MIDI specification [1].
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
+<li><p><strong>program</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 0</em><em> (</em><em>Acoustic Grand Piano</em><em>)</em>) – Program number, according to General MIDI specification [1].
 Valid values are 0 to 127.</p></li>
-<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether it is a percussion track.</p></li>
-<li><p><strong>use_hold_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use a special state for holds.</p></li>
-<li><p><strong>default_velocity</strong> (int (default: <cite>muspy.DEFAULT_VELOCITY</cite>)) – Default velocity value to use when decoding.</p></li>
+<li><p><strong>is_drum</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether it is a percussion track.</p></li>
+<li><p><strong>use_hold_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to use a special state for holds.</p></li>
+<li><p><strong>default_velocity</strong> (int, default: <cite>muspy.DEFAULT_VELOCITY</cite> (64)) – Default velocity value to use when decoding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -501,7 +501,7 @@ Valid values are 0 to 127.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>midi</strong> (<a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a>) – PrettyMIDI object to convert.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -521,7 +521,7 @@ Valid values are 0 to 127.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>multitrack</strong> (<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a>) – Pypianoroll Multitrack object to convert.</p></li>
-<li><p><strong>default_velocity</strong> (int (default: <cite>muspy.DEFAULT_VELOCITY</cite>)) – Default velocity value to use when decoding.</p></li>
+<li><p><strong>default_velocity</strong> (int, default: <cite>muspy.DEFAULT_VELOCITY</cite> (64)) – Default velocity value to use when decoding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -541,7 +541,7 @@ Valid values are 0 to 127.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>track</strong> (<a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Track" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Track</span></code></a>) – Pypianoroll Track object to convert.</p></li>
-<li><p><strong>default_velocity</strong> (int (default: <cite>muspy.DEFAULT_VELOCITY</cite>)) – Default velocity value to use when decoding.</p></li>
+<li><p><strong>default_velocity</strong> (int, default: <cite>muspy.DEFAULT_VELOCITY</cite> (64)) – Default velocity value to use when decoding.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -702,7 +702,7 @@ extension (<cite>.gz</cite>).</p></li>
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the ABC file to read.</p></li>
 <li><p><strong>number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Reference number of a specific tune to read (i.e., the ‘X:’
 field). Defaults to read all tunes.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -724,7 +724,7 @@ field). Defaults to read all tunes.</p></li>
 <li><p><strong>data_str</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – ABC data to parse.</p></li>
 <li><p><strong>number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>optional</em>) – Reference number of a specific tune to read (i.e., the ‘X:’
 field). Defaults to read all tunes.</p></li>
-<li><p><strong>resolution</strong> (int (default: <cite>muspy.DEFAULT_RESOLUTION</cite>)) – Time steps per quarter note.</p></li>
+<li><p><strong>resolution</strong> (int, default: <cite>muspy.DEFAULT_RESOLUTION</cite> (24)) – Time steps per quarter note.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -744,8 +744,8 @@ field). Defaults to read all tunes.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the MIDI file to read.</p></li>
-<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em> (</em><em>default: 'mido'</em><em>)</em>) – Backend to use.</p></li>
-<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'all'}</em><em> (</em><em>default: 'fifo'</em><em>)</em>) – <p>Policy for dealing with duplicate notes. When a note off message
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em>, </em><em>default: 'mido'</em>) – Backend to use.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'all'}</em><em>, </em><em>default: 'fifo'</em>) – <p>Policy for dealing with duplicate notes. When a note off message
 is presetned while there are multiple correspoding note on
 messages that have not yet been closed, we need a policy to
 decide which note on messages to close. Only used when <cite>backend</cite>
