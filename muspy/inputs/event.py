@@ -27,29 +27,29 @@ def from_event_representation(
     ----------
     array : ndarray
         Array in event-based representation to decode.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
-    program : int (default: 0 (Acoustic Grand Piano))
+    program : int, default: 0 (Acoustic Grand Piano)
         Program number, according to General MIDI specification [1].
         Valid values are 0 to 127.
-    is_drum : bool (default: False)
+    is_drum : bool, default: False
         Whether it is a percussion track.
-    use_single_note_off_event : bool (default: False)
+    use_single_note_off_event : bool, default: False
         Whether to use a single note-off event for all the pitches. If
         True, a note-off event will close all active notes, which can
         lead to lossy conversion for polyphonic music.
-    use_end_of_sequence_event : bool (default: False)
+    use_end_of_sequence_event : bool, default: False
         Whether to append an end-of-sequence event to the encoded
         sequence.
-    max_time_shift : int (default: 100)
+    max_time_shift : int, default: 100
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
         decomposed into two or more time-shift events.
-    velocity_bins : int (default: 32)
+    velocity_bins : int, default: 32
         Number of velocity bins to use.
-    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+    default_velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Default velocity value to use when decoding.
-    duplicate_note_mode : {'fifo', 'lifo', 'all'} (default: 'fifo')
+    duplicate_note_mode : {'fifo', 'lifo', 'all'}, default: 'fifo'
         Policy for dealing with duplicate notes. When a note off event
         is presetned while there are multiple correspoding note on
         events that have not yet been closed, we need a policy to decide

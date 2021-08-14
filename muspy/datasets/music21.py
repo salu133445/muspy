@@ -85,12 +85,12 @@ class Music21Dataset(Dataset):
         ----------
         root : str or Path
             Root directory to save the data.
-        kind : {'json', 'yaml'} (default: 'json')
+        kind : {'json', 'yaml'}, default: 'json'
             File format to save the data.
-        n_jobs : int (default: 1)
+        n_jobs : int, default: 1
             Maximum number of concurrently running jobs. If equal to 1,
             disable multiprocessing.
-        ignore_exceptions : bool (default: True)
+        ignore_exceptions : bool, default: True
             Whether to ignore errors and skip failed conversions. This
             can be helpful if some source files are known to be
             corrupted.

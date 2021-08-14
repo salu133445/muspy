@@ -155,10 +155,10 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool (default: True)
+        skip_missing : bool, default: True
             Whether to skip attributes with value None or those that are
             empty lists.
-        deepcopy : bool (default: True)
+        deepcopy : bool, default: True
             Whether to make deep copies of the attributes.
 
         Returns
@@ -227,7 +227,7 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool (default: True)
+        skip_missing : bool, default: True
             Whether to skip attributes with value None or those that are
             empty lists.
 
@@ -251,7 +251,7 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool (default: True)
+        skip_missing : bool, default: True
             Whether to skip attributes with value None or those that are
             empty lists.
 
@@ -306,7 +306,7 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -363,7 +363,7 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -394,7 +394,7 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -425,7 +425,7 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -479,7 +479,7 @@ class Base:
             timing, i.e., `new_time = func(old_time)`.
         attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -566,7 +566,7 @@ class ComplexBase(Base):
             list attributes with the corresponding list attributes of
             the other object. If an iterable is given, call
             :meth:`muspy.ComplexBase.append` for each item.
-        deepcopy : bool (default: False)
+        deepcopy : bool, default: False
             Whether to make deep copies of the appended objects.
 
         Returns
@@ -627,7 +627,7 @@ class ComplexBase(Base):
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -682,7 +682,7 @@ class ComplexBase(Base):
         ----------
         attr : str, optional
             Attribute to check. Defaults to check all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -724,7 +724,7 @@ class ComplexBase(Base):
         ----------
         attr : str, optional
             Attribute to sort. Defaults to sort all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns

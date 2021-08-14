@@ -45,7 +45,7 @@ def from_pypianoroll_track(
     ----------
     track : :class:`pypianoroll.Track`
         Pypianoroll Track object to convert.
-    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+    default_velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Default velocity value to use when decoding.
 
     Returns
@@ -75,7 +75,7 @@ def from_pypianoroll(
     ----------
     multitrack : :class:`pypianoroll.Multitrack`
         Pypianoroll Multitrack object to convert.
-    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+    default_velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Default velocity value to use when decoding.
 
     Returns
@@ -117,16 +117,16 @@ def from_pianoroll_representation(
     ----------
     array : ndarray
         Array in piano-roll representation to decode.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
-    program : int (default: 0 (Acoustic Grand Piano))
+    program : int, default: 0 (Acoustic Grand Piano)
         Program number, according to General MIDI specification [1].
         Valid values are 0 to 127.
-    is_drum : bool (default: False)
+    is_drum : bool, default: False
         Whether it is a percussion track.
-    encode_velocity : bool (default: True)
+    encode_velocity : bool, default: True
         Whether to encode velocities.
-    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+    default_velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Default velocity value to use when decoding. Only used when
         `encode_velocity` is True.
 

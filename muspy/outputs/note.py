@@ -31,12 +31,12 @@ def to_note_representation(
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    use_start_end : bool (default: False)
+    use_start_end : bool, default: False
         Whether to use 'start' and 'end' to encode the timing rather
         than 'time' and 'duration'.
-    encode_velocity : bool (default: True)
+    encode_velocity : bool, default: True
         Whether to encode note velocities.
-    dtype : np.dtype, type or str (default: int)
+    dtype : np.dtype, type or str, default: int
         Data type of the return array.
 
     Returns

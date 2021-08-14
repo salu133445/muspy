@@ -53,7 +53,7 @@ class Metadata(Base):
 
     Attributes
     ----------
-    schema_version : str (default: `muspy.DEFAULT_SCHEMA_VERSION`)
+    schema_version : str, default: `muspy.DEFAULT_SCHEMA_VERSION`
         Schema version.
     title : str, optional
         Song title.
@@ -223,7 +223,7 @@ class Beat(Base):
     ----------
     time : int
         Time of the beat, in time steps.
-    is_downbeat : bool (default: False)
+    is_downbeat : bool, default: False
         Whether it is a downbeat.
 
     """
@@ -291,7 +291,7 @@ class Note(Base):
         Note pitch, as a MIDI note number. Valid values are 0 to 127.
     duration : int
         Duration of the note, in time steps.
-    velocity : int (default: `muspy.DEFAULT_VELOCITY` (default: 64))
+    velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Note velocity. Valid values are 0 to 127.
     pitch_str : str, optional
         Note pitch as a string, useful for distinguishing, e.g., C# and
@@ -373,7 +373,7 @@ class Note(Base):
             timing, i.e., `new_time = func(old_time)`.
         attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -411,9 +411,9 @@ class Note(Base):
 
         Parameters
         ----------
-        lower : int (default: 0)
+        lower : int, default: 0
             Lower bound.
-        upper : int (default: 127)
+        upper : int, default: 127
             Upper bound.
 
         Returns
@@ -440,11 +440,11 @@ class Chord(Base):
         Note pitches, as MIDI note numbers. Valid values are 0 to 127.
     duration : int
         Duration of the chord, in time steps.
-    velocity : int (default: `muspy.DEFAULT_VELOCITY` (default: 64))
+    velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Chord velocity. Valid values are 0 to 127.
     pitches_str : list of str, optional
-        Note pitches as strings (useful for distinguishing, e.g., C# and
-        Db).
+        Note pitches as strings, useful for distinguishing, e.g., C# and
+        Db.
 
     """
 
@@ -527,7 +527,7 @@ class Chord(Base):
             timing, i.e., `new_time = func(old_time)`.
         attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool (default: True)
+        recursive : bool, default: True
             Whether to apply recursively.
 
         Returns
@@ -566,9 +566,9 @@ class Chord(Base):
 
         Parameters
         ----------
-        lower : int (default: 0)
+        lower : int, default: 0
             Lower bound.
-        upper : int (default: 127)
+        upper : int, default: 127
             Upper bound.
 
         Returns
@@ -589,20 +589,20 @@ class Track(ComplexBase):
 
     Attributes
     ----------
-    program : int (default: 0 (Acoustic Grand Piano))
+    program : int, default: 0 (Acoustic Grand Piano)
         Program number, according to General MIDI specification [1]_.
         Valid values are 0 to 127.
-    is_drum : bool (default: False)
+    is_drum : bool, default: False
         Whether it is a percussion track.
     name : str, optional
         Track name.
-    notes : list of :class:`muspy.Note` (default: [])
+    notes : list of :class:`muspy.Note`, default: []
         Musical notes.
-    chords : list of :class:`muspy.Chord` (default: [])
+    chords : list of :class:`muspy.Chord`, default: []
         Chords.
-    annotations : list of :class:`muspy.Annotation` (default: [])
+    annotations : list of :class:`muspy.Annotation`, default: []
         Annotations.
-    lyrics : list of :class:`muspy.Lyric` (default: [])
+    lyrics : list of :class:`muspy.Lyric`, default: []
         Lyrics.
 
     Note
@@ -671,7 +671,7 @@ class Track(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool (default: False)
+        is_sorted : bool, default: False
             Whether all the list attributes are sorted.
 
         """
@@ -695,9 +695,9 @@ class Track(ComplexBase):
 
         Parameters
         ----------
-        lower : int (default: 0)
+        lower : int, default: 0
             Lower bound.
-        upper : int (default: 127)
+        upper : int, default: 127
             Upper bound.
 
         Returns

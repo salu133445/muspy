@@ -23,16 +23,16 @@ def from_pitch_representation(
     ----------
     array : ndarray
         Array in pitch-based representation to decode.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
-    program : int (default: 0 (Acoustic Grand Piano))
+    program : int, default: 0 (Acoustic Grand Piano)
         Program number, according to General MIDI specification [1].
         Valid values are 0 to 127.
-    is_drum : bool (default: False)
+    is_drum : bool, default: False
         Whether it is a percussion track.
-    use_hold_state : bool (default: False)
+    use_hold_state : bool, default: False
         Whether to use a special state for holds.
-    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+    default_velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Default velocity value to use when decoding.
 
     Returns

@@ -43,7 +43,7 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
     ----------
     midi : :class:`mido.MidiFile`
         Mido MidiFile object to convert.
-    duplicate_note_mode : {'fifo', 'lifo', 'all'} (default: 'fifo')
+    duplicate_note_mode : {'fifo', 'lifo', 'all'}, default: 'fifo'
         Policy for dealing with duplicate notes. When a note off
         message is presetned while there are multiple correspoding note
         on messages that have not yet been closed, we need a policy to
@@ -296,7 +296,7 @@ def read_midi_mido(
     ----------
     path : str or Path
         Path to the MIDI file to read.
-    duplicate_note_mode : {'fifo', 'lifo, 'all'} (default: 'fifo')
+    duplicate_note_mode : {'fifo', 'lifo, 'all'}, default: 'fifo'
         Policy for dealing with duplicate notes. When a note off message
         is presetned while there are multiple correspoding note on
         messages that have not yet been closed, we need a policy to
@@ -457,7 +457,7 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
     ----------
     midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
 
     Returns
@@ -574,9 +574,9 @@ def read_midi(
     ----------
     path : str or Path
         Path to the MIDI file to read.
-    backend: {'mido', 'pretty_midi'} (default: 'mido')
+    backend: {'mido', 'pretty_midi'}, default: 'mido'
         Backend to use.
-    duplicate_note_mode : {'fifo', 'lifo, 'all'} (default: 'fifo')
+    duplicate_note_mode : {'fifo', 'lifo, 'all'}, default: 'fifo'
         Policy for dealing with duplicate notes. When a note off message
         is presetned while there are multiple correspoding note on
         messages that have not yet been closed, we need a policy to

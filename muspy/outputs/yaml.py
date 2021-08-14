@@ -25,10 +25,10 @@ def save_yaml(
         Path or file to save the YAML data.
     music : :class:`muspy.Music`
         Music object to save.
-    skip_missing : bool (default: True)
+    skip_missing : bool, default: True
         Whether to skip attributes with value None or those that are
         empty lists.
-    allow_unicode : bool (default: False)
+    allow_unicode : bool, default: False
         Whether to escape non-ASCII characters. Will be passed to
         :py:func:`json.dumps`.
     compressed : bool, optional

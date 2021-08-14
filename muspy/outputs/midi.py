@@ -180,7 +180,7 @@ def to_mido_note_on_note_off(
         Note object to convert.
     channel : int
         Channel of the MIDI message.
-    use_note_off_message : bool (default: False)
+    use_note_off_message : bool, default: False
         Whether to use note-off messages. If False, note-on messages
         with zero velocity are used instead. The advantage to using
         note-on messages at zero velocity is that it can avoid sending
@@ -234,7 +234,7 @@ def to_mido_track(
     channel : int, optional
         Channel number. Defaults to 10 for drums and 0 for other
         instruments.
-    use_note_off_message : bool (default: False)
+    use_note_off_message : bool, default: False
         Whether to use note-off messages. If False, note-on messages
         with zero velocity are used instead. The advantage to using
         note-on messages at zero velocity is that it can avoid sending
@@ -287,7 +287,7 @@ def to_mido(music: "Music", use_note_off_message: bool = False):
     ----------
     music : :class:`muspy.Music` object
         Music object to convert.
-    use_note_off_message : bool (default: False)
+    use_note_off_message : bool, default: False
         Whether to use note-off messages. If False, note-on messages
         with zero velocity are used instead. The advantage to using
         note-on messages at zero velocity is that it can avoid sending
@@ -347,7 +347,7 @@ def write_midi_mido(
         Path to write the MIDI file.
     music : :class:`muspy.Music` object
         Music object to write.
-    use_note_off_message : bool (default: False)
+    use_note_off_message : bool, default: False
         Whether to use note-off messages. If False, note-on messages
         with zero velocity are used instead. The advantage to using
         note-on messages at zero velocity is that it can avoid sending
@@ -531,7 +531,7 @@ def write_midi(
         Path to write the MIDI file.
     music : :class:`muspy.Music`
         Music object to write.
-    backend: {'mido', 'pretty_midi'} (default: 'mido')
+    backend: {'mido', 'pretty_midi'}, default: 'mido'
         Backend to use.
 
     See Also

@@ -73,7 +73,7 @@ def check_md5(path: Union[str, Path], md5: str, chunk_size: int = 1024 * 1024):
         Path to the file.
     md5 : str
         Expected MD5 hash of the file.
-    chunk_size : int (default: 2^20)
+    chunk_size : int, default: 2^20
         Chunk size used to compute the MD5 hash.
 
     """
@@ -109,7 +109,7 @@ def check_sha256(
         Path to the file.
     sha256 : str
         Expected sha256 hash of the file.
-    chunk_size : int (default: 2^20)
+    chunk_size : int, default: 2^20
         Chunk size used to compute the sha256 hash.
 
     """
@@ -133,7 +133,7 @@ def download_url(
         URL to the file to download.
     path : str or Path
         Path to save the downloaded file.
-    overwrite : bool (default: False)
+    overwrite : bool, default: False
         Whether to overwrite existing downloaded file.
     size : int, optional
         Expected size of the downloaded file. Defaults to skip size
@@ -144,7 +144,7 @@ def download_url(
     sha256 : str, optional
         Expected sha256 checksum of the downloaded file. Defaults to
         skip sha256 check.
-    verbose : bool (default: True)
+    verbose : bool, default: True
         Whether to be verbose.
 
     """
@@ -209,9 +209,9 @@ def extract_archive(
         directory that contains the archive.
     kind : {'zip', 'tar', 'tgz', 'txz', 'gz', 'xz'}, optional
         Fromat of the archive. Defaults to infer from the extension.
-    cleanup : bool (default: False)
+    cleanup : bool, default: False
         Whether to remove the source archive after extraction.
-    verbose : bool (default: True)
+    verbose : bool, default: True
         Whether to be verbose.
 
     """

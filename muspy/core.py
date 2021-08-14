@@ -57,7 +57,7 @@ def adjust_resolution(
         `new_resolution = old_resolution * factor`. For example, a
         factor of 2 double the resolution, and a factor of 0.5 halve the
         resolution.
-    rounding : {'round', 'ceil', 'floor'} or callable (default: 'round')
+    rounding : {'round', 'ceil', 'floor'} or callable, default: 'round'
             Rounding mode.
 
     """
@@ -133,7 +133,7 @@ def extend(obj1: ComplexBase, obj2, deepcopy: bool = False) -> ComplexBase:
         list attributes with the corresponding list attributes of
         `obj2`. If an iterable is given, call `obj1.append` on each
         item.
-    deepcopy : bool (default: False)
+    deepcopy : bool, default: False
         Whether to make deep copies of the appended objects.
 
     See Also
@@ -154,9 +154,9 @@ def clip(
     obj : :class:`muspy.Music`, :class:`muspy.Track` or \
             :class:`muspy.Note`
         Object to clip.
-    lower : int or float (default: 0)
+    lower : int or float, default: 0
         Lower bound.
-    upper : int or float (default: 127)
+    upper : int or float, default: 127
         Upper bound.
 
     """
@@ -173,7 +173,7 @@ def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
     ----------
     obj : :class:`muspy.Music` or :class:`muspy.Track`
         Object to inspect.
-    is_sorted : bool (default: False)
+    is_sorted : bool, default: False
         Whether all the list attributes are sorted.
 
     """
@@ -191,7 +191,7 @@ def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
     ----------
     music : :class:`muspy.Music`
         Object to inspect.
-    is_sorted : bool (default: False)
+    is_sorted : bool, default: False
         Whether all the list attributes are sorted.
 
     """
@@ -237,10 +237,10 @@ def to_ordered_dict(
     ----------
     obj : :class:`muspy.Base`
         Object to convert.
-    skip_missing : bool (default: True)
+    skip_missing : bool, default: True
         Whether to skip attributes with value None or those that are
         empty lists.
-    deepcopy : bool (default: True)
+    deepcopy : bool, default: True
         Whether to make deep copies of the attributes.
 
     Returns

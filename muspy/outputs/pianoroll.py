@@ -90,7 +90,7 @@ def to_pianoroll_representation(
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    encode_velocity : bool (default: True)
+    encode_velocity : bool, default: True
         Whether to encode velocities. If True, a binary-valued array
         will be return. Otherwise, an integer array will be return.
     dtype : np.dtype, type or str, optional

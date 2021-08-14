@@ -21,7 +21,7 @@ def read_abc_string(
     number : int, optional
         Reference number of a specific tune to read (i.e., the 'X:'
         field). Defaults to read all tunes.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
 
     Returns
@@ -65,7 +65,7 @@ def read_abc(
     number : int, optional
         Reference number of a specific tune to read (i.e., the 'X:'
         field). Defaults to read all tunes.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
 
     Returns

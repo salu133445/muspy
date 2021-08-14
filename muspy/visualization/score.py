@@ -310,12 +310,12 @@ class ScorePlotter:
         Axes object to plot the score on.
     resolution : int
         Time steps per quarter note.
-    note_spacing : int (default: 4)
+    note_spacing : int, default: 4
         Spacing of notes.
     font_path : str or Path, optional
         Path to the music font. Defaults to the path to the downloaded
         Bravura font.
-    font_scale : float (default: 140)
+    font_scale : float, default: 140
         Font scaling factor for finetuning. The default value of 140 is
         optimized for the default Bravura font.
 
@@ -796,16 +796,16 @@ def show_score(
     figsize : (float, float), optional
         Width and height in inches. Defaults to Matplotlib
         configuration.
-    clef : {'treble', 'alto', 'bass'} (default: 'treble')
+    clef : {'treble', 'alto', 'bass'}, default: 'treble'
         Clef type.
-    clef_octave : int (default: 0)
+    clef_octave : int, default: 0
         Clef octave.
-    note_spacing : int (default: 4)
+    note_spacing : int, default: 4
         Spacing of notes.
     font_path : str or Path, optional
         Path to the music font. Defaults to the path to the downloaded
         Bravura font.
-    font_scale : float (default: 140)
+    font_scale : float, default: 140
         Font scaling factor for finetuning. The default value of 140 is
         optimized for the default Bravura font.
 

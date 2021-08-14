@@ -33,26 +33,26 @@ def to_event_representation(
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    use_single_note_off_event : bool (default: False)
+    use_single_note_off_event : bool, default: False
         Whether to use a single note-off event for all the pitches. If
         True, the note-off event will close all active notes, which can
         lead to lossy conversion for polyphonic music.
-    use_end_of_sequence_event : bool (default: False)
+    use_end_of_sequence_event : bool, default: False
         Whether to append an end-of-sequence event to the encoded
         sequence.
-    encode_velocity : bool (default: False)
+    encode_velocity : bool, default: False
         Whether to encode velocities.
-    force_velocity_event : bool (default: True)
+    force_velocity_event : bool, default: True
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
         changed (i.e., different from the previous one).
-    max_time_shift : int (default: 100)
+    max_time_shift : int, default: 100
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
         decomposed into two or more time-shift events.
-    velocity_bins : int (default: 32)
+    velocity_bins : int, default: 32
         Number of velocity bins to use.
-    dtype : np.dtype, type or str (default: int)
+    dtype : np.dtype, type or str, default: int
         Data type of the return array.
 
     Returns

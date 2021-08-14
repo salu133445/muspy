@@ -23,19 +23,19 @@ def from_note_representation(
     ----------
     array : ndarray
         Array in note-based representation to decode.
-    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
-    program : int (default: 0 (Acoustic Grand Piano))
+    program : int, default: 0 (Acoustic Grand Piano)
         Program number, according to General MIDI specification [1].
         Valid values are 0 to 127.
-    is_drum : bool (default: False)
+    is_drum : bool, default: False
         Whether it is a percussion track.
-    use_start_end : bool (default: False)
+    use_start_end : bool, default: False
         Whether to use 'start' and 'end' to encode the timing rather
         than 'time' and 'duration'.
-    encode_velocity : bool (default: True)
+    encode_velocity : bool, default: True
         Whether to encode note velocities.
-    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+    default_velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)
         Default velocity value to use when decoding. Only used when
         `encode_velocity` is True.
 
