@@ -150,6 +150,11 @@ class KeySignature(Base):
     root_str : str, optional
         Root of the key signature as a string.
 
+    Note
+    ----
+    A key signature can be specified either by its root (`root`) or the
+    number of sharps or flats (`fifths`) along with its mode.
+
     """
 
     _attributes = OrderedDict(

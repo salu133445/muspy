@@ -1,7 +1,10 @@
 """Music21 input interface."""
+from operator import attrgetter
 from typing import Dict, List, Tuple, Union
 
 from music21.instrument import partitionByInstrument
+from music21.key import Key
+from music21.key import KeySignature as M21KeySignature
 from music21.stream import Opus, Part, Score, Stream
 
 from ..classes import (
@@ -64,12 +67,13 @@ def parse_tempos(stream: Stream, resolution=DEFAULT_RESOLUTION) -> List[Tempo]:
         Parsed tempos.
 
     """
-    tempos = []
+    tempos = set()
     for start, _, metronome in stream.flat.metronomeMarkBoundaries():
-        time = int(float(start * resolution))
-        tempo = Tempo(time, metronome.getQuarterBPM())
-        tempos.append(tempo)
-    return tempos
+        tempo = Tempo(
+            time=int(float(start * resolution)), qpm=metronome.getQuarterBPM()
+        )
+        tempos.add(tempo)
+    return sorted(tempos, key=attrgetter("time"))
 
 
 def parse_key_signatures(
@@ -91,12 +95,25 @@ def parse_key_signatures(
         Parsed key signatures.
 
     """
-    key_signatures = []
-    for item in stream.flat.getElementsByClass("Key"):
-        time = int(float(item.offset * resolution))
-        key_signature = KeySignature(time, item.tonic.pitchClass, item.mode)
-        key_signatures.append(key_signature)
-    return key_signatures
+    key_signatures = set()
+    for item in stream.flat.getElementsByClass(M21KeySignature):
+        if isinstance(item, Key):
+            key_signatures.add(
+                KeySignature(
+                    time=int(float(item.offset * resolution)),
+                    root=item.tonic.pitchClass,
+                    mode=item.mode,
+                    fifths=item.sharps,
+                )
+            )
+        else:
+            key_signatures.add(
+                KeySignature(
+                    time=int(float(item.offset * resolution)),
+                    fifths=item.sharps,
+                )
+            )
+    return sorted(key_signatures, key=attrgetter("time"))
 
 
 def parse_time_signatures(
@@ -118,12 +135,15 @@ def parse_time_signatures(
         Parsed time signatures.
 
     """
-    time_signatures = []
+    time_signatures = set()
     for item in stream.flat.getTimeSignatures():
-        time = int(float(item.offset * resolution))
-        time_signature = TimeSignature(time, item.numerator, item.denominator)
-        time_signatures.append(time_signature)
-    return time_signatures
+        time_signature = TimeSignature(
+            time=int(float(item.offset * resolution)),
+            numerator=item.numerator,
+            denominator=item.denominator,
+        )
+        time_signatures.add(time_signature)
+    return sorted(time_signatures, key=attrgetter("time"))
 
 
 def parse_notes_and_chords(
