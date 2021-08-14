@@ -165,7 +165,7 @@ def parse_part_elem(
     # Initialize variables
     time = 0
     velocity = 64
-    factor = resolution
+    division = 1
     default_instrument_id = next(iter(instrument_info))
     transpose_semitone = 0
     transpose_octave = 0
@@ -188,7 +188,7 @@ def parse_part_elem(
                     division_elem is not None
                     and division_elem.text is not None
                 ):
-                    factor = resolution // int(division_elem.text)
+                    division = int(division_elem.text)
 
                 # Transpose
                 transpose_elem = elem.find("transpose")
@@ -285,14 +285,15 @@ def parse_part_elem(
             elif elem.tag == "note":
                 # TODO: Handle voice information
 
-                # Check if it is a cue note
-                if elem.find("cue") is not None:
+                # Check if it is a rest
+                rest_elem = elem.find("rest")
+                if rest_elem is not None:
+                    duration = int(_get_required_text(elem, "duration"))
+                    position += int(duration * resolution / division)
                     continue
 
-                # Check if it is a grace note
-                # TODO: Handle grace notes
-                grace_elem = elem.find("grace")
-                if grace_elem is not None:
+                # Check if it is a cue note
+                if elem.find("cue") is not None:
                     continue
 
                 # Check if it is an unpitched note
@@ -301,32 +302,16 @@ def parse_part_elem(
                 if unpitched_elem is not None:
                     continue
 
-                # Move time position backward if it is in chord
+                # Move time position backward if it is in a chord
                 if elem.find("chord") is not None:
                     if last_note_position is not None:
                         position = last_note_position
-
-                # Get duration
-                duration = int(_get_required_text(elem, "duration"))
-
-                # Check if it is a rest
-                rest_elem = elem.find("rest")
-                if rest_elem is not None:
-                    position += duration * factor
-                    continue
 
                 # Compute pitch number
                 pitch, pitch_str = parse_pitch_elem(
                     _get_required(elem, "pitch")
                 )
                 pitch += 12 * transpose_octave + transpose_semitone
-
-                # Check if it is a tied note
-                # TODO: Should we look for a 'tie' or 'tied' element?
-                is_outgoing_tie = False
-                for tie_elem in elem.findall("tie"):
-                    if tie_elem.get("type") == "start":
-                        is_outgoing_tie = True
 
                 # Get instrument information
                 instrument_elem = elem.find("instrument")
@@ -340,12 +325,40 @@ def parse_part_elem(
                 else:
                     instrument_id = default_instrument_id
 
+                # Check if it is a grace note
+                grace_elem = elem.find("grace")
+                if grace_elem is not None:
+                    note_type = _get_required_text(elem, "type")
+                    notes[instrument_id].append(
+                        Note(
+                            time=time + position,
+                            pitch=pitch,
+                            duration=int(
+                                NOTE_TYPE_MAP[note_type] * resolution
+                            ),
+                            velocity=velocity,
+                            pitch_str=pitch_str,
+                        )
+                    )
+                    continue
+
+                # Get duration
+                # TODO: Should we look for a 'duration' or 'type' element?
+                duration = int(_get_required_text(elem, "duration"))
+
+                # Check if it is a tied note
+                # TODO: Should we look for a 'tie' or 'tied' element?
+                is_outgoing_tie = False
+                for tie_elem in elem.findall("tie"):
+                    if tie_elem.get("type") == "start":
+                        is_outgoing_tie = True
+
                 # Check if it is an incoming tied note
                 note_key = (instrument_id, pitch)
                 if note_key in ties:
                     note_idx = ties[note_key]
-                    notes[instrument_id][note_idx].duration += (
-                        duration * factor
+                    notes[instrument_id][note_idx].duration += int(
+                        duration * resolution / division
                     )
 
                     if is_outgoing_tie:
@@ -359,7 +372,7 @@ def parse_part_elem(
                         Note(
                             time=time + position,
                             pitch=pitch,
-                            duration=duration * factor,
+                            duration=int(duration * resolution / division),
                             velocity=velocity,
                             pitch_str=pitch_str,
                         )
@@ -386,15 +399,15 @@ def parse_part_elem(
 
                 # Move time position forward if it is not in chord
                 last_note_position = position
-                position += duration * factor
+                position += int(duration * resolution / division)
 
             elif elem.tag == "forward":
                 duration = int(_get_required_text(elem, "duration"))
-                position += duration * factor
+                position += int(duration * resolution / division)
 
             elif elem.tag == "backup":
                 duration = int(_get_required_text(elem, "duration"))
-                position -= duration * factor
+                position -= int(duration * resolution / division)
 
         time += position
 

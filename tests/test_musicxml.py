@@ -21,8 +21,7 @@ def test_pitches():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "01a-Pitches-Pitches.xml")
 
     assert len(music) == 1
-
-    assert len(music[0].notes) == 102
+    assert len(music[0]) == 102
 
     # Answers
     pitches = [43, 45, 47, 48]
@@ -31,21 +30,21 @@ def test_pitches():
             pitches.append(12 * octave + pitch)
 
     # Without accidentals
-    for i, note in enumerate(music[0].notes[:32]):
+    for i, note in enumerate(music[0][:32]):
         assert note.pitch == pitches[i]
 
     # With a sharp
-    for i, note in enumerate(music[0].notes[32:64]):
+    for i, note in enumerate(music[0][32:64]):
         assert note.pitch == pitches[i] + 1
 
     # With a flat
-    for i, note in enumerate(music[0].notes[64:96]):
+    for i, note in enumerate(music[0][64:96]):
         assert note.pitch == pitches[i] - 1
 
     # Double alterations
-    assert music[0].notes[96].pitch == 74
-    assert music[0].notes[97].pitch == 70
-    for note in music[0].notes[98:]:
+    assert music[0][96].pitch == 74
+    assert music[0][97].pitch == 70
+    for note in music[0][98:]:
         assert note.pitch == 73
 
 
@@ -54,8 +53,7 @@ def test_durations():
 
     assert music.resolution == 64
     assert len(music) == 1
-
-    assert len(music[0].notes) == 32
+    assert len(music[0]) == 32
 
     # Answers
     durations = (
@@ -85,15 +83,15 @@ def test_durations():
     )
 
     # Without dots
-    for i, note in enumerate(music[0].notes[:11]):
+    for i, note in enumerate(music[0][:11]):
         assert note.duration == 64 * durations[i]
 
     # With a dot
-    for i, note in enumerate(music[0].notes[11:22]):
+    for i, note in enumerate(music[0][11:22]):
         assert note.duration == 64 * durations[i] * 1.5
 
     # With double dots
-    for i, note in enumerate(music[0].notes[22:]):
+    for i, note in enumerate(music[0][22:]):
         assert note.duration == 64 * durations_double_dotted[i] * 1.75
 
 
@@ -103,11 +101,9 @@ def test_divisions():
     )
 
     assert music.resolution == 152
-
-    assert len(music[0].notes) == 6
-
-    assert music[0].notes[0].duration == music.resolution
-    assert music[0].notes[4].duration == 2 * music.resolution
+    assert len(music[0]) == 6
+    assert music[0][0].duration == music.resolution
+    assert music[0][4].duration == 2 * music.resolution
 
 
 def test_custom_resolution():
@@ -117,11 +113,9 @@ def test_custom_resolution():
     )
 
     assert music.resolution == 24
-
-    assert len(music[0].notes) == 6
-
-    assert music[0].notes[0].duration == music.resolution
-    assert music[0].notes[4].duration == 2 * music.resolution
+    assert len(music[0]) == 6
+    assert music[0][0].duration == music.resolution
+    assert music[0][4].duration == 2 * music.resolution
 
 
 def test_time_signatures():
@@ -148,10 +142,8 @@ def test_compound_time_signatures():
     )
 
     assert len(music.time_signatures) == 2
-
     assert music.time_signatures[0].numerator == 5
     assert music.time_signatures[0].denominator == 8
-
     assert music.time_signatures[1].numerator == 9
     assert music.time_signatures[1].denominator == 4
 
@@ -182,6 +174,8 @@ def test_church_modes():
         TEST_MUSICXML_LILYPOND_DIR / "13b-KeySignatures-ChurchModes.xml"
     )
 
+    assert len(music.key_signatures) == 9
+
     # Answers
     modes = (
         "major",
@@ -203,21 +197,22 @@ def test_church_modes():
 def test_chords():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "21a-Chord-Basic.xml")
 
-    assert len(music[0].notes) == 2
+    assert len(music[0]) == 2
 
-    assert music[0].notes[0].start == 0
-    assert music[0].notes[0].duration == music.resolution
-    assert music[0].notes[0].pitch == 65
-
-    assert music[0].notes[1].start == 0
-    assert music[0].notes[1].duration == music.resolution
-    assert music[0].notes[1].pitch == 69
+    assert music[0][0].start == 0
+    assert music[0][0].duration == music.resolution
+    assert music[0][0].pitch == 65
+    assert music[0][1].start == 0
+    assert music[0][1].duration == music.resolution
+    assert music[0][1].pitch == 69
 
 
 def test_chords_and_durations():
     music = muspy.read(
         TEST_MUSICXML_LILYPOND_DIR / "21c-Chords-ThreeNotesDuration.xml"
     )
+
+    assert len(music[0]) == 20
 
     # Answers
     pitches = (
@@ -231,7 +226,7 @@ def test_chords_and_durations():
     )
     durations = [1.5, 1.5, 1.5] + [0.5, 0.5] + [1, 1, 1] * 4 + [2, 2, 2]
 
-    for i, note in enumerate(music[0].notes):
+    for i, note in enumerate(music[0]):
         assert note.duration == music.resolution * durations[i]
         assert note.pitch == pitches[i]
 
@@ -241,13 +236,14 @@ def test_pickup_measures():
         TEST_MUSICXML_LILYPOND_DIR / "21e-Chords-PickupMeasures.xml"
     )
 
+    assert len(music[0]) == 6
+
     # Answers
     pitches = (72, 65, 69, 72, 69, 72)
     starts = (0, 1, 1, 1, 2, 2)
     durations = (1, 1, 1, 1, 1, 1)
 
-    for i, note in enumerate(music[0].notes):
-
+    for i, note in enumerate(music[0]):
         assert note.start == music.resolution * starts[i]
         assert note.duration == music.resolution * durations[i]
         assert note.pitch == pitches[i]
@@ -255,6 +251,8 @@ def test_pickup_measures():
 
 def test_tuplets():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "23a-Tuplets.xml")
+
+    assert len(music[0]) == 30
 
     # Answers
     pitches = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83, 84]
@@ -265,7 +263,7 @@ def test_tuplets():
     durations += [3 / 7] * 7
     durations += [2 / 6] * 6
 
-    for i, note in enumerate(music[0].notes):
+    for i, note in enumerate(music[0]):
         assert note.pitch == pitches[i]
         assert note.duration == round(music.resolution * durations[i])
 
@@ -273,7 +271,43 @@ def test_tuplets():
 def test_grace_notes():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "24a-GraceNotes.xml")
 
-    assert len(music[0].notes) == 13
+    assert len(music[0]) == 28
+
+    # Answers
+    pitches = (
+        [72, 74]
+        + [72, 74, 76]
+        + [72, 74]
+        + [72, 74]
+        + [72, 74]
+        + [72, 74, 76]
+        + [72, 74]
+        + [72, 74]
+        + [65]
+        + [72, 76, 76]
+        + [72, 75, 68]
+        + [72, 73]
+        + [72]
+    )
+    durations = (
+        [1, 0.25]
+        + [1, 0.25, 0.25]
+        + [1, 0.25]
+        + [1, 0.5]
+        + [1, 0.25]
+        + [2, 0.25, 0.25]
+        + [0.5, 0.25]
+        + [0.5, 0.25]
+        + [1]
+        + [1, 0.25, 0.25]
+        + [1, 1]
+        + [1, 1, 1]
+        + [1]
+    )
+
+    for i, note in enumerate(music[0]):
+        assert note.pitch == pitches[i]
+        assert note.duration == round(music.resolution * durations[i])
 
 
 def test_directions():
@@ -299,22 +333,21 @@ def test_metronome():
 def test_ties():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "33b-Spanners-Tie.xml")
 
-    assert len(music[0].notes) == 1
+    assert len(music[0]) == 1
 
-    assert music[0].notes[0].duration == music.resolution * 8
-    assert music[0].notes[0].pitch == 65
+    assert music[0][0].duration == music.resolution * 8
+    assert music[0][0].pitch == 65
 
 
 def test_ties_not_ended():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "33i-Ties-NotEnded.xml")
 
-    assert len(music[0].notes) == 2
+    assert len(music[0]) == 2
 
-    assert music[0].notes[0].duration == music.resolution * 8
-    assert music[0].notes[0].pitch == 72
-
-    assert music[0].notes[1].duration == music.resolution * 12
-    assert music[0].notes[1].pitch == 72
+    assert music[0][0].duration == music.resolution * 8
+    assert music[0][0].pitch == 72
+    assert music[0][1].duration == music.resolution * 12
+    assert music[0][1].pitch == 72
 
 
 def test_parts():
@@ -329,9 +362,9 @@ def test_parts():
 
     for i, track in enumerate(music.tracks):
         assert track.name == "Part " + str(i + 1)
-        assert track.notes[0].start == 0
-        assert track.notes[0].duration == music.resolution
-        assert track.notes[0].pitch == pitches[i]
+        assert track[0].start == 0
+        assert track[0].duration == music.resolution
+        assert track[0].pitch == pitches[i]
 
 
 def test_part_names_with_line_breaks():
@@ -370,7 +403,7 @@ def test_voices():
     starts = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
     durations = (2, 2, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 0.5, 0.5)
 
-    for i, note in enumerate(music[0].notes):
+    for i, note in enumerate(music[0]):
         assert note.start == music.resolution * starts[i]
         assert note.duration == music.resolution * durations[i]
         assert note.pitch == pitches[i]
@@ -401,15 +434,14 @@ def test_piano_staff():
 
     assert len(music) == 1
 
-    assert len(music[0].notes) == 2
+    assert len(music[0]) == 2
 
-    assert music[0].notes[0].start == 0
-    assert music[0].notes[0].duration == music.resolution * 4
-    assert music[0].notes[0].pitch == 47
-
-    assert music[0].notes[1].start == 0
-    assert music[0].notes[1].duration == music.resolution * 4
-    assert music[0].notes[1].pitch == 65
+    assert music[0][0].start == 0
+    assert music[0][0].duration == music.resolution * 4
+    assert music[0][0].pitch == 47
+    assert music[0][1].start == 0
+    assert music[0][1].duration == music.resolution * 4
+    assert music[0][1].pitch == 65
 
 
 def test_quoted_headers():
@@ -454,16 +486,15 @@ def test_percussion():
 
     assert len(music) == 3
 
-    assert len(music[0].notes) == 2
+    assert len(music[0]) == 2
 
-    assert music[0].notes[0].duration == music.resolution * 6
-    assert music[0].notes[0].pitch == 52
+    assert music[0][0].duration == music.resolution * 6
+    assert music[0][0].pitch == 52
+    assert music[0][1].duration == music.resolution * 2
+    assert music[0][1].pitch == 45
 
-    assert music[0].notes[1].duration == music.resolution * 2
-    assert music[0].notes[1].pitch == 45
-
-    assert len(music[1].notes) == 0
-    assert len(music[2].notes) == 0
+    assert len(music[1]) == 0
+    assert len(music[2]) == 0
 
 
 def test_compressed_musicxml():
@@ -473,7 +504,7 @@ def test_compressed_musicxml():
 
     assert music.metadata.title == "Compressed MusicXML file"
     assert len(music) == 1
-    assert len(music[0].notes) == 4
+    assert len(music[0]) == 4
 
 
 def test_realworld():
