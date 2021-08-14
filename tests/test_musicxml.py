@@ -110,6 +110,20 @@ def test_divisions():
     assert music[0].notes[4].duration == 2 * music.resolution
 
 
+def test_custom_resolution():
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "03c-Rhythm-DivisionChange.xml",
+        resolution=24,
+    )
+
+    assert music.resolution == 24
+
+    assert len(music[0].notes) == 6
+
+    assert music[0].notes[0].duration == music.resolution
+    assert music[0].notes[4].duration == 2 * music.resolution
+
+
 def test_time_signatures():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "11a-TimeSignatures.xml")
 

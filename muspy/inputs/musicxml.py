@@ -496,13 +496,18 @@ def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
     return part_id, part_info
 
 
-def read_musicxml(path: Union[str, Path], compressed: bool = None) -> Music:
+def read_musicxml(
+    path: Union[str, Path], resolution: int = None, compressed: bool = None,
+) -> Music:
     """Read a MusicXML file into a Music object.
 
     Parameters
     ----------
     path : str or Path
         Path to the MusicXML file to read.
+    resolution : int, optional
+        Time steps per quarter note. Defaults to the least common
+        multiple of all divisions.
     compressed : bool, optional
         Whether it is a compressed MusicXML file. Defaults to infer
         from the filename.
@@ -528,9 +533,9 @@ def read_musicxml(path: Union[str, Path], compressed: bool = None) -> Music:
     metadata.source_filename = Path(path).name
 
     # Set resolution to the least common multiple of all divisions
-    # TODO: Support custom resolution
-    divisions = _get_divisions(root)
-    resolution = _lcm(*divisions) if divisions else 1
+    if resolution is None:
+        divisions = _get_divisions(root)
+        resolution = _lcm(*divisions) if divisions else 1
 
     # Part information
     part_info: OrderedDict = OrderedDict()
