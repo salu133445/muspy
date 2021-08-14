@@ -285,6 +285,10 @@ def parse_part_elem(
             elif elem.tag == "note":
                 # TODO: Handle voice information
 
+                # Check if it is a cue note
+                if elem.find("cue") is not None:
+                    continue
+
                 # Check if it is a grace note
                 # TODO: Handle grace notes
                 grace_elem = elem.find("grace")
@@ -318,6 +322,7 @@ def parse_part_elem(
                 pitch += 12 * transpose_octave + transpose_semitone
 
                 # Check if it is a tied note
+                # TODO: Should we look for a 'tie' or 'tied' element?
                 is_outgoing_tie = False
                 for tie_elem in elem.findall("tie"):
                     if tie_elem.get("type") == "start":
