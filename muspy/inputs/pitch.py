@@ -23,7 +23,7 @@ def from_pitch_representation(
     ----------
     array : ndarray
         Array in pitch-based representation to decode.
-    resolution : int
+    resolution : int, optional
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
@@ -33,9 +33,9 @@ def from_pitch_representation(
     is_drum : bool, optional
         A boolean indicating if it is a percussion track. Defaults to
         False.
-    use_hold_state : bool
+    use_hold_state : bool, optional
         Whether to use a special state for holds. Defaults to False.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
 
     Returns

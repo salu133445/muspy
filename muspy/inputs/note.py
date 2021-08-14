@@ -23,7 +23,7 @@ def from_note_representation(
     ----------
     array : ndarray
         Array in note-based representation to decode.
-    resolution : int
+    resolution : int, optional
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
@@ -33,12 +33,12 @@ def from_note_representation(
     is_drum : bool, optional
         A boolean indicating if it is a percussion track. Defaults to
         False.
-    use_start_end : bool
+    use_start_end : bool, optional
         Whether to use 'start' and 'end' to encode the timing rather
         than 'time' and 'duration'. Defaults to False.
-    encode_velocity : bool
+    encode_velocity : bool, optional
         Whether to encode note velocities. Defaults to True.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding if `encode_velocity`
         is False. Defaults to 64.
 

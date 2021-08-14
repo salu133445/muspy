@@ -1,7 +1,7 @@
 """YAML input interface."""
 import gzip
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import TextIO, Union
 
 import yaml
 
@@ -9,7 +9,7 @@ from ..music import Music
 
 
 def load_yaml(
-    path: Union[str, Path, TextIO], compressed: Optional[bool] = None
+    path: Union[str, Path, TextIO], compressed: bool = None
 ) -> Music:
     """Load a YAML file into a Music object.
 

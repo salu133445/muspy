@@ -2,7 +2,7 @@
 from collections import OrderedDict, defaultdict
 from operator import attrgetter
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Union
 
 import numpy as np
 from mido import MidiFile, tempo2bpm
@@ -43,7 +43,7 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
     ----------
     midi : :class:`mido.MidiFile`
         Mido MidiFile object to convert.
-    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}
+    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}, optional
         Policy for dealing with duplicate notes. When a note off
         message is presetned while there are multiple correspoding note
         on messages that have not yet been closed, we need a policy to
@@ -451,9 +451,7 @@ def from_pretty_midi_instrument(instrument: Instrument) -> Track:
     )
 
 
-def from_pretty_midi(
-    midi: PrettyMIDI, resolution: Optional[int] = None
-) -> Music:
+def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
     """Return a pretty_midi PrettyMIDI object as a Music object.
 
     Parameters
@@ -578,9 +576,9 @@ def read_midi(
     ----------
     path : str or Path
         Path to the MIDI file to read.
-    backend: {'mido', 'pretty_midi'}
+    backend: {'mido', 'pretty_midi'}, optional
         Backend to use.
-    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
+    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}, optional
         Policy for dealing with duplicate notes. When a note off message
         is presetned while there are multiple correspoding note on
         messages that have not yet been closed, we need a policy to

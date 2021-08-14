@@ -1,6 +1,6 @@
 """Datasets built from music21 corpus."""
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 from music21 import corpus
 
@@ -49,7 +49,7 @@ class Music21Dataset(Dataset):
         # ".abc",
     )
 
-    def __init__(self, composer: Optional[str] = None):
+    def __init__(self, composer: str = None):
         if composer is None:
             self.composer = "ALL"
             self.filenames = [

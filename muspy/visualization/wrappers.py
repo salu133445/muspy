@@ -15,7 +15,7 @@ def show(music: "Music", kind: str, **kwargs: Any):
     ----------
     music : :class:`muspy.Music`
         Music object to convert.
-    kind : str, {'piano-roll', 'score'}
+    kind : {'piano-roll', 'score'}
         Target representation.
 
     """

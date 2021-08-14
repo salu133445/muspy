@@ -24,7 +24,7 @@ Variables
 
 """
 from collections import OrderedDict
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List
 
 from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
@@ -53,7 +53,7 @@ class Metadata(Base):
 
     Attributes
     ----------
-    schema_version : str
+    schema_version : str, optional
         Schema version. Defaults to the latest version.
     title : str, optional
         Song title.
@@ -94,12 +94,12 @@ class Metadata(Base):
     def __init__(
         self,
         schema_version: str = DEFAULT_SCHEMA_VERSION,
-        title: Optional[str] = None,
-        creators: Optional[List[str]] = None,
-        copyright: Optional[str] = None,
-        collection: Optional[str] = None,
-        source_filename: Optional[str] = None,
-        source_format: Optional[str] = None,
+        title: str = None,
+        creators: List[str] = None,
+        copyright: str = None,
+        collection: str = None,
+        source_filename: str = None,
+        source_format: str = None,
     ):
         # pylint: disable=redefined-builtin
         self.schema_version = schema_version
@@ -173,10 +173,10 @@ class KeySignature(Base):
     def __init__(
         self,
         time: int,
-        root: Optional[int] = None,
-        mode: Optional[str] = None,
-        fifths: Optional[int] = None,
-        root_str: Optional[str] = None,
+        root: int = None,
+        mode: str = None,
+        fifths: int = None,
+        root_str: str = None,
     ):
         self.time = time
         self.root = root
@@ -223,14 +223,15 @@ class Beat(Base):
     ----------
     time : int
         Time of the beat, in time steps.
-    is_downbeat : bool
-        Whether it is a downbeat.
+    is_downbeat : bool, optional
+        Whether it is a downbeat. Defaults to False
 
     """
 
     _attributes = OrderedDict([("time", int), ("is_downbeat", bool)])
+    _optional_attributes = ["is_downbeat"]
 
-    def __init__(self, time: int, is_downbeat: bool):
+    def __init__(self, time: int, is_downbeat: bool = False):
         self.time = time
         self.is_downbeat = is_downbeat
 
@@ -273,9 +274,7 @@ class Annotation(Base):
     )
     _optional_attributes = ["group"]
 
-    def __init__(
-        self, time: int, annotation: Any, group: Optional[str] = None
-    ):
+    def __init__(self, time: int, annotation: Any, group: str = None):
         self.time = time
         self.annotation = annotation
         self.group = group
@@ -294,7 +293,7 @@ class Note(Base):
         Duration of the note, in time steps.
     velocity : int, optional
         Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
-    pitch_str : str
+    pitch_str : str, optional
         Note pitch as a string, useful for distinguishing, e.g., C# and
         Db.
 
@@ -316,8 +315,8 @@ class Note(Base):
         time: int,
         pitch: int,
         duration: int,
-        velocity: Optional[int] = None,
-        pitch_str: Optional[str] = None,
+        velocity: int = None,
+        pitch_str: str = None,
     ):
         self.time = time
         self.pitch = pitch
@@ -362,7 +361,7 @@ class Note(Base):
     def adjust_time(
         self,
         func: Callable[[int], int],
-        attr: Optional[str] = None,
+        attr: str = None,
         recursive: bool = True,
     ) -> "Note":
         """Adjust the timing of the note.
@@ -372,9 +371,9 @@ class Note(Base):
         func : callable
             The function used to compute the new timing from the old
             timing, i.e., `new_time = func(old_time)`.
-        attr : str
+        attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -443,7 +442,7 @@ class Chord(Base):
         Duration of the chord, in time steps.
     velocity : int, optional
         Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
-    pitches_str : list of str
+    pitches_str : list of str, optional
         Note pitches as strings (useful for distinguishing, e.g., C# and
         Db).
 
@@ -465,8 +464,8 @@ class Chord(Base):
         time: int,
         pitches: List[int],
         duration: int,
-        velocity: Optional[int] = None,
-        pitches_str: Optional[List[int]] = None,
+        velocity: int = None,
+        pitches_str: List[int] = None,
     ):
         self.time = time
         self.pitches = pitches
@@ -516,7 +515,7 @@ class Chord(Base):
     def adjust_time(
         self,
         func: Callable[[int], int],
-        attr: Optional[str] = None,
+        attr: str = None,
         recursive: bool = True,
     ) -> "Chord":
         """Adjust the timing of the chord.
@@ -637,11 +636,11 @@ class Track(ComplexBase):
         self,
         program: int = 0,
         is_drum: bool = False,
-        name: Optional[str] = None,
-        notes: Optional[List[Note]] = None,
-        chords: Optional[List[Chord]] = None,
-        lyrics: Optional[List[Lyric]] = None,
-        annotations: Optional[List[Annotation]] = None,
+        name: str = None,
+        notes: List[Note] = None,
+        chords: List[Chord] = None,
+        lyrics: List[Lyric] = None,
+        annotations: List[Annotation] = None,
     ):
         self.program = program if program is not None else 0
         self.is_drum = is_drum if program is not None else False
@@ -672,7 +671,7 @@ class Track(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool
+        is_sorted : bool, optional
             Whether all the list attributes are sorted. Defaults to
             False.
 

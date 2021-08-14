@@ -51,7 +51,7 @@ def _lcm(*args: int) -> int:
 def _get_text(
     element: Element,
     path: str,
-    default: Optional[T] = None,
+    default: T = None,
     remove_newlines: bool = False,
 ) -> Union[str, T]:
     """Return the text of the first matching element."""
@@ -410,7 +410,7 @@ def parse_metadata(root: Element) -> Metadata:
     )
 
 
-def _get_root(path: Union[str, Path], compressed: Optional[bool] = None):
+def _get_root(path: Union[str, Path], compressed: bool = None):
     """Return root of the element tree."""
     if compressed is None:
         compressed = str(path).endswith(".mxl")
@@ -496,15 +496,16 @@ def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
     return part_id, part_info
 
 
-def read_musicxml(
-    path: Union[str, Path], compressed: Optional[bool] = None
-) -> Music:
+def read_musicxml(path: Union[str, Path], compressed: bool = None) -> Music:
     """Read a MusicXML file into a Music object.
 
     Parameters
     ----------
     path : str or Path
         Path to the MusicXML file to read.
+    compressed : bool, optional
+        Whether it is a compressed MusicXML file. Defaults to infer
+        from the filename.
 
     Returns
     -------

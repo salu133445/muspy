@@ -1,6 +1,6 @@
 """Event-based representation output interface."""
 from operator import attrgetter, itemgetter
-from typing import TYPE_CHECKING, Iterable, List, Optional
+from typing import TYPE_CHECKING, Iterable, List
 
 import numpy as np
 from bidict import bidict
@@ -33,28 +33,28 @@ def to_event_representation(
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    use_single_note_off_event : bool
+    use_single_note_off_event : bool, optional
         Whether to use a single note-off event for all the pitches. If
         True, the note-off event will close all active notes, which can
         lead to lossy conversion for polyphonic music. Defaults to
         False.
-    use_end_of_sequence_event : bool
+    use_end_of_sequence_event : bool, optional
         Whether to append an end-of-sequence event to the encoded
         sequence. Defaults to False.
-    encode_velocity : bool
-        Whether to encode velocities.
+    encode_velocity : bool, optional
+        Whether to encode velocities. Defaults to False.
     force_velocity_event : bool
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
         changed (i.e., different from the previous one). Defaults to
         True.
-    max_time_shift : int
+    max_time_shift : int, optional
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
         decomposed into two or more time-shift events. Defaults to 100.
-    velocity_bins : int
+    velocity_bins : int, optional
         Number of velocity bins to use. Defaults to 32.
-    dtype : np.dtype, type or str
+    dtype : np.dtype, type or str, optional
         Data type of the return array. Defaults to int.
 
     Returns
@@ -143,16 +143,12 @@ class EventSequence(list):
 
     Attributes
     ----------
-    indexer : bidict
+    indexer : bidict, optional
         Indexer that defines the mapping between events and their codes.
 
     """
 
-    def __init__(
-        self,
-        iterable: Optional[Iterable] = None,
-        indexer: Optional[bidict] = None,
-    ):
+    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
         if iterable is not None:
             super().__init__(iterable)
         else:
@@ -206,16 +202,12 @@ class DefaultEventSequence(EventSequence):
 
     Attributes
     ----------
-    indexer : bidict
+    indexer : bidict, optional
         Indexer that defines the mapping between events and their codes.
 
     """
 
-    def __init__(
-        self,
-        iterable: Optional[Iterable] = None,
-        indexer: Optional[bidict] = None,
-    ):
+    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
         if indexer is not None:
             super().__init__(iterable, indexer)
         else:
@@ -314,16 +306,12 @@ class PerformanceEventSequence(EventSequence):
 
     Attributes
     ----------
-    indexer : bidict
+    indexer : bidict, optional
         Indexer that defines the mapping between events and their codes.
 
     """
 
-    def __init__(
-        self,
-        iterable: Optional[Iterable] = None,
-        indexer: Optional[bidict] = None,
-    ):
+    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
         if indexer is not None:
             super().__init__(iterable, indexer)
         else:
@@ -431,7 +419,7 @@ class REMIEventSequence(EventSequence):
 
     Attributes
     ----------
-    indexer : bidict
+    indexer : bidict, optional
         Indexer that defines the mapping between events and their codes.
 
     Note
@@ -441,11 +429,7 @@ class REMIEventSequence(EventSequence):
 
     """
 
-    def __init__(
-        self,
-        iterable: Optional[Iterable] = None,
-        indexer: Optional[bidict] = None,
-    ):
+    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
         if indexer is not None:
             super().__init__(iterable, indexer)
         else:

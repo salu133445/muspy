@@ -20,16 +20,16 @@ def to_pitch_representation(
     pitch, rest and (optional) hold tokens. Only monophonic melodies are
     compatible with this representation. The output shape is T x 1,
     where T is the number of time steps. The values indicate whether the
-    current time step is a pitch (0-127), a rest (128) or (optionally) a
+    current time step is a pitch (0-127), a rest (128) or, optionally, a
     hold (129).
 
     Parameters
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    use_hold_state : bool
+    use_hold_state : bool, optional
         Whether to use a special state for holds. Defaults to False.
-    dtype : np.dtype, type or str
+    dtype : np.dtype, type or str, optional
         Data type of the return array. Defaults to int.
 
     Returns

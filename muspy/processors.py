@@ -54,11 +54,11 @@ class NoteRepresentationProcessor:
     use_start_end : bool
         Whether to use 'start' and 'end' to encode the timing rather
         than 'time' and 'duration'. Defaults to False.
-    encode_velocity : bool
+    encode_velocity : bool, optional
         Whether to encode note velocities. Defaults to True.
-    dtype : dtype, type or str
+    dtype : dtype, type or str, optional
         Data type of the return array. Defaults to int.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding if `encode_velocity`
         is False. Defaults to 64.
 
@@ -148,23 +148,23 @@ class EventRepresentationProcessor:
         True, the note-off event will close all active notes, which can
         lead to lossy conversion for polyphonic music. Defaults to
         False.
-    use_end_of_sequence_event : bool
+    use_end_of_sequence_event : bool, optional
         Whether to append an end-of-sequence event to the encoded
         sequence. Defaults to False.
-    encode_velocity : bool
-        Whether to encode velocities.
-    force_velocity_event : bool
+    encode_velocity : bool, optional
+        Whether to encode velocities. Defaults to False.
+    force_velocity_event : bool, optional
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
         changed (i.e., different from the previous one). Defaults to
         True.
-    max_time_shift : int
+    max_time_shift : int, optional
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
         decomposed into two or more time-shift events. Defaults to 100.
-    velocity_bins : int
+    velocity_bins : int, optional
         Number of velocity bins to use. Defaults to 32.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
 
     """
@@ -254,14 +254,14 @@ class PitchRepresentationProcessor:
     pitch, rest and (optional) hold tokens. Only monophonic melodies are
     compatible with this representation. The output shape is T x 1,
     where T is the number of time steps. The values indicate whether the
-    current time step is a pitch (0-127), a rest (128) or (optionally) a
+    current time step is a pitch (0-127), a rest (128) or, optionally, a
     hold (129).
 
     Attributes
     ----------
-    use_hold_state : bool
+    use_hold_state : bool, optional
         Whether to use a special state for holds. Defaults to False.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
 
     """
@@ -334,11 +334,11 @@ class PianoRollRepresentationProcessor:
 
     Attributes
     ----------
-    encode_velocity : bool
+    encode_velocity : bool, optional
         Whether to encode velocities. If True, a binary-valued array
         will be return. Otherwise, an integer array will be return.
         Defaults to True.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding if `encode_velocity`
         is False. Defaults to 64.
 

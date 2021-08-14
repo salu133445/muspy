@@ -8,7 +8,6 @@ from typing import (
     Callable,
     Dict,
     List,
-    Optional,
     Sequence,
     Tuple,
     TypeVar,
@@ -45,10 +44,10 @@ class DatasetInfo:
 
     def __init__(
         self,
-        name: Optional[str] = None,
-        description: Optional[str] = None,
-        homepage: Optional[str] = None,
-        license: Optional[str] = None,
+        name: str = None,
+        description: str = None,
+        homepage: str = None,
+        license: str = None,
     ):
         # pylint: disable=redefined-builtin
         self.name = name
@@ -165,8 +164,8 @@ class Dataset:
 
     def split(
         self,
-        filename: Optional[Union[str, Path]] = None,
-        splits: Optional[Sequence[float]] = None,
+        filename: Union[str, Path] = None,
+        splits: Sequence[float] = None,
         random_state: Any = None,
     ) -> Dict[str, List[int]]:
         """Return the dataset as a PyTorch dataset.
@@ -236,10 +235,10 @@ class Dataset:
 
     def to_pytorch_dataset(
         self,
-        factory: Optional[Callable] = None,
-        representation: Optional[str] = None,
-        split_filename: Optional[Union[str, Path]] = None,
-        splits: Optional[Sequence[float]] = None,
+        factory: Callable = None,
+        representation: str = None,
+        split_filename: Union[str, Path] = None,
+        splits: Sequence[float] = None,
         random_state: Any = None,
         **kwargs: Any,
     ) -> Union["TorchDataset", Dict[str, "TorchDataset"]]:
@@ -308,7 +307,7 @@ class Dataset:
                 dataset: Dataset,
                 factory: Callable,
                 subset: str = "Full",
-                indices: Optional[Sequence[int]] = None,
+                indices: Sequence[int] = None,
             ):
                 self.dataset = dataset
                 self.factory = factory
@@ -354,7 +353,7 @@ class Dataset:
                 dataset: Dataset,
                 representation: str,
                 subset: str = "Full",
-                indices: Optional[Sequence[int]] = None,
+                indices: Sequence[int] = None,
                 **kwargs: Any,
             ):
                 self.representation = representation
@@ -397,10 +396,10 @@ class Dataset:
 
     def to_tensorflow_dataset(
         self,
-        factory: Optional[Callable] = None,
-        representation: Optional[str] = None,
-        split_filename: Optional[Union[str, Path]] = None,
-        splits: Optional[Sequence[float]] = None,
+        factory: Callable = None,
+        representation: str = None,
+        split_filename: Union[str, Path] = None,
+        splits: Sequence[float] = None,
         random_state: Any = None,
         **kwargs: Any,
     ) -> Union["TFDataset", Dict[str, "TFDataset"]]:
@@ -533,6 +532,7 @@ class RemoteDataset(Dataset):
     - url (str): URL to the file.
     - archive (bool): Whether the file is an archive.
     - md5 (str, optional): Expected MD5 checksum of the file.
+    - sha256 (str, optional): Expected SHA256 checksum of the file.
 
     Here is an example.::
 
@@ -542,6 +542,7 @@ class RemoteDataset(Dataset):
                 "url": "https://www.example.com/example.tar.gz",
                 "archive": True,
                 "md5": None,
+                "sha256": None,
             }
         }
 
@@ -851,7 +852,7 @@ class FolderDataset(Dataset):
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
-        use_converted: Optional[bool] = None,
+        use_converted: bool = None,
     ):
         self.root = Path(root).expanduser().resolve()
         self.kind = kind
@@ -1071,7 +1072,7 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
-        use_converted: Optional[bool] = None,
+        use_converted: bool = None,
         verbose: bool = True,
     ):
         RemoteDataset.__init__(
@@ -1183,7 +1184,7 @@ class RemoteABCFolderDataset(ABCFolderDataset, RemoteDataset):
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
-        use_converted: Optional[bool] = None,
+        use_converted: bool = None,
         verbose: bool = True,
     ):
         RemoteDataset.__init__(

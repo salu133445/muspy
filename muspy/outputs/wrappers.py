@@ -1,6 +1,6 @@
 """Wrapper functions for output interface."""
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, TextIO, Union
+from typing import TYPE_CHECKING, TextIO, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -25,10 +25,7 @@ if TYPE_CHECKING:
 
 
 def save(
-    path: Union[str, Path, TextIO],
-    music: "Music",
-    kind: Optional[str] = None,
-    **kwargs,
+    path: Union[str, Path, TextIO], music: "Music", kind: str = None, **kwargs,
 ):
     """Save a Music object loselessly to a JSON or a YAML file.
 
@@ -84,10 +81,7 @@ def save(
 
 
 def write(
-    path: Union[str, Path],
-    music: "Music",
-    kind: Optional[str] = None,
-    **kwargs,
+    path: Union[str, Path], music: "Music", kind: str = None, **kwargs,
 ):
     """Write a Music object to a MIDI/MusicXML/ABC/audio file.
 

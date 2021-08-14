@@ -18,7 +18,7 @@ Functions
 
 """
 from collections import OrderedDict
-from typing import Callable, Optional, Union
+from typing import Callable, Union
 
 from .base import Base, ComplexBase
 from .classes import Note, Track
@@ -40,9 +40,9 @@ __all__ = [
 
 def adjust_resolution(
     music: Music,
-    target: Optional[int] = None,
-    factor: Optional[float] = None,
-    rounding: Optional[Union[str, Callable]] = "round",
+    target: int = None,
+    factor: float = None,
+    rounding: Union[str, Callable] = "round",
 ) -> Music:
     """Adjust resolution and timing of all time-stamped objects.
 
@@ -192,7 +192,7 @@ def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
     ----------
     music : :class:`muspy.Music`
         Object to inspect.
-    is_sorted : bool
+    is_sorted : bool, optional
         Whether all the list attributes are sorted. Defaults to False.
 
     """
@@ -238,10 +238,10 @@ def to_ordered_dict(
     ----------
     obj : :class:`muspy.Base`
         Object to convert.
-    skip_missing : bool
+    skip_missing : bool, optional
         Whether to skip attributes with value None or those that are
         empty lists. Defaults to True.
-    deepcopy : bool
+    deepcopy : bool, optional
         Whether to make deep copies of the attributes. Defaults to
         False.
 

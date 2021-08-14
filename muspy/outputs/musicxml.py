@@ -1,7 +1,7 @@
 """MusicXML output interface."""
 import os
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Union
 
 from music21.musicxml.archiveTools import compressXML
 
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 def write_musicxml(
-    path: Union[str, Path], music: "Music", compressed: Optional[bool] = None
+    path: Union[str, Path], music: "Music", compressed: bool = None
 ):
     """Write a Music object to a MusicXML file.
 

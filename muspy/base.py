@@ -13,17 +13,7 @@ import copy
 from collections import OrderedDict
 from inspect import isclass
 from operator import attrgetter
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Type,
-    TypeVar,
-    Union,
-)
+from typing import Any, Callable, Iterable, List, Mapping, Type, TypeVar, Union
 
 from .utils import yaml_dump
 
@@ -118,7 +108,7 @@ class Base:
     def __hash__(self) -> int:
         return hash(repr(self))
 
-    def __deepcopy__(self: BaseType, memo: Optional[dict]) -> BaseType:
+    def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
         return self.from_dict(self.to_ordered_dict())
 
     @classmethod
@@ -165,10 +155,10 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool
+        skip_missing : bool, optional
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
-        deepcopy : bool
+        deepcopy : bool, optional
             Whether to make deep copies of the attributes. Defaults to
             True.
 
@@ -238,7 +228,7 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool
+        skip_missing : bool, optional
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -262,7 +252,7 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool
+        skip_missing : bool, optional
             Whether to skip attributes with value None or those that are
             empty lists. Defaults to True.
 
@@ -307,7 +297,7 @@ class Base:
                 getattr(self, attr).validate_type(recursive=recursive)
 
     def validate_type(
-        self: BaseType, attr: Optional[str] = None, recursive: bool = True,
+        self: BaseType, attr: str = None, recursive: bool = True,
     ) -> BaseType:
         """Raise an error if an attribute is of an invalid type.
 
@@ -315,9 +305,9 @@ class Base:
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -364,7 +354,7 @@ class Base:
                 getattr(self, attr).validate(recursive=recursive)
 
     def validate(
-        self: BaseType, attr: Optional[str] = None, recursive: bool = True,
+        self: BaseType, attr: str = None, recursive: bool = True,
     ) -> BaseType:
         """Raise an error if an attribute has an invalid type or value.
 
@@ -372,9 +362,9 @@ class Base:
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -396,18 +386,16 @@ class Base:
             self._validate(attr, recursive)
         return self
 
-    def is_valid_type(
-        self, attr: Optional[str] = None, recursive: bool = True,
-    ) -> bool:
+    def is_valid_type(self, attr: str = None, recursive: bool = True,) -> bool:
         """Return True if an attribute is of a valid type.
 
         This will apply recursively to an attribute's attributes.
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -431,18 +419,16 @@ class Base:
             return False
         return True
 
-    def is_valid(
-        self, attr: Optional[str] = None, recursive: bool = True,
-    ) -> bool:
+    def is_valid(self, attr: str = None, recursive: bool = True,) -> bool:
         """Return True if an attribute has a valid type and value.
 
         This will recursively apply to an attribute's attributes.
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -484,7 +470,7 @@ class Base:
     def adjust_time(
         self: BaseType,
         func: Callable[[int], int],
-        attr: Optional[str] = None,
+        attr: str = None,
         recursive: bool = True,
     ) -> BaseType:
         """Adjust the timing of time-stamped objects.
@@ -494,9 +480,9 @@ class Base:
         func : callable
             The function used to compute the new timing from the old
             timing, i.e., `new_time = func(old_time)`.
-        attr : str
+        attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -583,7 +569,7 @@ class ComplexBase(Base):
             list attributes with the corresponding list attributes of
             the other object. If an iterable is given, call
             :meth:`muspy.ComplexBase.append` for each item.
-        deepcopy : bool
+        deepcopy : bool, optional
             Whether to make deep copies of the appended objects.
             Defaults to False.
 
@@ -637,17 +623,15 @@ class ComplexBase(Base):
             value[:] = [item for item in value if isinstance(item, attr_type)]
 
     def remove_invalid(
-        self: ComplexBaseType,
-        attr: Optional[str] = None,
-        recursive: bool = True,
+        self: ComplexBaseType, attr: str = None, recursive: bool = True,
     ) -> ComplexBaseType:
         """Remove invalid items from a list attribute.
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -694,17 +678,15 @@ class ComplexBase(Base):
         value[:] = new_value
 
     def remove_duplicate(
-        self: ComplexBaseType,
-        attr: Optional[str] = None,
-        recursive: bool = True,
+        self: ComplexBaseType, attr: str = None, recursive: bool = True,
     ) -> ComplexBaseType:
         """Remove duplicate items from a list attribute.
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to check. Defaults to check all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns
@@ -738,17 +720,15 @@ class ComplexBase(Base):
                     value.sort(recursive=recursive)
 
     def sort(
-        self: ComplexBaseType,
-        attr: Optional[str] = None,
-        recursive: bool = True,
+        self: ComplexBaseType, attr: str = None, recursive: bool = True,
     ) -> ComplexBaseType:
         """Sort a list attribute.
 
         Parameters
         ----------
-        attr : str
+        attr : str, optional
             Attribute to sort. Defaults to sort all attributes.
-        recursive : bool
+        recursive : bool, optional
             Whether to apply recursively. Defaults to True.
 
         Returns

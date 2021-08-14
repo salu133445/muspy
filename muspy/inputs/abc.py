@@ -1,6 +1,6 @@
 """ABC input interface."""
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Union
 
 import music21.converter
 from music21.stream import Opus
@@ -10,7 +10,7 @@ from .music21 import from_music21_opus, from_music21_score
 
 
 def read_abc_string(
-    data_str: str, number: Optional[int] = None, resolution=DEFAULT_RESOLUTION,
+    data_str: str, number: int = None, resolution=DEFAULT_RESOLUTION,
 ) -> Union[Music, List[Music]]:
     """Read ABC data into Music object(s) using music21 backend.
 
@@ -18,7 +18,7 @@ def read_abc_string(
     ----------
     data_str : str
         ABC data to parse.
-    number : int
+    number : int, optional
         Reference number of a specific tune to read (i.e., the 'X:'
         field).
     resolution : int, optional
@@ -55,9 +55,7 @@ def read_abc_string(
 
 
 def read_abc(
-    path: Union[str, Path],
-    number: Optional[int] = None,
-    resolution=DEFAULT_RESOLUTION,
+    path: Union[str, Path], number: int = None, resolution=DEFAULT_RESOLUTION,
 ) -> Union[Music, List[Music]]:
     """Return an ABC file into Music object(s) using music21 backend.
 
@@ -65,7 +63,7 @@ def read_abc(
     ----------
     path : str or Path
         Path to the ABC file to read.
-    number : int
+    number : int, optional
         Reference number of a specific tune to read (i.e., the 'X:'
         field).
     resolution : int, optional

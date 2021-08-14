@@ -224,9 +224,7 @@ def to_mido_note_on_note_off(
 
 
 def to_mido_track(
-    track: Track,
-    channel: Optional[int] = None,
-    use_note_off_message: bool = False,
+    track: Track, channel: int = None, use_note_off_message: bool = False,
 ) -> MidiTrack:
     """Return a Track object as a mido MidiTrack object.
 
@@ -234,15 +232,15 @@ def to_mido_track(
     ----------
     track : :class:`muspy.Track` object
         Track object to convert.
+    channel : int, optional
+        Channel number. Defaults to 10 for drums and 0 for other
+        instruments.
     use_note_off_message : bool, optional
         Whether to use note-off messages. If False, note-on messages
         with zero velocity are used instead. The advantage to using
         note-on messages at zero velocity is that it can avoid sending
         additional status bytes when Running Status is employed.
         Defaults to False.
-    channel : int, optional
-        Channel number. Defaults to 10 for drums and 0 for other
-        instruments.
 
     Returns
     -------

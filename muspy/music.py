@@ -17,7 +17,7 @@ Variables
 from collections import OrderedDict
 from math import ceil, floor
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, List, Union
 
 import numpy as np
 from mido import MidiFile
@@ -65,24 +65,24 @@ class Music(ComplexBase):
 
     Attributes
     ----------
-    metadata : :class:`muspy.Metadata`
+    metadata : :class:`muspy.Metadata`, optional
         Metadata.
     resolution : int, optional
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
-    tempos : list of :class:`muspy.Tempo`
+    tempos : list of :class:`muspy.Tempo`, optional
         Tempo changes.
-    key_signatures : list of :class:`muspy.KeySignature`
+    key_signatures : list of :class:`muspy.KeySignature`, optional
         Key signatures changes.
-    time_signatures : list of :class:`muspy.TimeSignature`
+    time_signatures : list of :class:`muspy.TimeSignature`, optional
         Time signature changes.
-    beats : list of :class:`muspy.Beat`
+    beats : list of :class:`muspy.Beat`, optional
         Beats.
-    lyrics : list of :class:`muspy.Lyric`
+    lyrics : list of :class:`muspy.Lyric`, optional
         Lyrics.
-    annotations : list of :class:`muspy.Annotation`
+    annotations : list of :class:`muspy.Annotation`, optional
         Annotations.
-    tracks : list of :class:`muspy.Track`
+    tracks : list of :class:`muspy.Track`, optional
         Music tracks.
 
     Note
@@ -130,15 +130,15 @@ class Music(ComplexBase):
 
     def __init__(
         self,
-        metadata: Optional[Metadata] = None,
-        resolution: Optional[int] = None,
-        tempos: Optional[List[Tempo]] = None,
-        key_signatures: Optional[List[KeySignature]] = None,
-        time_signatures: Optional[List[TimeSignature]] = None,
-        beats: Optional[List[Beat]] = None,
-        lyrics: Optional[List[Lyric]] = None,
-        annotations: Optional[List[Annotation]] = None,
-        tracks: Optional[List[Track]] = None,
+        metadata: Metadata = None,
+        resolution: int = None,
+        tempos: List[Tempo] = None,
+        key_signatures: List[KeySignature] = None,
+        time_signatures: List[TimeSignature] = None,
+        beats: List[Beat] = None,
+        lyrics: List[Lyric] = None,
+        annotations: List[Annotation] = None,
+        tracks: List[Track] = None,
     ):
         self.metadata = metadata if metadata is not None else Metadata()
         self.resolution = (
@@ -173,7 +173,7 @@ class Music(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool
+        is_sorted : bool, optional
             Whether all the list attributes are sorted. Defaults to
             False.
 
@@ -214,7 +214,7 @@ class Music(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool
+        is_sorted : bool, optional
             Whether all the list attributes are sorted. Defaults to
             False.
 
@@ -270,9 +270,9 @@ class Music(ComplexBase):
 
     def adjust_resolution(
         self,
-        target: Optional[int] = None,
-        factor: Optional[float] = None,
-        rounding: Optional[Union[str, Callable]] = "round",
+        target: int = None,
+        factor: float = None,
+        rounding: Union[str, Callable] = "round",
     ) -> "Music":
         """Adjust resolution and timing of all time-stamped objects.
 
@@ -374,9 +374,7 @@ class Music(ComplexBase):
                 track.transpose(semitone)
         return self
 
-    def save(
-        self, path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
-    ):
+    def save(self, path: Union[str, Path], kind: str = None, **kwargs: Any):
         """Save loselessly to a JSON or a YAML file.
 
         Refer to :func:`muspy.save` for full documentation.
@@ -400,9 +398,7 @@ class Music(ComplexBase):
         """
         return save(path, self, kind="yaml")
 
-    def write(
-        self, path: Union[str, Path], kind: Optional[str] = None, **kwargs: Any
-    ):
+    def write(self, path: Union[str, Path], kind: str = None, **kwargs: Any):
         """Write to a MIDI, a MusicXML, an ABC or an audio file.
 
         Refer to :func:`muspy.write` for full documentation.

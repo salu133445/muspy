@@ -2,7 +2,7 @@
 import gzip
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, TextIO, Union
+from typing import TYPE_CHECKING, TextIO, Union
 
 if TYPE_CHECKING:
     from ..music import Music
@@ -13,7 +13,7 @@ def save_json(
     music: "Music",
     skip_missing: bool = True,
     ensure_ascii: bool = False,
-    compressed: Optional[bool] = None,
+    compressed: bool = None,
     **kwargs
 ):
     """Save a Music object to a JSON file.
@@ -24,10 +24,10 @@ def save_json(
         Path or file to save the JSON data.
     music : :class:`muspy.Music`
         Music object to save.
-    skip_missing : bool
+    skip_missing : bool, optional
         Whether to skip attributes with value None or those that are
         empty lists. Defaults to True.
-    ensure_ascii : bool
+    ensure_ascii : bool, optional
         Whether to escape non-ASCII characters. Will be passed to
         PyYAML's `yaml.dump`. Defaults to False.
     compressed : bool, optional

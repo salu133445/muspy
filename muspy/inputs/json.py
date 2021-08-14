@@ -2,13 +2,13 @@
 import gzip
 import json
 from pathlib import Path
-from typing import Optional, TextIO, Union
+from typing import TextIO, Union
 
 from ..music import Music
 
 
 def load_json(
-    path: Union[str, Path, TextIO], compressed: Optional[bool] = None
+    path: Union[str, Path, TextIO], compressed: bool = None
 ) -> Music:
     """Load a JSON file into a Music object.
 

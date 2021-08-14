@@ -52,7 +52,9 @@ def parse_metadata(stream: Stream) -> Union[Metadata, None]:
     )
 
 
-def parse_tempos(stream: Stream, resolution=DEFAULT_RESOLUTION) -> List[Tempo]:
+def parse_tempos(
+    stream: Stream, resolution: int = DEFAULT_RESOLUTION
+) -> List[Tempo]:
     """Return tempos parsed from a music21 Stream object.
 
     Parameters
@@ -79,7 +81,7 @@ def parse_tempos(stream: Stream, resolution=DEFAULT_RESOLUTION) -> List[Tempo]:
 
 
 def parse_key_signatures(
-    stream: Stream, resolution=DEFAULT_RESOLUTION
+    stream: Stream, resolution: int = DEFAULT_RESOLUTION
 ) -> List[KeySignature]:
     """Return key signatures parsed from a music21 Stream object.
 
@@ -119,7 +121,7 @@ def parse_key_signatures(
 
 
 def parse_time_signatures(
-    stream: Stream, resolution=DEFAULT_RESOLUTION
+    stream: Stream, resolution: int = DEFAULT_RESOLUTION
 ) -> List[TimeSignature]:
     """Return time signatures parsed from a music21 Stream object.
 
@@ -151,7 +153,7 @@ def parse_time_signatures(
 def parse_beats(
     stream: Stream,
     time_signatures: List[TimeSignature],
-    resolution=DEFAULT_RESOLUTION,
+    resolution: int = DEFAULT_RESOLUTION,
 ) -> List[Beat]:
     """Return beats parsed from a music21 Stream object.
 
@@ -192,7 +194,7 @@ def parse_beats(
         beat_resolution = resolution / (time_sign.denominator / 4)
         # Get the next downbeat
         if downbeat_idx < len(downbeats) - 1:
-            end = downbeats[downbeat_idx + 1]
+            end: float = downbeats[downbeat_idx + 1]
         else:
             end = (
                 downbeats[downbeat_idx] + beat_resolution * time_sign.numerator
@@ -210,7 +212,7 @@ def parse_beats(
 
 
 def parse_notes_and_chords(
-    stream: Stream, resolution=DEFAULT_RESOLUTION
+    stream: Stream, resolution: int = DEFAULT_RESOLUTION
 ) -> Tuple[List[Note], List[Chord]]:
     """Return notes and chords parsed from a music21 Stream object.
 
@@ -285,7 +287,7 @@ def parse_notes_and_chords(
     return notes, chords
 
 
-def parse_track(part: Part, resolution=DEFAULT_RESOLUTION) -> Track:
+def parse_track(part: Part, resolution: int = DEFAULT_RESOLUTION) -> Track:
     """Return track parsed from a music21 Part object.
 
     Parameters
@@ -326,7 +328,7 @@ def parse_track(part: Part, resolution=DEFAULT_RESOLUTION) -> Track:
 
 
 def from_music21_part(
-    part: Part, resolution=DEFAULT_RESOLUTION
+    part: Part, resolution: int = DEFAULT_RESOLUTION
 ) -> Union[Track, List[Track]]:
     """Return a music21 Part object as Track object(s).
 
@@ -350,7 +352,9 @@ def from_music21_part(
     return [parse_track(instrument, resolution) for instrument in instruments]
 
 
-def from_music21_score(score: Score, resolution=DEFAULT_RESOLUTION) -> Music:
+def from_music21_score(
+    score: Score, resolution: int = DEFAULT_RESOLUTION
+) -> Music:
     """Return a music21 Stream object as a Music object.
 
     Parameters
@@ -391,7 +395,7 @@ def from_music21_score(score: Score, resolution=DEFAULT_RESOLUTION) -> Music:
 
 
 def from_music21_opus(
-    opus: Opus, resolution=DEFAULT_RESOLUTION
+    opus: Opus, resolution: int = DEFAULT_RESOLUTION
 ) -> List[Music]:
     """Return a music21 Opus object as a list of Music objects.
 
@@ -413,7 +417,7 @@ def from_music21_opus(
 
 
 def from_music21(
-    stream: Stream, resolution=DEFAULT_RESOLUTION
+    stream: Stream, resolution: int = DEFAULT_RESOLUTION
 ) -> Union[Music, List[Music], Track, List[Track]]:
     """Return a music21 Stream object as Music or Track object(s).
 

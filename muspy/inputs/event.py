@@ -27,7 +27,7 @@ def from_event_representation(
     ----------
     array : ndarray
         Array in event-based representation to decode.
-    resolution : int
+    resolution : int, optional
         Time steps per quarter note. Defaults to
         `muspy.DEFAULT_RESOLUTION`.
     program : int, optional
@@ -37,23 +37,23 @@ def from_event_representation(
     is_drum : bool, optional
         A boolean indicating if it is a percussion track. Defaults to
         False.
-    use_single_note_off_event : bool
+    use_single_note_off_event : bool, optional
         Whether to use a single note-off event for all the pitches. If
         True, a note-off event will close all active notes, which can
         lead to lossy conversion for polyphonic music. Defaults to
         False.
-    use_end_of_sequence_event : bool
+    use_end_of_sequence_event : bool, optional
         Whether to append an end-of-sequence event to the encoded
         sequence. Defaults to False.
-    max_time_shift : int
+    max_time_shift : int, optional
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
         decomposed into two or more time-shift events. Defaults to 100.
-    velocity_bins : int
+    velocity_bins : int, optional
         Number of velocity bins to use. Defaults to 32.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
-    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}
+    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}, optional
         Policy for dealing with duplicate notes. When a note off event
         is presetned while there are multiple correspoding note on
         events that have not yet been closed, we need a policy to decide

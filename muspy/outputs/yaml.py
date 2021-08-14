@@ -1,7 +1,7 @@
 """YAML output interface."""
 import gzip
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, TextIO, Union
+from typing import TYPE_CHECKING, TextIO, Union
 
 from ..utils import yaml_dump
 
@@ -14,7 +14,7 @@ def save_yaml(
     music: "Music",
     skip_missing: bool = True,
     allow_unicode: bool = True,
-    compressed: Optional[bool] = None,
+    compressed: bool = None,
     **kwargs
 ):
     """Save a Music object to a YAML file.
@@ -25,10 +25,10 @@ def save_yaml(
         Path or file to save the YAML data.
     music : :class:`muspy.Music`
         Music object to save.
-    skip_missing : bool
+    skip_missing : bool, optional
         Whether to skip attributes with value None or those that are
         empty lists. Defaults to True.
-    allow_unicode : bool
+    allow_unicode : bool, optional
         Whether to escape non-ASCII characters. Will be passed to
         :py:func:`json.dumps`. Defaults to False.
     compressed : bool, optional

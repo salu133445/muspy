@@ -1,6 +1,6 @@
 """Hymnal Dataset."""
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 
 import requests
 
@@ -30,7 +30,7 @@ class HymnalDataset(FolderDataset):
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
-        use_converted: Optional[bool] = None,
+        use_converted: bool = None,
     ):
 
         self.root = Path(root).expanduser().resolve()
@@ -130,7 +130,7 @@ class HymnalTuneDataset(FolderDataset):
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
-        use_converted: Optional[bool] = None,
+        use_converted: bool = None,
     ):
 
         self.root = Path(root).expanduser().resolve()

@@ -2,7 +2,7 @@
 import subprocess
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from numpy import ndarray
@@ -28,9 +28,7 @@ def _check_soundfont(soundfont_path):
 
 
 def synthesize(
-    music: "Music",
-    soundfont_path: Optional[Union[str, Path]] = None,
-    rate: int = 44100,
+    music: "Music", soundfont_path: Union[str, Path] = None, rate: int = 44100,
 ) -> ndarray:
     """Synthesize a Music object to raw audio.
 
@@ -41,7 +39,7 @@ def synthesize(
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
-    rate : int
+    rate : int, optional
         Sample rate (in samples per sec). Defaults to 44100.
 
     Returns
@@ -86,9 +84,9 @@ def synthesize(
 def write_audio(
     path: Union[str, Path],
     music: "Music",
-    soundfont_path: Optional[Union[str, Path]] = None,
+    soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
-    audio_format: Optional[str] = None,
+    audio_format: str = None,
 ):
     """Write a Music object to an audio file.
 
@@ -103,7 +101,7 @@ def write_audio(
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
-    rate : int
+    rate : int, optional
         Sample rate (in samples per sec). Defaults to 44100.
     audio_format : str, {'wav', 'aiff', 'flac', 'oga'}, optional
         File format to write. If None, infer it from the extension.

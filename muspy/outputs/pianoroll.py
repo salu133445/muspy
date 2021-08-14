@@ -1,6 +1,6 @@
 """Piano-roll output interface."""
 from operator import attrgetter
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 from numpy import ndarray
@@ -82,7 +82,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
 def to_pianoroll_representation(
     music: "Music",
     encode_velocity: bool = True,
-    dtype: Optional[Union[np.dtype, type, str]] = None,
+    dtype: Union[np.dtype, type, str] = None,
 ) -> ndarray:
     """Encode notes into piano-roll representation.
 
@@ -90,11 +90,11 @@ def to_pianoroll_representation(
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    encode_velocity : bool
+    encode_velocity : bool, optional
         Whether to encode velocities. If True, a binary-valued array
         will be return. Otherwise, an integer array will be return.
         Defaults to True.
-    dtype : np.dtype, type or str
+    dtype : np.dtype, type or str, optional
         Data type of the return array. Defaults to uint8 if
         `encode_velocity` is True, otherwise bool.
 

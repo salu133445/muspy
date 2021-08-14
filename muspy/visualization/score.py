@@ -326,9 +326,9 @@ class ScorePlotter:
         fig: Figure,
         ax: Axes,
         resolution: int,
-        note_spacing: Optional[int] = None,
-        font_path: Optional[Union[str, Path]] = None,
-        font_scale: Optional[float] = None,
+        note_spacing: int = None,
+        font_path: Union[str, Path] = None,
+        font_scale: float = None,
     ):
         self.fig = fig
         self.ax = ax
@@ -400,7 +400,7 @@ class ScorePlotter:
         self._bottom_note_y = self._baseline
         self._top_note_y = self._baseline + 4
 
-    def adjust_fonts(self, scale: Optional[float] = None):
+    def adjust_fonts(self, scale: float = None):
         """Adjust the fonts."""
         if scale is None:
             scale = self.font_scale
@@ -436,10 +436,10 @@ class ScorePlotter:
 
     def update_boundaries(
         self,
-        left: Optional[float] = None,
-        right: Optional[float] = None,
-        bottom: Optional[float] = None,
-        top: Optional[float] = None,
+        left: float = None,
+        right: float = None,
+        bottom: float = None,
+        top: float = None,
     ):
         """Update boundaries."""
         if left is not None:
@@ -452,7 +452,7 @@ class ScorePlotter:
             self.top = max(self.top, top)
 
     def plot_staffs(
-        self, start: Optional[float] = None, end: Optional[float] = None
+        self, start: float = None, end: float = None
     ) -> List[Line2D]:
         """Plot the staffs."""
         if start is None:
@@ -780,12 +780,12 @@ class ScorePlotter:
 
 def show_score(
     music: "Music",
-    figsize: Optional[Tuple[float, float]] = None,
+    figsize: Tuple[float, float] = None,
     clef: str = "treble",
-    clef_octave: Optional[int] = 0,
-    note_spacing: Optional[int] = None,
-    font_path: Optional[Union[str, Path]] = None,
-    font_scale: Optional[float] = None,
+    clef_octave: int = 0,
+    note_spacing: int = None,
+    font_path: Union[str, Path] = None,
+    font_scale: float = None,
 ) -> ScorePlotter:
     """Show score visualization.
 
@@ -796,9 +796,9 @@ def show_score(
     figsize : (float, float), optional
         Width and height in inches. Defaults to Matplotlib
         configuration.
-    clef : str, {'treble', 'alto', 'bass'}
+    clef : str, {'treble', 'alto', 'bass'}, optional
         Clef type. Defaults to a treble clef.
-    clef_octave : int
+    clef_octave : int, optional
         Clef octave. Defaults to zero.
     note_spacing : int, optional
         Spacing of notes. Defaults to 4.

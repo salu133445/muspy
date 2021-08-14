@@ -1,6 +1,6 @@
 """Wrapper functions for input interface."""
 from pathlib import Path
-from typing import List, Optional, TextIO, Union
+from typing import List, TextIO, Union
 
 from mido import MidiFile
 from music21.stream import Stream
@@ -22,9 +22,7 @@ from .pitch import from_pitch_representation
 from .yaml import load_yaml
 
 
-def load(
-    path: Union[str, Path, TextIO], kind: Optional[str] = None, **kwargs
-) -> Music:
+def load(path: Union[str, Path, TextIO], kind: str = None, **kwargs) -> Music:
     """Load a JSON or a YAML file into a Music object.
 
     This is a wrapper function for :func:`muspy.load_json` and
@@ -76,7 +74,7 @@ def load(
 
 
 def read(
-    path: Union[str, Path], kind: Optional[str] = None, **kwargs
+    path: Union[str, Path], kind: str = None, **kwargs
 ) -> Union[Music, List[Music]]:
     """Read a MIDI/MusicXML/ABC file into a Music object.
 

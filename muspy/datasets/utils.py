@@ -8,7 +8,7 @@ import shutil
 import tarfile
 import zipfile
 from pathlib import Path
-from typing import Optional, Union
+from typing import Union
 from urllib.request import urlretrieve
 
 from tqdm import tqdm
@@ -120,9 +120,9 @@ def download_url(
     url: str,
     path: Union[str, Path],
     overwrite: bool = False,
-    size: Optional[int] = None,
-    md5: Optional[str] = None,
-    sha256: Optional[str] = None,
+    size: int = None,
+    md5: str = None,
+    sha256: str = None,
     verbose: bool = True,
 ):
     """Download a file from a URL.
@@ -193,8 +193,8 @@ def download_url(
 
 def extract_archive(
     path: Union[str, Path],
-    root: Optional[Union[str, Path]] = None,
-    kind: Optional[str] = None,
+    root: Union[str, Path] = None,
+    kind: str = None,
     cleanup: bool = False,
     verbose: bool = True,
 ):

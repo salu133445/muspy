@@ -45,7 +45,7 @@ def from_pypianoroll_track(
     ----------
     track : :class:`pypianoroll.Track`
         Pypianoroll Track object to convert.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
 
     Returns
@@ -75,7 +75,7 @@ def from_pypianoroll(
     ----------
     multitrack : :class:`pypianoroll.Multitrack`
         Pypianoroll Multitrack object to convert.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
 
     Returns
@@ -127,9 +127,9 @@ def from_pianoroll_representation(
     is_drum : bool, optional
         A boolean indicating if it is a percussion track. Defaults to
         False.
-    encode_velocity : bool
+    encode_velocity : bool, optional
         Whether to encode velocities. Defaults to True.
-    default_velocity : int
+    default_velocity : int, optional
         Default velocity value to use when decoding. Defaults to 64.
 
     Returns
