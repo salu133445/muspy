@@ -31,13 +31,13 @@ def test_is_valid():
 
 def test_get_real_end_time():
     music = muspy.load(TEST_JSON_PATH)
-    assert music.get_real_end_time() == 3.75
+    assert music.get_real_end_time() == 1.875 # 2.25 / 72 * 60
 
 
 def test_adjust_resolution():
     music = muspy.load(TEST_JSON_PATH)
-    music.adjust_resolution(2)
-    check_tracks(music.tracks, resolution=2)
+    music.adjust_resolution(12)
+    check_tracks(music.tracks, resolution=12)
 
 
 def test_clip():

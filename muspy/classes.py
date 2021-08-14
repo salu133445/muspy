@@ -139,7 +139,7 @@ class KeySignature(Base):
     Attributes
     ----------
     time : int
-        Start time of the key signature, in time steps or seconds.
+        Start time of the key signature, in time steps.
     root : int, optional
         Root (tonic) of the key signature.
     mode : str, optional
@@ -189,7 +189,7 @@ class TimeSignature(Base):
     Attributes
     ----------
     time : int
-        Start time of the time signature, in time steps or seconds.
+        Start time of the time signature, in time steps.
     numerator : int
         Numerator of the time signature.
     denominator : int
@@ -220,7 +220,7 @@ class Lyric(Base):
     Attributes
     ----------
     time : int
-        Start time of the lyric, in time steps or seconds.
+        Start time of the lyric, in time steps.
     lyric : str
         Lyric (sentence, word, syllable, etc.).
 
@@ -239,11 +239,11 @@ class Annotation(Base):
     Attributes
     ----------
     time : int
-        Start time of the annotation, in time steps or seconds.
+        Start time of the annotation, in time steps.
     annotation : any
         Annotation of any type.
     group : str, optional
-        Group name for better organizing the annotations.
+        Group name (for better organizing the annotations).
 
     """
 
@@ -274,7 +274,8 @@ class Note(Base):
     velocity : int, optional
         Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
     pitch_str : str
-        Note pitch as a string, useful for distinguishing C# and Db.
+        Note pitch as a string, useful for distinguishing, e.g., C# and
+        Db.
 
     """
 

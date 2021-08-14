@@ -278,7 +278,7 @@ def test_write():
 
     loaded = muspy.read(temp_dir / "test.mid")
 
-    assert loaded.resolution == 4
+    assert loaded.resolution == 24
     assert loaded.metadata.title == "Für Elise"
     assert loaded.metadata.source_filename == "test.mid"
     assert loaded.metadata.source_format == "midi"

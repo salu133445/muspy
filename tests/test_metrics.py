@@ -81,7 +81,7 @@ def test_drum_pattern_consistency():
 def test_groove_consistency():
     music = muspy.load(TEST_JSON_PATH)
     measure_resolution = int(1.5 * music.resolution)
-    assert groove_consistency(music, measure_resolution) == 5 / 6
+    assert groove_consistency(music, measure_resolution) == 11 / 12
 
 
 def test_pitch_entropy():

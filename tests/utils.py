@@ -55,8 +55,8 @@ def check_time_signatures(time_signatures):
 def check_downbeats(downbeats):
     """Check downbeats."""
     assert len(downbeats) == 2
-    assert downbeats[0] == 4
-    assert downbeats[1] == 16
+    assert downbeats[0] == 12
+    assert downbeats[1] == 48
 
 
 def check_lyrics(lyrics):
@@ -72,7 +72,7 @@ def check_annotations(annotations):
     assert annotations[0].group is None
 
 
-def check_tracks(tracks, resolution=4):
+def check_tracks(tracks, resolution=24):
     """Check tracks."""
     assert len(tracks) == 1
     assert tracks[0].program == 0
@@ -83,15 +83,15 @@ def check_tracks(tracks, resolution=4):
     assert len(notes) == 9
     pitches = (76, 75, 76, 75, 76, 71, 74, 72, 69)
     for i, (note, pitch) in enumerate(zip(notes, pitches)):
-        assert note.time == i * resolution // 2
+        assert note.time == i * resolution // 4
         assert note.pitch == pitch
-        assert note.duration == resolution // 2
+        assert note.duration == resolution // 4
         assert note.velocity == 64
 
     assert len(tracks[0].chords) == 0
 
 
-def check_music(music, ext=None, resolution=4):
+def check_music(music, ext=None, resolution=24):
     """Check example music."""
     check_metadata(music.metadata, ext)
     assert music.resolution == resolution
