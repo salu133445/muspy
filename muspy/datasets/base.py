@@ -3,6 +3,7 @@ import json
 import warnings
 from pathlib import Path
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -30,20 +31,9 @@ from .utils import (
     extract_archive,
 )
 
-try:
-    from torch.utils.data import Dataset as TorchDataset
-
-    HAS_TORCH = True
-except ImportError:
-    HAS_TORCH = False
-
-try:
-    import tensorflow as tf
+if TYPE_CHECKING:
     from tensorflow.data import Dataset as TFDataset
-
-    HAS_TENSORFLOW = True
-except ImportError:
-    HAS_TENSORFLOW = False
+    from torch.utils.data import Dataset as TorchDataset
 
 
 RemoteDatasetType = TypeVar("RemoteDatasetType", bound="RemoteDataset")
@@ -295,8 +285,93 @@ class Dataset:
                 "Only one of `representation` and `factory` can be given."
             )
 
-        if not HAS_TORCH:
-            raise ImportError("Optional package torch is required.")
+        try:
+            from torch.utils.data import Dataset as TorchDataset
+        except ImportError:
+            raise ImportError("Optional package pytorch is required.")
+
+        class TorchMusicFactoryDataset(TorchDataset):
+            """A PyTorch dataset built from a Music dataset.
+
+            Parameters
+            ----------
+            dataset : :class:`muspy.Dataset`
+                Dataset object to base on.
+            factory : Callable
+                Function to be applied to the Music objects. The input is a
+                Music object, and the output is an array or a tensor.
+
+            """
+
+            def __init__(
+                self,
+                dataset: Dataset,
+                factory: Callable,
+                subset: str = "Full",
+                indices: Optional[Sequence[int]] = None,
+            ):
+                self.dataset = dataset
+                self.factory = factory
+                self.subset = subset
+                self.indices = indices
+                if self.indices is not None:
+                    self.indices = sorted(
+                        idx for idx in self.indices if idx < len(self.dataset)
+                    )
+
+            def __repr__(self) -> str:
+                return (
+                    f"TorchMusicFactoryDataset(dataset={self.dataset}, "
+                    f"factory={self.subset}, subset={self.factory})"
+                )
+
+            def __getitem__(self, index):
+                if self.indices is None:
+                    return self.factory(self.dataset[index])
+                return self.factory(self.dataset[self.indices[index]])
+
+            def __len__(self) -> int:
+                if self.indices is None:
+                    return len(self.dataset)
+                return len(self.indices)
+
+        class TorchRepresentationDataset(TorchMusicFactoryDataset):
+            """A PyTorch music dataset.
+
+            Parameters
+            ----------
+            dataset : :class:`muspy.Dataset`
+                Dataset object to base on.
+            representation : str
+                Target representation. See
+                :func:`muspy.to_representation()` for available
+                representation.
+
+            """
+
+            def __init__(
+                self,
+                dataset: Dataset,
+                representation: str,
+                subset: str = "Full",
+                indices: Optional[Sequence[int]] = None,
+                **kwargs: Any,
+            ):
+                self.representation = representation
+
+                def factory(music):
+                    return music.to_representation(representation, **kwargs)
+
+                super().__init__(
+                    dataset, factory=factory, subset=subset, indices=indices
+                )
+
+            def __repr__(self) -> str:
+                return (
+                    f"TorchRepresentationDataset(dataset={self.dataset}, "
+                    f"representation={self.representation}, "
+                    f"subset={self.subset})"
+                )
 
         # No split
         if splits is None:
@@ -306,7 +381,7 @@ class Dataset:
                 )
             return TorchMusicFactoryDataset(self, factory)  # type: ignore
 
-        datasets: Dict[str, TorchDataset] = {}
+        datasets: Dict[str, "TorchDataset"] = {}
         indices_list = self.split(split_filename, splits, random_state)
         for key, value in indices_list.items():
             if representation is not None:
@@ -371,7 +446,10 @@ class Dataset:
                 "Only one of `representation` and `factory` can be given."
             )
 
-        if not HAS_TENSORFLOW:
+        try:
+            import tensorflow as tf
+            from tensorflow.data import Dataset as TFDataset
+        except ImportError:
             raise ImportError("Optional package tensorflow is required.")
 
         if representation is not None:
@@ -622,89 +700,6 @@ class RemoteDataset(Dataset):
         return self.download(overwrite=overwrite, verbose=verbose).extract(
             cleanup=cleanup, verbose=verbose
         )
-
-
-if HAS_TORCH:
-
-    class TorchMusicFactoryDataset(TorchDataset):
-        """A PyTorch dataset built from a Music dataset.
-
-        Parameters
-        ----------
-        dataset : :class:`muspy.Dataset`
-            Dataset object to base on.
-        factory : Callable
-            Function to be applied to the Music objects. The input is a
-            Music object, and the output is an array or a tensor.
-
-        """
-
-        def __init__(
-            self,
-            dataset: Dataset,
-            factory: Callable,
-            subset: str = "Full",
-            indices: Optional[Sequence[int]] = None,
-        ):
-            self.dataset = dataset
-            self.factory = factory
-            self.subset = subset
-            self.indices = indices
-            if self.indices is not None:
-                self.indices = sorted(
-                    idx for idx in self.indices if idx < len(self.dataset)
-                )
-
-        def __repr__(self) -> str:
-            return (
-                f"TorchMusicFactoryDataset(dataset={self.dataset}, "
-                f"factory={self.subset}, subset={self.factory})"
-            )
-
-        def __getitem__(self, index):
-            if self.indices is None:
-                return self.factory(self.dataset[index])
-            return self.factory(self.dataset[self.indices[index]])
-
-        def __len__(self) -> int:
-            if self.indices is None:
-                return len(self.dataset)
-            return len(self.indices)
-
-    class TorchRepresentationDataset(TorchMusicFactoryDataset):
-        """A PyTorch music dataset.
-
-        Parameters
-        ----------
-        dataset : :class:`muspy.Dataset`
-            Dataset object to base on.
-        representation : str
-            Target representation. See :func:`muspy.to_representation()`
-            for available representation.
-        """
-
-        def __init__(
-            self,
-            dataset: Dataset,
-            representation: str,
-            subset: str = "Full",
-            indices: Optional[Sequence[int]] = None,
-            **kwargs: Any,
-        ):
-            self.representation = representation
-
-            def factory(music):
-                return music.to_representation(representation, **kwargs)
-
-            super().__init__(
-                dataset, factory=factory, subset=subset, indices=indices
-            )
-
-        def __repr__(self) -> str:
-            return (
-                f"TorchRepresentationDataset(dataset={self.dataset}, "
-                f"representation={self.representation}, subset={self.subset})"
-            )
 
 
 class MusicDataset(Dataset):
