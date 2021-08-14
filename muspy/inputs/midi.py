@@ -83,8 +83,11 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 
     time = 0
     song_title = None
-    tempos, key_signatures, time_signatures = [], [], []
-    lyrics, annotations = [], []
+    tempos: List[Tempo] = []
+    key_signatures: List[KeySignature] = []
+    time_signatures: List[TimeSignature] = []
+    lyrics: List[Lyric] = []
+    annotations: List[Annotation] = []
     copyrights = []
 
     # Create a list to store converted tracks
@@ -595,7 +598,7 @@ def read_midi(
 
     """
     if backend == "mido":
-        return read_midi_mido(path, duplicate_note_mode)
+        return read_midi_mido(path, duplicate_note_mode=duplicate_note_mode)
     if backend == "pretty_midi":
         return read_midi_pretty_midi(path)
     raise ValueError("`backend` must by one of 'mido' and 'pretty_midi'.")
