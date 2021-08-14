@@ -53,8 +53,8 @@ class Metadata(Base):
 
     Attributes
     ----------
-    schema_version : str, optional
-        Schema version. Defaults to the latest version.
+    schema_version : str (default: `muspy.DEFAULT_SCHEMA_VERSION`)
+        Schema version.
     title : str, optional
         Song title.
     creators : list of str, optional
@@ -223,8 +223,8 @@ class Beat(Base):
     ----------
     time : int
         Time of the beat, in time steps.
-    is_downbeat : bool, optional
-        Whether it is a downbeat. Defaults to False
+    is_downbeat : bool (default: False)
+        Whether it is a downbeat.
 
     """
 
@@ -288,11 +288,11 @@ class Note(Base):
     time : int
         Start time of the note, in time steps.
     pitch : int
-        Note pitch, as a MIDI note number.
+        Note pitch, as a MIDI note number. Valid values are 0 to 127.
     duration : int
         Duration of the note, in time steps.
-    velocity : int, optional
-        Note velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
+    velocity : int (default: `muspy.DEFAULT_VELOCITY` (default: 64))
+        Note velocity. Valid values are 0 to 127.
     pitch_str : str, optional
         Note pitch as a string, useful for distinguishing, e.g., C# and
         Db.
@@ -373,8 +373,8 @@ class Note(Base):
             timing, i.e., `new_time = func(old_time)`.
         attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -411,10 +411,10 @@ class Note(Base):
 
         Parameters
         ----------
-        lower : int, optional
-            Lower bound. Defaults to 0.
-        upper : int, optional
-            Upper bound. Defaults to 127.
+        lower : int (default: 0)
+            Lower bound.
+        upper : int (default: 127)
+            Upper bound.
 
         Returns
         -------
@@ -437,11 +437,11 @@ class Chord(Base):
     time : int
         Start time of the chord, in time steps.
     pitches : list of int
-        Note pitches, as MIDI note numbers.
+        Note pitches, as MIDI note numbers. Valid values are 0 to 127.
     duration : int
         Duration of the chord, in time steps.
-    velocity : int, optional
-        Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
+    velocity : int (default: `muspy.DEFAULT_VELOCITY` (default: 64))
+        Chord velocity. Valid values are 0 to 127.
     pitches_str : list of str, optional
         Note pitches as strings (useful for distinguishing, e.g., C# and
         Db).
@@ -525,10 +525,10 @@ class Chord(Base):
         func : callable
             The function used to compute the new timing from the old
             timing, i.e., `new_time = func(old_time)`.
-        attr : str
+        attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -566,10 +566,10 @@ class Chord(Base):
 
         Parameters
         ----------
-        lower : int, optional
-            Lower bound. Defaults to 0.
-        upper : int, optional
-            Upper bound. Defaults to 127.
+        lower : int (default: 0)
+            Lower bound.
+        upper : int (default: 127)
+            Upper bound.
 
         Returns
         -------
@@ -589,21 +589,21 @@ class Track(ComplexBase):
 
     Attributes
     ----------
-    program : int, 0-127, optional
+    program : int (default: 0 (Acoustic Grand Piano))
         Program number, according to General MIDI specification [1]_.
-        Defaults to 0 (Acoustic Grand Piano).
-    is_drum : bool, optional
-        Whether it is a percussion track. Defaults to False.
+        Valid values are 0 to 127.
+    is_drum : bool (default: False)
+        Whether it is a percussion track.
     name : str, optional
         Track name.
-    notes : list of :class:`muspy.Note`, optional
-        Musical notes. Defaults to an empty list.
-    chords : list of :class:`muspy.Chord`, optional
-        Chords. Defaults to an empty list.
-    annotations : list of :class:`muspy.Annotation`, optional
-        Annotations. Defaults to an empty list.
-    lyrics : list of :class:`muspy.Lyric`, optional
-        Lyrics. Defaults to an empty list.
+    notes : list of :class:`muspy.Note` (default: [])
+        Musical notes.
+    chords : list of :class:`muspy.Chord` (default: [])
+        Chords.
+    annotations : list of :class:`muspy.Annotation` (default: [])
+        Annotations.
+    lyrics : list of :class:`muspy.Lyric` (default: [])
+        Lyrics.
 
     Note
     ----
@@ -671,9 +671,8 @@ class Track(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool, optional
-            Whether all the list attributes are sorted. Defaults to
-            False.
+        is_sorted : bool (default: False)
+            Whether all the list attributes are sorted.
 
         """
 
@@ -696,10 +695,10 @@ class Track(ComplexBase):
 
         Parameters
         ----------
-        lower : int, optional
-            Lower bound. Defaults to 0.
-        upper : int, optional
-            Upper bound. Defaults to 127.
+        lower : int (default: 0)
+            Lower bound.
+        upper : int (default: 127)
+            Upper bound.
 
         Returns
         -------

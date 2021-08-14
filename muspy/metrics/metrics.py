@@ -283,9 +283,8 @@ def polyphony_rate(music: Music, threshold: int = 2) -> float:
     ----------
     music : :class:`muspy.Music`
         Music object to evaluate.
-    threshold : int, optional
+    threshold : int (default: 2)
         Threshold of number of pitches to count into the numerator.
-        Defaults to 2.
 
     Returns
     -------

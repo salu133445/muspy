@@ -109,17 +109,17 @@ class Dataset:
         ----------
         root : str or Path
             Root directory to save the data.
-        kind : {'json', 'yaml'}, optional
-            File format to save the data. Defaults to 'json'.
-        n_jobs : int, optional
+        kind : {'json', 'yaml'} (default: 'json')
+            File format to save the data.
+        n_jobs : int (default: 1)
             Maximum number of concurrently running jobs. If equal to 1,
-            disable multiprocessing. Defaults to 1.
-        ignore_exceptions : bool, optional
+            disable multiprocessing.
+        ignore_exceptions : bool (default: True)
             Whether to ignore errors and skip failed conversions. This
             can be helpful if some source files are known to be
-            corrupted. Defaults to True.
-        verbose : bool, optional
-            Whether to be verbose. Defaults to True.
+            corrupted.
+        verbose : bool (default: True)
+            Whether to be verbose.
         **kwargs
             Keyword arguments to pass to :func:`muspy.save`.
 
@@ -497,14 +497,14 @@ class RemoteDataset(Dataset):
 
     Parameters
     ----------
-    download_and_extract : bool, optional
-        Whether to download and extract the dataset. Defaults to False.
-    overwrite : bool, optional
-        Whether to overwrite existing file(s). Defaults to False.
-    cleanup : bool, optional
-        Whether to remove the source archive(s). Defaults to False.
-    verbose : bool, optional
-        Whether to be verbose. Defaults to True.
+    download_and_extract : bool (default: False)
+        Whether to download and extract the dataset.
+    overwrite : bool (default: False)
+        Whether to overwrite existing file(s).
+    cleanup : bool (default: False)
+        Whether to remove the source archive(s).
+    verbose : bool (default: True)
+        Whether to be verbose.
 
     Raises
     ------
@@ -615,10 +615,10 @@ class RemoteDataset(Dataset):
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Whether to overwrite existing file(s). Defaults to False.
-        verbose : bool, optional
-            Whether to be verbose. Defaults to True.
+        overwrite : bool (default: False)
+            Whether to overwrite existing file(s).
+        verbose : bool (default: True)
+            Whether to be verbose.
 
         Returns
         -------
@@ -651,11 +651,10 @@ class RemoteDataset(Dataset):
 
         Parameters
         ----------
-        cleanup : bool, optional
+        cleanup : bool (default: False)
             Whether to remove the source archive after extraction.
-            Defaults to False.
-        verbose : bool, optional
-            Whether to be verbose. Defaults to True.
+        verbose : bool (default: True)
+            Whether to be verbose.
 
         Returns
         -------
@@ -686,12 +685,12 @@ class RemoteDataset(Dataset):
 
         Parameters
         ----------
-        overwrite : bool, optional
-            Whether to overwrite existing file(s). Defaults to False.
-        cleanup : bool, optional
-            Whether to remove the source archive(s). Defaults to False.
-        verbose : bool, optional
-            Whether to be verbose. Defaults to True.
+        overwrite : bool (default: False)
+            Whether to overwrite existing file(s).
+        cleanup : bool (default: False)
+            Whether to remove the source archive(s).
+        verbose : bool (default: True)
+            Whether to be verbose.
 
         Returns
         -------
@@ -710,8 +709,8 @@ class MusicDataset(Dataset):
     ----------
     root : str or Path
         Root directory of the dataset.
-    kind : {'json', 'yaml'}, optional
-        File format of the data. Defaults to 'json'.
+    kind : {'json', 'yaml'} (default: 'json')
+        File format of the data.
 
     See Also
     --------
@@ -743,17 +742,17 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
     ----------
     root : str or Path
         Root directory of the dataset.
-    kind : {'json', 'yaml'}, optional
-        File format of the data. Defaults to 'json'.
+    kind : {'json', 'yaml'} (default: 'json')
+        File format of the data.
 
     Parameters
     ----------
-    download_and_extract : bool, optional
-        Whether to download and extract the dataset. Defaults to False.
-    overwrite : bool, optional
-        Whether to overwrite existing file(s). Defaults to False.
-    cleanup : bool, optional
-        Whether to remove the source archive(s). Defaults to False.
+    download_and_extract : bool (default: False)
+        Whether to download and extract the dataset.
+    overwrite : bool (default: False)
+        Whether to overwrite existing file(s).
+    cleanup : bool (default: False)
+        Whether to remove the source archive(s).
 
     See Also
     --------
@@ -801,22 +800,21 @@ class FolderDataset(Dataset):
 
     Parameters
     ----------
-    convert : bool, optional
+    convert : bool (default: False)
         Whether to convert the dataset to MusPy JSON/YAML files. If
         False, will check if converted data exists. If so, disable
         on-the-fly mode. If not, enable on-the-fly mode and warns.
-        Defaults to False.
-    kind : {'json', 'yaml'}, optional
-        File format to save the data. Defaults to 'json'.
-    n_jobs : int, optional
+    kind : {'json', 'yaml'} (default: 'json')
+        File format to save the data.
+    n_jobs : int (default: 1)
         Maximum number of concurrently running jobs. If equal to 1,
-        disable multiprocessing. Defaults to 1.
-    ignore_exceptions : bool, optional
+        disable multiprocessing.
+    ignore_exceptions : bool (default: True)
         Whether to ignore errors and skip failed conversions. This can
         be helpful if some source files are known to be corrupted.
-        Defaults to True.
     use_converted : bool, optional
         Force to disable on-the-fly mode and use converted data.
+        Defaults to True if converted data exist, otherwise False.
 
     Important
     ---------
@@ -984,17 +982,17 @@ class FolderDataset(Dataset):
 
         Parameters
         ----------
-        kind : {'json', 'yaml'}, optional
-            File format to save the data. Defaults to 'json'.
-        n_jobs : int, optional
+        kind : {'json', 'yaml'} (default: 'json')
+            File format to save the data.
+        n_jobs : int (default: 1)
             Maximum number of concurrently running jobs. If equal to 1,
-            disable multiprocessing. Defaults to 1.
-        ignore_exceptions : bool, optional
+            disable multiprocessing.
+        ignore_exceptions : bool (default: True)
             Whether to ignore errors and skip failed conversions. This
             can be helpful if some source files are known to be
-            corrupted. Defaults to True.
-        verbose : bool, optional
-            Whether to be verbose. Defaults to True.
+            corrupted.
+        verbose : bool (default: True)
+            Whether to be verbose.
         **kwargs
             Keyword arguments to pass to :func:`muspy.save`.
 
@@ -1033,26 +1031,25 @@ class RemoteFolderDataset(FolderDataset, RemoteDataset):
 
     Parameters
     ----------
-    download_and_extract : bool, optional
-        Whether to download and extract the dataset. Defaults to False.
-    cleanup : bool, optional
-        Whether to remove the source archive(s). Defaults to False.
-    convert : bool, optional
+    download_and_extract : bool (default: False)
+        Whether to download and extract the dataset.
+    cleanup : bool (default: False)
+        Whether to remove the source archive(s).
+    convert : bool (default: False)
         Whether to convert the dataset to MusPy JSON/YAML files. If
         False, will check if converted data exists. If so, disable
         on-the-fly mode. If not, enable on-the-fly mode and warns.
-        Defaults to False.
-    kind : {'json', 'yaml'}, optional
-        File format to save the data. Defaults to 'json'.
-    n_jobs : int, optional
+    kind : {'json', 'yaml'} (default: 'json')
+        File format to save the data.
+    n_jobs : int (default: 1)
         Maximum number of concurrently running jobs. If equal to 1,
-        disable multiprocessing. Defaults to 1.
-    ignore_exceptions : bool, optional
+        disable multiprocessing.
+    ignore_exceptions : bool (default: True)
         Whether to ignore errors and skip failed conversions. This can
         be helpful if some source files are known to be corrupted.
-        Defaults to True.
     use_converted : bool, optional
-        Force to disable on-the-fly mode and use stored converted data
+        Force to disable on-the-fly mode and use converted data.
+        Defaults to True if converted data exist, otherwise False.
 
     See Also
     --------

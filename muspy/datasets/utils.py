@@ -73,8 +73,8 @@ def check_md5(path: Union[str, Path], md5: str, chunk_size: int = 1024 * 1024):
         Path to the file.
     md5 : str
         Expected MD5 hash of the file.
-    chunk_size : int, optional
-        Chunk size used to compute the MD5 hash. Defaults to 2^20.
+    chunk_size : int (default: 2^20)
+        Chunk size used to compute the MD5 hash.
 
     """
     return compute_md5(path, chunk_size) == md5
@@ -109,8 +109,8 @@ def check_sha256(
         Path to the file.
     sha256 : str
         Expected sha256 hash of the file.
-    chunk_size : int, optional
-        Chunk size used to compute the sha256 hash. Defaults to 2^20.
+    chunk_size : int (default: 2^20)
+        Chunk size used to compute the sha256 hash.
 
     """
     return compute_sha256(path, chunk_size) == sha256
@@ -133,8 +133,8 @@ def download_url(
         URL to the file to download.
     path : str or Path
         Path to save the downloaded file.
-    overwrite : bool, optional
-        Whether to overwrite existing downloaded file. Defaults to False.
+    overwrite : bool (default: False)
+        Whether to overwrite existing downloaded file.
     size : int, optional
         Expected size of the downloaded file. Defaults to skip size
         check.
@@ -144,8 +144,8 @@ def download_url(
     sha256 : str, optional
         Expected sha256 checksum of the downloaded file. Defaults to
         skip sha256 check.
-    verbose : bool, optional
-        Whether to be verbose. Defaults to True.
+    verbose : bool (default: True)
+        Whether to be verbose.
 
     """
     path = Path(path)
@@ -209,11 +209,10 @@ def extract_archive(
         directory that contains the archive.
     kind : {'zip', 'tar', 'tgz', 'txz', 'gz', 'xz'}, optional
         Fromat of the archive. Defaults to infer from the extension.
-    cleanup : bool, optional
+    cleanup : bool (default: False)
         Whether to remove the source archive after extraction.
-        Defaults to False.
-    verbose : bool, optional
-        Whether to be verbose. Defaults to True.
+    verbose : bool (default: True)
+        Whether to be verbose.
 
     """
     path = Path(path)

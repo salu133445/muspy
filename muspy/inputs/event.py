@@ -5,7 +5,7 @@ from operator import attrgetter
 import numpy as np
 from numpy import ndarray
 
-from ..classes import Note, Track
+from ..classes import DEFAULT_VELOCITY, Note, Track
 from ..music import DEFAULT_RESOLUTION, Music
 
 
@@ -18,7 +18,7 @@ def from_event_representation(
     use_end_of_sequence_event: bool = False,
     max_time_shift: int = 100,
     velocity_bins: int = 32,
-    default_velocity: int = 64,
+    default_velocity: int = DEFAULT_VELOCITY,
     duplicate_note_mode: str = "fifo",
 ) -> Music:
     """Decode event-based representation into a Music object.
@@ -27,42 +27,38 @@ def from_event_representation(
     ----------
     array : ndarray
         Array in event-based representation to decode.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
-    program : int, optional
-        Program number according to General MIDI specification [1].
-        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
-        Piano).
-    is_drum : bool, optional
-        A boolean indicating if it is a percussion track. Defaults to
-        False.
-    use_single_note_off_event : bool, optional
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
+    program : int (default: 0 (Acoustic Grand Piano))
+        Program number, according to General MIDI specification [1].
+        Valid values are 0 to 127.
+    is_drum : bool (default: False)
+        Whether it is a percussion track.
+    use_single_note_off_event : bool (default: False)
         Whether to use a single note-off event for all the pitches. If
         True, a note-off event will close all active notes, which can
-        lead to lossy conversion for polyphonic music. Defaults to
-        False.
-    use_end_of_sequence_event : bool, optional
+        lead to lossy conversion for polyphonic music.
+    use_end_of_sequence_event : bool (default: False)
         Whether to append an end-of-sequence event to the encoded
-        sequence. Defaults to False.
-    max_time_shift : int, optional
+        sequence.
+    max_time_shift : int (default: 100)
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
-        decomposed into two or more time-shift events. Defaults to 100.
-    velocity_bins : int, optional
-        Number of velocity bins to use. Defaults to 32.
-    default_velocity : int, optional
-        Default velocity value to use when decoding. Defaults to 64.
-    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}, optional
+        decomposed into two or more time-shift events.
+    velocity_bins : int (default: 32)
+        Number of velocity bins to use.
+    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+        Default velocity value to use when decoding.
+    duplicate_note_mode : {'fifo', 'lifo', 'all'} (default: 'fifo')
         Policy for dealing with duplicate notes. When a note off event
         is presetned while there are multiple correspoding note on
         events that have not yet been closed, we need a policy to decide
         which note on messages to close. This is only effective when
-        `use_single_note_off_event` is False. Defaults to 'fifo'.
+        `use_single_note_off_event` is False.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out): close the latest note on
-        - 'close_all': close all note on messages
+        - 'all': close all note on messages
 
     Returns
     -------
@@ -74,6 +70,11 @@ def from_event_representation(
     [1] https://www.midi.org/specifications/item/gm-level-1-sound-set
 
     """
+    if duplicate_note_mode.lower() not in ("fifo", "lifo", "all"):
+        raise ValueError(
+            "`duplicate_note_mode` must be one of 'fifo', 'lifo' and " "'all'."
+        )
+
     # Cast the array to integer
     if not np.issubdtype(array.dtype, np.integer):
         raise TypeError("Array must be of type int.")
@@ -156,8 +157,8 @@ def from_event_representation(
                 notes.append(note)
                 del active_notes[pitch][-1]
 
-            # 'close_all' - close all note on events
-            elif duplicate_note_mode.lower() == "close_all":
+            # 'all' - close all note on events
+            elif duplicate_note_mode.lower() == "all":
                 for note in active_notes[pitch]:
                     note.duration = time - note.time
                     notes.append(note)

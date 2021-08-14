@@ -65,24 +65,23 @@ class Music(ComplexBase):
 
     Attributes
     ----------
-    metadata : :class:`muspy.Metadata`, optional
+    metadata : :class:`muspy.Metadata` (default: `Metadata()`)
         Metadata.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
-    tempos : list of :class:`muspy.Tempo`, optional
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
+    tempos : list of :class:`muspy.Tempo` (default: [])
         Tempo changes.
-    key_signatures : list of :class:`muspy.KeySignature`, optional
+    key_signatures : list of :class:`muspy.KeySignature` (default: [])
         Key signatures changes.
-    time_signatures : list of :class:`muspy.TimeSignature`, optional
+    time_signatures : list of :class:`muspy.TimeSignature` (default: [])
         Time signature changes.
-    beats : list of :class:`muspy.Beat`, optional
+    beats : list of :class:`muspy.Beat` (default: [])
         Beats.
-    lyrics : list of :class:`muspy.Lyric`, optional
+    lyrics : list of :class:`muspy.Lyric` (default: [])
         Lyrics.
-    annotations : list of :class:`muspy.Annotation`, optional
+    annotations : list of :class:`muspy.Annotation` (default: [])
         Annotations.
-    tracks : list of :class:`muspy.Track`, optional
+    tracks : list of :class:`muspy.Track` (default: [])
         Music tracks.
 
     Note
@@ -173,9 +172,8 @@ class Music(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool, optional
-            Whether all the list attributes are sorted. Defaults to
-            False.
+        is_sorted : bool (default: False)
+            Whether all the list attributes are sorted.
 
         """
 
@@ -214,9 +212,8 @@ class Music(ComplexBase):
 
         Parameters
         ----------
-        is_sorted : bool, optional
-            Whether all the list attributes are sorted. Defaults to
-            False.
+        is_sorted : bool (default: False)
+            Whether all the list attributes are sorted.
 
         """
         # Get symbolic end time
@@ -285,8 +282,8 @@ class Music(ComplexBase):
             `new_resolution = old_resolution * factor`. For example, a
             factor of 2 double the resolution, and a factor of 0.5 halve
             the resolution.
-        rounding : {'round', 'ceil', 'floor'} or callable, optional
-            Rounding mode. Defaults to 'round'.
+        rounding : {'round', 'ceil', 'floor'} or callable (default: 'round')
+            Rounding mode.
 
         Returns
         -------
@@ -336,10 +333,10 @@ class Music(ComplexBase):
 
         Parameters
         ----------
-        lower : int, optional
-            Lower bound. Defaults to 0.
-        upper : int, optional
-            Upper bound. Defaults to 127.
+        lower : int (default: 0)
+            Lower bound.
+        upper : int (default: 127)
+            Upper bound.
 
         Returns
         -------

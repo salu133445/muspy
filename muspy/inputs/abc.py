@@ -20,10 +20,9 @@ def read_abc_string(
         ABC data to parse.
     number : int, optional
         Reference number of a specific tune to read (i.e., the 'X:'
-        field).
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+        field). Defaults to read all tunes.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -65,10 +64,9 @@ def read_abc(
         Path to the ABC file to read.
     number : int, optional
         Reference number of a specific tune to read (i.e., the 'X:'
-        field).
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+        field). Defaults to read all tunes.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------

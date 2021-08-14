@@ -6,6 +6,8 @@ from ..inputs import read_midi
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "JSB Chorales Dataset"
 _DESCRIPTION = """\
 The JSB Chorales Dataset is a collection of 382 four-part chorales by Johann \

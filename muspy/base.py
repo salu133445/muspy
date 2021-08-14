@@ -155,12 +155,11 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool, optional
+        skip_missing : bool (default: True)
             Whether to skip attributes with value None or those that are
-            empty lists. Defaults to True.
-        deepcopy : bool, optional
-            Whether to make deep copies of the attributes. Defaults to
-            True.
+            empty lists.
+        deepcopy : bool (default: True)
+            Whether to make deep copies of the attributes.
 
         Returns
         -------
@@ -228,9 +227,9 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool, optional
+        skip_missing : bool (default: True)
             Whether to skip attributes with value None or those that are
-            empty lists. Defaults to True.
+            empty lists.
 
         Returns
         -------
@@ -252,9 +251,9 @@ class Base:
 
         Parameters
         ----------
-        skip_missing : bool, optional
+        skip_missing : bool (default: True)
             Whether to skip attributes with value None or those that are
-            empty lists. Defaults to True.
+            empty lists.
 
         See Also
         --------
@@ -307,8 +306,8 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -364,8 +363,8 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -395,15 +394,13 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
         bool
             Whether the attribute is of a valid type.
-        recursive : bool
-            Whether to apply recursively. Defaults to True.
 
         See Also
         --------
@@ -428,8 +425,8 @@ class Base:
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -482,8 +479,8 @@ class Base:
             timing, i.e., `new_time = func(old_time)`.
         attr : str, optional
             Attribute to adjust. Defaults to adjust all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -569,9 +566,8 @@ class ComplexBase(Base):
             list attributes with the corresponding list attributes of
             the other object. If an iterable is given, call
             :meth:`muspy.ComplexBase.append` for each item.
-        deepcopy : bool, optional
+        deepcopy : bool (default: False)
             Whether to make deep copies of the appended objects.
-            Defaults to False.
 
         Returns
         -------
@@ -631,8 +627,8 @@ class ComplexBase(Base):
         ----------
         attr : str, optional
             Attribute to validate. Defaults to validate all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -686,8 +682,8 @@ class ComplexBase(Base):
         ----------
         attr : str, optional
             Attribute to check. Defaults to check all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------
@@ -728,8 +724,8 @@ class ComplexBase(Base):
         ----------
         attr : str, optional
             Attribute to sort. Defaults to sort all attributes.
-        recursive : bool, optional
-            Whether to apply recursively. Defaults to True.
+        recursive : bool (default: True)
+            Whether to apply recursively.
 
         Returns
         -------

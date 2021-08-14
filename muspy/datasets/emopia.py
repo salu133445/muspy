@@ -7,6 +7,8 @@ from ..inputs import read_midi
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "EMOPIA Dataset"
 _DESCRIPTION = """\
 EMOPIA (pronounced ‘yee-mò-pi-uh’) dataset is a shared multi-modal (audio and \

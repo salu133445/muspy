@@ -1,6 +1,8 @@
 """Nottingham Database."""
 from .base import DatasetInfo, RemoteABCFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "Nottingham Database"
 _DESCRIPTION = """\
 This is a collection of 1200 British and American folk tunes, (hornpipe, \

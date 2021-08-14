@@ -6,6 +6,8 @@ from ..inputs import read_midi
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "MusicNet Dataset"
 _DESCRIPTION = """\
 MusicNet is a collection of 330 freely-licensed classical music recordings, \

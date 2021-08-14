@@ -57,8 +57,8 @@ def adjust_resolution(
         `new_resolution = old_resolution * factor`. For example, a
         factor of 2 double the resolution, and a factor of 0.5 halve the
         resolution.
-    rounding : {'round', 'ceil', 'floor'} or callable, optional
-            Rounding mode. Defaults to 'round'.
+    rounding : {'round', 'ceil', 'floor'} or callable (default: 'round')
+            Rounding mode.
 
     """
     return music.adjust_resolution(
@@ -133,9 +133,8 @@ def extend(obj1: ComplexBase, obj2, deepcopy: bool = False) -> ComplexBase:
         list attributes with the corresponding list attributes of
         `obj2`. If an iterable is given, call `obj1.append` on each
         item.
-    deepcopy : bool
-        Whether to make deep copies of the appended objects. Defaults
-        to False.
+    deepcopy : bool (default: False)
+        Whether to make deep copies of the appended objects.
 
     See Also
     --------
@@ -155,10 +154,10 @@ def clip(
     obj : :class:`muspy.Music`, :class:`muspy.Track` or \
             :class:`muspy.Note`
         Object to clip.
-    lower : int or float, optional
-        Lower bound. Defaults to 0.
-    upper : int or float, optional
-        Upper bound. Defaults to 127.
+    lower : int or float (default: 0)
+        Lower bound.
+    upper : int or float (default: 127)
+        Upper bound.
 
     """
     return obj.clip(lower=lower, upper=upper)
@@ -174,8 +173,8 @@ def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
     ----------
     obj : :class:`muspy.Music` or :class:`muspy.Track`
         Object to inspect.
-    is_sorted : bool
-        Whether all the list attributes are sorted. Defaults to False.
+    is_sorted : bool (default: False)
+        Whether all the list attributes are sorted.
 
     """
     return obj.get_end_time(is_sorted=is_sorted)
@@ -192,8 +191,8 @@ def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
     ----------
     music : :class:`muspy.Music`
         Object to inspect.
-    is_sorted : bool, optional
-        Whether all the list attributes are sorted. Defaults to False.
+    is_sorted : bool (default: False)
+        Whether all the list attributes are sorted.
 
     """
     return music.get_real_end_time(is_sorted=is_sorted)
@@ -238,12 +237,11 @@ def to_ordered_dict(
     ----------
     obj : :class:`muspy.Base`
         Object to convert.
-    skip_missing : bool, optional
+    skip_missing : bool (default: True)
         Whether to skip attributes with value None or those that are
-        empty lists. Defaults to True.
-    deepcopy : bool, optional
-        Whether to make deep copies of the attributes. Defaults to
-        False.
+        empty lists.
+    deepcopy : bool (default: True)
+        Whether to make deep copies of the attributes.
 
     Returns
     -------

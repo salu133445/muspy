@@ -32,7 +32,6 @@ class HymnalDataset(FolderDataset):
         ignore_exceptions: bool = True,
         use_converted: bool = None,
     ):
-
         self.root = Path(root).expanduser().resolve()
         if not self.root.exists():
             raise ValueError("`root` must be an existing path.")
@@ -77,7 +76,10 @@ class HymnalDataset(FolderDataset):
             # the tolerance
             while consecutive_failure_count < tolerance:
                 # Send a HEAD request to check if content type is MIDI
-                url = f"https://www.hymnal.net/en/hymn/{key}/{idx}/f={self._type}"
+                url = (
+                    f"https://www.hymnal.net/en/hymn/{key}/{idx}/"
+                    f"f={self._type}"
+                )
                 req = requests.head(url)
                 if req.headers["Content-Type"] != "audio/midi":
                     consecutive_failure_count += 1
@@ -177,7 +179,10 @@ class HymnalTuneDataset(FolderDataset):
             # the tolerance
             while consecutive_failure_count < tolerance:
                 # Send a HEAD request to check if content type is MIDI
-                url = f"https://www.hymnal.net/en/hymn/{key}/{idx}/f={self._type}"
+                url = (
+                    f"https://www.hymnal.net/en/hymn/{key}/{idx}/"
+                    f"f={self._type}"
+                )
                 req = requests.head(url)
                 if req.headers["Content-Type"] != "audio/midi":
                     consecutive_failure_count += 1

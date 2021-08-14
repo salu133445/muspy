@@ -7,7 +7,7 @@ from numpy import ndarray
 from pypianoroll import Multitrack
 from pypianoroll import Track as PypianorollTrack
 
-from ..classes import Metadata, Note, Tempo, Track
+from ..classes import DEFAULT_VELOCITY, Metadata, Note, Tempo, Track
 from ..music import DEFAULT_RESOLUTION, Music
 
 
@@ -37,7 +37,7 @@ def _pianoroll_to_notes(
 
 
 def from_pypianoroll_track(
-    track: PypianorollTrack, default_velocity: int = 64
+    track: PypianorollTrack, default_velocity: int = DEFAULT_VELOCITY
 ) -> Track:
     """Return a Pypianoroll Track object as a Track object.
 
@@ -45,8 +45,8 @@ def from_pypianoroll_track(
     ----------
     track : :class:`pypianoroll.Track`
         Pypianoroll Track object to convert.
-    default_velocity : int, optional
-        Default velocity value to use when decoding. Defaults to 64.
+    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+        Default velocity value to use when decoding.
 
     Returns
     -------
@@ -67,7 +67,7 @@ def from_pypianoroll_track(
 
 
 def from_pypianoroll(
-    multitrack: Multitrack, default_velocity: int = 64
+    multitrack: Multitrack, default_velocity: int = DEFAULT_VELOCITY
 ) -> Music:
     """Return a Pypianoroll Multitrack object as a Music object.
 
@@ -75,8 +75,8 @@ def from_pypianoroll(
     ----------
     multitrack : :class:`pypianoroll.Multitrack`
         Pypianoroll Multitrack object to convert.
-    default_velocity : int, optional
-        Default velocity value to use when decoding. Defaults to 64.
+    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+        Default velocity value to use when decoding.
 
     Returns
     -------
@@ -109,7 +109,7 @@ def from_pianoroll_representation(
     program: int = 0,
     is_drum: bool = False,
     encode_velocity: bool = True,
-    default_velocity: int = 64,
+    default_velocity: int = DEFAULT_VELOCITY,
 ) -> Music:
     """Decode piano-roll representation into a Music object.
 
@@ -117,20 +117,18 @@ def from_pianoroll_representation(
     ----------
     array : ndarray
         Array in piano-roll representation to decode.
-    resolution : int
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
-    program : int, optional
-        Program number according to General MIDI specification [1].
-        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
-        Piano).
-    is_drum : bool, optional
-        A boolean indicating if it is a percussion track. Defaults to
-        False.
-    encode_velocity : bool, optional
-        Whether to encode velocities. Defaults to True.
-    default_velocity : int, optional
-        Default velocity value to use when decoding. Defaults to 64.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
+    program : int (default: 0 (Acoustic Grand Piano))
+        Program number, according to General MIDI specification [1].
+        Valid values are 0 to 127.
+    is_drum : bool (default: False)
+        Whether it is a percussion track.
+    encode_velocity : bool (default: True)
+        Whether to encode velocities.
+    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+        Default velocity value to use when decoding. Only used when
+        `encode_velocity` is True.
 
     Returns
     -------

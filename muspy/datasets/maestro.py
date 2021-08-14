@@ -6,6 +6,8 @@ from ..inputs import read_midi
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "MAESTRO Dataset"
 _DESCRIPTION = """\
 MAESTRO (MIDI and Audio Edited for Synchronous TRacks and Organization) is a \

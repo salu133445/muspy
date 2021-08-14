@@ -24,12 +24,12 @@ def save_json(
         Path or file to save the JSON data.
     music : :class:`muspy.Music`
         Music object to save.
-    skip_missing : bool, optional
+    skip_missing : bool (default: True)
         Whether to skip attributes with value None or those that are
-        empty lists. Defaults to True.
-    ensure_ascii : bool, optional
+        empty lists.
+    ensure_ascii : bool (default: False)
         Whether to escape non-ASCII characters. Will be passed to
-        PyYAML's `yaml.dump`. Defaults to False.
+        PyYAML's `yaml.dump`.
     compressed : bool, optional
         Whether to save as a compressed JSON file (`.json.gz`). Has no
         effect when `path` is a file object. Defaults to infer from the

@@ -27,10 +27,10 @@ def to_pitch_representation(
     ----------
     music : :class:`muspy.Music`
         Music object to encode.
-    use_hold_state : bool, optional
-        Whether to use a special state for holds. Defaults to False.
-    dtype : np.dtype, type or str, optional
-        Data type of the return array. Defaults to int.
+    use_hold_state : bool (default: False)
+        Whether to use a special state for holds.
+    dtype : np.dtype, type or str (default: int)
+        Data type of the return array.
 
     Returns
     -------

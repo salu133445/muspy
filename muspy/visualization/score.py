@@ -310,14 +310,14 @@ class ScorePlotter:
         Axes object to plot the score on.
     resolution : int
         Time steps per quarter note.
-    note_spacing : int, optional
-        Spacing of notes. Defaults to 4.
+    note_spacing : int (default: 4)
+        Spacing of notes.
     font_path : str or Path, optional
         Path to the music font. Defaults to the path to the downloaded
         Bravura font.
-    font_scale : float, optional
-        Font scaling factor for finetuning. Defaults to 140, optimized
-        for the Bravura font.
+    font_scale : float (default: 140)
+        Font scaling factor for finetuning. The default value of 140 is
+        optimized for the default Bravura font.
 
     """
 
@@ -796,18 +796,18 @@ def show_score(
     figsize : (float, float), optional
         Width and height in inches. Defaults to Matplotlib
         configuration.
-    clef : str, {'treble', 'alto', 'bass'}, optional
-        Clef type. Defaults to a treble clef.
-    clef_octave : int, optional
-        Clef octave. Defaults to zero.
-    note_spacing : int, optional
-        Spacing of notes. Defaults to 4.
+    clef : {'treble', 'alto', 'bass'} (default: 'treble')
+        Clef type.
+    clef_octave : int (default: 0)
+        Clef octave.
+    note_spacing : int (default: 4)
+        Spacing of notes.
     font_path : str or Path, optional
-        Path to the music font. Defaults to the path to the built-in
+        Path to the music font. Defaults to the path to the downloaded
         Bravura font.
-    font_scale : float, optional
-        Font scaling factor for finetuning. Defaults to 140, optimized
-        for the Bravura font.
+    font_scale : float (default: 140)
+        Font scaling factor for finetuning. The default value of 140 is
+        optimized for the default Bravura font.
 
     Returns
     -------

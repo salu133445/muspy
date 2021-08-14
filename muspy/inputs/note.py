@@ -4,7 +4,7 @@ from operator import attrgetter
 import numpy as np
 from numpy import ndarray
 
-from ..classes import Note, Track
+from ..classes import DEFAULT_VELOCITY, Note, Track
 from ..music import DEFAULT_RESOLUTION, Music
 
 
@@ -15,7 +15,7 @@ def from_note_representation(
     is_drum: bool = False,
     use_start_end: bool = False,
     encode_velocity: bool = True,
-    default_velocity: int = 64,
+    default_velocity: int = DEFAULT_VELOCITY,
 ) -> Music:
     """Decode note-based representation into a Music object.
 
@@ -23,24 +23,21 @@ def from_note_representation(
     ----------
     array : ndarray
         Array in note-based representation to decode.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
-    program : int, optional
-        Program number according to General MIDI specification [1].
-        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand
-        Piano).
-    is_drum : bool, optional
-        A boolean indicating if it is a percussion track. Defaults to
-        False.
-    use_start_end : bool, optional
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
+    program : int (default: 0 (Acoustic Grand Piano))
+        Program number, according to General MIDI specification [1].
+        Valid values are 0 to 127.
+    is_drum : bool (default: False)
+        Whether it is a percussion track.
+    use_start_end : bool (default: False)
         Whether to use 'start' and 'end' to encode the timing rather
-        than 'time' and 'duration'. Defaults to False.
-    encode_velocity : bool, optional
-        Whether to encode note velocities. Defaults to True.
-    default_velocity : int, optional
-        Default velocity value to use when decoding if `encode_velocity`
-        is False. Defaults to 64.
+        than 'time' and 'duration'.
+    encode_velocity : bool (default: True)
+        Whether to encode note velocities.
+    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)
+        Default velocity value to use when decoding. Only used when
+        `encode_velocity` is True.
 
     Returns
     -------

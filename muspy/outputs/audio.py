@@ -39,8 +39,8 @@ def synthesize(
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
-    rate : int, optional
-        Sample rate (in samples per sec). Defaults to 44100.
+    rate : int (default: 44100)
+        Sample rate (in samples per sec).
 
     Returns
     -------
@@ -101,10 +101,10 @@ def write_audio(
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
-    rate : int, optional
-        Sample rate (in samples per sec). Defaults to 44100.
+    rate : int (default: 44100)
+        Sample rate (in samples per sec).
     audio_format : str, {'wav', 'aiff', 'flac', 'oga'}, optional
-        File format to write. If None, infer it from the extension.
+        File format to write. Defaults to infer from the extension.
 
     """
     if audio_format is None:

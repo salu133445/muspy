@@ -51,16 +51,16 @@ class NoteRepresentationProcessor:
 
     Attributes
     ----------
-    use_start_end : bool
+    use_start_end : bool (default: False)
         Whether to use 'start' and 'end' to encode the timing rather
-        than 'time' and 'duration'. Defaults to False.
-    encode_velocity : bool, optional
-        Whether to encode note velocities. Defaults to True.
-    dtype : dtype, type or str, optional
-        Data type of the return array. Defaults to int.
-    default_velocity : int, optional
+        than 'time' and 'duration'.
+    encode_velocity : bool (default: True)
+        Whether to encode note velocities.
+    dtype : dtype, type or str (default: int)
+        Data type of the return array.
+    default_velocity : int (default: 64)
         Default velocity value to use when decoding if `encode_velocity`
-        is False. Defaults to 64.
+        is False.
 
     """
 
@@ -143,29 +143,27 @@ class EventRepresentationProcessor:
 
     Attributes
     ----------
-    use_single_note_off_event : bool
+    use_single_note_off_event : bool (default: False)
         Whether to use a single note-off event for all the pitches. If
         True, the note-off event will close all active notes, which can
-        lead to lossy conversion for polyphonic music. Defaults to
-        False.
-    use_end_of_sequence_event : bool, optional
+        lead to lossy conversion for polyphonic music.
+    use_end_of_sequence_event : bool (default: False)
         Whether to append an end-of-sequence event to the encoded
-        sequence. Defaults to False.
-    encode_velocity : bool, optional
-        Whether to encode velocities. Defaults to False.
-    force_velocity_event : bool, optional
+        sequence.
+    encode_velocity : bool (default: False)
+        Whether to encode velocities.
+    force_velocity_event : bool (default: True)
         Whether to add a velocity event before every note-on event. If
         False, velocity events are only used when the note velocity is
-        changed (i.e., different from the previous one). Defaults to
-        True.
-    max_time_shift : int, optional
+        changed (i.e., different from the previous one).
+    max_time_shift : int (default: 100)
         Maximum time shift (in ticks) to be encoded as an separate
         event. Time shifts larger than `max_time_shift` will be
-        decomposed into two or more time-shift events. Defaults to 100.
-    velocity_bins : int, optional
-        Number of velocity bins to use. Defaults to 32.
-    default_velocity : int, optional
-        Default velocity value to use when decoding. Defaults to 64.
+        decomposed into two or more time-shift events.
+    velocity_bins : int (default: 32)
+        Number of velocity bins to use.
+    default_velocity : int (default: 64)
+        Default velocity value to use when decoding.
 
     """
 
@@ -259,10 +257,10 @@ class PitchRepresentationProcessor:
 
     Attributes
     ----------
-    use_hold_state : bool, optional
-        Whether to use a special state for holds. Defaults to False.
-    default_velocity : int, optional
-        Default velocity value to use when decoding. Defaults to 64.
+    use_hold_state : bool (default: False)
+        Whether to use a special state for holds.
+    default_velocity : int (default: 64)
+        Default velocity value to use when decoding.
 
     """
 
@@ -334,13 +332,12 @@ class PianoRollRepresentationProcessor:
 
     Attributes
     ----------
-    encode_velocity : bool, optional
+    encode_velocity : bool (default: True)
         Whether to encode velocities. If True, a binary-valued array
         will be return. Otherwise, an integer array will be return.
-        Defaults to True.
-    default_velocity : int, optional
+    default_velocity : int (default: 64)
         Default velocity value to use when decoding if `encode_velocity`
-        is False. Defaults to 64.
+        is False.
 
     """
 

@@ -10,6 +10,8 @@ from ..inputs import from_music21_score
 from ..music import DEFAULT_RESOLUTION, Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "Haydn Op.20 Dataset"
 _DESCRIPTION = """\
 This dataset is a set of functional harmonic analysis annotations \

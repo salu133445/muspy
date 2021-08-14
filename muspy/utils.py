@@ -119,7 +119,9 @@ def _dict_representer(dumper, data):
 OrderedDumper.add_representer(OrderedDict, _dict_representer)
 
 
-def yaml_dump(data, Dumper=None, allow_unicode: bool = True, **kwargs):
+def yaml_dump(
+    data, Dumper=None, allow_unicode: bool = True, **kwargs
+):  # pylint: disable=invalid-name
     """Dump data to YAML, which supports OrderedDict.
 
     Code adapted from https://stackoverflow.com/a/21912744.

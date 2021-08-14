@@ -6,6 +6,8 @@ from ..inputs import read_midi
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "Lakh MIDI Dataset"
 _DESCRIPTION = """\
 The Lakh MIDI dataset is a collection of 176,581 unique MIDI files, 45,129 of \

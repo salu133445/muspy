@@ -43,15 +43,15 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
     ----------
     midi : :class:`mido.MidiFile`
         Mido MidiFile object to convert.
-    duplicate_note_mode : {'fifo', 'lifo', 'close_all'}, optional
+    duplicate_note_mode : {'fifo', 'lifo', 'all'} (default: 'fifo')
         Policy for dealing with duplicate notes. When a note off
         message is presetned while there are multiple correspoding note
         on messages that have not yet been closed, we need a policy to
-        decide which note on messages to close. Defaults to 'fifo'.
+        decide which note on messages to close.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out): close the latest note on
-        - 'close_all': close all note on messages
+        - 'all': close all note on messages
 
     Returns
     -------
@@ -59,10 +59,9 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
         Converted Music object.
 
     """
-    if duplicate_note_mode.lower() not in ("fifo", "lifo", "close_all"):
+    if duplicate_note_mode.lower() not in ("fifo", "lifo", "all"):
         raise ValueError(
-            "`duplicate_note_mode` must be one of 'fifo', 'lifo' and "
-            "'close_all'."
+            "`duplicate_note_mode` must be one of 'fifo', 'lifo' and " "'all'."
         )
 
     def _get_active_track(t_idx, program, channel):
@@ -297,15 +296,15 @@ def read_midi_mido(
     ----------
     path : str or Path
         Path to the MIDI file to read.
-    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}
+    duplicate_note_mode : {'fifo', 'lifo, 'all'} (default: 'fifo')
         Policy for dealing with duplicate notes. When a note off message
         is presetned while there are multiple correspoding note on
         messages that have not yet been closed, we need a policy to
-        decide which note on messages to close. Defaults to 'fifo'.
+        decide which note on messages to close.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out):close the latest note on
-        - 'close_all': close all note on messages
+        - 'all': close all note on messages
 
     Returns
     -------
@@ -458,9 +457,8 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
     ----------
     midi : :class:`pretty_midi.PrettyMIDI`
         PrettyMIDI object to convert.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -576,18 +574,18 @@ def read_midi(
     ----------
     path : str or Path
         Path to the MIDI file to read.
-    backend: {'mido', 'pretty_midi'}, optional
+    backend: {'mido', 'pretty_midi'} (default: 'mido')
         Backend to use.
-    duplicate_note_mode : {'fifo', 'lifo, 'close_all'}, optional
+    duplicate_note_mode : {'fifo', 'lifo, 'all'} (default: 'fifo')
         Policy for dealing with duplicate notes. When a note off message
         is presetned while there are multiple correspoding note on
         messages that have not yet been closed, we need a policy to
-        decide which note on messages to close. Defaults to 'fifo'. Only
-        used when `backend='mido'`.
+        decide which note on messages to close. Only used when `backend`
+        is 'mido'.
 
         - 'fifo' (first in first out): close the earliest note on
         - 'lifo' (first in first out):close the latest note on
-        - 'close_all': close all note on messages
+        - 'all': close all note on messages
 
     Returns
     -------

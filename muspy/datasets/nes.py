@@ -6,6 +6,8 @@ from ..inputs import read_midi
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "NES Music Database"
 _DESCRIPTION = """\
 The Nintendo Entertainment System Music Database (NES-MDB) is a dataset \

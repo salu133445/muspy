@@ -1,6 +1,8 @@
 """Essen Folk Song Database."""
 from .base import DatasetInfo, RemoteABCFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "Essen Folk Song Database"
 _DESCRIPTION = """\
 This is a collection of about 8000 European and Chinese folk songs written in \

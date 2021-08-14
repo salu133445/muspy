@@ -6,6 +6,8 @@ from ..inputs import read_musicxml
 from ..music import Music
 from .base import DatasetInfo, RemoteFolderDataset
 
+# pylint: disable=line-too-long
+
 _NAME = "Wikifonia Dataset"
 _DESCRIPTION = """\
 Wikifonia dataset is a collection of 6675 lead sheets in MusicMXL format. It

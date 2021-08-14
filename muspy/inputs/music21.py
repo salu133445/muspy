@@ -61,9 +61,8 @@ def parse_tempos(
     ----------
     stream : `music21.stream.Stream`
         Stream object to parse.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -89,9 +88,8 @@ def parse_key_signatures(
     ----------
     stream : `music21.stream.Stream`
         Stream object to parse.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -129,9 +127,8 @@ def parse_time_signatures(
     ----------
     stream : `music21.stream.Stream`
         Stream object to parse.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -163,9 +160,8 @@ def parse_beats(
         Stream object to parse.
     time_signatures : list of :class:`muspy.TimeSignature`
         Time signature objects.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -220,9 +216,8 @@ def parse_notes_and_chords(
     ----------
     stream : `music21.stream.Stream`
         Stream object to parse.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -294,9 +289,8 @@ def parse_track(part: Part, resolution: int = DEFAULT_RESOLUTION) -> Track:
     ----------
     part : `music21.stream.Part`
         Part object to parse.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -336,9 +330,8 @@ def from_music21_part(
     ----------
     part : `music21.stream.Part`
         Part object to parse.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -361,9 +354,8 @@ def from_music21_score(
     ----------
     score : `music21.stream.Score`
         Score object to convert.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
@@ -403,9 +395,8 @@ def from_music21_opus(
     ----------
     opus : `music21.stream.Opus`
         Opus object to convert.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note. D
 
     Returns
     -------
@@ -425,9 +416,8 @@ def from_music21(
     ----------
     stream : `music21.stream.Stream`
         Stream object to convert.
-    resolution : int, optional
-        Time steps per quarter note. Defaults to
-        `muspy.DEFAULT_RESOLUTION`.
+    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)
+        Time steps per quarter note.
 
     Returns
     -------
