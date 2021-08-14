@@ -192,15 +192,18 @@ libraries and commonly-used representations in music generation.</p>
 <li><p>save</p></li>
 <li><p>save_json</p></li>
 <li><p>save_yaml</p></li>
+<li><p>to_default_event_representation</p></li>
 <li><p>to_event_representation</p></li>
 <li><p>to_mido</p></li>
 <li><p>to_music21</p></li>
 <li><p>to_note_representation</p></li>
 <li><p>to_object</p></li>
+<li><p>to_performance_event_representation</p></li>
 <li><p>to_pianoroll_representation</p></li>
 <li><p>to_pitch_representation</p></li>
 <li><p>to_pretty_midi</p></li>
 <li><p>to_pypianoroll</p></li>
+<li><p>to_remi_event_representation</p></li>
 <li><p>to_representation</p></li>
 <li><p>write</p></li>
 <li><p>write_abc</p></li>
@@ -251,10 +254,10 @@ type).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Path</em><em> or </em><em>TextIO</em>) – Path or file to save the JSON data.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to save.</p></li>
-<li><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
-empty lists. Defaults to True.</p></li>
-<li><p><strong>ensure_ascii</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to escape non-ASCII characters. Will be passed to
-PyYAML’s <cite>yaml.dump</cite>. Defaults to False.</p></li>
+<li><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to skip attributes with value None or those that are
+empty lists.</p></li>
+<li><p><strong>ensure_ascii</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to escape non-ASCII characters. Will be passed to
+PyYAML’s <cite>yaml.dump</cite>.</p></li>
 <li><p><strong>compressed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to save as a compressed JSON file (<cite>.json.gz</cite>). Has no
 effect when <cite>path</cite> is a file object. Defaults to infer from the
 extension (<cite>.gz</cite>).</p></li>
@@ -276,10 +279,10 @@ extension (<cite>.gz</cite>).</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>Path</em><em> or </em><em>TextIO</em>) – Path or file to save the YAML data.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to save.</p></li>
-<li><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to skip attributes with value None or those that are
-empty lists. Defaults to True.</p></li>
-<li><p><strong>allow_unicode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to escape non-ASCII characters. Will be passed to
-<a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>. Defaults to False.</p></li>
+<li><p><strong>skip_missing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to skip attributes with value None or those that are
+empty lists.</p></li>
+<li><p><strong>allow_unicode</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to escape non-ASCII characters. Will be passed to
+<a class="reference external" href="https://docs.python.org/3/library/json.html#json.dumps" title="(in Python v3.9)"><code class="xref py py-func docutils literal notranslate"><span class="pre">json.dumps()</span></code></a>.</p></li>
 <li><p><strong>compressed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to save as a compressed YAML file (<cite>.yaml.gz</cite>). Has no
 effect when <cite>path</cite> is a file object. Defaults to infer from the
 extension (<cite>.gz</cite>).</p></li>
@@ -290,6 +293,34 @@ extension (<cite>.gz</cite>).</p></li>
 <p class="rubric">Notes</p>
 <p>When a path is given, use UTF-8 encoding and gzip compression if
 <cite>compressed=True</cite>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.synthesize">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#synthesize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.synthesize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synthesize a Music object to raw audio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
+<li><p><strong>soundfont_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the
+downloaded MuseScore General soundfont.</p></li>
+<li><p><strong>rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 44100</em><em>)</em>) – Sample rate (in samples per sec).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Synthesized waveform.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>ndarray, dtype=int16, shape=(?, 2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.to_default_event_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_default_event_representation</code><span class="sig-paren">(</span><em class="sig-param">music</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_default_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_default_event_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode a Music object into the default event representation.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -306,22 +337,20 @@ time-shift events, and 356 to 387 for velocity events.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to encode.</p></li>
-<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a single note-off event for all the pitches. If
+<li><p><strong>use_single_note_off_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use a single note-off event for all the pitches. If
 True, the note-off event will close all active notes, which can
-lead to lossy conversion for polyphonic music. Defaults to
-False.</p></li>
-<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to append an end-of-sequence event to the encoded
-sequence. Defaults to False.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode velocities.</p></li>
-<li><p><strong>force_velocity_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to add a velocity event before every note-on event. If
+lead to lossy conversion for polyphonic music.</p></li>
+<li><p><strong>use_end_of_sequence_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to append an end-of-sequence event to the encoded
+sequence.</p></li>
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to encode velocities.</p></li>
+<li><p><strong>force_velocity_event</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to add a velocity event before every note-on event. If
 False, velocity events are only used when the note velocity is
-changed (i.e., different from the previous one). Defaults to
-True.</p></li>
-<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Maximum time shift (in ticks) to be encoded as an separate
+changed (i.e., different from the previous one).</p></li>
+<li><p><strong>max_time_shift</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 100</em><em>)</em>) – Maximum time shift (in ticks) to be encoded as an separate
 event. Time shifts larger than <cite>max_time_shift</cite> will be
-decomposed into two or more time-shift events. Defaults to 100.</p></li>
-<li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Number of velocity bins to use. Defaults to 32.</p></li>
-<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
+decomposed into two or more time-shift events.</p></li>
+<li><p><strong>velocity_bins</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 32</em><em>)</em>) – Number of velocity bins to use.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> (</em><em>default: int</em><em>)</em>) – Data type of the return array.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -341,18 +370,17 @@ decomposed into two or more time-shift events. Defaults to 100.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a> object) – Music object to convert.</p></li>
-<li><p><strong>use_note_off_message</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether to use note-off messages. If False, note-on messages
+<li><p><strong>use_note_off_message</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use note-off messages. If False, note-on messages
 with zero velocity are used instead. The advantage to using
 note-on messages at zero velocity is that it can avoid sending
-additional status bytes when Running Status is employed.
-Defaults to False.</p></li>
+additional status bytes when Running Status is employed.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Converted MidiFile object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiFile" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiFile</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiFile" title="(in Mido v1.2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiFile</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -389,10 +417,10 @@ duration and velocity (discarded when <cite>encode_velocity</cite> is False).</p
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to encode.</p></li>
-<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use ‘start’ and ‘end’ to encode the timing rather
-than ‘time’ and ‘duration’. Defaults to False.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode note velocities. Defaults to True.</p></li>
-<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
+<li><p><strong>use_start_end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use ‘start’ and ‘end’ to encode the timing rather
+than ‘time’ and ‘duration’.</p></li>
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to encode note velocities.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> (</em><em>default: int</em><em>)</em>) – Data type of the return array.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -408,7 +436,7 @@ than ‘time’ and ‘duration’. Defaults to False.</p></li>
 <dt id="muspy.outputs.to_object">
 <code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_object</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#to_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object as an object in other libraries.</p>
-<p>Supported classes are <cite>music21.Stream</cite>, <a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiTrack" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiTrack</span></code></a>,
+<p>Supported classes are <cite>music21.Stream</cite>, <a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiTrack" title="(in Mido v1.2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiTrack</span></code></a>,
 <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> and <a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -421,9 +449,15 @@ than ‘time’ and ‘duration’. Defaults to False.</p></li>
 <dd class="field-even"><p>Converted object.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><cite>music21.Stream</cite>, <a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiTrack" title="(in Mido v1.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiTrack</span></code></a>,             <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> or             <a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a></p>
+<dd class="field-odd"><p><cite>music21.Stream</cite>, <a class="reference external" href="https://mido.readthedocs.io/en/latest/lib.html#mido.MidiTrack" title="(in Mido v1.2.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mido.MidiTrack</span></code></a>,             <a class="reference external" href="https://craffel.github.io/pretty-midi/index.html#pretty_midi.PrettyMIDI" title="(in pretty_midi v0.2.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pretty_midi.PrettyMIDI</span></code></a> or             <a class="reference external" href="https://salu133445.github.io/pypianoroll/doc.html#pypianoroll.Multitrack" title="(in Pypianoroll)"><code class="xref py py-class docutils literal notranslate"><span class="pre">pypianoroll.Multitrack</span></code></a></p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="muspy.outputs.to_performance_event_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_performance_event_representation</code><span class="sig-paren">(</span><em class="sig-param">music</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_performance_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_performance_event_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode a Music object into the performance event representation.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -434,10 +468,9 @@ than ‘time’ and ‘duration’. Defaults to False.</p></li>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to encode.</p></li>
-<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to encode velocities. If True, a binary-valued array
-will be return. Otherwise, an integer array will be return.
-Defaults to True.</p></li>
-<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to uint8 if
+<li><p><strong>encode_velocity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: True</em><em>)</em>) – Whether to encode velocities. If True, a binary-valued array
+will be return. Otherwise, an integer array will be return.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Data type of the return array. Defaults to uint8 if
 <cite>encode_velocity</cite> is True, otherwise bool.</p></li>
 </ul>
 </dd>
@@ -458,14 +491,14 @@ Defaults to True.</p></li>
 pitch, rest and (optional) hold tokens. Only monophonic melodies are
 compatible with this representation. The output shape is T x 1,
 where T is the number of time steps. The values indicate whether the
-current time step is a pitch (0-127), a rest (128) or (optionally) a
+current time step is a pitch (0-127), a rest (128) or, optionally, a
 hold (129).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to encode.</p></li>
-<li><p><strong>use_hold_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a>) – Whether to use a special state for holds. Defaults to False.</p></li>
-<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a>) – Data type of the return array. Defaults to int.</p></li>
+<li><p><strong>use_hold_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em> (</em><em>default: False</em><em>)</em>) – Whether to use a special state for holds.</p></li>
+<li><p><strong>dtype</strong> (<em>np.dtype</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.9)"><em>type</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> (</em><em>default: int</em><em>)</em>) – Data type of the return array.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -515,6 +548,12 @@ hold (129).</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.outputs.to_remi_event_representation">
+<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_remi_event_representation</code><span class="sig-paren">(</span><em class="sig-param">music</em>, <em class="sig-param">dtype=&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/event.html#to_remi_event_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_remi_event_representation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Encode a Music object into the remi event representation.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.outputs.to_representation">
 <code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">to_representation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">kind</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/wrappers.html#to_representation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.to_representation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a Music object in a specific representation.</p>
@@ -530,28 +569,6 @@ hold (129).</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="muspy.outputs.synthesize">
-<code class="sig-prename descclassname">muspy.outputs.</code><code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#synthesize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.outputs.synthesize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Synthesize a Music object to raw audio.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
-<li><p><strong>soundfont_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the
-downloaded MuseScore General soundfont.</p></li>
-<li><p><strong>rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Sample rate (in samples per sec). Defaults to 44100.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Synthesized waveform.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray, dtype=int16, shape=(?, 2)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -604,8 +621,8 @@ downloaded MuseScore General soundfont.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
 <li><p><strong>soundfont_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the
 downloaded MuseScore General soundfont.</p></li>
-<li><p><strong>rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a>) – Sample rate (in samples per sec). Defaults to 44100.</p></li>
-<li><p><strong>audio_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>{'wav'</em><em>, </em><em>'aiff'</em><em>, </em><em>'flac'</em><em>, </em><em>'oga'}</em><em>, </em><em>optional</em>) – File format to write. If None, infer it from the extension.</p></li>
+<li><p><strong>rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em> (</em><em>default: 44100</em><em>)</em>) – Sample rate (in samples per sec).</p></li>
+<li><p><strong>audio_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>{'wav'</em><em>, </em><em>'aiff'</em><em>, </em><em>'flac'</em><em>, </em><em>'oga'}</em><em>, </em><em>optional</em>) – File format to write. Defaults to infer from the extension.</p></li>
 </ul>
 </dd>
 </dl>
@@ -620,7 +637,7 @@ downloaded MuseScore General soundfont.</p></li>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to write the MIDI file.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
-<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em>, </em><em>optional</em>) – Backend to use. Defaults to ‘mido’.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em> (</em><em>default: 'mido'</em><em>)</em>) – Backend to use.</p></li>
 </ul>
 </dd>
 </dl>

@@ -161,7 +161,7 @@
   <h1>Source code for muspy.datasets.music21</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Datasets built from music21 corpus.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">corpus</span>
 
@@ -210,7 +210,7 @@
         <span class="c1"># &quot;.abc&quot;,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">composer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">composer</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">composer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">composer</span> <span class="o">=</span> <span class="s2">&quot;ALL&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span>
@@ -246,15 +246,15 @@
 <span class="sd">        ----------</span>
 <span class="sd">        root : str or Path</span>
 <span class="sd">            Root directory to save the data.</span>
-<span class="sd">        kind : {&#39;json&#39;, &#39;yaml&#39;}, optional</span>
-<span class="sd">            File format to save the data. Defaults to &#39;json&#39;.</span>
-<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">        kind : {&#39;json&#39;, &#39;yaml&#39;} (default: &#39;json&#39;)</span>
+<span class="sd">            File format to save the data.</span>
+<span class="sd">        n_jobs : int (default: 1)</span>
 <span class="sd">            Maximum number of concurrently running jobs. If equal to 1,</span>
-<span class="sd">            disable multiprocessing. Defaults to 1.</span>
-<span class="sd">        ignore_exceptions : bool, optional</span>
+<span class="sd">            disable multiprocessing.</span>
+<span class="sd">        ignore_exceptions : bool (default: True)</span>
 <span class="sd">            Whether to ignore errors and skip failed conversions. This</span>
 <span class="sd">            can be helpful if some source files are known to be</span>
-<span class="sd">            corrupted. Defaults to True.</span>
+<span class="sd">            corrupted.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">,</span> <span class="n">ignore_exceptions</span><span class="p">)</span>

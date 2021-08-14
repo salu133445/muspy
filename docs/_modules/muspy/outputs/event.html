@@ -161,9 +161,10 @@
   <h1>Source code for muspy.outputs.event</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Event-based representation output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span><span class="p">,</span> <span class="n">itemgetter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">bidict</span> <span class="kn">import</span> <span class="n">bidict</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
@@ -193,29 +194,27 @@
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to encode.</span>
-<span class="sd">    use_single_note_off_event : bool</span>
+<span class="sd">    use_single_note_off_event : bool (default: False)</span>
 <span class="sd">        Whether to use a single note-off event for all the pitches. If</span>
 <span class="sd">        True, the note-off event will close all active notes, which can</span>
-<span class="sd">        lead to lossy conversion for polyphonic music. Defaults to</span>
-<span class="sd">        False.</span>
-<span class="sd">    use_end_of_sequence_event : bool</span>
+<span class="sd">        lead to lossy conversion for polyphonic music.</span>
+<span class="sd">    use_end_of_sequence_event : bool (default: False)</span>
 <span class="sd">        Whether to append an end-of-sequence event to the encoded</span>
-<span class="sd">        sequence. Defaults to False.</span>
-<span class="sd">    encode_velocity : bool</span>
+<span class="sd">        sequence.</span>
+<span class="sd">    encode_velocity : bool (default: False)</span>
 <span class="sd">        Whether to encode velocities.</span>
-<span class="sd">    force_velocity_event : bool</span>
+<span class="sd">    force_velocity_event : bool (default: True)</span>
 <span class="sd">        Whether to add a velocity event before every note-on event. If</span>
 <span class="sd">        False, velocity events are only used when the note velocity is</span>
-<span class="sd">        changed (i.e., different from the previous one). Defaults to</span>
-<span class="sd">        True.</span>
-<span class="sd">    max_time_shift : int</span>
+<span class="sd">        changed (i.e., different from the previous one).</span>
+<span class="sd">    max_time_shift : int (default: 100)</span>
 <span class="sd">        Maximum time shift (in ticks) to be encoded as an separate</span>
 <span class="sd">        event. Time shifts larger than `max_time_shift` will be</span>
-<span class="sd">        decomposed into two or more time-shift events. Defaults to 100.</span>
-<span class="sd">    velocity_bins : int</span>
-<span class="sd">        Number of velocity bins to use. Defaults to 32.</span>
-<span class="sd">    dtype : np.dtype, type or str</span>
-<span class="sd">        Data type of the return array. Defaults to int.</span>
+<span class="sd">        decomposed into two or more time-shift events.</span>
+<span class="sd">    velocity_bins : int (default: 32)</span>
+<span class="sd">        Number of velocity bins to use.</span>
+<span class="sd">    dtype : np.dtype, type or str (default: int)</span>
+<span class="sd">        Data type of the return array.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -292,6 +291,391 @@
         <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">offset_eos</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">EventSequence</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for handling an event sequence.</span>
+
+<span class="sd">    The EventSequence inherits from the builtin list. The elements are</span>
+<span class="sd">    integer codes of the events defined by its `indexer` attribute. The</span>
+<span class="sd">    corresponding events can be accessed by calling `events(idx)`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    indexer : bidict, optional</span>
+<span class="sd">        Indexer that defines the mapping between events and their codes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">indexer</span><span class="p">:</span> <span class="n">bidict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">iterable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indexer</span> <span class="o">=</span> <span class="n">indexer</span> <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">bidict</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the event at a given index.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexer</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="bp">self</span><span class="p">[</span><span class="n">idx</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="nf">events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of all events.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indexer</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="n">elem</span><span class="p">]</span> <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">append_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Append an event to the event sequence.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=unsubscriptable-object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexer</span><span class="p">[</span><span class="n">event</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">extend_events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">events</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Extend the event sequence by a list of events.&quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=unsubscriptable-object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indexer</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">inverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the corresponding event by its code.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexer</span><span class="o">.</span><span class="n">inverse</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_default_indexer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">bidict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the default indexer.&quot;&quot;&quot;</span>
+    <span class="n">indexer</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Note-on events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;note_on_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Note-off events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;note_off_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Time-shift events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;time_shift_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">bidict</span><span class="p">(</span><span class="n">indexer</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DefaultEventSequence</span><span class="p">(</span><span class="n">EventSequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for handling a MIDI-like event sequence.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    indexer : bidict, optional</span>
+<span class="sd">        Indexer that defines the mapping between events and their codes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">indexer</span><span class="p">:</span> <span class="n">bidict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">indexer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">get_default_indexer</span><span class="p">())</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_note_on_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a note-on event for a given pitch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;note_on_</span><span class="si">{</span><span class="n">pitch</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_note_off_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a note-off event for a given pitch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;note_off_</span><span class="si">{</span><span class="n">pitch</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_time_shift_events</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">time_shift</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of time-shift events for a given time-shift.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time_shift</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;time_shift_</span><span class="si">{</span><span class="n">time_shift</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">div</span><span class="p">,</span> <span class="n">mod</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">time_shift</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">div</span><span class="p">):</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;time_shift_100&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mod</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;time_shift_</span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">events</span>
+
+
+<span class="k">def</span> <span class="nf">to_default_event_sequence</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DefaultEventSequence</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object as a DefaultEventSequence object.&quot;&quot;&quot;</span>
+    <span class="c1"># Collect notes</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
+
+    <span class="c1"># Raise an error if no notes is found</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No notes found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a DefaultEventSequence object</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">DefaultEventSequence</span><span class="p">()</span>
+
+    <span class="c1"># Collect events</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_note_on_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">)))</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_note_off_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">)))</span>
+
+    <span class="c1"># Sort the events by time</span>
+    <span class="n">events</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Create event sequence</span>
+    <span class="n">last_event_time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">last_event_time</span><span class="p">:</span>
+            <span class="n">time_shift</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">last_event_time</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">extend_events</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">to_time_shift_events</span><span class="p">(</span><span class="n">time_shift</span><span class="p">))</span>
+        <span class="n">seq</span><span class="o">.</span><span class="n">append_event</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">last_event_time</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">seq</span>
+
+
+<div class="viewcode-block" id="to_default_event_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_default_event_representation">[docs]</a><span class="k">def</span> <span class="nf">to_default_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Encode a Music object into the default event representation.&quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">to_default_event_sequence</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_performance_indexer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">bidict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the default indexer.&quot;&quot;&quot;</span>
+    <span class="n">indexer</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Note-on events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;note_on_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Note-off events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;note_off_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Time-shift events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">101</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;time_shift_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Velocity events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">32</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;velocity_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">bidict</span><span class="p">(</span><span class="n">indexer</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">PerformanceEventSequence</span><span class="p">(</span><span class="n">EventSequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for handling a MIDI-like event sequence.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    indexer : bidict, optional</span>
+<span class="sd">        Indexer that defines the mapping between events and their codes.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">indexer</span><span class="p">:</span> <span class="n">bidict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">indexer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">get_performance_indexer</span><span class="p">())</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_note_on_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a note-on event for a given pitch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;note_on_</span><span class="si">{</span><span class="n">pitch</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_note_off_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a note-off event for a given pitch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;note_off_</span><span class="si">{</span><span class="n">pitch</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_velocity_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a velocity event for a given velocity.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;velocity_</span><span class="si">{</span><span class="n">velocity</span><span class="o">//</span><span class="mi">4</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_time_shift_events</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">time_shift</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return a list of time-shift events for a given time-shift.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">time_shift</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;time_shift_</span><span class="si">{</span><span class="n">time_shift</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">div</span><span class="p">,</span> <span class="n">mod</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">time_shift</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">div</span><span class="p">):</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;time_shift_100&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">mod</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;time_shift_</span><span class="si">{</span><span class="n">mod</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">events</span>
+
+
+<span class="k">def</span> <span class="nf">to_performance_event_sequence</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PerformanceEventSequence</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object as a PerformanceEventSequence object.&quot;&quot;&quot;</span>
+    <span class="c1"># Collect notes</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
+
+    <span class="c1"># Raise an error if no notes is found</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No notes found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a PerformanceEventSequence object</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">PerformanceEventSequence</span><span class="p">()</span>
+
+    <span class="c1"># Collect events</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_velocity_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">)))</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_note_on_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">)))</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_note_off_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">)))</span>
+
+    <span class="c1"># Sort the events by time</span>
+    <span class="n">events</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Create event sequence</span>
+    <span class="n">last_event_time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">last_event_time</span><span class="p">:</span>
+            <span class="n">time_shift</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">last_event_time</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">extend_events</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">to_time_shift_events</span><span class="p">(</span><span class="n">time_shift</span><span class="p">))</span>
+        <span class="n">seq</span><span class="o">.</span><span class="n">append_event</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">last_event_time</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">seq</span>
+
+
+<div class="viewcode-block" id="to_performance_event_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_performance_event_representation">[docs]</a><span class="k">def</span> <span class="nf">to_performance_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Encode a Music object into the performance event representation.&quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">to_performance_event_sequence</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_remi_indexer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">bidict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the REMI indexer.&quot;&quot;&quot;</span>
+    <span class="n">indexer</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Note-on events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">128</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;note_on_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Note-duration events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;note_duration_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Position events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;position_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Beat event</span>
+    <span class="n">indexer</span><span class="p">[</span><span class="s2">&quot;beat&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+    <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Tempo events</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">210</span><span class="p">):</span>
+        <span class="n">indexer</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;tempo_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+        <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">bidict</span><span class="p">(</span><span class="n">indexer</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">REMIEventSequence</span><span class="p">(</span><span class="n">EventSequence</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for handling a MIDI-like event sequence.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    indexer : bidict, optional</span>
+<span class="sd">        Indexer that defines the mapping between events and their codes.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    Bar events are replaced by beat events. Chord events are currently</span>
+<span class="sd">    not supported.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterable</span><span class="p">:</span> <span class="n">Iterable</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">indexer</span><span class="p">:</span> <span class="n">bidict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">indexer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">indexer</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">get_remi_indexer</span><span class="p">())</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_note_on_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a note-on event for a given pitch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;note_on_</span><span class="si">{</span><span class="n">pitch</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_note_duration_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a note-duration event for a given pitch.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;note_duration_</span><span class="si">{</span><span class="n">duration</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_position_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">position</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a position event for a given position.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;position_</span><span class="si">{</span><span class="n">position</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_beat_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a beat event.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot;beat&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">to_tempo_event</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tempo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return a position event for a given position.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;tempo_</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">to_remi_event_sequence</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">REMIEventSequence</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Music object as a REMIEventSequence object.&quot;&quot;&quot;</span>
+    <span class="c1"># Collect notes</span>
+    <span class="n">notes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">)</span>
+
+    <span class="c1"># Raise an error if no notes is found</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No notes found.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a REMIEventSequence object</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">REMIEventSequence</span><span class="p">()</span>
+
+    <span class="c1"># Collect events</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_tempo_event</span><span class="p">(</span><span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">:</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_note_on_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">)))</span>
+        <span class="n">events</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">note</span><span class="o">.</span><span class="n">end</span><span class="p">,</span> <span class="n">seq</span><span class="o">.</span><span class="n">to_note_duration_event</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">)))</span>
+
+    <span class="c1"># Sort the events by time</span>
+    <span class="n">events</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">itemgetter</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Create event sequence</span>
+    <span class="n">last_beat</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">last_position</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+        <span class="n">beat</span><span class="p">,</span> <span class="n">position</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">beat</span> <span class="o">&gt;</span> <span class="n">last_beat</span><span class="p">:</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">append_event</span><span class="p">(</span><span class="n">seq</span><span class="o">.</span><span class="n">to_beat_event</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">position</span> <span class="o">&gt;</span> <span class="n">last_position</span><span class="p">:</span>
+            <span class="n">seq</span><span class="o">.</span><span class="n">append_event</span><span class="p">(</span>
+                <span class="n">seq</span><span class="o">.</span><span class="n">to_position_event</span><span class="p">(</span><span class="mi">24</span> <span class="o">*</span> <span class="n">position</span> <span class="o">//</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">seq</span><span class="o">.</span><span class="n">append_event</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">seq</span>
+
+
+<div class="viewcode-block" id="to_remi_event_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_remi_event_representation">[docs]</a><span class="k">def</span> <span class="nf">to_remi_event_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Encode a Music object into the remi event representation.&quot;&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="n">to_remi_event_sequence</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">seq</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_indexer</span><span class="p">(</span><span class="n">preset</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bidict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a preset indexer.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">preset</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">preset</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;midi&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_default_indexer</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">preset</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;remi&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_remi_indexer</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">preset</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;performance&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_performance_indexer</span><span class="p">()</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown preset : </span><span class="si">{</span><span class="n">preset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 
            </div>

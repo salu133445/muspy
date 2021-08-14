@@ -212,7 +212,7 @@
 <span class="k">def</span> <span class="nf">_get_text</span><span class="p">(</span>
     <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span>
     <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">default</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">default</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">remove_newlines</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Return the text of the first matching element.&quot;&quot;&quot;</span>
@@ -571,7 +571,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_root</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_root</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Return root of the element tree.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">compressed</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mxl&quot;</span><span class="p">)</span>
@@ -657,15 +657,16 @@
     <span class="k">return</span> <span class="n">part_id</span><span class="p">,</span> <span class="n">part_info</span>
 
 
-<div class="viewcode-block" id="read_musicxml"><a class="viewcode-back" href="../../../io/musicxml.html#muspy.inputs.read_musicxml">[docs]</a><span class="k">def</span> <span class="nf">read_musicxml</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="read_musicxml"><a class="viewcode-back" href="../../../io/musicxml.html#muspy.inputs.read_musicxml">[docs]</a><span class="k">def</span> <span class="nf">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Read a MusicXML file into a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the MusicXML file to read.</span>
+<span class="sd">    compressed : bool, optional</span>
+<span class="sd">        Whether it is a compressed MusicXML file. Defaults to infer</span>
+<span class="sd">        from the filename.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

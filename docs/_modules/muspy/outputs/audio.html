@@ -163,7 +163,7 @@
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
@@ -189,9 +189,7 @@
 
 
 <div class="viewcode-block" id="synthesize"><a class="viewcode-back" href="../../../synthesis.html#muspy.synthesize">[docs]</a><span class="k">def</span> <span class="nf">synthesize</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
-    <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Synthesize a Music object to raw audio.</span>
 
@@ -202,8 +200,8 @@
 <span class="sd">    soundfont_path : str or Path, optional</span>
 <span class="sd">        Path to the soundfount file. Defaults to the path to the</span>
 <span class="sd">        downloaded MuseScore General soundfont.</span>
-<span class="sd">    rate : int</span>
-<span class="sd">        Sample rate (in samples per sec). Defaults to 44100.</span>
+<span class="sd">    rate : int (default: 44100)</span>
+<span class="sd">        Sample rate (in samples per sec).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -247,9 +245,9 @@
 <div class="viewcode-block" id="write_audio"><a class="viewcode-back" href="../../../synthesis.html#muspy.write_audio">[docs]</a><span class="k">def</span> <span class="nf">write_audio</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
-    <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
-    <span class="n">audio_format</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">audio_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a Music object to an audio file.</span>
 
@@ -264,10 +262,10 @@
 <span class="sd">    soundfont_path : str or Path, optional</span>
 <span class="sd">        Path to the soundfount file. Defaults to the path to the</span>
 <span class="sd">        downloaded MuseScore General soundfont.</span>
-<span class="sd">    rate : int</span>
-<span class="sd">        Sample rate (in samples per sec). Defaults to 44100.</span>
+<span class="sd">    rate : int (default: 44100)</span>
+<span class="sd">        Sample rate (in samples per sec).</span>
 <span class="sd">    audio_format : str, {&#39;wav&#39;, &#39;aiff&#39;, &#39;flac&#39;, &#39;oga&#39;}, optional</span>
-<span class="sd">        File format to write. If None, infer it from the extension.</span>
+<span class="sd">        File format to write. Defaults to infer from the extension.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">audio_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

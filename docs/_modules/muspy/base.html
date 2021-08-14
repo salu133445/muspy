@@ -174,17 +174,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isclass</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">Any</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
-    <span class="n">Iterable</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">,</span>
-    <span class="n">Mapping</span><span class="p">,</span>
-    <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Type</span><span class="p">,</span>
-    <span class="n">TypeVar</span><span class="p">,</span>
-    <span class="n">Union</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">yaml_dump</span>
 
@@ -276,7 +266,10 @@
                 <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
@@ -323,12 +316,11 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        skip_missing : bool</span>
+<span class="sd">        skip_missing : bool (default: True)</span>
 <span class="sd">            Whether to skip attributes with value None or those that are</span>
-<span class="sd">            empty lists. Defaults to True.</span>
-<span class="sd">        deepcopy : bool</span>
-<span class="sd">            Whether to make deep copies of the attributes. Defaults to</span>
-<span class="sd">            True.</span>
+<span class="sd">            empty lists.</span>
+<span class="sd">        deepcopy : bool (default: True)</span>
+<span class="sd">            Whether to make deep copies of the attributes.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -396,9 +388,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        skip_missing : bool</span>
+<span class="sd">        skip_missing : bool (default: True)</span>
 <span class="sd">            Whether to skip attributes with value None or those that are</span>
-<span class="sd">            empty lists. Defaults to True.</span>
+<span class="sd">            empty lists.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -420,9 +412,9 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        skip_missing : bool</span>
+<span class="sd">        skip_missing : bool (default: True)</span>
 <span class="sd">            Whether to skip attributes with value None or those that are</span>
-<span class="sd">            empty lists. Defaults to True.</span>
+<span class="sd">            empty lists.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -465,7 +457,7 @@
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">validate_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.validate_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.validate_type">[docs]</a>    <span class="k">def</span> <span class="nf">validate_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Raise an error if an attribute is of an invalid type.</span>
 
@@ -473,10 +465,10 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to validate. Defaults to validate all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -522,7 +514,7 @@
                 <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Raise an error if an attribute has an invalid type or value.</span>
 
@@ -530,10 +522,10 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to validate. Defaults to validate all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -554,26 +546,22 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Base.is_valid_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid_type">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.is_valid_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid_type">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if an attribute is of a valid type.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to validate. Defaults to validate all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            Whether the attribute is of a valid type.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
 
 <span class="sd">        See Also</span>
 <span class="sd">        --------</span>
@@ -589,19 +577,17 @@
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if an attribute has a valid type and value.</span>
 
 <span class="sd">        This will recursively apply to an attribute&#39;s attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to validate. Defaults to validate all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -642,7 +628,7 @@
 <div class="viewcode-block" id="Base.adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.adjust_time">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
-        <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Adjust the timing of time-stamped objects.</span>
@@ -652,10 +638,10 @@
 <span class="sd">        func : callable</span>
 <span class="sd">            The function used to compute the new timing from the old</span>
 <span class="sd">            timing, i.e., `new_time = func(old_time)`.</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to adjust. Defaults to adjust all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -741,9 +727,8 @@
 <span class="sd">            list attributes with the corresponding list attributes of</span>
 <span class="sd">            the other object. If an iterable is given, call</span>
 <span class="sd">            :meth:`muspy.ComplexBase.append` for each item.</span>
-<span class="sd">        deepcopy : bool</span>
+<span class="sd">        deepcopy : bool (default: False)</span>
 <span class="sd">            Whether to make deep copies of the appended objects.</span>
-<span class="sd">            Defaults to False.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -795,18 +780,16 @@
             <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="ComplexBase.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>
-        <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove invalid items from a list attribute.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to validate. Defaults to validate all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -852,18 +835,16 @@
         <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_value</span>
 
 <div class="viewcode-block" id="ComplexBase.remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>
-        <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove duplicate items from a list attribute.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to check. Defaults to check all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -896,18 +877,16 @@
                     <span class="n">value</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ComplexBase.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>
-        <span class="n">attr</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Sort a list attribute.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        attr : str</span>
+<span class="sd">        attr : str, optional</span>
 <span class="sd">            Attribute to sort. Defaults to sort all attributes.</span>
-<span class="sd">        recursive : bool</span>
-<span class="sd">            Whether to apply recursively. Defaults to True.</span>
+<span class="sd">        recursive : bool (default: True)</span>
+<span class="sd">            Whether to apply recursively.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

@@ -167,6 +167,8 @@
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">DatasetInfo</span><span class="p">,</span> <span class="n">RemoteFolderDataset</span>
 
+<span class="c1"># pylint: disable=line-too-long</span>
+
 <span class="n">_NAME</span> <span class="o">=</span> <span class="s2">&quot;MAESTRO Dataset&quot;</span>
 <span class="n">_DESCRIPTION</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
 <span class="s2">MAESTRO (MIDI and Audio Edited for Synchronous TRacks and Organization) is a </span><span class="se">\</span>
@@ -186,13 +188,13 @@
 
 
 <div class="viewcode-block" id="MAESTRODatasetV1"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV1">[docs]</a><span class="k">class</span> <span class="nc">MAESTRODatasetV1</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset (MIDI only).&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset V1 (MIDI only).&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_LICENSE</span><span class="p">)</span>
     <span class="n">_citation</span> <span class="o">=</span> <span class="n">_CITATION</span>
     <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;maestro&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;maestro-v2.0.0-midi.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;maestro-v1.0.0-midi.zip&quot;</span><span class="p">,</span>
             <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://storage.googleapis.com/magentadata/datasets/maestro/v1.0.0/maestro-v1.0.0-midi.zip&quot;</span><span class="p">,</span>
             <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">46579421</span><span class="p">,</span>
@@ -207,7 +209,7 @@
 
 
 <div class="viewcode-block" id="MAESTRODatasetV2"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV2">[docs]</a><span class="k">class</span> <span class="nc">MAESTRODatasetV2</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset (MIDI only).&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset V2 (MIDI only).&quot;&quot;&quot;</span>
 
     <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_LICENSE</span><span class="p">)</span>
     <span class="n">_citation</span> <span class="o">=</span> <span class="n">_CITATION</span>
@@ -223,6 +225,27 @@
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
 
 <div class="viewcode-block" id="MAESTRODatasetV2.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV2.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MAESTRODatasetV3"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV3">[docs]</a><span class="k">class</span> <span class="nc">MAESTRODatasetV3</span><span class="p">(</span><span class="n">RemoteFolderDataset</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;MAESTRO Dataset V3 (MIDI only).&quot;&quot;&quot;</span>
+
+    <span class="n">_info</span> <span class="o">=</span> <span class="n">DatasetInfo</span><span class="p">(</span><span class="n">_NAME</span><span class="p">,</span> <span class="n">_DESCRIPTION</span><span class="p">,</span> <span class="n">_HOMEPAGE</span><span class="p">,</span> <span class="n">_LICENSE</span><span class="p">)</span>
+    <span class="n">_citation</span> <span class="o">=</span> <span class="n">_CITATION</span>
+    <span class="n">_sources</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;maestro&quot;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s2">&quot;filename&quot;</span><span class="p">:</span> <span class="s2">&quot;maestro-v3.0.0-midi.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://storage.googleapis.com/magentadata/datasets/maestro/v3.0.0/maestro-v3.0.0-midi.zip&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;archive&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="mi">58416533</span><span class="p">,</span>
+            <span class="s2">&quot;sha256&quot;</span><span class="p">:</span> <span class="s2">&quot;70470ee253295c8d2c71e6d9d4a815189e35c89624b76d22fce5a019d5dde12c&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
+
+<div class="viewcode-block" id="MAESTRODatasetV3.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.datasets.MAESTRODatasetV3.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div></div>
 </pre></div>

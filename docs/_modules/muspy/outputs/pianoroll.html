@@ -161,7 +161,7 @@
   <h1>Source code for muspy.outputs.pianoroll</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Piano-roll output interface.&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
@@ -221,12 +221,13 @@
         <span class="n">tempo_arr</span><span class="p">[</span><span class="n">position</span><span class="p">:]</span> <span class="o">=</span> <span class="n">qpm</span>
 
     <span class="c1"># Downbeats</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">downbeats</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">music</span><span class="o">.</span><span class="n">beats</span><span class="p">:</span>
         <span class="n">downbeat_arr</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">downbeat_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">length</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">downbeat</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">downbeats</span><span class="p">:</span>
-            <span class="n">downbeat_arr</span><span class="p">[</span><span class="n">downbeat</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">beat</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">beats</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">beat</span><span class="o">.</span><span class="n">is_downbeat</span><span class="p">:</span>
+                <span class="n">downbeat_arr</span><span class="p">[</span><span class="n">beat</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="n">has_title</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
@@ -242,7 +243,7 @@
 <div class="viewcode-block" id="to_pianoroll_representation"><a class="viewcode-back" href="../../../representations/pianoroll.html#muspy.to_pianoroll_representation">[docs]</a><span class="k">def</span> <span class="nf">to_pianoroll_representation</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
     <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Encode notes into piano-roll representation.</span>
 
@@ -250,11 +251,10 @@
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to encode.</span>
-<span class="sd">    encode_velocity : bool</span>
+<span class="sd">    encode_velocity : bool (default: True)</span>
 <span class="sd">        Whether to encode velocities. If True, a binary-valued array</span>
 <span class="sd">        will be return. Otherwise, an integer array will be return.</span>
-<span class="sd">        Defaults to True.</span>
-<span class="sd">    dtype : np.dtype, type or str</span>
+<span class="sd">    dtype : np.dtype, type or str, optional</span>
 <span class="sd">        Data type of the return array. Defaults to uint8 if</span>
 <span class="sd">        `encode_velocity` is True, otherwise bool.</span>
 

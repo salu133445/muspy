@@ -165,7 +165,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 
 
@@ -176,7 +176,7 @@
     <span class="n">is_drum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">use_start_end</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decode note-based representation into a Music object.</span>
 
@@ -184,24 +184,21 @@
 <span class="sd">    ----------</span>
 <span class="sd">    array : ndarray</span>
 <span class="sd">        Array in note-based representation to decode.</span>
-<span class="sd">    resolution : int</span>
-<span class="sd">        Time steps per quarter note. Defaults to</span>
-<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
-<span class="sd">    program : int, optional</span>
-<span class="sd">        Program number according to General MIDI specification [1].</span>
-<span class="sd">        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand</span>
-<span class="sd">        Piano).</span>
-<span class="sd">    is_drum : bool, optional</span>
-<span class="sd">        A boolean indicating if it is a percussion track. Defaults to</span>
-<span class="sd">        False.</span>
-<span class="sd">    use_start_end : bool</span>
+<span class="sd">    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)</span>
+<span class="sd">        Time steps per quarter note.</span>
+<span class="sd">    program : int (default: 0 (Acoustic Grand Piano))</span>
+<span class="sd">        Program number, according to General MIDI specification [1].</span>
+<span class="sd">        Valid values are 0 to 127.</span>
+<span class="sd">    is_drum : bool (default: False)</span>
+<span class="sd">        Whether it is a percussion track.</span>
+<span class="sd">    use_start_end : bool (default: False)</span>
 <span class="sd">        Whether to use &#39;start&#39; and &#39;end&#39; to encode the timing rather</span>
-<span class="sd">        than &#39;time&#39; and &#39;duration&#39;. Defaults to False.</span>
-<span class="sd">    encode_velocity : bool</span>
-<span class="sd">        Whether to encode note velocities. Defaults to True.</span>
-<span class="sd">    default_velocity : int</span>
-<span class="sd">        Default velocity value to use when decoding if `encode_velocity`</span>
-<span class="sd">        is False. Defaults to 64.</span>
+<span class="sd">        than &#39;time&#39; and &#39;duration&#39;.</span>
+<span class="sd">    encode_velocity : bool (default: True)</span>
+<span class="sd">        Whether to encode note velocities.</span>
+<span class="sd">    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)</span>
+<span class="sd">        Default velocity value to use when decoding. Only used when</span>
+<span class="sd">        `encode_velocity` is True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

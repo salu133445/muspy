@@ -168,7 +168,7 @@
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Track</span> <span class="k">as</span> <span class="n">PypianorollTrack</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 
 
@@ -198,7 +198,7 @@
 
 
 <div class="viewcode-block" id="from_pypianoroll_track"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.from_pypianoroll_track">[docs]</a><span class="k">def</span> <span class="nf">from_pypianoroll_track</span><span class="p">(</span>
-    <span class="n">track</span><span class="p">:</span> <span class="n">PypianorollTrack</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">track</span><span class="p">:</span> <span class="n">PypianorollTrack</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Pypianoroll Track object as a Track object.</span>
 
@@ -206,8 +206,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    track : :class:`pypianoroll.Track`</span>
 <span class="sd">        Pypianoroll Track object to convert.</span>
-<span class="sd">    default_velocity : int</span>
-<span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
+<span class="sd">    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)</span>
+<span class="sd">        Default velocity value to use when decoding.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -228,7 +228,7 @@
 
 
 <div class="viewcode-block" id="from_pypianoroll"><a class="viewcode-back" href="../../../io/pypianoroll.html#muspy.inputs.from_pypianoroll">[docs]</a><span class="k">def</span> <span class="nf">from_pypianoroll</span><span class="p">(</span>
-    <span class="n">multitrack</span><span class="p">:</span> <span class="n">Multitrack</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">multitrack</span><span class="p">:</span> <span class="n">Multitrack</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Pypianoroll Multitrack object as a Music object.</span>
 
@@ -236,8 +236,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    multitrack : :class:`pypianoroll.Multitrack`</span>
 <span class="sd">        Pypianoroll Multitrack object to convert.</span>
-<span class="sd">    default_velocity : int</span>
-<span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
+<span class="sd">    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)</span>
+<span class="sd">        Default velocity value to use when decoding.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -270,7 +270,7 @@
     <span class="n">program</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">is_drum</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">encode_velocity</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
+    <span class="n">default_velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Decode piano-roll representation into a Music object.</span>
 
@@ -278,20 +278,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    array : ndarray</span>
 <span class="sd">        Array in piano-roll representation to decode.</span>
-<span class="sd">    resolution : int</span>
-<span class="sd">        Time steps per quarter note. Defaults to</span>
-<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
-<span class="sd">    program : int, optional</span>
-<span class="sd">        Program number according to General MIDI specification [1].</span>
-<span class="sd">        Acceptable values are 0 to 127. Defaults to 0 (Acoustic Grand</span>
-<span class="sd">        Piano).</span>
-<span class="sd">    is_drum : bool, optional</span>
-<span class="sd">        A boolean indicating if it is a percussion track. Defaults to</span>
-<span class="sd">        False.</span>
-<span class="sd">    encode_velocity : bool</span>
-<span class="sd">        Whether to encode velocities. Defaults to True.</span>
-<span class="sd">    default_velocity : int</span>
-<span class="sd">        Default velocity value to use when decoding. Defaults to 64.</span>
+<span class="sd">    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)</span>
+<span class="sd">        Time steps per quarter note.</span>
+<span class="sd">    program : int (default: 0 (Acoustic Grand Piano))</span>
+<span class="sd">        Program number, according to General MIDI specification [1].</span>
+<span class="sd">        Valid values are 0 to 127.</span>
+<span class="sd">    is_drum : bool (default: False)</span>
+<span class="sd">        Whether it is a percussion track.</span>
+<span class="sd">    encode_velocity : bool (default: True)</span>
+<span class="sd">        Whether to encode velocities.</span>
+<span class="sd">    default_velocity : int (default: `muspy.DEFAULT_VELOCITY`)</span>
+<span class="sd">        Default velocity value to use when decoding. Only used when</span>
+<span class="sd">        `encode_velocity` is True.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

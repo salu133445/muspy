@@ -187,16 +187,16 @@
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the MIDI file to read.</p></li>
-<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em>) – Backend to use.</p></li>
-<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'close_all'}</em>) – <p>Policy for dealing with duplicate notes. When a note off message
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em> (</em><em>default: 'mido'</em><em>)</em>) – Backend to use.</p></li>
+<li><p><strong>duplicate_note_mode</strong> (<em>{'fifo'</em><em>, </em><em>'lifo</em><em>, </em><em>'all'}</em><em> (</em><em>default: 'fifo'</em><em>)</em>) – <p>Policy for dealing with duplicate notes. When a note off message
 is presetned while there are multiple correspoding note on
 messages that have not yet been closed, we need a policy to
-decide which note on messages to close. Defaults to ‘fifo’. Only
-used when <cite>backend=’mido’</cite>.</p>
+decide which note on messages to close. Only used when <cite>backend</cite>
+is ‘mido’.</p>
 <ul>
 <li><p>’fifo’ (first in first out): close the earliest note on</p></li>
 <li><p>’lifo’ (first in first out):close the latest note on</p></li>
-<li><p>’close_all’: close all note on messages</p></li>
+<li><p>’all’: close all note on messages</p></li>
 </ul>
 </p></li>
 </ul>
@@ -219,7 +219,7 @@ used when <cite>backend=’mido’</cite>.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to write the MIDI file.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
-<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em>, </em><em>optional</em>) – Backend to use. Defaults to ‘mido’.</p></li>
+<li><p><strong>backend</strong> (<em>{'mido'</em><em>, </em><em>'pretty_midi'}</em><em> (</em><em>default: 'mido'</em><em>)</em>) – Backend to use.</p></li>
 </ul>
 </dd>
 </dl>

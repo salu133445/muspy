@@ -178,8 +178,9 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="n">floor</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">MidiFile</span>
 <span class="kn">from</span> <span class="nn">music21.stream</span> <span class="kn">import</span> <span class="n">Stream</span>
 <span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">ndarray</span>
@@ -189,6 +190,7 @@
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.classes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Annotation</span><span class="p">,</span>
+    <span class="n">Beat</span><span class="p">,</span>
     <span class="n">KeySignature</span><span class="p">,</span>
     <span class="n">Lyric</span><span class="p">,</span>
     <span class="n">Metadata</span><span class="p">,</span>
@@ -224,24 +226,23 @@
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    metadata : :class:`muspy.Metadata`</span>
+<span class="sd">    metadata : :class:`muspy.Metadata` (default: `Metadata()`)</span>
 <span class="sd">        Metadata.</span>
-<span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to</span>
-<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
-<span class="sd">    tempos : list of :class:`muspy.Tempo`</span>
+<span class="sd">    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)</span>
+<span class="sd">        Time steps per quarter note.</span>
+<span class="sd">    tempos : list of :class:`muspy.Tempo` (default: [])</span>
 <span class="sd">        Tempo changes.</span>
-<span class="sd">    key_signatures : list of :class:`muspy.KeySignature`</span>
+<span class="sd">    key_signatures : list of :class:`muspy.KeySignature` (default: [])</span>
 <span class="sd">        Key signatures changes.</span>
-<span class="sd">    time_signatures : list of :class:`muspy.TimeSignature`</span>
+<span class="sd">    time_signatures : list of :class:`muspy.TimeSignature` (default: [])</span>
 <span class="sd">        Time signature changes.</span>
-<span class="sd">    downbeats : list of int</span>
-<span class="sd">        Downbeat positions.</span>
-<span class="sd">    lyrics : list of :class:`muspy.Lyric`</span>
+<span class="sd">    beats : list of :class:`muspy.Beat` (default: [])</span>
+<span class="sd">        Beats.</span>
+<span class="sd">    lyrics : list of :class:`muspy.Lyric` (default: [])</span>
 <span class="sd">        Lyrics.</span>
-<span class="sd">    annotations : list of :class:`muspy.Annotation`</span>
+<span class="sd">    annotations : list of :class:`muspy.Annotation` (default: [])</span>
 <span class="sd">        Annotations.</span>
-<span class="sd">    tracks : list of :class:`muspy.Track`</span>
+<span class="sd">    tracks : list of :class:`muspy.Track` (default: [])</span>
 <span class="sd">        Music tracks.</span>
 
 <span class="sd">    Note</span>
@@ -260,7 +261,7 @@
             <span class="p">(</span><span class="s2">&quot;tempos&quot;</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span> <span class="n">TimeSignature</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;downbeats&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;beats&quot;</span><span class="p">,</span> <span class="n">Beat</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="n">Lyric</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;annotations&quot;</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;tracks&quot;</span><span class="p">,</span> <span class="n">Track</span><span class="p">),</span>
@@ -272,17 +273,16 @@
         <span class="s2">&quot;tempos&quot;</span><span class="p">,</span>
         <span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span>
         <span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;downbeats&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;beats&quot;</span><span class="p">,</span>
         <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tracks&quot;</span><span class="p">,</span>
     <span class="p">]</span>
-    <span class="n">_temporal_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;downbeats&quot;</span><span class="p">]</span>
     <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;tempos&quot;</span><span class="p">,</span>
         <span class="s2">&quot;key_signatures&quot;</span><span class="p">,</span>
         <span class="s2">&quot;time_signatures&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;downbeats&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;beats&quot;</span><span class="p">,</span>
         <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span>
         <span class="s2">&quot;annotations&quot;</span><span class="p">,</span>
         <span class="s2">&quot;tracks&quot;</span><span class="p">,</span>
@@ -290,15 +290,15 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Metadata</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tempos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">key_signatures</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">time_signatures</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">downbeats</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">lyrics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">tracks</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Metadata</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">time_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">beats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Beat</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">lyrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tracks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span> <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Metadata</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="p">(</span>
@@ -311,7 +311,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">time_signatures</span> <span class="k">if</span> <span class="n">time_signatures</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">downbeats</span> <span class="o">=</span> <span class="n">downbeats</span> <span class="k">if</span> <span class="n">downbeats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beats</span> <span class="o">=</span> <span class="n">beats</span> <span class="k">if</span> <span class="n">beats</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="n">lyrics</span> <span class="k">if</span> <span class="n">lyrics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tracks</span> <span class="o">=</span> <span class="n">tracks</span> <span class="k">if</span> <span class="n">tracks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
@@ -333,9 +333,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        is_sorted : bool</span>
-<span class="sd">            Whether all the list attributes are sorted. Defaults to</span>
-<span class="sd">            False.</span>
+<span class="sd">        is_sorted : bool (default: False)</span>
+<span class="sd">            Whether all the list attributes are sorted.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -357,6 +356,7 @@
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tempos</span><span class="p">),</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">),</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">),</span>
+            <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beats</span><span class="p">),</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span><span class="p">),</span>
             <span class="n">_get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">),</span>
             <span class="n">track_end_time</span><span class="p">,</span>
@@ -373,9 +373,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        is_sorted : bool</span>
-<span class="sd">            Whether all the list attributes are sorted. Defaults to</span>
-<span class="sd">            False.</span>
+<span class="sd">        is_sorted : bool (default: False)</span>
+<span class="sd">            Whether all the list attributes are sorted.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get symbolic end time</span>
@@ -398,11 +397,40 @@
 
         <span class="k">return</span> <span class="n">real_end_time</span></div>
 
+<div class="viewcode-block" id="Music.infer_beats"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.infer_beats">[docs]</a>    <span class="k">def</span> <span class="nf">infer_beats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Beat</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Infer beats from the time signature changes.</span>
+
+<span class="sd">        This assumes that there is a downbeat at each time signature</span>
+<span class="sd">        change (this is not always true, e.g., for a pickup measure).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list of :class:`muspy.Beat`</span>
+<span class="sd">            List of beats inferred from the time signature changes.</span>
+<span class="sd">            Return an empty list if no time signature is found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">beats</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Beat</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">time_sign</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">time</span>
+            <span class="n">beat_resolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">/</span> <span class="p">(</span><span class="n">time_sign</span><span class="o">.</span><span class="n">denominator</span> <span class="o">/</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">time</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">time_sign</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">beat_resolution</span><span class="p">)</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">%</span> <span class="n">time_sign</span><span class="o">.</span><span class="n">numerator</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">beats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Beat</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">is_downbeat</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">beats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Beat</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">is_downbeat</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">beats</span></div>
+
 <div class="viewcode-block" id="Music.adjust_resolution"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.adjust_resolution">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_resolution</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">rounding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
+        <span class="n">target</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rounding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Music&quot;</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Adjust resolution and timing of all time-stamped objects.</span>
 
@@ -415,8 +443,8 @@
 <span class="sd">            `new_resolution = old_resolution * factor`. For example, a</span>
 <span class="sd">            factor of 2 double the resolution, and a factor of 0.5 halve</span>
 <span class="sd">            the resolution.</span>
-<span class="sd">        rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable, optional</span>
-<span class="sd">            Rounding mode. Defaults to &#39;round&#39;.</span>
+<span class="sd">        rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable (default: &#39;round&#39;)</span>
+<span class="sd">            Rounding mode.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -466,10 +494,10 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        lower : int, optional</span>
-<span class="sd">            Lower bound. Defaults to 0.</span>
-<span class="sd">        upper : int, optional</span>
-<span class="sd">            Upper bound. Defaults to 127.</span>
+<span class="sd">        lower : int (default: 0)</span>
+<span class="sd">            Lower bound.</span>
+<span class="sd">        upper : int (default: 127)</span>
+<span class="sd">            Upper bound.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -504,9 +532,7 @@
                 <span class="n">track</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">semitone</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Music.save"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="Music.save"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Save loselessly to a JSON or a YAML file.</span>
 
 <span class="sd">        Refer to :func:`muspy.save` for full documentation.</span>
@@ -530,9 +556,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">save</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;yaml&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Music.write"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-    <span class="p">):</span>
+<div class="viewcode-block" id="Music.write"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Music.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Write to a MIDI, a MusicXML, an ABC or an audio file.</span>
 
 <span class="sd">        Refer to :func:`muspy.write` for full documentation.</span>

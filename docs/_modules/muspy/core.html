@@ -179,7 +179,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.classes</span> <span class="kn">import</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Track</span>
@@ -201,9 +201,9 @@
 
 <div class="viewcode-block" id="adjust_resolution"><a class="viewcode-back" href="../../doc/muspy.html#muspy.adjust_resolution">[docs]</a><span class="k">def</span> <span class="nf">adjust_resolution</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="n">Music</span><span class="p">,</span>
-    <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">factor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">rounding</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
+    <span class="n">target</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rounding</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Adjust resolution and timing of all time-stamped objects.</span>
 
@@ -218,8 +218,8 @@
 <span class="sd">        `new_resolution = old_resolution * factor`. For example, a</span>
 <span class="sd">        factor of 2 double the resolution, and a factor of 0.5 halve the</span>
 <span class="sd">        resolution.</span>
-<span class="sd">    rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable, optional</span>
-<span class="sd">            Rounding mode. Defaults to &#39;round&#39;.</span>
+<span class="sd">    rounding : {&#39;round&#39;, &#39;ceil&#39;, &#39;floor&#39;} or callable (default: &#39;round&#39;)</span>
+<span class="sd">            Rounding mode.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">adjust_resolution</span><span class="p">(</span>
@@ -294,9 +294,8 @@
 <span class="sd">        list attributes with the corresponding list attributes of</span>
 <span class="sd">        `obj2`. If an iterable is given, call `obj1.append` on each</span>
 <span class="sd">        item.</span>
-<span class="sd">    deepcopy : bool</span>
-<span class="sd">        Whether to make deep copies of the appended objects. Defaults</span>
-<span class="sd">        to False.</span>
+<span class="sd">    deepcopy : bool (default: False)</span>
+<span class="sd">        Whether to make deep copies of the appended objects.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -316,10 +315,10 @@
 <span class="sd">    obj : :class:`muspy.Music`, :class:`muspy.Track` or \</span>
 <span class="sd">            :class:`muspy.Note`</span>
 <span class="sd">        Object to clip.</span>
-<span class="sd">    lower : int or float, optional</span>
-<span class="sd">        Lower bound. Defaults to 0.</span>
-<span class="sd">    upper : int or float, optional</span>
-<span class="sd">        Upper bound. Defaults to 127.</span>
+<span class="sd">    lower : int or float (default: 0)</span>
+<span class="sd">        Lower bound.</span>
+<span class="sd">    upper : int or float (default: 127)</span>
+<span class="sd">        Upper bound.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="n">upper</span><span class="p">)</span></div>
@@ -335,8 +334,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Music` or :class:`muspy.Track`</span>
 <span class="sd">        Object to inspect.</span>
-<span class="sd">    is_sorted : bool</span>
-<span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
+<span class="sd">    is_sorted : bool (default: False)</span>
+<span class="sd">        Whether all the list attributes are sorted.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span></div>
@@ -353,8 +352,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Object to inspect.</span>
-<span class="sd">    is_sorted : bool</span>
-<span class="sd">        Whether all the list attributes are sorted. Defaults to False.</span>
+<span class="sd">    is_sorted : bool (default: False)</span>
+<span class="sd">        Whether all the list attributes are sorted.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">music</span><span class="o">.</span><span class="n">get_real_end_time</span><span class="p">(</span><span class="n">is_sorted</span><span class="o">=</span><span class="n">is_sorted</span><span class="p">)</span></div>
@@ -399,12 +398,11 @@
 <span class="sd">    ----------</span>
 <span class="sd">    obj : :class:`muspy.Base`</span>
 <span class="sd">        Object to convert.</span>
-<span class="sd">    skip_missing : bool</span>
+<span class="sd">    skip_missing : bool (default: True)</span>
 <span class="sd">        Whether to skip attributes with value None or those that are</span>
-<span class="sd">        empty lists. Defaults to True.</span>
-<span class="sd">    deepcopy : bool</span>
-<span class="sd">        Whether to make deep copies of the attributes. Defaults to</span>
-<span class="sd">        False.</span>
+<span class="sd">        empty lists.</span>
+<span class="sd">    deepcopy : bool (default: True)</span>
+<span class="sd">        Whether to make deep copies of the attributes.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

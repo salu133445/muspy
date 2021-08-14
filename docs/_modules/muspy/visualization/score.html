@@ -471,14 +471,14 @@
 <span class="sd">        Axes object to plot the score on.</span>
 <span class="sd">    resolution : int</span>
 <span class="sd">        Time steps per quarter note.</span>
-<span class="sd">    note_spacing : int, optional</span>
-<span class="sd">        Spacing of notes. Defaults to 4.</span>
+<span class="sd">    note_spacing : int (default: 4)</span>
+<span class="sd">        Spacing of notes.</span>
 <span class="sd">    font_path : str or Path, optional</span>
 <span class="sd">        Path to the music font. Defaults to the path to the downloaded</span>
 <span class="sd">        Bravura font.</span>
-<span class="sd">    font_scale : float, optional</span>
-<span class="sd">        Font scaling factor for finetuning. Defaults to 140, optimized</span>
-<span class="sd">        for the Bravura font.</span>
+<span class="sd">    font_scale : float (default: 140)</span>
+<span class="sd">        Font scaling factor for finetuning. The default value of 140 is</span>
+<span class="sd">        optimized for the default Bravura font.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -487,9 +487,9 @@
         <span class="n">fig</span><span class="p">:</span> <span class="n">Figure</span><span class="p">,</span>
         <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span>
         <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">note_spacing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">font_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">font_scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">note_spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">font_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">font_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">fig</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
@@ -561,7 +561,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_bottom_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_top_note_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baseline</span> <span class="o">+</span> <span class="mi">4</span></div>
 
-<div class="viewcode-block" id="ScorePlotter.adjust_fonts"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.adjust_fonts">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_fonts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ScorePlotter.adjust_fonts"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.adjust_fonts">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_fonts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Adjust the fonts.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">scale</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font_scale</span>
@@ -597,10 +597,10 @@
 
 <div class="viewcode-block" id="ScorePlotter.update_boundaries"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.update_boundaries">[docs]</a>    <span class="k">def</span> <span class="nf">update_boundaries</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">left</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">right</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">bottom</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">top</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">left</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">right</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bottom</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">top</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update boundaries.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">left</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -613,7 +613,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">top</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">top</span><span class="p">,</span> <span class="n">top</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ScorePlotter.plot_staffs"><a class="viewcode-back" href="../../../doc/visualization.html#muspy.ScorePlotter.plot_staffs">[docs]</a>    <span class="k">def</span> <span class="nf">plot_staffs</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Line2D</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Plot the staffs.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -941,12 +941,12 @@
 
 <div class="viewcode-block" id="show_score"><a class="viewcode-back" href="../../../visualization.html#muspy.show_score">[docs]</a><span class="k">def</span> <span class="nf">show_score</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
-    <span class="n">figsize</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">figsize</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">clef</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;treble&quot;</span><span class="p">,</span>
-    <span class="n">clef_octave</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="n">note_spacing</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">font_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">font_scale</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">clef_octave</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">note_spacing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">font_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">font_scale</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ScorePlotter</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Show score visualization.</span>
 
@@ -957,18 +957,18 @@
 <span class="sd">    figsize : (float, float), optional</span>
 <span class="sd">        Width and height in inches. Defaults to Matplotlib</span>
 <span class="sd">        configuration.</span>
-<span class="sd">    clef : str, {&#39;treble&#39;, &#39;alto&#39;, &#39;bass&#39;}</span>
-<span class="sd">        Clef type. Defaults to a treble clef.</span>
-<span class="sd">    clef_octave : int</span>
-<span class="sd">        Clef octave. Defaults to zero.</span>
-<span class="sd">    note_spacing : int, optional</span>
-<span class="sd">        Spacing of notes. Defaults to 4.</span>
+<span class="sd">    clef : {&#39;treble&#39;, &#39;alto&#39;, &#39;bass&#39;} (default: &#39;treble&#39;)</span>
+<span class="sd">        Clef type.</span>
+<span class="sd">    clef_octave : int (default: 0)</span>
+<span class="sd">        Clef octave.</span>
+<span class="sd">    note_spacing : int (default: 4)</span>
+<span class="sd">        Spacing of notes.</span>
 <span class="sd">    font_path : str or Path, optional</span>
-<span class="sd">        Path to the music font. Defaults to the path to the built-in</span>
+<span class="sd">        Path to the music font. Defaults to the path to the downloaded</span>
 <span class="sd">        Bravura font.</span>
-<span class="sd">    font_scale : float, optional</span>
-<span class="sd">        Font scaling factor for finetuning. Defaults to 140, optimized</span>
-<span class="sd">        for the Bravura font.</span>
+<span class="sd">    font_scale : float (default: 140)</span>
+<span class="sd">        Font scaling factor for finetuning. The default value of 140 is</span>
+<span class="sd">        optimized for the default Bravura font.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

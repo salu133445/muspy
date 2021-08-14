@@ -163,7 +163,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mido</span> <span class="kn">import</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">tempo2bpm</span>
@@ -204,15 +204,15 @@
 <span class="sd">    ----------</span>
 <span class="sd">    midi : :class:`mido.MidiFile`</span>
 <span class="sd">        Mido MidiFile object to convert.</span>
-<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo&#39;, &#39;close_all&#39;}</span>
+<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo&#39;, &#39;all&#39;} (default: &#39;fifo&#39;)</span>
 <span class="sd">        Policy for dealing with duplicate notes. When a note off</span>
 <span class="sd">        message is presetned while there are multiple correspoding note</span>
 <span class="sd">        on messages that have not yet been closed, we need a policy to</span>
-<span class="sd">        decide which note on messages to close. Defaults to &#39;fifo&#39;.</span>
+<span class="sd">        decide which note on messages to close.</span>
 
 <span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
 <span class="sd">        - &#39;lifo&#39; (first in first out): close the latest note on</span>
-<span class="sd">        - &#39;close_all&#39;: close all note on messages</span>
+<span class="sd">        - &#39;all&#39;: close all note on messages</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -220,10 +220,9 @@
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;fifo&quot;</span><span class="p">,</span> <span class="s2">&quot;lifo&quot;</span><span class="p">,</span> <span class="s2">&quot;close_all&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;fifo&quot;</span><span class="p">,</span> <span class="s2">&quot;lifo&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;`duplicate_note_mode` must be one of &#39;fifo&#39;, &#39;lifo&#39; and &quot;</span>
-            <span class="s2">&quot;&#39;close_all&#39;.&quot;</span>
+            <span class="s2">&quot;`duplicate_note_mode` must be one of &#39;fifo&#39;, &#39;lifo&#39; and &quot;</span> <span class="s2">&quot;&#39;all&#39;.&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_active_track</span><span class="p">(</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
@@ -244,8 +243,11 @@
 
     <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">song_title</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">tempos</span><span class="p">,</span> <span class="n">key_signatures</span><span class="p">,</span> <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
-    <span class="n">lyrics</span><span class="p">,</span> <span class="n">annotations</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">time_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lyrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">annotations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">copyrights</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Create a list to store converted tracks</span>
@@ -455,15 +457,15 @@
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the MIDI file to read.</span>
-<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
+<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;all&#39;} (default: &#39;fifo&#39;)</span>
 <span class="sd">        Policy for dealing with duplicate notes. When a note off message</span>
 <span class="sd">        is presetned while there are multiple correspoding note on</span>
 <span class="sd">        messages that have not yet been closed, we need a policy to</span>
-<span class="sd">        decide which note on messages to close. Defaults to &#39;fifo&#39;.</span>
+<span class="sd">        decide which note on messages to close.</span>
 
 <span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
 <span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
-<span class="sd">        - &#39;close_all&#39;: close all note on messages</span>
+<span class="sd">        - &#39;all&#39;: close all note on messages</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -609,18 +611,15 @@
     <span class="p">)</span>
 
 
-<div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span>
-    <span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+<div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a pretty_midi PrettyMIDI object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    midi : :class:`pretty_midi.PrettyMIDI`</span>
 <span class="sd">        PrettyMIDI object to convert.</span>
-<span class="sd">    resolution : int, optional</span>
-<span class="sd">        Time steps per quarter note. Defaults to</span>
-<span class="sd">        `muspy.DEFAULT_RESOLUTION`.</span>
+<span class="sd">    resolution : int (default: `muspy.DEFAULT_RESOLUTION`)</span>
+<span class="sd">        Time steps per quarter note.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -736,18 +735,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    path : str or Path</span>
 <span class="sd">        Path to the MIDI file to read.</span>
-<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}</span>
+<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;} (default: &#39;mido&#39;)</span>
 <span class="sd">        Backend to use.</span>
-<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;close_all&#39;}</span>
+<span class="sd">    duplicate_note_mode : {&#39;fifo&#39;, &#39;lifo, &#39;all&#39;} (default: &#39;fifo&#39;)</span>
 <span class="sd">        Policy for dealing with duplicate notes. When a note off message</span>
 <span class="sd">        is presetned while there are multiple correspoding note on</span>
 <span class="sd">        messages that have not yet been closed, we need a policy to</span>
-<span class="sd">        decide which note on messages to close. Defaults to &#39;fifo&#39;. Only</span>
-<span class="sd">        used when `backend=&#39;mido&#39;`.</span>
+<span class="sd">        decide which note on messages to close. Only used when `backend`</span>
+<span class="sd">        is &#39;mido&#39;.</span>
 
 <span class="sd">        - &#39;fifo&#39; (first in first out): close the earliest note on</span>
 <span class="sd">        - &#39;lifo&#39; (first in first out):close the latest note on</span>
-<span class="sd">        - &#39;close_all&#39;: close all note on messages</span>
+<span class="sd">        - &#39;all&#39;: close all note on messages</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -756,7 +755,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;mido&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">read_midi_mido</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">read_midi_mido</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="o">=</span><span class="n">duplicate_note_mode</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">backend</span> <span class="o">==</span> <span class="s2">&quot;pretty_midi&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_midi_pretty_midi</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`backend` must by one of &#39;mido&#39; and &#39;pretty_midi&#39;.&quot;</span><span class="p">)</span></div>

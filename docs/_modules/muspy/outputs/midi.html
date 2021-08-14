@@ -341,12 +341,11 @@
 <span class="sd">        Note object to convert.</span>
 <span class="sd">    channel : int</span>
 <span class="sd">        Channel of the MIDI message.</span>
-<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">    use_note_off_message : bool (default: False)</span>
 <span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
 <span class="sd">        with zero velocity are used instead. The advantage to using</span>
 <span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
 <span class="sd">        additional status bytes when Running Status is employed.</span>
-<span class="sd">        Defaults to False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -385,9 +384,7 @@
 
 
 <span class="k">def</span> <span class="nf">to_mido_track</span><span class="p">(</span>
-    <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span>
-    <span class="n">channel</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MidiTrack</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Track object as a mido MidiTrack object.</span>
 
@@ -395,15 +392,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    track : :class:`muspy.Track` object</span>
 <span class="sd">        Track object to convert.</span>
-<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">    channel : int, optional</span>
+<span class="sd">        Channel number. Defaults to 10 for drums and 0 for other</span>
+<span class="sd">        instruments.</span>
+<span class="sd">    use_note_off_message : bool (default: False)</span>
 <span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
 <span class="sd">        with zero velocity are used instead. The advantage to using</span>
 <span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
 <span class="sd">        additional status bytes when Running Status is employed.</span>
-<span class="sd">        Defaults to False.</span>
-<span class="sd">    channel : int, optional</span>
-<span class="sd">        Channel number. Defaults to 10 for drums and 0 for other</span>
-<span class="sd">        instruments.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -452,12 +448,11 @@
 <span class="sd">    ----------</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to convert.</span>
-<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">    use_note_off_message : bool (default: False)</span>
 <span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
 <span class="sd">        with zero velocity are used instead. The advantage to using</span>
 <span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
 <span class="sd">        additional status bytes when Running Status is employed.</span>
-<span class="sd">        Defaults to False.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -513,12 +508,11 @@
 <span class="sd">        Path to write the MIDI file.</span>
 <span class="sd">    music : :class:`muspy.Music` object</span>
 <span class="sd">        Music object to write.</span>
-<span class="sd">    use_note_off_message : bool, optional</span>
+<span class="sd">    use_note_off_message : bool (default: False)</span>
 <span class="sd">        Whether to use note-off messages. If False, note-on messages</span>
 <span class="sd">        with zero velocity are used instead. The advantage to using</span>
 <span class="sd">        note-on messages at zero velocity is that it can avoid sending</span>
 <span class="sd">        additional status bytes when Running Status is employed.</span>
-<span class="sd">        Defaults to False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">midi</span> <span class="o">=</span> <span class="n">to_mido</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="o">=</span><span class="n">use_note_off_message</span><span class="p">)</span>
@@ -698,8 +692,8 @@
 <span class="sd">        Path to write the MIDI file.</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to write.</span>
-<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;}, optional</span>
-<span class="sd">        Backend to use. Defaults to &#39;mido&#39;.</span>
+<span class="sd">    backend: {&#39;mido&#39;, &#39;pretty_midi&#39;} (default: &#39;mido&#39;)</span>
+<span class="sd">        Backend to use.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
