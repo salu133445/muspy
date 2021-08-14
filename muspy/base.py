@@ -115,6 +115,9 @@ class Base:
                 return False
         return True
 
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
     def __deepcopy__(self: BaseType, memo: Optional[dict]) -> BaseType:
         return self.from_dict(self.to_ordered_dict())
 
