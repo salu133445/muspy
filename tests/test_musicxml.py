@@ -363,6 +363,7 @@ def test_voices():
     )
 
     assert len(music) == 1
+    assert len(music[0]) == 12
 
     # Answers
     pitches = (72, 76, 71, 74, 67, 71, 71, 74, 55, 59, 69, 72)
@@ -373,6 +374,26 @@ def test_voices():
         assert note.start == music.resolution * starts[i]
         assert note.duration == music.resolution * durations[i]
         assert note.pitch == pitches[i]
+
+
+def test_lyrics():
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR
+        / "42a-MultiVoice-TwoVoicesOnStaff-Lyrics.xml"
+    )
+
+    assert len(music) == 1
+    assert len(music[0]) == 12
+
+    # Answers
+    lyrics = "This This is is the the lyrics lyrics of of Voice1 Voice1".split(
+        " "
+    )
+    times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+
+    for i, lyric in enumerate(music[0].lyrics):
+        assert lyric.time == music.resolution * times[i]
+        assert lyric.lyric == lyrics[i]
 
 
 def test_piano_staff():

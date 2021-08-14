@@ -8,7 +8,15 @@ from typing import Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
-from ..classes import KeySignature, Metadata, Note, Tempo, TimeSignature, Track
+from ..classes import (
+    KeySignature,
+    Lyric,
+    Metadata,
+    Note,
+    Tempo,
+    TimeSignature,
+    Track,
+)
 from ..music import Music
 from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS, NOTE_MAP, NOTE_TYPE_MAP
 
@@ -151,6 +159,7 @@ def parse_part_elem(
     notes: Dict[str, List[Note]] = {
         instrument_id: [] for instrument_id in instrument_info
     }
+    lyrics: List[Lyric] = []
     ties: Dict[Tuple[str, int], int] = {}
 
     # Initialize variables
@@ -171,7 +180,6 @@ def parse_part_elem(
         for elem in measure_elem:
 
             # TODO: Handle repeat, segno, dalsegno, coda, tocoda, fine
-            # TODO: Handle lyrics
 
             if elem.tag == "attributes":
                 # Division
@@ -223,13 +231,14 @@ def parse_part_elem(
                 if key_elem is not None:
                     parsed_key = parse_key_elem(key_elem)
                     if parsed_key is not None:
-                        key_signature = KeySignature(
-                            time=time + position,
-                            root=parsed_key.get("root"),
-                            mode=parsed_key.get("mode"),
-                            root_str=parsed_key.get("root_str"),
+                        key_signatures.append(
+                            KeySignature(
+                                time=time + position,
+                                root=parsed_key.get("root"),
+                                mode=parsed_key.get("mode"),
+                                root_str=parsed_key.get("root_str"),
+                            )
                         )
-                        key_signatures.append(key_signature)
 
             # Sound element
             elif elem.tag == "sound":
@@ -341,17 +350,34 @@ def parse_part_elem(
 
                 else:
                     # Create a new note and append it to the note list
-                    note = Note(
-                        time=time + position,
-                        pitch=pitch,
-                        duration=duration * factor,
-                        velocity=velocity,
-                        pitch_str=pitch_str,
+                    notes[instrument_id].append(
+                        Note(
+                            time=time + position,
+                            pitch=pitch,
+                            duration=duration * factor,
+                            velocity=velocity,
+                            pitch_str=pitch_str,
+                        )
                     )
-                    notes[instrument_id].append(note)
 
                     if is_outgoing_tie:
                         ties[note_key] = len(notes[instrument_id]) - 1
+
+                # Lyric
+                lyric_elem = elem.find("lyric")
+                if lyric_elem is not None:
+                    lyric_text = _get_required_text(lyric_elem, "text")
+                    syllabic_elem = lyric_elem.find("syllabic")
+                    if syllabic_elem is not None:
+                        if syllabic_elem.text == "begin":
+                            lyric_text += "-"
+                        elif syllabic_elem.text == "middle":
+                            lyric_text = "-" + lyric_text + "-"
+                        elif syllabic_elem.text == "end":
+                            lyric_text = "-" + lyric_text
+                    lyrics.append(
+                        Lyric(time=time + position, lyric=lyric_text)
+                    )
 
                 # Move time position forward if it is not in chord
                 last_note_position = position
@@ -373,11 +399,18 @@ def parse_part_elem(
             key=attrgetter("time", "pitch", "duration", "velocity")
         )
 
+    # Sort tempos, key signatures, time signatures and lyrics
+    tempos.sort(key=attrgetter("time"))
+    key_signatures.sort(key=attrgetter("time"))
+    time_signatures.sort(key=attrgetter("time"))
+    lyrics.sort(key=attrgetter("time"))
+
     return {
         "tempos": tempos,
         "key_signatures": key_signatures,
         "time_signatures": time_signatures,
         "notes": notes,
+        "lyrics": lyrics,
     }
 
 
@@ -543,7 +576,7 @@ def read_musicxml(
         part_id, info = parse_score_part_elem(part_elem)
         part_info[part_id] = info
 
-    if not root.find("part"):
+    if root.find("part") is None:
         return Music(metadata=metadata, resolution=resolution)
 
     # Initialize lists
@@ -587,6 +620,7 @@ def read_musicxml(
                     is_drum=part_info[part_id][instrument_id]["is_drum"],
                     name=part_info[part_id][instrument_id]["name"],
                     notes=notes,
+                    lyrics=part["lyrics"],
                 )
                 tracks.append(track)
 
