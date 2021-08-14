@@ -19,6 +19,7 @@ from math import ceil, floor
 from pathlib import Path
 from typing import Any, Callable, List, Optional, Union
 
+import numpy as np
 from mido import MidiFile
 from music21.stream import Stream
 from numpy import ndarray
@@ -28,6 +29,7 @@ from pypianoroll import Multitrack
 from .base import ComplexBase
 from .classes import (
     Annotation,
+    Beat,
     KeySignature,
     Lyric,
     Metadata,
@@ -74,8 +76,8 @@ class Music(ComplexBase):
         Key signatures changes.
     time_signatures : list of :class:`muspy.TimeSignature`
         Time signature changes.
-    downbeats : list of int
-        Downbeat positions.
+    beats : list of :class:`muspy.Beat`
+        Beats.
     lyrics : list of :class:`muspy.Lyric`
         Lyrics.
     annotations : list of :class:`muspy.Annotation`
@@ -99,7 +101,7 @@ class Music(ComplexBase):
             ("tempos", Tempo),
             ("key_signatures", KeySignature),
             ("time_signatures", TimeSignature),
-            ("downbeats", int),
+            ("beats", Beat),
             ("lyrics", Lyric),
             ("annotations", Annotation),
             ("tracks", Track),
@@ -111,17 +113,16 @@ class Music(ComplexBase):
         "tempos",
         "key_signatures",
         "time_signatures",
-        "downbeats",
+        "beats",
         "lyrics",
         "annotations",
         "tracks",
     ]
-    _temporal_attributes = ["downbeats"]
     _list_attributes = [
         "tempos",
         "key_signatures",
         "time_signatures",
-        "downbeats",
+        "beats",
         "lyrics",
         "annotations",
         "tracks",
@@ -134,7 +135,7 @@ class Music(ComplexBase):
         tempos: Optional[List[Tempo]] = None,
         key_signatures: Optional[List[KeySignature]] = None,
         time_signatures: Optional[List[TimeSignature]] = None,
-        downbeats: Optional[List[int]] = None,
+        beats: Optional[List[Beat]] = None,
         lyrics: Optional[List[Lyric]] = None,
         annotations: Optional[List[Annotation]] = None,
         tracks: Optional[List[Track]] = None,
@@ -150,7 +151,7 @@ class Music(ComplexBase):
         self.time_signatures = (
             time_signatures if time_signatures is not None else []
         )
-        self.downbeats = downbeats if downbeats is not None else []
+        self.beats = beats if beats is not None else []
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
@@ -196,6 +197,7 @@ class Music(ComplexBase):
             _get_end_time(self.tempos),
             _get_end_time(self.key_signatures),
             _get_end_time(self.time_signatures),
+            _get_end_time(self.beats),
             _get_end_time(self.lyrics),
             _get_end_time(self.annotations),
             track_end_time,
@@ -236,6 +238,35 @@ class Music(ComplexBase):
         real_end_time += (end_time - position) * factor / qpm
 
         return real_end_time
+
+    def infer_beats(self) -> List[Beat]:
+        """Infer beats from the time signature changes.
+
+        This assumes that there is a downbeat at each time signature
+        change (this is not always true, e.g., for a pickup measure).
+
+        Returns
+        -------
+        list of :class:`muspy.Beat`
+            List of beats inferred from the time signature changes.
+            Return an empty list if no time signature is found.
+
+        """
+        beats: List[Beat] = []
+        for i, time_sign in enumerate(self.time_signatures):
+            if i == len(self.time_signatures) - 1:
+                end = self.get_end_time()
+            else:
+                end = self.time_signatures[i + 1].time
+            beat_resolution = self.resolution / (time_sign.denominator / 4)
+            for j, time in enumerate(
+                np.arange(time_sign.time, end, beat_resolution)
+            ):
+                if j % time_sign.numerator == 0:
+                    beats.append(Beat(time=int(time), is_downbeat=True))
+                else:
+                    beats.append(Beat(time=int(time), is_downbeat=False))
+        return beats
 
     def adjust_resolution(
         self,

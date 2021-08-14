@@ -52,11 +52,13 @@ def check_time_signatures(time_signatures):
     assert time_signatures[0].denominator == 8
 
 
-def check_downbeats(downbeats):
-    """Check downbeats."""
-    assert len(downbeats) == 2
-    assert downbeats[0] == 12
-    assert downbeats[1] == 48
+def check_beats(beats):
+    """Check beats."""
+    assert len(beats) == 5
+    assert beats[0].time == 0
+    assert not beats[0].is_downbeat
+    assert beats[1].time == 12
+    assert beats[1].is_downbeat
 
 
 def check_lyrics(lyrics):
@@ -99,7 +101,7 @@ def check_music(music, ext=None, resolution=24):
     check_tempos(music.tempos)
     check_key_signatures(music.key_signatures)
     check_time_signatures(music.time_signatures)
-    check_downbeats(music.downbeats)
+    check_beats(music.beats)
     check_lyrics(music.lyrics)
     check_annotations(music.annotations)
 

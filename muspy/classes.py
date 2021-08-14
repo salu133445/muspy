@@ -6,6 +6,7 @@ Classes
 -------
 
 - Annotation
+- Beat
 - Chord
 - KeySignature
 - Lyric
@@ -32,6 +33,7 @@ DEFAULT_VELOCITY = 64
 
 __all__ = [
     "Annotation",
+    "Beat",
     "Chord",
     "DEFAULT_VELOCITY",
     "KeySignature",
@@ -212,6 +214,25 @@ class TimeSignature(Base):
             raise ValueError("`numerator` must be positive.")
         if attr == "denominator" and self.denominator < 1:
             raise ValueError("`denominator` must be positive.")
+
+
+class Beat(Base):
+    """A container for beats.
+
+    Attributes
+    ----------
+    time : int
+        Time of the beat, in time steps.
+    is_downbeat : bool
+        Whether it is a downbeat.
+
+    """
+
+    _attributes = OrderedDict([("time", int), ("is_downbeat", bool)])
+
+    def __init__(self, time: int, is_downbeat: bool):
+        self.time = time
+        self.is_downbeat = is_downbeat
 
 
 class Lyric(Base):
@@ -423,7 +444,8 @@ class Chord(Base):
     velocity : int, optional
         Chord velocity. Defaults to `muspy.DEFAULT_VELOCITY`.
     pitches_str : list of str
-        Note pitches as strings, useful for distinguishing C# and Db.
+        Note pitches as strings (useful for distinguishing, e.g., C# and
+        Db).
 
     """
 
@@ -569,7 +591,7 @@ class Track(ComplexBase):
     Attributes
     ----------
     program : int, 0-127, optional
-        Program number according to General MIDI specification [1]_.
+        Program number, according to General MIDI specification [1]_.
         Defaults to 0 (Acoustic Grand Piano).
     is_drum : bool, optional
         Whether it is a percussion track. Defaults to False.

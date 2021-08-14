@@ -1,11 +1,11 @@
-# MusPy YAML schema v0.0
+# MusPy YAML schema v0.1
 
 metadata: include("meta", required=False)
 resolution: int(required=False)
 tempos: list(include("tempo"), required=False)
 time_signatures: list(include("time_signature"), required=False)
 key_signatures: list(include("key_signature"), required=False)
-downbeats: list(int(), required=False)
+beats: list(include("beat"), required=False)
 lyrics: list(include("lyric"), required=False)
 annotations: list(include("annotation"), required=False)
 tracks: any(list(include("track")), required=False)
@@ -47,6 +47,10 @@ time_signature:
   time: int()
   numerator: int()
   denominator: int()
+
+beat:
+  time: int()
+  is_downbeat: bool()
 
 note:
   time: int()

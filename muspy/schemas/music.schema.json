@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "MusPy JSON schema v0.0",
+    "title": "MusPy JSON schema v0.1",
     "description": "A simple, intuitive format for symbolic music",
     "type": "object",
     "properties": {
@@ -37,7 +37,7 @@
                     "type": ["string", "null"]
                 },
                 "source_format": {
-                    "description": "Format of the source file (e.g., midi and musicxml)",
+                    "description": "Format of the source file",
                     "type": ["string", "null"]
                 }
             }
@@ -47,13 +47,13 @@
             "type": "integer"
         },
         "tempos": {
-            "description": "Tempos",
+            "description": "Tempo changes",
             "type": ["array", "null"],
             "items": {
                 "type": "object",
                 "properties": {
                     "time": {
-                        "description": "Event time",
+                        "description": "Start time of the tempo, in time steps",
                         "type": "integer"
                     },
                     "tempo": {
@@ -65,61 +65,70 @@
 
         },
         "key_signatures": {
-            "description": "Key signatures",
+            "description": "Key signature changes",
             "type": ["array", "null"],
             "items": {
                 "type": "object",
                 "properties": {
                     "time": {
-                        "description": "Event time",
+                        "description": "Start time of the key signature, in time steps",
                         "type": "integer"
                     },
                     "root": {
-                        "description": "Root pitch (0-11, 0 for C, 11 for B)",
+                        "description": "Root (tonic) of the key signature",
                         "type": "integer"
                     },
                     "mode": {
-                        "description": "Mode: {major, minor}",
+                        "description": "Mode of the key signature",
                         "type": "string"
                     },
                     "fifths":{
-                        "description": "Number of flats or sharps",
+                        "description": "Number of sharps or flats (positive numbers for sharps and negative numbers for flats)",
                         "type": "integer"
                     },
                     "root_str": {
-                        "description": "Root pitch ({A-G} with optional accidentals {#, b, ##, bb})",
+                        "description": "Root of the key signature as a string",
                         "type": "string"
                     }
                 }
             }
         },
         "time_signatures": {
-            "description": "Time signatures",
+            "description": "Time signature changes",
             "type": ["array", "null"],
             "items": {
                 "type": "object",
                 "properties": {
                     "time": {
-                        "description": "Event time",
+                        "description": "Start time of the time signature, in time steps.",
                         "type": "integer"
                     },
                     "numerator": {
-                        "description": "Numerator of time signature",
+                        "description": "Numerator of the time signature",
                         "type": "integer"
                     },
                     "denominator": {
-                        "description": "Denominator of time signature",
+                        "description": "Denominator of the time signature",
                         "type": "integer"
                     }
                 }
             }
         },
-        "downbeats": {
-            "description": "Downbeat positions",
+        "beats": {
+            "description": "Beats",
             "type": ["array", "null"],
             "items": {
-                "description": "Downbeat time",
-                "type": "integer"
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Time of the beat, in time steps",
+                        "type": "integer"
+                    },
+                    "is_downbeat": {
+                        "description": "Whether it is a downbeat",
+                        "type": "boolean"
+                    }
+                }
             }
         },
         "lyrics": {
@@ -129,11 +138,11 @@
                 "type": "object",
                 "properties": {
                     "time": {
-                        "description": "Event time",
+                        "description": "Start time of the lyric, in time steps",
                         "type": "integer"
                     },
                     "lyric": {
-                        "description": "Content of lyric",
+                        "description": "Lyric (sentence, word, syllable, etc.)",
                         "type": "string"
                     }
                 }
@@ -146,14 +155,14 @@
                 "type": "object",
                 "properties": {
                     "time": {
-                        "description": "Event time",
+                        "description": "Start time of the annotation, in time steps",
                         "type": "integer"
                     },
                     "annotation": {
-                        "description": "Content of annotation"
+                        "description": "Annotation of any type"
                     },
                     "group": {
-                        "description": "Annotation group",
+                        "description": "Group name (for better organizing the annotations)",
                         "type": ["string", "null"]
                     }
                 }
@@ -166,41 +175,41 @@
                 "type": "object",
                 "properties": {
                     "program": {
-                        "description": "# Program number (according to General MIDI specification)",
+                        "description": "Program number, according to General MIDI specification",
                         "type": "integer"
                     },
                     "is_drum": {
-                        "description": "A boolean indicator that indicates whether it is a percussion track",
+                        "description": "Whether it is a percussion track",
                         "type": "boolean"
                     },
                     "name": {
-                        "description": "Name of track",
+                        "description": "Track name",
                         "type": ["string", "null"]
                     },
                     "notes": {
-                        "description": "Notes",
+                        "description": "Musical notes",
                         "type": ["array", "null"],
                         "items": {
                             "type": "object",
                             "properties": {
                                 "time": {
-                                    "description": "Start time",
-                                    "type": "integer"
-                                },
-                                "duration": {
-                                    "description": "Note duration",
+                                    "description": "Start time of the note, in time steps",
                                     "type": "integer"
                                 },
                                 "pitch": {
-                                    "description": "Note pitch (0-127, 0 for C-1, 127 for G9)",
+                                    "description": "Note pitch, as a MIDI note number",
+                                    "type": "integer"
+                                },
+                                "duration": {
+                                    "description": "Duration of the note, in time steps",
                                     "type": "integer"
                                 },
                                 "velocity": {
-                                    "description": "Note velocity (0-127)",
+                                    "description": "Note velocity",
                                     "type": "integer"
                                 },
                                 "pitch_str": {
-                                    "description": "Note pitch as a string",
+                                    "description": "Note pitch as a string (useful for distinguishing, e.g., C# and Db)",
                                     "type": "integer"
                                 }
                             }
@@ -213,7 +222,7 @@
                             "type": "object",
                             "properties": {
                                 "time": {
-                                    "description": "Start time",
+                                    "description": "Start time of the chord, in time steps",
                                     "type": "integer"
                                 },
                                 "duration": {
@@ -221,22 +230,22 @@
                                     "type": "integer"
                                 },
                                 "pitches": {
-                                    "description": "Note pitches",
+                                    "description": "Note pitches, as MIDI note numbers",
                                     "type": ["array", "null"],
                                     "items": {
-                                        "description": "Note pitch (0-127, 0 for C-1, 127 for G9)",
+                                        "description": "Note pitch, as a MIDI note number",
                                         "type": "integer"
                                     }
                                 },
                                 "velocity": {
-                                    "description": "Chord velocity (0-127)",
+                                    "description": "Chord velocity",
                                     "type": "integer"
                                 },
                                 "pitches_str": {
-                                    "description": "Note pitches as strings",
+                                    "description": "Note pitches as strings (useful for distinguishing, e.g., C# and Db)",
                                     "type": ["array", "null"],
                                     "items": {
-                                        "description": "Note pitch (0-127, 0 for C-1, 127 for G9)",
+                                        "description": "Note pitch as a string",
                                         "type": "integer"
                                     }
                                 }
@@ -250,11 +259,11 @@
                             "type": "object",
                             "properties": {
                                 "time": {
-                                    "description": "Event time",
+                                    "description": "Start time of the lyric, in time steps",
                                     "type": "integer"
                                 },
                                 "lyric": {
-                                    "description": "Content of lyric",
+                                    "description": "Lyric (sentence, word, syllable, etc.)",
                                     "type": "string"
                                 }
                             }
@@ -267,14 +276,14 @@
                             "type": ["object", "null"],
                             "properties": {
                                 "time": {
-                                    "description": "Event time",
+                                    "description": "Start time of the annotation, in time steps",
                                     "type": "integer"
                                 },
                                 "annotation": {
-                                    "description": "Content of annotation"
+                                    "description": "Annotation of any type"
                                 },
                                 "group": {
-                                    "description": "Annotation group",
+                                    "description": "Group name (for better organizing the annotations)",
                                     "type": ["string", "null"]
                                 }
                             }

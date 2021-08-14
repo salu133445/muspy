@@ -60,12 +60,13 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         tempo_arr[position:] = qpm
 
     # Downbeats
-    if not music.downbeats:
+    if not music.beats:
         downbeat_arr = None
     else:
         downbeat_arr = np.ones(length, bool)
-        for downbeat in music.downbeats:
-            downbeat_arr[downbeat] = True
+        for beat in music.beats:
+            if beat.is_downbeat:
+                downbeat_arr[beat.time] = True
 
     has_title = music.metadata is not None and music.metadata.title is not None
 

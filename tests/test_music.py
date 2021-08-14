@@ -31,7 +31,17 @@ def test_is_valid():
 
 def test_get_real_end_time():
     music = muspy.load(TEST_JSON_PATH)
-    assert music.get_real_end_time() == 1.875 # 2.25 / 72 * 60
+    assert music.get_real_end_time() == 1.875  # 2.25 / 72 * 60
+
+
+def test_infer_beats():
+    music = muspy.load(TEST_JSON_PATH)
+    beats = music.infer_beats()
+    assert len(beats) == 5
+    assert beats[0].time == 0
+    assert beats[0].is_downbeat
+    assert beats[1].time == 12
+    assert not beats[1].is_downbeat
 
 
 def test_adjust_resolution():
@@ -71,8 +81,9 @@ def test_deepcopy():
 
     assert music2 == music
     assert music2 is not music
+    assert music2.tracks is not music.tracks
+    assert music2.tracks[0] is not music.tracks[0]
     assert music2.tracks[0][0] is not music.tracks[0][0]
-    assert music2.downbeats is not music.downbeats
 
 
 def test_obj_extend():

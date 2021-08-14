@@ -2,12 +2,14 @@
 from operator import attrgetter
 from typing import Dict, List, Tuple, Union
 
+import numpy as np
 from music21.instrument import partitionByInstrument
 from music21.key import Key
 from music21.key import KeySignature as M21KeySignature
 from music21.stream import Opus, Part, Score, Stream
 
 from ..classes import (
+    Beat,
     Chord,
     KeySignature,
     Metadata,
@@ -144,6 +146,67 @@ def parse_time_signatures(
         )
         time_signatures.add(time_signature)
     return sorted(time_signatures, key=attrgetter("time"))
+
+
+def parse_beats(
+    stream: Stream,
+    time_signatures: List[TimeSignature],
+    resolution=DEFAULT_RESOLUTION,
+) -> List[Beat]:
+    """Return beats parsed from a music21 Stream object.
+
+    Parameters
+    ----------
+    stream : `music21.stream.Stream`
+        Stream object to parse.
+    time_signatures : list of :class:`muspy.TimeSignature`
+        Time signature objects.
+    resolution : int, optional
+        Time steps per quarter note. Defaults to
+        `muspy.DEFAULT_RESOLUTION`.
+
+    Returns
+    -------
+    list of :class:`muspy.Beat`
+        Parsed beats.
+
+    """
+    beats: List[Beat] = []
+    measure_offset_map = stream.measureOffsetMap()
+    downbeats = list(
+        int(float(offset * resolution)) for offset in measure_offset_map.keys()
+    )
+    downbeats.sort()
+    time_sign_idx = 0
+    downbeat_idx = 0
+    while downbeat_idx < len(downbeats):
+        # Use next time signature
+        if (
+            time_sign_idx < len(time_signatures) - 1
+            and downbeats[downbeat_idx] >= time_signatures[time_sign_idx].time
+        ):
+            time_sign_idx += 1
+            continue
+        # Set time signature
+        time_sign = time_signatures[time_sign_idx]
+        beat_resolution = resolution / (time_sign.denominator / 4)
+        # Get the next downbeat
+        if downbeat_idx < len(downbeats) - 1:
+            end = downbeats[downbeat_idx + 1]
+        else:
+            end = (
+                downbeats[downbeat_idx] + beat_resolution * time_sign.numerator
+            )
+        # Append beats
+        for j, time in enumerate(
+            np.arange(downbeats[downbeat_idx], end, beat_resolution)
+        ):
+            if j % time_sign.numerator == 0:
+                beats.append(Beat(time=int(time), is_downbeat=True))
+            else:
+                beats.append(Beat(time=int(time), is_downbeat=False))
+        downbeat_idx += 1
+    return beats
 
 
 def parse_notes_and_chords(
@@ -313,12 +376,16 @@ def from_music21_score(score: Score, resolution=DEFAULT_RESOLUTION) -> Music:
         elif len(part.flat.notesAndRests) > 0:
             tracks.append(parse_track(part))
 
+    time_signatures = parse_time_signatures(score, resolution)
+    beats = parse_beats(score, time_signatures, resolution)
+
     return Music(
         metadata=parse_metadata(score),
         resolution=DEFAULT_RESOLUTION,
         tempos=parse_tempos(score),
         key_signatures=parse_key_signatures(score, resolution),
-        time_signatures=parse_time_signatures(score, resolution),
+        time_signatures=time_signatures,
+        beats=beats,
         tracks=tracks,
     )
 
