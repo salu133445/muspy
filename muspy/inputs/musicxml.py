@@ -169,20 +169,78 @@ def parse_part_elem(
     default_instrument_id = next(iter(instrument_info))
     transpose_semitone = 0
     transpose_octave = 0
+    is_repeat = 0
+    last_repeat = 0
+    count_repeat = 1
+    count_ending = 1
+    is_after_jump = False
 
     # Iterate over all elements
-    for measure_elem in part_elem.findall("measure"):
+    measure_idx = 0
+    measure_elems = list(part_elem.findall("measure"))
+    while measure_idx < len(measure_elems):
+
+        # Get the measure element
+        measure_elem = measure_elems[measure_idx]
 
         # Initialize position
         position = 0
         last_note_position = None
 
+        # TODO: Handle segno, dalsegno, coda, tocoda, fine
+        # Barline elements
+        for barline_elem in measure_elem.findall("barline"):
+            # Repeat elements
+            repeat_elem = barline_elem.find("repeat")
+            if repeat_elem is not None:
+                direction = _get_required_attr(repeat_elem, "direction")
+                if direction == "forward":
+                    last_repeat = measure_idx
+                elif direction == "backward":
+                    # Get after-jump infomation
+                    after_jump_attr = repeat_elem.get("after-jump")
+                    if after_jump_attr is None or after_jump_attr == "no":
+                        after_jump = False
+                    else:
+                        after_jump = True
+                    if not is_after_jump or (is_after_jump and after_jump):
+                        # Get repeat-times infomation
+                        repeat_times_attr = repeat_elem.get("times")
+                        if repeat_times_attr is None:
+                            repeat_times = 2
+                        else:
+                            repeat_times = int(repeat_times_attr)
+                        # Check if repeat times has reached
+                        if count_repeat < repeat_times:
+                            count_repeat += 1
+                            count_ending += 1
+                            is_repeat = True
+                        else:
+                            count_repeat = 1
+                            count_ending = 1
+                else:
+                    raise MusicXMLError(
+                        "Unknown direction for a `repeat` element : "
+                        f"{direction}"
+                    )
+            # Ending elements
+            ending_elem = barline_elem.find("ending")
+            if ending_elem is not None:
+                ending_num_attr = _get_required_attr(ending_elem, "number")
+                if ending_num_attr:
+                    ending_num = [
+                        int(num) for num in ending_num_attr.split(",")
+                    ]
+                # Skip the current measure if not the correct ending
+                if not is_repeat and count_ending not in ending_num:
+                    measure_idx += 1
+                    continue
+
+        # Iterating over all elements in the current measure
         for elem in measure_elem:
-
-            # TODO: Handle repeat, segno, dalsegno, coda, tocoda, fine
-
+            # Attributes elements
             if elem.tag == "attributes":
-                # Division
+                # Division elements
                 division_elem = elem.find("divisions")
                 if (
                     division_elem is not None
@@ -190,7 +248,7 @@ def parse_part_elem(
                 ):
                     division = int(division_elem.text)
 
-                # Transpose
+                # Transpose elements
                 transpose_elem = elem.find("transpose")
                 if transpose_elem is not None:
                     transpose_semitone = int(
@@ -226,7 +284,7 @@ def parse_part_elem(
                         )
                     )
 
-                # Key signatures
+                # Key elements
                 key_elem = elem.find("key")
                 if key_elem is not None:
                     parsed_key = parse_key_elem(key_elem)
@@ -242,26 +300,26 @@ def parse_part_elem(
 
             # Sound element
             elif elem.tag == "sound":
-
-                # Tempo
+                # Tempo elements
                 tempo = elem.get("tempo")
                 if tempo is not None:
                     tempos.append(Tempo(time + position, float(tempo)))
 
-                # Dynamics
+                # Dynamics elements
                 dynamics = elem.get("dynamics")
                 if dynamics is not None:
                     velocity = int(float(dynamics))
 
+            # Direction elements
             elif elem.tag == "direction":
                 # TODO: Handle symbolic dynamics and tempo
 
                 tempo_set = False
 
-                # Sound element
+                # Sound elements
                 sound_elem = elem.find("sound")
                 if sound_elem is not None:
-                    # Tempo
+                    # Tempo directions
                     tempo = sound_elem.get("tempo")
                     if tempo is not None:
                         tempos.append(
@@ -269,12 +327,12 @@ def parse_part_elem(
                         )
                         tempo_set = True
 
-                    # Dynamics
+                    # Dynamic directions
                     dynamics = sound_elem.get("dynamics")
                     if dynamics is not None:
                         velocity = int(float(dynamics))
 
-                # Metronome element
+                # Metronome elements
                 if not tempo_set:
                     metronome_elem = elem.find("direction-type/metronome")
                     if metronome_elem is not None:
@@ -282,28 +340,31 @@ def parse_part_elem(
                         if qpm is not None:
                             tempos.append(Tempo(time=time + position, qpm=qpm))
 
+            # Note elements
             elif elem.tag == "note":
                 # TODO: Handle voice information
 
-                # Check if it is a rest
+                # Rest elements
                 rest_elem = elem.find("rest")
                 if rest_elem is not None:
+                    # Move time position forward if it is a rest
                     duration = int(_get_required_text(elem, "duration"))
                     position += int(duration * resolution / division)
                     continue
 
-                # Check if it is a cue note
+                # Cue notes
                 if elem.find("cue") is not None:
                     continue
 
-                # Check if it is an unpitched note
+                # Unpitched notes
                 # TODO: Handle unpitched notes
                 unpitched_elem = elem.find("unpitched")
                 if unpitched_elem is not None:
                     continue
 
-                # Move time position backward if it is in a chord
+                # Chord elements
                 if elem.find("chord") is not None:
+                    # Move time position backward if it is in a chord
                     if last_note_position is not None:
                         position = last_note_position
 
@@ -325,7 +386,7 @@ def parse_part_elem(
                 else:
                     instrument_id = default_instrument_id
 
-                # Check if it is a grace note
+                # Grace notes
                 grace_elem = elem.find("grace")
                 if grace_elem is not None:
                     note_type = _get_required_text(elem, "type")
@@ -343,11 +404,11 @@ def parse_part_elem(
                     continue
 
                 # Get duration
-                # TODO: Should we look for a 'duration' or 'type' element?
+                # TODO: Should we look for a duration or type element?
                 duration = int(_get_required_text(elem, "duration"))
 
                 # Check if it is a tied note
-                # TODO: Should we look for a 'tie' or 'tied' element?
+                # TODO: Should we look for a tie or tied element?
                 is_outgoing_tie = False
                 for tie_elem in elem.findall("tie"):
                     if tie_elem.get("type") == "start":
@@ -381,7 +442,7 @@ def parse_part_elem(
                     if is_outgoing_tie:
                         ties[note_key] = len(notes[instrument_id]) - 1
 
-                # Lyric
+                # Lyrics
                 lyric_elem = elem.find("lyric")
                 if lyric_elem is not None:
                     lyric_text = _get_required_text(lyric_elem, "text")
@@ -401,15 +462,23 @@ def parse_part_elem(
                 last_note_position = position
                 position += int(duration * resolution / division)
 
+            # Forward elements
             elif elem.tag == "forward":
                 duration = int(_get_required_text(elem, "duration"))
                 position += int(duration * resolution / division)
 
+            # Backup elements
             elif elem.tag == "backup":
                 duration = int(_get_required_text(elem, "duration"))
                 position -= int(duration * resolution / division)
 
         time += position
+
+        if is_repeat:
+            is_repeat = False
+            measure_idx = last_repeat
+        else:
+            measure_idx += 1
 
     # Sort notes
     for instrument_notes in notes.values():

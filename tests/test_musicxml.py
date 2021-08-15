@@ -433,7 +433,6 @@ def test_piano_staff():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "43a-PianoStaff.xml")
 
     assert len(music) == 1
-
     assert len(music[0]) == 2
 
     assert music[0][0].start == 0
@@ -442,6 +441,20 @@ def test_piano_staff():
     assert music[0][1].start == 0
     assert music[0][1].duration == music.resolution * 4
     assert music[0][1].pitch == 65
+
+
+def test_repeat():
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "45a-SimpleRepeat.xml")
+    assert len(music) == 1
+    assert len(music[0]) == 6
+
+
+def test_repeat_with_alternatives():
+    music = muspy.read(
+        TEST_MUSICXML_LILYPOND_DIR / "45b-RepeatWithAlternatives.xml"
+    )
+    assert len(music) == 1
+    assert len(music[0]) == 5
 
 
 def test_quoted_headers():
@@ -516,14 +529,14 @@ def test_realworld():
 
     assert len(music) == 1
 
-    assert len(music.tempos) == 1
+    assert len(music.tempos) == 2  # repeats
     assert music.tempos[0].qpm == 72
 
-    assert len(music.key_signatures) == 1
+    assert len(music.key_signatures) == 2  # repeats
     assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
-    assert len(music.time_signatures) == 1
+    assert len(music.time_signatures) == 2  # repeats
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
 
@@ -537,14 +550,14 @@ def test_realworld_compressed():
 
     assert len(music) == 1
 
-    assert len(music.tempos) == 1
+    assert len(music.tempos) == 2  # repeats
     assert music.tempos[0].qpm == 72
 
-    assert len(music.key_signatures) == 1
+    assert len(music.key_signatures) == 2  # repeats
     assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
-    assert len(music.time_signatures) == 1
+    assert len(music.time_signatures) == 2  # repeats
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
 
