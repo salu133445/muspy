@@ -169,11 +169,21 @@ def parse_part_elem(
     default_instrument_id = next(iter(instrument_info))
     transpose_semitone = 0
     transpose_octave = 0
+    # Repeats
     is_repeat = 0
     last_repeat = 0
     count_repeat = 1
     count_ending = 1
+    # Coda, tocoda, dacapo, segno, dalsegno, fine
     is_after_jump = False
+    is_fine = False
+    is_dacapo = False
+    is_dalsegno = False
+    is_segno = False
+    is_segno_found = False
+    is_tocoda = False
+    is_coda = False
+    is_coda_found = False
 
     # Iterate over all elements
     measure_idx = 0
@@ -187,7 +197,78 @@ def parse_part_elem(
         position = 0
         last_note_position = None
 
-        # TODO: Handle segno, dalsegno, coda, tocoda, fine
+        # Look for segno
+        if is_dalsegno and not is_segno_found:
+            # Segno
+            for sound_elem in measure_elem.findall("sound"):
+                if sound_elem.get("segno") is not None:
+                    is_segno = True
+            for sound_elem in measure_elem.findall("direction/sound"):
+                if sound_elem.get("segno") is not None:
+                    is_segno = True
+
+            # Skip if not segno
+            if not is_segno:
+                measure_idx += 1
+                continue
+
+            is_segno_found = True
+
+        # Look for coda
+        if is_tocoda and not is_coda_found:
+            # Coda
+            for sound_elem in measure_elem.findall("sound"):
+                if sound_elem.get("coda") is not None:
+                    is_coda = True
+            for sound_elem in measure_elem.findall("direction/sound"):
+                if sound_elem.get("coda") is not None:
+                    is_coda = True
+
+            # Skip if not coda
+            if not is_coda:
+                measure_idx += 1
+                continue
+
+            is_coda_found = True
+
+        # Sound element
+        for sound_elem in measure_elem.findall("sound"):
+            if is_after_jump:
+                # Tocoda
+                if sound_elem.get("tocoda") is not None:
+                    is_tocoda = True
+
+                # Fine
+                if sound_elem.get("fine") is not None:
+                    is_fine = True
+            else:
+                # Dacapo
+                if sound_elem.get("dacapo") is not None:
+                    is_dacapo = True
+
+                # Daselgno
+                if sound_elem.get("dalsegno") is not None:
+                    is_dalsegno = True
+
+        # Sound elements under direction elements
+        for sound_elem in measure_elem.findall("direction/sound"):
+            if is_after_jump:
+                # Tocoda
+                if sound_elem.get("tocoda") is not None:
+                    is_tocoda = True
+
+                # Fine
+                if sound_elem.get("fine") is not None:
+                    is_fine = True
+            else:
+                # Dacapo
+                if sound_elem.get("dacapo") is not None:
+                    is_dacapo = True
+
+                # Daselgno
+                if sound_elem.get("dalsegno") is not None:
+                    is_dalsegno = True
+
         # Barline elements
         for barline_elem in measure_elem.findall("barline"):
             # Repeat elements
@@ -317,10 +398,10 @@ def parse_part_elem(
                 tempo_set = False
 
                 # Sound elements
-                sound_elem = elem.find("sound")
-                if sound_elem is not None:
+                sound_elem_ = elem.find("sound")
+                if sound_elem_ is not None:
                     # Tempo directions
-                    tempo = sound_elem.get("tempo")
+                    tempo = sound_elem_.get("tempo")
                     if tempo is not None:
                         tempos.append(
                             Tempo(time=time + position, qpm=float(tempo))
@@ -328,7 +409,7 @@ def parse_part_elem(
                         tempo_set = True
 
                     # Dynamic directions
-                    dynamics = sound_elem.get("dynamics")
+                    dynamics = sound_elem_.get("dynamics")
                     if dynamics is not None:
                         velocity = int(float(dynamics))
 
@@ -474,7 +555,13 @@ def parse_part_elem(
 
         time += position
 
-        if is_repeat:
+        if is_after_jump and is_fine:
+            break
+
+        if not is_after_jump and (is_dacapo or is_dalsegno):
+            measure_idx = 0
+            is_after_jump = True
+        elif is_repeat:
             is_repeat = False
             measure_idx = last_repeat
         else:

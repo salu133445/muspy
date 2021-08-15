@@ -520,6 +520,27 @@ def test_compressed_musicxml():
     assert len(music[0]) == 4
 
 
+def test_dcalfine():
+    music = muspy.read(TEST_MUSICXML_DIR / "dcalfine.xml")
+
+    assert len(music) == 1
+    assert len(music[0]) == 6
+
+
+def test_dsalfine():
+    music = muspy.read(TEST_MUSICXML_DIR / "dsalfine.xml")
+
+    assert len(music) == 1
+    assert len(music[0]) == 6
+
+
+def test_dsalcoda():
+    music = muspy.read(TEST_MUSICXML_DIR / "dsalcoda.xml")
+
+    assert len(music) == 1
+    assert len(music[0]) == 5
+
+
 def test_realworld():
     music = muspy.read(TEST_MUSICXML_DIR / "fur-elise.xml")
 
@@ -529,14 +550,14 @@ def test_realworld():
 
     assert len(music) == 1
 
-    assert len(music.tempos) == 2  # repeats
+    assert len(music.tempos) == 2  # due to the repeats
     assert music.tempos[0].qpm == 72
 
-    assert len(music.key_signatures) == 2  # repeats
+    assert len(music.key_signatures) == 2  # due to the repeats
     assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
-    assert len(music.time_signatures) == 2  # repeats
+    assert len(music.time_signatures) == 2  # due to the repeats
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
 
@@ -550,14 +571,14 @@ def test_realworld_compressed():
 
     assert len(music) == 1
 
-    assert len(music.tempos) == 2  # repeats
+    assert len(music.tempos) == 2  # due to the repeats
     assert music.tempos[0].qpm == 72
 
-    assert len(music.key_signatures) == 2  # repeats
+    assert len(music.key_signatures) == 2  # due to the repeats
     assert music.key_signatures[0].root == 0
     assert music.key_signatures[0].mode == "major"
 
-    assert len(music.time_signatures) == 2  # repeats
+    assert len(music.time_signatures) == 2  # due to the repeats
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
 
