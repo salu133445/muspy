@@ -7,6 +7,7 @@ from typing import (
     Any,
     Callable,
     Dict,
+    Iterable,
     List,
     Sequence,
     Tuple,
@@ -702,15 +703,33 @@ class RemoteDataset(Dataset):
         )
 
 
+def _get_filenames(root, extensions: List[str], recursive: bool = True):
+    filenames = []
+    for ext in extensions:
+        if recursive:
+            filenames.extend(root.rglob(f"*.{ext}"))
+        else:
+            filenames.extend(root.glob(f"*.{ext}"))
+    return filenames
+
+
 class MusicDataset(Dataset):
     """Class for datasets of MusPy JSON/YAML files.
 
-    Attributes
+    Parameters
     ----------
     root : str or Path
         Root directory of the dataset.
-    kind : {'json', 'yaml'}, default: 'json'
-        File format of the data.
+    kind : {'json', 'yaml'}, optional
+        File formats to include in the dataset. Defaults to include
+        both JSON and YAML files.
+
+    Attributes
+    ----------
+    root : Path
+        Root directory of the dataset.
+    filenames : list of Path
+        Path to the files, relative to `root`.
 
     See Also
     --------
@@ -718,18 +737,26 @@ class MusicDataset(Dataset):
 
     """
 
-    def __init__(self, root: Union[str, Path], kind: str = "json"):
+    def __init__(self, root: Union[str, Path], kind: str = None):
+        if kind is not None and kind not in ("json", "yaml"):
+            raise ValueError(f"Unknown value for `kind` : {kind} .")
+
         self.root = Path(root).expanduser().resolve()
         self.root.mkdir(exist_ok=True)
 
-        self.kind = kind
-        self.filenames = sorted(self.root.rglob("*." + self.kind))
+        if kind is None:
+            extensions = ["json", "json.gz", "yaml", "yaml.gz"]
+        elif kind == "json":
+            extensions = ["json", "json.gz"]
+        else:
+            extensions = ["yaml", "yaml.gz"]
+        self.filenames = _get_filenames(self.root, extensions)
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(root={self.root})"
 
     def __getitem__(self, index) -> Music:
-        return load(self.root / self.filenames[index], self.kind)
+        return load(self.root / self.filenames[index])
 
     def __len__(self) -> int:
         return len(self.filenames)
@@ -738,21 +765,28 @@ class MusicDataset(Dataset):
 class RemoteMusicDataset(MusicDataset, RemoteDataset):
     """Base class for remote datasets of MusPy JSON/YAML files.
 
-    Attributes
+    Parameters
     ----------
     root : str or Path
         Root directory of the dataset.
-    kind : {'json', 'yaml'}, default: 'json'
-        File format of the data.
-
-    Parameters
-    ----------
     download_and_extract : bool, default: False
         Whether to download and extract the dataset.
     overwrite : bool, default: False
         Whether to overwrite existing file(s).
     cleanup : bool, default: False
         Whether to remove the source archive(s).
+    kind : {'json', 'yaml'}, optional
+        File formats to include in the dataset. Defaults to include
+        both JSON and YAML files.
+    verbose : bool. default: True
+        Whether to be verbose.
+
+    Attributes
+    ----------
+    root : Path
+        Root directory of the dataset.
+    filenames : list of Path
+        Path to the files, relative to `root`.
 
     See Also
     --------
@@ -768,7 +802,7 @@ class RemoteMusicDataset(MusicDataset, RemoteDataset):
         download_and_extract: bool = False,
         overwrite: bool = False,
         cleanup: bool = False,
-        kind: str = "json",
+        kind: str = None,
         verbose: bool = True,
     ):
         RemoteDataset.__init__(
