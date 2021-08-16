@@ -45,8 +45,8 @@ def download_bravura_font(overwrite: bool = False):
         Whether to overwrite an existing file.
 
     """
-    if not overwrite and get_musescore_soundfont_path().is_file():
-        print("Skip downloading as the MuseScore General soundfont is found.")
+    if not overwrite and get_bravura_font_path().is_file():
+        print("Skip downloading as the Bravura font is found.")
         return
 
     # Make sure the directory exists
