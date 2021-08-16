@@ -8,7 +8,7 @@ from .utils import TEST_JSON_PATH
 
 
 def test_synthesis():
-    muspy.download_musescore_soundfont(overwrite=False)
+    muspy.download_musescore_soundfont()
     music = muspy.load(TEST_JSON_PATH)
     waveform = muspy.synthesize(music)
 
@@ -18,7 +18,7 @@ def test_synthesis():
 
 
 def test_write_audio(tmp_path):
-    muspy.download_musescore_soundfont(overwrite=False)
+    muspy.download_musescore_soundfont()
     music = muspy.load(TEST_JSON_PATH)
     music.write_audio(tmp_path / "test.wav")
     rate, waveform = scipy.io.wavfile.read(tmp_path / "test.wav")

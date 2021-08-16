@@ -1,10 +1,7 @@
-"""Test cases for MIDI I/O."""
-import tempfile
-from pathlib import Path
-
+"""Test cases for ABC input interface."""
 import muspy
 
-from .utils import TEST_ABC_DIR, TEST_JSON_PATH
+from .utils import TEST_ABC_DIR
 
 
 def test_header():

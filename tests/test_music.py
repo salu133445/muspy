@@ -4,7 +4,6 @@ from inspect import isclass
 from operator import attrgetter
 
 import muspy
-from muspy.base import ComplexBase
 
 from .utils import TEST_JSON_PATH, check_tracks
 

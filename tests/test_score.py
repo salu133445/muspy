@@ -1,6 +1,4 @@
 """Test cases for score visualization."""
-import pytest
-
 import muspy
 
 from .utils import TEST_JSON_PATH
