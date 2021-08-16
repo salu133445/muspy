@@ -23,6 +23,10 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install pytest
         pip install -e .[test,optional,schema]
+    - name: Install Fluidsynth
+      run: |
+        sudo apt-get update
+        sudo apt-get install fludisynth
     - name: Test with pytest
       run: pytest --cov="muspy/" tests/
     - name: Upload coverage to Codecov

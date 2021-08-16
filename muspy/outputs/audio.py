@@ -28,7 +28,10 @@ def _check_soundfont(soundfont_path):
 
 
 def synthesize(
-    music: "Music", soundfont_path: Union[str, Path] = None, rate: int = 44100,
+    music: "Music",
+    soundfont_path: Union[str, Path] = None,
+    rate: int = 44100,
+    gain: float = None,
 ) -> ndarray:
     """Synthesize a Music object to raw audio.
 
@@ -41,6 +44,10 @@ def synthesize(
         downloaded MuseScore General soundfont.
     rate : int, default: 44100
         Sample rate (in samples per sec).
+    gain : float, optional
+        Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,
+        where n is the number of tracks. This can be used to prevent
+        distortions caused by clipping.
 
     Returns
     -------
@@ -48,6 +55,9 @@ def synthesize(
         Synthesized waveform.
 
     """
+    if gain is None:
+        gain = 1 / len(music)
+
     # Check soundfont
     soundfont_path = _check_soundfont(soundfont_path)
 
@@ -67,6 +77,8 @@ def synthesize(
                 "-F-",
                 "-r",
                 str(rate),
+                "-g",
+                str(gain),
                 "-i",
                 str(soundfont_path),
                 str(midi_path),
@@ -84,9 +96,10 @@ def synthesize(
 def write_audio(
     path: Union[str, Path],
     music: "Music",
+    audio_format: str = None,
     soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
-    audio_format: str = None,
+    gain: float = None,
 ):
     """Write a Music object to an audio file.
 
@@ -98,17 +111,23 @@ def write_audio(
         Path to write the audio file.
     music : :class:`muspy.Music`
         Music object to write.
+    audio_format : str, {'wav', 'aiff', 'flac', 'oga'}, optional
+        File format to write. Defaults to infer from the extension.
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
     rate : int, default: 44100
         Sample rate (in samples per sec).
-    audio_format : str, {'wav', 'aiff', 'flac', 'oga'}, optional
-        File format to write. Defaults to infer from the extension.
+    gain : float, optional
+        Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,
+        where n is the number of tracks. This can be used to prevent
+        distortions caused by clipping.
 
     """
     if audio_format is None:
         audio_format = "auto"
+    if gain is None:
+        gain = 1 / len(music)
 
     # Check soundfont
     soundfont_path = _check_soundfont(soundfont_path)
@@ -131,6 +150,8 @@ def write_audio(
                 audio_format,
                 "-r",
                 str(rate),
+                "-g",
+                str(gain),
                 str(soundfont_path),
                 str(midi_path),
             ],
