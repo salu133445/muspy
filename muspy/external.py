@@ -13,7 +13,7 @@ Functions
 - get_musescore_soundfont_path
 
 """
-import urllib
+import urllib.request
 from pathlib import Path
 
 __all__ = [
@@ -36,8 +36,19 @@ def get_bravura_font_path() -> Path:
     return get_bravura_font_dir() / "Bravura.otf"
 
 
-def download_bravura_font():
-    """Download the Bravura font."""
+def download_bravura_font(overwrite: bool = False):
+    """Download the Bravura font.
+
+    Parameters
+    ----------
+    overwrite : bool, default: False
+        Whether to overwrite an existing file.
+
+    """
+    if not overwrite and get_musescore_soundfont_path().is_file():
+        print("Skip downloading as the MuseScore General soundfont is found.")
+        return
+
     # Make sure the directory exists
     get_bravura_font_dir().mkdir(parents=True, exist_ok=True)
 
@@ -68,8 +79,19 @@ def get_musescore_soundfont_path() -> Path:
     return get_musescore_soundfont_dir() / "MuseScore_General.sf3"
 
 
-def download_musescore_soundfont():
-    """Download the MuseScore General soundfont."""
+def download_musescore_soundfont(overwrite: bool = False):
+    """Download the MuseScore General soundfont.
+
+    Parameters
+    ----------
+    overwrite : bool, default: False
+        Whether to overwrite an existing file.
+
+    """
+    if not overwrite and get_musescore_soundfont_path().is_file():
+        print("Skip downloading as the MuseScore General soundfont is found.")
+        return
+
     # Make sure the directory exists
     get_musescore_soundfont_dir().mkdir(parents=True, exist_ok=True)
 
