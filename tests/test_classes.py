@@ -37,8 +37,8 @@ def test_extend():
     ]
     track.extend(notes)
     assert len(track) == 1 + len(notes)
-    assert track.notes[1:] == notes
-    for a, b in zip(track.notes[1:], notes):
+    assert track[1:] == notes
+    for a, b in zip(track[1:], notes):
         assert a is b
 
 
@@ -49,8 +49,8 @@ def test_extend_copy():
         Note(time=2, duration=1, pitch=60),
     ]
     track.extend(notes, deepcopy=True)
-    assert track.notes[1:] == notes
-    for a, b in zip(track.notes[1:], notes):
+    assert track[1:] == notes
+    for a, b in zip(track[1:], notes):
         assert a is not b
 
 
@@ -61,8 +61,8 @@ def test_iadd():
         Note(time=2, duration=1, pitch=60),
     ]
     track += notes
-    assert track.notes[1:] == notes
-    for a, b in zip(track.notes[1:], notes):
+    assert track[1:] == notes
+    for a, b in zip(track[1:], notes):
         assert a is b
 
 
@@ -122,6 +122,20 @@ def test_remove_duplicate_recursive():
     assert len(music[0]) == 1
 
 
+def test_ordering():
+    notes = [
+        Note(time=0, pitch=62, duration=1),
+        Note(time=1, pitch=64, duration=1),
+        Note(time=0, pitch=60, duration=1),
+    ]
+    assert notes[0] < notes[1]
+    assert notes[1] > notes[2]
+    assert not notes[0] < notes[2]
+
+    notes.sort()
+    assert notes[0].pitch == 62
+
+
 def test_sort_track():
     notes = [
         Note(time=2, pitch=64, duration=1),
@@ -135,6 +149,7 @@ def test_sort_track():
     times = (0, 1, 2)
     pitches = (60, 62, 64)
 
+    assert len(track) == 3
     for i, note in enumerate(track):
         assert note.time == times[i]
         assert note.pitch == pitches[i]
@@ -153,6 +168,7 @@ def test_sort_music():
     times = (0, 1, 2)
     pitches = (60, 62, 64)
 
-    for i, note in enumerate(music.tracks[0]):
+    assert len(music[0]) == 3
+    for i, note in enumerate(music[0]):
         assert note.time == times[i]
         assert note.pitch == pitches[i]

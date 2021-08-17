@@ -12,7 +12,6 @@ Classes
 import copy
 from collections import OrderedDict
 from inspect import isclass
-from operator import attrgetter
 from typing import Any, Callable, Iterable, List, Mapping, Type, TypeVar, Union
 
 from .utils import yaml_dump
@@ -41,8 +40,13 @@ class Base:
 
     This is the base class for MusPy classes. It provides two handy I/O
     methods---`from_dict` and `to_ordered_dict`. It also provides
-    intuitive `__repr__` as well as methods `pretty_str` and `print` for
+    intuitive `repr` as well as methods `pretty_str` and `print` for
     beautifully printing the content.
+
+    In addition, `hash` is implemented by `hash(repr(self))`.
+    Comparisons between two Base objects are also supported, where
+    equality check will compare all attributes, while 'less than' and
+    'greater than' will only compare the `time` attribute.
 
     Hint
     ----
@@ -99,14 +103,28 @@ class Base:
                 to_join.append(attr + "=" + repr(value))
         return type(self).__name__ + "(" + ", ".join(to_join) + ")"
 
+    def __hash__(self) -> int:
+        return hash(repr(self))
+
     def __eq__(self, other) -> bool:
         for attr in self._attributes:
             if getattr(self, attr) != getattr(other, attr):
                 return False
         return True
 
-    def __hash__(self) -> int:
-        return hash(repr(self))
+    def __lt__(self, other) -> bool:
+        if not hasattr(self, "time") or not hasattr(other, "time"):
+            return NotImplemented
+        if getattr(self, "time") < getattr(other, "time"):
+            return True
+        return False
+
+    def __gt__(self, other) -> bool:
+        if not hasattr(self, "time") or not hasattr(other, "time"):
+            return NotImplemented
+        if getattr(self, "time") > getattr(other, "time"):
+            return True
+        return False
 
     def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
         return self.from_dict(self.to_ordered_dict())
@@ -724,9 +742,7 @@ class ComplexBase(Base):
         # Sort the list
         attr_type = self._attributes[attr]
         if isclass(attr_type) and issubclass(attr_type, Base):
-            # pylint: disable=protected-access
-            if "time" in attr_type._attributes:
-                getattr(self, attr).sort(key=attrgetter("time"))
+            getattr(self, attr).sort()
             # Apply recursively
             if recursive and issubclass(attr_type, ComplexBase):
                 for value in getattr(self, attr):
