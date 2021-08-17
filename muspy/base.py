@@ -529,6 +529,55 @@ class Base:
             self._adjust_time(func, attr, recursive)
         return self
 
+    def _fix(self: BaseType, attr: str, recursive: bool):
+        attr_type = self._attributes[attr]
+        if isclass(attr_type) and issubclass(attr_type, Base):
+            if attr in self._list_attributes:
+                if getattr(self, attr):
+                    for item in getattr(self, attr):
+                        item.fix()
+            else:
+                getattr(self, attr).fix()
+        else:
+            value = getattr(self, attr)
+            if not isinstance(value, attr_type):
+                if isinstance(attr_type, tuple):
+                    setattr(self, attr, attr_type[0](value))
+                else:
+                    setattr(self, attr, attr_type(value))
+
+        # Apply recursively
+        if recursive and isclass(attr_type) and issubclass(attr_type, Base):
+            if attr in self._list_attributes:
+                for item in getattr(self, attr):
+                    item.fix(recursive=recursive)
+            elif getattr(self, attr) is not None:
+                getattr(self, attr).fix(recursive=recursive)
+
+    def fix_type(
+        self: BaseType, attr: str = None, recursive: bool = True
+    ) -> BaseType:
+        """Fix the types of attributes.
+
+        Parameters
+        ----------
+        attr : str, optional
+            Attribute to adjust. Defaults to adjust all attributes.
+        recursive : bool, default: True
+            Whether to apply recursively.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        if attr is None:
+            for attribute in self._attributes:
+                self._fix(attribute, recursive)
+        else:
+            self._fix(attr, recursive)
+        return self
+
 
 class ComplexBase(Base):
     """Base class that supports advanced operations on list attributes.
