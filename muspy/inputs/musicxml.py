@@ -389,7 +389,7 @@ def parse_part_elem(
                 # Dynamics elements
                 dynamics = elem.get("dynamics")
                 if dynamics is not None:
-                    velocity = int(float(dynamics))
+                    velocity = round(float(dynamics))
 
             # Direction elements
             elif elem.tag == "direction":
@@ -411,7 +411,7 @@ def parse_part_elem(
                     # Dynamic directions
                     dynamics = sound_elem_.get("dynamics")
                     if dynamics is not None:
-                        velocity = int(float(dynamics))
+                        velocity = round(float(dynamics))
 
                 # Metronome elements
                 if not tempo_set:
@@ -430,7 +430,7 @@ def parse_part_elem(
                 if rest_elem is not None:
                     # Move time position forward if it is a rest
                     duration = int(_get_required_text(elem, "duration"))
-                    position += int(duration * resolution / division)
+                    position += round(duration * resolution / division)
                     continue
 
                 # Cue notes
@@ -475,7 +475,7 @@ def parse_part_elem(
                         Note(
                             time=time + position,
                             pitch=pitch,
-                            duration=int(
+                            duration=round(
                                 NOTE_TYPE_MAP[note_type] * resolution
                             ),
                             velocity=velocity,
@@ -499,7 +499,7 @@ def parse_part_elem(
                 note_key = (instrument_id, pitch)
                 if note_key in ties:
                     note_idx = ties[note_key]
-                    notes[instrument_id][note_idx].duration += int(
+                    notes[instrument_id][note_idx].duration += round(
                         duration * resolution / division
                     )
 
@@ -514,7 +514,7 @@ def parse_part_elem(
                         Note(
                             time=time + position,
                             pitch=pitch,
-                            duration=int(duration * resolution / division),
+                            duration=round(duration * resolution / division),
                             velocity=velocity,
                             pitch_str=pitch_str,
                         )
@@ -541,17 +541,17 @@ def parse_part_elem(
 
                 # Move time position forward if it is not in chord
                 last_note_position = position
-                position += int(duration * resolution / division)
+                position += round(duration * resolution / division)
 
             # Forward elements
             elif elem.tag == "forward":
                 duration = int(_get_required_text(elem, "duration"))
-                position += int(duration * resolution / division)
+                position += round(duration * resolution / division)
 
             # Backup elements
             elif elem.tag == "backup":
                 duration = int(_get_required_text(elem, "duration"))
-                position -= int(duration * resolution / division)
+                position -= round(duration * resolution / division)
 
         time += position
 

@@ -116,7 +116,9 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 
             # Tempo messages
             if msg.type == "set_tempo":
-                tempos.append(Tempo(time=time, qpm=tempo2bpm(msg.tempo)))
+                tempos.append(
+                    Tempo(time=int(time), qpm=float(tempo2bpm(msg.tempo)))
+                )
 
             # Key signature messages
             elif msg.type == "key_signature":
@@ -127,38 +129,44 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                     mode = "major"
                     root = note_str_to_note_num(msg.key)
                 key_signatures.append(
-                    KeySignature(time=time, root=root, mode=mode)
+                    KeySignature(time=int(time), root=root, mode=mode)
                 )
 
             # Time signature messages
             elif msg.type == "time_signature":
                 time_signatures.append(
                     TimeSignature(
-                        time=time,
-                        numerator=msg.numerator,
-                        denominator=msg.denominator,
+                        time=int(time),
+                        numerator=int(msg.numerator),
+                        denominator=int(msg.denominator),
                     )
                 )
 
             # Lyric messages
             elif msg.type == "lyrics":
-                lyrics.append(Lyric(time=time, lyric=msg.text))
+                lyrics.append(Lyric(time=int(time), lyric=str(msg.text)))
 
             # Marker messages
             elif msg.type == "marker":
                 annotations.append(
-                    Annotation(time=time, annotation=msg.text, group="marker")
+                    Annotation(
+                        time=int(time),
+                        annotation=str(msg.text),
+                        group="marker",
+                    )
                 )
 
             # Text messages
             elif msg.type == "text":
                 annotations.append(
-                    Annotation(time=time, annotation=msg.text, group="text")
+                    Annotation(
+                        time=int(time), annotation=str(msg.text), group="text"
+                    )
                 )
 
             # Copyright messages
             elif msg.type == "copyright":
-                copyrights.append(msg.text)
+                copyrights.append(str(msg.text))
 
             # === Track specific Data ===
 
@@ -205,10 +213,10 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                     onset, velocity = active_notes[note_key][0]
                     track.notes.append(
                         Note(
-                            time=onset,
-                            pitch=msg.note,
-                            duration=time - onset,
-                            velocity=velocity,
+                            time=int(onset),
+                            pitch=int(msg.note),
+                            duration=int(time - onset),
+                            velocity=int(velocity),
                         )
                     )
                     del active_notes[note_key][0]
@@ -218,10 +226,10 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                     onset, velocity = active_notes[note_key][-1]
                     track.notes.append(
                         Note(
-                            time=onset,
-                            pitch=msg.note,
-                            duration=time - onset,
-                            velocity=velocity,
+                            time=int(onset),
+                            pitch=int(msg.note),
+                            duration=int(time - onset),
+                            velocity=int(velocity),
                         )
                     )
                     del active_notes[note_key][-1]
@@ -231,10 +239,10 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                     for onset, velocity in active_notes[note_key]:
                         track.notes.append(
                             Note(
-                                time=onset,
-                                pitch=msg.note,
-                                duration=time - onset,
-                                velocity=velocity,
+                                time=int(onset),
+                                pitch=int(msg.note),
+                                duration=int(time - onset),
+                                velocity=int(velocity),
                             )
                         )
                     del active_notes[note_key]
@@ -250,10 +258,10 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
             for onset, velocity in note_ons:
                 track.notes.append(
                     Note(
-                        time=onset,
-                        pitch=note,
-                        duration=time - onset,
-                        velocity=velocity,
+                        time=int(onset),
+                        pitch=int(note),
+                        duration=int(time - onset),
+                        velocity=int(velocity),
                     )
                 )
 
@@ -271,14 +279,14 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
 
     # Meta data
     metadata = Metadata(
-        title=song_title,
+        title=str(song_title),
         source_format="midi",
         copyright=" ".join(copyrights) if copyrights else None,
     )
 
     return Music(
         metadata=metadata,
-        resolution=midi.ticks_per_beat,
+        resolution=int(midi.ticks_per_beat),
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
@@ -397,7 +405,7 @@ def from_pretty_midi_lyric(lyric: PmLyric) -> Lyric:
     """
     return Lyric(
         time=float(lyric.time),  # type: ignore
-        lyric=lyric.text,
+        lyric=str(lyric.text),
     )
 
 
@@ -445,7 +453,7 @@ def from_pretty_midi_instrument(instrument: Instrument) -> Track:
     return Track(
         program=int(instrument.program),
         is_drum=bool(instrument.is_drum),
-        name=instrument.name,
+        name=str(instrument.name),
         notes=[from_pretty_midi_note(note) for note in instrument.notes],
     )
 
@@ -471,9 +479,8 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
 
     tempo_realtimes, tempi = midi.get_tempo_changes()
     assert len(tempi) > 0
-
     tempos = [
-        Tempo(time=time, qpm=tempo)
+        Tempo(time=float(time), qpm=float(tempo))  # type: ignore
         for time, tempo in zip(tempo_realtimes, tempi)
     ]
 
@@ -521,8 +528,9 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
 
     if len(tempi) == 1:
 
-        def map_time(time):
-            return int(round(time * resolution * tempi[0] / 60.0))
+        def map_time(time: float) -> int:
+            factor = resolution * float(tempi[0]) / 60.0  # type: ignore
+            return round(time * factor)
 
     else:
         # Compute the tempo time in metrical timing of each tempo change
@@ -532,11 +540,11 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
         tempo_times = np.round(tempo_times).astype(int).tolist()
         tempo_times.insert(0, 0)
 
-        def map_time(time):
+        def map_time(time: float) -> int:
             idx = np.searchsorted(tempo_realtimes, time, side="right") - 1
             residual = time - tempo_realtimes[idx]
             factor = resolution * tempi[idx] / 60.0
-            return tempo_times[idx] + int(round(residual * factor))
+            return round(tempo_times[idx] + residual * factor)
 
     # Adjust timing
     music.adjust_time(func=map_time)

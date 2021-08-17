@@ -65,10 +65,10 @@ def from_note_representation(
 
         notes.append(
             Note(
-                time=note_tuple[0],
-                pitch=note_tuple[1],
-                duration=duration,
-                velocity=velocity,
+                time=int(note_tuple[0]),
+                pitch=int(note_tuple[1]),
+                duration=int(duration),
+                velocity=int(velocity),
             )
         )
 

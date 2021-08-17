@@ -123,7 +123,7 @@ class Tempo(Base):
 
     """
 
-    _attributes = OrderedDict([("time", int), ("qpm", (int, float))])
+    _attributes = OrderedDict([("time", int), ("qpm", float)])
 
     def __init__(self, time: int, qpm: float):
         self.time = time

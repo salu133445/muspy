@@ -260,9 +260,9 @@ class Music(ComplexBase):
                 np.arange(time_sign.time, end, beat_resolution)
             ):
                 if j % time_sign.numerator == 0:
-                    beats.append(Beat(time=int(time), is_downbeat=True))
+                    beats.append(Beat(time=round(time), is_downbeat=True))
                 else:
-                    beats.append(Beat(time=int(time), is_downbeat=False))
+                    beats.append(Beat(time=round(time), is_downbeat=False))
         return beats
 
     def adjust_resolution(
@@ -283,7 +283,7 @@ class Music(ComplexBase):
             factor of 2 double the resolution, and a factor of 0.5 halve
             the resolution.
         rounding : {'round', 'ceil', 'floor'} or callable, default:
-                   'round'
+        'round'
             Rounding mode.
 
         Returns
@@ -292,14 +292,14 @@ class Music(ComplexBase):
 
         """
         if self.resolution is None:
-            raise TypeError("`resolution` must not be None.")
+            raise TypeError("`resolution` must be given.")
         if self.resolution < 0:
             raise ValueError("`resolution` must be positive.")
 
         if target is None and factor is None:
-            raise ValueError("`target` and `factor` must not be both None.")
+            raise ValueError("One of `target` and `factor` must be given.")
         if target is not None and factor is not None:
-            raise ValueError("Either `target` or `factor` must be given.")
+            raise ValueError("Only one of `target` and `factor` can be given.")
 
         if rounding is None or rounding == "round":
             rounding = round
@@ -308,7 +308,7 @@ class Music(ComplexBase):
         elif rounding == "floor":
             rounding = floor
         elif isinstance(rounding, str):
-            raise ValueError(f"Unrecognized rounding mode : {rounding}.")
+            raise ValueError(f"Unrecognized rounding mode : {rounding} .")
 
         if target is not None:
             if not isinstance(target, int):
@@ -317,10 +317,11 @@ class Music(ComplexBase):
             factor_ = target / self.resolution
 
         if factor is not None:
-            new_resolution = self.resolution * factor
+            new_resolution = float(self.resolution * factor)
             if not new_resolution.is_integer():
                 raise ValueError(
-                    "`factor` must be a factor of the resolution."
+                    f"`factor` must be a factor of the original resolution "
+                    f"{self.resolution}, but got : {factor}."
                 )
             factor_ = float(factor)
             target_ = int(new_resolution)

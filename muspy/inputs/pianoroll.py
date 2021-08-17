@@ -27,7 +27,10 @@ def _pianoroll_to_notes(
             else:
                 velocity = default_velocity
             note = Note(
-                time=start, pitch=i, duration=end - start, velocity=velocity,
+                time=int(start),
+                pitch=i,
+                duration=int(end - start),
+                velocity=int(velocity),
             )
             notes.append(note)
 
@@ -87,7 +90,7 @@ def from_pypianoroll(
     # Tempos
     tempo_change_timings = np.diff(multitrack.tempo, prepend=-1).nonzero()[0]
     tempos = [
-        Tempo(time, qpm=multitrack.tempo[time])
+        Tempo(time, qpm=float(multitrack.tempo[time]))
         for time in tempo_change_timings
     ]
     # Tracks
@@ -96,7 +99,7 @@ def from_pypianoroll(
         for track in multitrack.tracks
     ]
     return Music(
-        resolution=multitrack.resolution,
+        resolution=int(multitrack.resolution),
         metadata=Metadata(title=multitrack.name) if multitrack.name else None,
         tempos=tempos,
         tracks=tracks,

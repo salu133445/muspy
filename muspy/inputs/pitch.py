@@ -74,9 +74,9 @@ def from_pitch_representation(
             # Pitch
             else:
                 note = Note(
-                    time=start,
-                    pitch=array[start],
-                    duration=end - start,
+                    time=int(start),
+                    pitch=int(array[start]),
+                    duration=int(end - start),
                     velocity=default_velocity,
                 )
                 notes.append(note)
@@ -90,9 +90,9 @@ def from_pitch_representation(
 
             # Pitch
             note = Note(
-                time=start,
-                pitch=array[start],
-                duration=end - start,
+                time=int(start),
+                pitch=int(array[start]),
+                duration=int(end - start),
                 velocity=default_velocity,
             )
             notes.append(note)

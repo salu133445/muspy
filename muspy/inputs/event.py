@@ -118,7 +118,12 @@ def from_event_representation(
         if event < offset_note_off:
             pitch = event - offset_note_on
             active_notes[pitch].append(
-                Note(time=time, pitch=pitch, duration=-1, velocity=velocity)
+                Note(
+                    time=int(time),
+                    pitch=int(pitch),
+                    duration=0,
+                    velocity=int(velocity),
+                )
             )
 
         # Note off events
@@ -128,7 +133,7 @@ def from_event_representation(
                 if active_notes:
                     for pitch, note_list in active_notes.items():
                         for note in note_list:
-                            note.duration = time - note.time
+                            note.duration = int(time - note.time)
                             notes.append(note)
                     active_notes = defaultdict(list)
                 continue
@@ -146,21 +151,21 @@ def from_event_representation(
             # 'FIFO': (first in first out) close the earliest note
             elif duplicate_note_mode.lower() == "fifo":
                 note = active_notes[pitch][0]
-                note.duration = time - note.time
+                note.duration = int(time - note.time)
                 notes.append(note)
                 del active_notes[pitch][0]
 
             # 'LIFO': (last in first out) close the latest note on
             elif duplicate_note_mode.lower() == "lifo":
                 note = active_notes[pitch][-1]
-                note.duration = time - note.time
+                note.duration = int(time - note.time)
                 notes.append(note)
                 del active_notes[pitch][-1]
 
             # 'all' - close all note on events
             elif duplicate_note_mode.lower() == "all":
                 for note in active_notes[pitch]:
-                    note.duration = time - note.time
+                    note.duration = int(time - note.time)
                     notes.append(note)
                 del active_notes[pitch]
 

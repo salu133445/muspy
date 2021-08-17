@@ -73,7 +73,8 @@ def parse_tempos(
     tempos = set()
     for start, _, metronome in stream.flat.metronomeMarkBoundaries():
         tempo = Tempo(
-            time=int(float(start * resolution)), qpm=metronome.getQuarterBPM()
+            time=round(float(start * resolution)),
+            qpm=metronome.getQuarterBPM(),
         )
         tempos.add(tempo)
     return sorted(tempos, key=attrgetter("time"))
@@ -102,7 +103,7 @@ def parse_key_signatures(
         if isinstance(item, Key):
             key_signatures.add(
                 KeySignature(
-                    time=int(float(item.offset * resolution)),
+                    time=round(float(item.offset * resolution)),
                     root=item.tonic.pitchClass,
                     mode=item.mode,
                     fifths=item.sharps,
@@ -111,7 +112,7 @@ def parse_key_signatures(
         else:
             key_signatures.add(
                 KeySignature(
-                    time=int(float(item.offset * resolution)),
+                    time=round(float(item.offset * resolution)),
                     fifths=item.sharps,
                 )
             )
@@ -139,7 +140,7 @@ def parse_time_signatures(
     time_signatures = set()
     for item in stream.flat.getTimeSignatures():
         time_signature = TimeSignature(
-            time=int(float(item.offset * resolution)),
+            time=round(float(item.offset * resolution)),
             numerator=item.numerator,
             denominator=item.denominator,
         )
@@ -172,7 +173,8 @@ def parse_beats(
     beats: List[Beat] = []
     measure_offset_map = stream.measureOffsetMap()
     downbeats = list(
-        int(float(offset * resolution)) for offset in measure_offset_map.keys()
+        round(float(offset * resolution))
+        for offset in measure_offset_map.keys()
     )
     downbeats.sort()
     time_sign_idx = 0
@@ -200,9 +202,9 @@ def parse_beats(
             np.arange(downbeats[downbeat_idx], end, beat_resolution)
         ):
             if j % time_sign.numerator == 0:
-                beats.append(Beat(time=int(time), is_downbeat=True))
+                beats.append(Beat(time=round(time), is_downbeat=True))
             else:
-                beats.append(Beat(time=int(time), is_downbeat=False))
+                beats.append(Beat(time=round(time), is_downbeat=False))
         downbeat_idx += 1
     return beats
 
@@ -241,11 +243,11 @@ def parse_notes_and_chords(
             continue
 
         # Parse note
-        time = int(round(float(item.offset * resolution)))
-        duration = int(round(float(item.quarterLength) * resolution))
+        time = round(float(item.offset * resolution))
+        duration = round(float(item.quarterLength) * resolution)
         velocity = item.volume.velocity
         if velocity is not None:
-            velocity = int(velocity)
+            velocity = round(velocity)
 
         if item.isNote:
             pitch = int(item.pitch.midi)
