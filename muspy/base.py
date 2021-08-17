@@ -135,13 +135,30 @@ class Base:
             if value is None:
                 if attr in cls._optional_attributes:
                     continue
-                raise TypeError("`{}` must not be None.".format(attr))
+                raise TypeError(f"`{attr}` must not be None.")
             if isclass(attr_type) and issubclass(attr_type, Base):
                 if attr in cls._list_attributes:
                     kwargs[attr] = [attr_type.from_dict(v) for v in value]
                 else:
                     kwargs[attr] = attr_type.from_dict(value)
             else:
+                if attr in cls._list_attributes:
+                    if not isinstance(value, list):
+                        raise TypeError(
+                            f"`{attr}` must be a list, but got : "
+                            f"{type(value)} ."
+                        )
+                    for v in value:  # pylint: disable=invalid-name
+                        if not isinstance(v, attr_type):
+                            raise TypeError(
+                                f"`{attr}` must be a list of type "
+                                f"{attr_type}, but got : {type(v)} ."
+                            )
+                elif not isinstance(value, attr_type):
+                    raise TypeError(
+                        f"`{attr}` must be of type {attr_type}, "
+                        f"but got : {type(value)} ."
+                    )
                 kwargs[attr] = value
         return cls(**kwargs)
 
