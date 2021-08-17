@@ -207,8 +207,12 @@ rendering, score and piano-roll visualizations and objective metrics.</p></li>
 <dd><p>Base class for MusPy classes.</p>
 <p>This is the base class for MusPy classes. It provides two handy I/O
 methods—<cite>from_dict</cite> and <cite>to_ordered_dict</cite>. It also provides
-intuitive <cite>__repr__</cite> as well as methods <cite>pretty_str</cite> and <cite>print</cite> for
+intuitive <cite>repr</cite> as well as methods <cite>pretty_str</cite> and <cite>print</cite> for
 beautifully printing the content.</p>
+<p>In addition, <cite>hash</cite> is implemented by <cite>hash(repr(self))</cite>.
+Comparisons between two Base objects are also supported, where
+equality check will compare all attributes, while ‘less than’ and
+‘greater than’ will only compare the <cite>time</cite> attribute.</p>
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>To implement a new class in MusPy, please inherit from this class
@@ -487,6 +491,26 @@ empty lists.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>func</strong> (<em>callable</em>) – The function used to compute the new timing from the old
 timing, i.e., <cite>new_time = func(old_time)</cite>.</p></li>
+<li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Attribute to adjust. Defaults to adjust all attributes.</p></li>
+<li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to apply recursively.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="muspy.Base.fix_type">
+<code class="sig-name descname">fix_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">attr</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recursive</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/base.html#Base.fix_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.Base.fix_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fix the types of attributes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>optional</em>) – Attribute to adjust. Defaults to adjust all attributes.</p></li>
 <li><p><strong>recursive</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to apply recursively.</p></li>
 </ul>
@@ -2086,26 +2110,35 @@ corrupted.</p></li>
 
 <dl class="py class">
 <dt id="muspy.MusicDataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#MusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MusicDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">MusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#MusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.MusicDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for datasets of MusPy JSON/YAML files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory of the dataset.</p></li>
+<li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – File formats to include in the dataset. Defaults to include
+both JSON and YAML files.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt id="muspy.MusicDataset.root">
 <code class="sig-name descname">root</code><a class="headerlink" href="#muspy.MusicDataset.root" title="Permalink to this definition">¶</a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> or Path</p>
+<dd class="field-odd"><p>Path</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.MusicDataset.kind">
-<code class="sig-name descname">kind</code><a class="headerlink" href="#muspy.MusicDataset.kind" title="Permalink to this definition">¶</a></dt>
-<dd><p>File format of the data.</p>
+<dt id="muspy.MusicDataset.filenames">
+<code class="sig-name descname">filenames</code><a class="headerlink" href="#muspy.MusicDataset.filenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the files, relative to <cite>root</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>{‘json’, ‘yaml’}, default: ‘json’</p>
+<dd class="field-odd"><p>list of Path</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2363,39 +2396,43 @@ Defaults to True if converted data exist, otherwise False.</p></li>
 
 <dl class="py class">
 <dt id="muspy.RemoteMusicDataset">
-<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">'json'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteMusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.RemoteMusicDataset" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">RemoteMusicDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">download_and_extract</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">cleanup</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteMusicDataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.RemoteMusicDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Base class for remote datasets of MusPy JSON/YAML files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory of the dataset.</p></li>
+<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
+<li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – File formats to include in the dataset. Defaults to include
+both JSON and YAML files.</p></li>
+<li><p><strong>verbose</strong> (<em>bool. default: True</em>) – Whether to be verbose.</p></li>
+</ul>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt id="muspy.RemoteMusicDataset.root">
 <code class="sig-name descname">root</code><a class="headerlink" href="#muspy.RemoteMusicDataset.root" title="Permalink to this definition">¶</a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)">str</a> or Path</p>
+<dd class="field-odd"><p>Path</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="muspy.RemoteMusicDataset.kind">
-<code class="sig-name descname">kind</code><a class="headerlink" href="#muspy.RemoteMusicDataset.kind" title="Permalink to this definition">¶</a></dt>
-<dd><p>File format of the data.</p>
+<dt id="muspy.RemoteMusicDataset.filenames">
+<code class="sig-name descname">filenames</code><a class="headerlink" href="#muspy.RemoteMusicDataset.filenames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the files, relative to <cite>root</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>{‘json’, ‘yaml’}, default: ‘json’</p>
+<dd class="field-odd"><p>list of Path</p>
 </dd>
 </dl>
 </dd></dl>
 
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
-</ul>
-</dd>
-</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -2452,14 +2489,24 @@ Defaults to True if converted data exist, otherwise False.</p></li>
 
 <dl class="py function">
 <dt id="muspy.download_bravura_font">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">download_bravura_font</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/external.html#download_bravura_font"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.download_bravura_font" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">download_bravura_font</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/external.html#download_bravura_font"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.download_bravura_font" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download the Bravura font.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite an existing file.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="muspy.download_musescore_soundfont">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">download_musescore_soundfont</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/external.html#download_musescore_soundfont"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.download_musescore_soundfont" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">download_musescore_soundfont</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/external.html#download_musescore_soundfont"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.download_musescore_soundfont" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download the MuseScore General soundfont.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite an existing file.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -3722,8 +3769,8 @@ Return an empty list if no time signature is found.</p>
 <cite>new_resolution = old_resolution * factor</cite>. For example, a
 factor of 2 double the resolution, and a factor of 0.5 halve
 the resolution.</p></li>
-<li><p><strong>rounding</strong> (<em>{'round'</em><em>, </em><em>'ceil'</em><em>, </em><em>'floor'}</em><em> or </em><em>callable</em><em>, </em><em>default:</em>) – ‘round’
-Rounding mode.</p></li>
+<li><p><strong>rounding</strong> (<em>{'round'</em><em>, </em><em>'ceil'</em><em>, </em><em>'floor'}</em><em> or </em><em>callable</em><em>, </em><em>default:</em>) – </p></li>
+<li><p><strong>'round'</strong> – Rounding mode.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -4022,7 +4069,7 @@ extension (<cite>.gz</cite>).</p></li>
 
 <dl class="py function">
 <dt id="muspy.synthesize">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#synthesize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.synthesize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">synthesize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em>, <em class="sig-param"><span class="n">gain</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#synthesize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.synthesize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Synthesize a Music object to raw audio.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -4031,6 +4078,9 @@ extension (<cite>.gz</cite>).</p></li>
 <li><p><strong>soundfont_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the
 downloaded MuseScore General soundfont.</p></li>
 <li><p><strong>rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 44100</em>) – Sample rate (in samples per sec).</p></li>
+<li><p><strong>gain</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Master gain (<cite>-g</cite> option) for Fluidsynth. Defaults to 1/n,
+where n is the number of tracks. This can be used to prevent
+distortions caused by clipping.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -4322,7 +4372,7 @@ hold (129).</p>
 
 <dl class="py function">
 <dt id="muspy.write_audio">
-<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">write_audio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em>, <em class="sig-param"><span class="n">audio_format</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#write_audio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.write_audio" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">muspy.</code><code class="sig-name descname">write_audio</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">music</span></em>, <em class="sig-param"><span class="n">audio_format</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">soundfont_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">rate</span><span class="o">=</span><span class="default_value">44100</span></em>, <em class="sig-param"><span class="n">gain</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#write_audio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.write_audio" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a Music object to an audio file.</p>
 <p>Supported formats include WAV, AIFF, FLAC and OGA.</p>
 <dl class="field-list simple">
@@ -4330,10 +4380,13 @@ hold (129).</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em>) – Path to write the audio file.</p></li>
 <li><p><strong>music</strong> (<a class="reference internal" href="#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
+<li><p><strong>audio_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>{'wav'</em><em>, </em><em>'aiff'</em><em>, </em><em>'flac'</em><em>, </em><em>'oga'}</em><em>, </em><em>optional</em>) – File format to write. Defaults to infer from the extension.</p></li>
 <li><p><strong>soundfont_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the soundfount file. Defaults to the path to the
 downloaded MuseScore General soundfont.</p></li>
 <li><p><strong>rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><em>int</em></a><em>, </em><em>default: 44100</em>) – Sample rate (in samples per sec).</p></li>
-<li><p><strong>audio_format</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><em>str</em></a><em>, </em><em>{'wav'</em><em>, </em><em>'aiff'</em><em>, </em><em>'flac'</em><em>, </em><em>'oga'}</em><em>, </em><em>optional</em>) – File format to write. Defaults to infer from the extension.</p></li>
+<li><p><strong>gain</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.9)"><em>float</em></a><em>, </em><em>optional</em>) – Master gain (<cite>-g</cite> option) for Fluidsynth. Defaults to 1/n,
+where n is the number of tracks. This can be used to prevent
+distortions caused by clipping.</p></li>
 </ul>
 </dd>
 </dl>

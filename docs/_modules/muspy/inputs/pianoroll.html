@@ -188,7 +188,10 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">velocity</span> <span class="o">=</span> <span class="n">default_velocity</span>
             <span class="n">note</span> <span class="o">=</span> <span class="n">Note</span><span class="p">(</span>
-                <span class="n">time</span><span class="o">=</span><span class="n">start</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">start</span><span class="p">),</span>
+                <span class="n">pitch</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">),</span>
+                <span class="n">velocity</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">velocity</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
 
@@ -248,7 +251,7 @@
     <span class="c1"># Tempos</span>
     <span class="n">tempo_change_timings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">multitrack</span><span class="o">.</span><span class="n">tempo</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="n">multitrack</span><span class="o">.</span><span class="n">tempo</span><span class="p">[</span><span class="n">time</span><span class="p">])</span>
+        <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">multitrack</span><span class="o">.</span><span class="n">tempo</span><span class="p">[</span><span class="n">time</span><span class="p">]))</span>
         <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">tempo_change_timings</span>
     <span class="p">]</span>
     <span class="c1"># Tracks</span>
@@ -257,7 +260,7 @@
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">multitrack</span><span class="o">.</span><span class="n">tracks</span>
     <span class="p">]</span>
     <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
-        <span class="n">resolution</span><span class="o">=</span><span class="n">multitrack</span><span class="o">.</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">multitrack</span><span class="o">.</span><span class="n">resolution</span><span class="p">),</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">multitrack</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">multitrack</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>

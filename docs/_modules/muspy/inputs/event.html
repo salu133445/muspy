@@ -279,7 +279,12 @@
         <span class="k">if</span> <span class="n">event</span> <span class="o">&lt;</span> <span class="n">offset_note_off</span><span class="p">:</span>
             <span class="n">pitch</span> <span class="o">=</span> <span class="n">event</span> <span class="o">-</span> <span class="n">offset_note_on</span>
             <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">Note</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span> <span class="n">duration</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">)</span>
+                <span class="n">Note</span><span class="p">(</span>
+                    <span class="n">time</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+                    <span class="n">pitch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">pitch</span><span class="p">),</span>
+                    <span class="n">duration</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                    <span class="n">velocity</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">velocity</span><span class="p">),</span>
+                <span class="p">)</span>
             <span class="p">)</span>
 
         <span class="c1"># Note off events</span>
@@ -289,7 +294,7 @@
                 <span class="k">if</span> <span class="n">active_notes</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">pitch</span><span class="p">,</span> <span class="n">note_list</span> <span class="ow">in</span> <span class="n">active_notes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">note_list</span><span class="p">:</span>
-                            <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                            <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
                             <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
                     <span class="n">active_notes</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
                 <span class="k">continue</span>
@@ -307,21 +312,21 @@
             <span class="c1"># &#39;FIFO&#39;: (first in first out) close the earliest note</span>
             <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;fifo&quot;</span><span class="p">:</span>
                 <span class="n">note</span> <span class="o">=</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
                 <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="c1"># &#39;LIFO&#39;: (last in first out) close the latest note on</span>
             <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;lifo&quot;</span><span class="p">:</span>
                 <span class="n">note</span> <span class="o">=</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
                 <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="c1"># &#39;all&#39; - close all note on events</span>
             <span class="k">elif</span> <span class="n">duplicate_note_mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]:</span>
-                    <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span>
+                    <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span> <span class="o">-</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
                     <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
                 <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span>
 

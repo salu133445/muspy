@@ -550,7 +550,7 @@
                 <span class="c1"># Dynamics elements</span>
                 <span class="n">dynamics</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dynamics&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">dynamics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">velocity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dynamics</span><span class="p">))</span>
+                    <span class="n">velocity</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dynamics</span><span class="p">))</span>
 
             <span class="c1"># Direction elements</span>
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;direction&quot;</span><span class="p">:</span>
@@ -572,7 +572,7 @@
                     <span class="c1"># Dynamic directions</span>
                     <span class="n">dynamics</span> <span class="o">=</span> <span class="n">sound_elem_</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;dynamics&quot;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">dynamics</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="n">velocity</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dynamics</span><span class="p">))</span>
+                        <span class="n">velocity</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">dynamics</span><span class="p">))</span>
 
                 <span class="c1"># Metronome elements</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">tempo_set</span><span class="p">:</span>
@@ -591,7 +591,7 @@
                 <span class="k">if</span> <span class="n">rest_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="c1"># Move time position forward if it is a rest</span>
                     <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
-                    <span class="n">position</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
+                    <span class="n">position</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
                     <span class="k">continue</span>
 
                 <span class="c1"># Cue notes</span>
@@ -636,7 +636,7 @@
                         <span class="n">Note</span><span class="p">(</span>
                             <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
                             <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
-                            <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span>
+                            <span class="n">duration</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span>
                                 <span class="n">NOTE_TYPE_MAP</span><span class="p">[</span><span class="n">note_type</span><span class="p">]</span> <span class="o">*</span> <span class="n">resolution</span>
                             <span class="p">),</span>
                             <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
@@ -660,7 +660,7 @@
                 <span class="n">note_key</span> <span class="o">=</span> <span class="p">(</span><span class="n">instrument_id</span><span class="p">,</span> <span class="n">pitch</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">note_key</span> <span class="ow">in</span> <span class="n">ties</span><span class="p">:</span>
                     <span class="n">note_idx</span> <span class="o">=</span> <span class="n">ties</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span>
-                    <span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="n">note_idx</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span>
+                    <span class="n">notes</span><span class="p">[</span><span class="n">instrument_id</span><span class="p">][</span><span class="n">note_idx</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span>
                         <span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span>
                     <span class="p">)</span>
 
@@ -675,7 +675,7 @@
                         <span class="n">Note</span><span class="p">(</span>
                             <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
                             <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
-                            <span class="n">duration</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">),</span>
+                            <span class="n">duration</span><span class="o">=</span><span class="nb">round</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">),</span>
                             <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
                             <span class="n">pitch_str</span><span class="o">=</span><span class="n">pitch_str</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -702,17 +702,17 @@
 
                 <span class="c1"># Move time position forward if it is not in chord</span>
                 <span class="n">last_note_position</span> <span class="o">=</span> <span class="n">position</span>
-                <span class="n">position</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
+                <span class="n">position</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
 
             <span class="c1"># Forward elements</span>
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;forward&quot;</span><span class="p">:</span>
                 <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
-                <span class="n">position</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
+                <span class="n">position</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
 
             <span class="c1"># Backup elements</span>
             <span class="k">elif</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;backup&quot;</span><span class="p">:</span>
                 <span class="n">duration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">))</span>
-                <span class="n">position</span> <span class="o">-=</span> <span class="nb">int</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
+                <span class="n">position</span> <span class="o">-=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">/</span> <span class="n">division</span><span class="p">)</span>
 
         <span class="n">time</span> <span class="o">+=</span> <span class="n">position</span>
 

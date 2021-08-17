@@ -189,7 +189,10 @@
 
 
 <div class="viewcode-block" id="synthesize"><a class="viewcode-back" href="../../../synthesis.html#muspy.synthesize">[docs]</a><span class="k">def</span> <span class="nf">synthesize</span><span class="p">(</span>
-    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Synthesize a Music object to raw audio.</span>
 
@@ -202,6 +205,10 @@
 <span class="sd">        downloaded MuseScore General soundfont.</span>
 <span class="sd">    rate : int, default: 44100</span>
 <span class="sd">        Sample rate (in samples per sec).</span>
+<span class="sd">    gain : float, optional</span>
+<span class="sd">        Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,</span>
+<span class="sd">        where n is the number of tracks. This can be used to prevent</span>
+<span class="sd">        distortions caused by clipping.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -209,6 +216,9 @@
 <span class="sd">        Synthesized waveform.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">gain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+
     <span class="c1"># Check soundfont</span>
     <span class="n">soundfont_path</span> <span class="o">=</span> <span class="n">_check_soundfont</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">)</span>
 
@@ -228,6 +238,8 @@
                 <span class="s2">&quot;-F-&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">),</span>
+                <span class="s2">&quot;-g&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">gain</span><span class="p">),</span>
                 <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">midi_path</span><span class="p">),</span>
@@ -245,9 +257,10 @@
 <div class="viewcode-block" id="write_audio"><a class="viewcode-back" href="../../../synthesis.html#muspy.write_audio">[docs]</a><span class="k">def</span> <span class="nf">write_audio</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
     <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span>
+    <span class="n">audio_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">soundfont_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44100</span><span class="p">,</span>
-    <span class="n">audio_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">gain</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a Music object to an audio file.</span>
 
@@ -259,17 +272,23 @@
 <span class="sd">        Path to write the audio file.</span>
 <span class="sd">    music : :class:`muspy.Music`</span>
 <span class="sd">        Music object to write.</span>
+<span class="sd">    audio_format : str, {&#39;wav&#39;, &#39;aiff&#39;, &#39;flac&#39;, &#39;oga&#39;}, optional</span>
+<span class="sd">        File format to write. Defaults to infer from the extension.</span>
 <span class="sd">    soundfont_path : str or Path, optional</span>
 <span class="sd">        Path to the soundfount file. Defaults to the path to the</span>
 <span class="sd">        downloaded MuseScore General soundfont.</span>
 <span class="sd">    rate : int, default: 44100</span>
 <span class="sd">        Sample rate (in samples per sec).</span>
-<span class="sd">    audio_format : str, {&#39;wav&#39;, &#39;aiff&#39;, &#39;flac&#39;, &#39;oga&#39;}, optional</span>
-<span class="sd">        File format to write. Defaults to infer from the extension.</span>
+<span class="sd">    gain : float, optional</span>
+<span class="sd">        Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,</span>
+<span class="sd">        where n is the number of tracks. This can be used to prevent</span>
+<span class="sd">        distortions caused by clipping.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">audio_format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">audio_format</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+    <span class="k">if</span> <span class="n">gain</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">gain</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
 
     <span class="c1"># Check soundfont</span>
     <span class="n">soundfont_path</span> <span class="o">=</span> <span class="n">_check_soundfont</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">)</span>
@@ -292,6 +311,8 @@
                 <span class="n">audio_format</span><span class="p">,</span>
                 <span class="s2">&quot;-r&quot;</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">rate</span><span class="p">),</span>
+                <span class="s2">&quot;-g&quot;</span><span class="p">,</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">gain</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">soundfont_path</span><span class="p">),</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">midi_path</span><span class="p">),</span>
             <span class="p">],</span>

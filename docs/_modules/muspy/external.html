@@ -174,7 +174,7 @@
 <span class="sd">- get_musescore_soundfont_path</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">urllib.request</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -197,8 +197,19 @@
     <span class="k">return</span> <span class="n">get_bravura_font_dir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;Bravura.otf&quot;</span></div>
 
 
-<div class="viewcode-block" id="download_bravura_font"><a class="viewcode-back" href="../../doc/muspy.html#muspy.external.download_bravura_font">[docs]</a><span class="k">def</span> <span class="nf">download_bravura_font</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Download the Bravura font.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="download_bravura_font"><a class="viewcode-back" href="../../doc/muspy.html#muspy.external.download_bravura_font">[docs]</a><span class="k">def</span> <span class="nf">download_bravura_font</span><span class="p">(</span><span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download the Bravura font.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    overwrite : bool, default: False</span>
+<span class="sd">        Whether to overwrite an existing file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">get_bravura_font_path</span><span class="p">()</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip downloading as the Bravura font is found.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
     <span class="c1"># Make sure the directory exists</span>
     <span class="n">get_bravura_font_dir</span><span class="p">()</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -229,8 +240,19 @@
     <span class="k">return</span> <span class="n">get_musescore_soundfont_dir</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;MuseScore_General.sf3&quot;</span></div>
 
 
-<div class="viewcode-block" id="download_musescore_soundfont"><a class="viewcode-back" href="../../doc/muspy.html#muspy.external.download_musescore_soundfont">[docs]</a><span class="k">def</span> <span class="nf">download_musescore_soundfont</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Download the MuseScore General soundfont.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="download_musescore_soundfont"><a class="viewcode-back" href="../../doc/muspy.html#muspy.external.download_musescore_soundfont">[docs]</a><span class="k">def</span> <span class="nf">download_musescore_soundfont</span><span class="p">(</span><span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Download the MuseScore General soundfont.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    overwrite : bool, default: False</span>
+<span class="sd">        Whether to overwrite an existing file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">get_musescore_soundfont_path</span><span class="p">()</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Skip downloading as the MuseScore General soundfont is found.&quot;</span><span class="p">)</span>
+        <span class="k">return</span>
+
     <span class="c1"># Make sure the directory exists</span>
     <span class="n">get_musescore_soundfont_dir</span><span class="p">()</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
