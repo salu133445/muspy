@@ -1,4 +1,5 @@
 """MIDI input interface."""
+import warnings
 from collections import OrderedDict, defaultdict
 from operator import attrgetter
 from pathlib import Path
@@ -247,6 +248,24 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                         )
                     del active_notes[note_key]
 
+            # Control change messages
+            elif msg.type == "control_change":
+                # Get the active track
+                program = channel_programs[msg.channel]
+                track = _get_active_track(track_idx, program, msg.channel)
+
+                # Append the control change message as an annotation
+                track.annotations.append(
+                    Annotation(
+                        time=int(time),
+                        annotation={
+                            "number": int(msg.control),
+                            "value": int(msg.value),
+                        },
+                        group="control_changes",
+                    )
+                )
+
             # End of track message
             elif msg.type == "end_of_track":
                 break
@@ -349,11 +368,13 @@ def from_pretty_midi_key_signature(
     """
     is_minor, root = divmod(key_signature.key_number, 12)
     mode = "minor" if is_minor else "major"
-    return KeySignature(
-        time=float(key_signature.time),  # type: ignore
-        root=root,
-        mode=mode,
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+        return KeySignature(
+            time=float(key_signature.time),  # type: ignore
+            root=root,
+            mode=mode,
+        )
 
 
 def from_pretty_midi_time_signature(
@@ -377,11 +398,13 @@ def from_pretty_midi_time_signature(
     as pretty_midi uses the absolute timing system.
 
     """
-    return TimeSignature(
-        time=float(time_signature.time),  # type: ignore
-        numerator=time_signature.numerator,
-        denominator=time_signature.denominator,
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+        return TimeSignature(
+            time=float(time_signature.time),  # type: ignore
+            numerator=time_signature.numerator,
+            denominator=time_signature.denominator,
+        )
 
 
 def from_pretty_midi_lyric(lyric: PmLyric) -> Lyric:
@@ -403,10 +426,12 @@ def from_pretty_midi_lyric(lyric: PmLyric) -> Lyric:
     as pretty_midi uses the absolute timing system.
 
     """
-    return Lyric(
-        time=float(lyric.time),  # type: ignore
-        lyric=str(lyric.text),
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+        return Lyric(
+            time=float(lyric.time),  # type: ignore
+            lyric=str(lyric.text),
+        )
 
 
 def from_pretty_midi_note(note: PmNote) -> Note:
@@ -428,12 +453,14 @@ def from_pretty_midi_note(note: PmNote) -> Note:
     of type float as pretty_midi uses the absolute timing system.
 
     """
-    return Note(
-        time=float(note.start),  # type: ignore
-        duration=float(note.duration),  # type: ignore
-        pitch=int(note.pitch),
-        velocity=int(note.velocity),
-    )
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+        return Note(
+            time=float(note.start),  # type: ignore
+            duration=float(note.duration),  # type: ignore
+            pitch=int(note.pitch),
+            velocity=int(note.velocity),
+        )
 
 
 def from_pretty_midi_instrument(instrument: Instrument) -> Track:
@@ -479,10 +506,12 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
 
     tempo_realtimes, tempi = midi.get_tempo_changes()
     assert len(tempi) > 0
-    tempos = [
-        Tempo(time=float(time), qpm=float(tempo))  # type: ignore
-        for time, tempo in zip(tempo_realtimes, tempi)
-    ]
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=RuntimeWarning)
+        tempos = [
+            Tempo(time=float(time), qpm=float(tempo))  # type: ignore
+            for time, tempo in zip(tempo_realtimes, tempi)
+        ]
 
     key_signatures = [
         from_pretty_midi_key_signature(key_signature)
