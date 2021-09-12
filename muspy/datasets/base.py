@@ -966,7 +966,7 @@ class FolderDataset(Dataset):
                 "the dataset."
             )
         if not self.converted_filenames:
-            self.converted_filenames = self.get_raw_filenames()
+            self.converted_filenames = self.get_converted_filenames()
         self._filenames = self.converted_filenames
         self._use_converted = True
         self._factory = self.load
