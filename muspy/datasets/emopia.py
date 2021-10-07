@@ -34,11 +34,10 @@ class EMOPIADataset(RemoteFolderDataset):
     _citation = _CITATION
     _sources = {
         "emopia": {
-            "filename": "EMOPIA_2.1.zip",
-            "url": "https://zenodo.org/record/5151045/files/EMOPIA_2.1.zip",
+            "filename": "EMOPIA_2.2.zip",
+            "url": "https://zenodo.org/record/5257995/files/EMOPIA_2.2.zip",
             "archive": True,
-            "md5": "c7ae6700a495f3203b271692c587927f",
-            "sha256": "609309244444f88c0205e1381cc79d2bf7154f2a387a6f9f0229a54f92f89578",
+            "md5": "bad5171786a4898f37fc2678e99afd94",
         }
     }
 
