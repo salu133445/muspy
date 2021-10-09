@@ -262,7 +262,7 @@ def from_mido(midi: MidiFile, duplicate_note_mode: str = "fifo") -> Music:
                             "number": int(msg.control),
                             "value": int(msg.value),
                         },
-                        group="control_changes",
+                        group="control_change",
                     )
                 )
 
