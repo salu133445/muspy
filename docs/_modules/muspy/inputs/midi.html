@@ -160,6 +160,7 @@
             
   <h1>Source code for muspy.inputs.midi</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;MIDI input interface.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -408,6 +409,24 @@
                         <span class="p">)</span>
                     <span class="k">del</span> <span class="n">active_notes</span><span class="p">[</span><span class="n">note_key</span><span class="p">]</span>
 
+            <span class="c1"># Control change messages</span>
+            <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;control_change&quot;</span><span class="p">:</span>
+                <span class="c1"># Get the active track</span>
+                <span class="n">program</span> <span class="o">=</span> <span class="n">channel_programs</span><span class="p">[</span><span class="n">msg</span><span class="o">.</span><span class="n">channel</span><span class="p">]</span>
+                <span class="n">track</span> <span class="o">=</span> <span class="n">_get_active_track</span><span class="p">(</span><span class="n">track_idx</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">msg</span><span class="o">.</span><span class="n">channel</span><span class="p">)</span>
+
+                <span class="c1"># Append the control change message as an annotation</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Annotation</span><span class="p">(</span>
+                        <span class="n">time</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">),</span>
+                        <span class="n">annotation</span><span class="o">=</span><span class="p">{</span>
+                            <span class="s2">&quot;number&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">control</span><span class="p">),</span>
+                            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="p">),</span>
+                        <span class="p">},</span>
+                        <span class="n">group</span><span class="o">=</span><span class="s2">&quot;control_change&quot;</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
             <span class="c1"># End of track message</span>
             <span class="k">elif</span> <span class="n">msg</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;end_of_track&quot;</span><span class="p">:</span>
                 <span class="k">break</span>
@@ -510,11 +529,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">is_minor</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">key_number</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
     <span class="n">mode</span> <span class="o">=</span> <span class="s2">&quot;minor&quot;</span> <span class="k">if</span> <span class="n">is_minor</span> <span class="k">else</span> <span class="s2">&quot;major&quot;</span>
-    <span class="k">return</span> <span class="n">KeySignature</span><span class="p">(</span>
-        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">KeySignature</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_time_signature</span><span class="p">(</span>
@@ -538,11 +559,13 @@
 <span class="sd">    as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">TimeSignature</span><span class="p">(</span>
-        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="n">numerator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
-        <span class="n">denominator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
-    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TimeSignature</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">numerator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="p">,</span>
+            <span class="n">denominator</span><span class="o">=</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="p">,</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_lyric</span><span class="p">(</span><span class="n">lyric</span><span class="p">:</span> <span class="n">PmLyric</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lyric</span><span class="p">:</span>
@@ -564,10 +587,12 @@
 <span class="sd">    as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Lyric</span><span class="p">(</span>
-        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="n">lyric</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">),</span>
-    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Lyric</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">lyric</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">lyric</span><span class="o">.</span><span class="n">text</span><span class="p">),</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">PmNote</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
@@ -589,12 +614,14 @@
 <span class="sd">    of type float as pretty_midi uses the absolute timing system.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">Note</span><span class="p">(</span>
-        <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
-        <span class="n">pitch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">),</span>
-        <span class="n">velocity</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">),</span>
-    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Note</span><span class="p">(</span>
+            <span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">start</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">duration</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">),</span>  <span class="c1"># type: ignore</span>
+            <span class="n">pitch</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">),</span>
+            <span class="n">velocity</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">velocity</span><span class="p">),</span>
+        <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">:</span> <span class="n">Instrument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
@@ -640,10 +667,12 @@
 
     <span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span> <span class="o">=</span> <span class="n">midi</span><span class="o">.</span><span class="n">get_tempo_changes</span><span class="p">()</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
-    <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">qpm</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
-        <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span><span class="p">)</span>
-    <span class="p">]</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
+        <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">qpm</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
+            <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span><span class="p">)</span>
+        <span class="p">]</span>
 
     <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">from_pretty_midi_key_signature</span><span class="p">(</span><span class="n">key_signature</span><span class="p">)</span>

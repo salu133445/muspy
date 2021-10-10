@@ -291,7 +291,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseType</span><span class="p">],</span> <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseType</span><span class="p">],</span>
+        <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
+        <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">cast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
 <span class="sd">        Instantiate an object whose attributes and the corresponding</span>
@@ -302,14 +307,23 @@
 <span class="sd">        dict_ : dict or mapping</span>
 <span class="sd">            A dictionary that stores the attributes and their values as</span>
 <span class="sd">            key-value pairs, e.g., `{&quot;attr1&quot;: value1, &quot;attr2&quot;: value2}`.</span>
+<span class="sd">        strict : bool, default: False</span>
+<span class="sd">            Whether to raise errors for invalid input types.</span>
+<span class="sd">        cast : bool, default: False</span>
+<span class="sd">            Whether to cast types.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Constructed object.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">strict</span> <span class="ow">and</span> <span class="n">cast</span>
+        <span class="p">),</span> <span class="s2">&quot;`strict` and `cast` cannot be both True.&quot;</span>
         <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr_type</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">attr_type</span> <span class="o">=</span> <span class="n">attr_type</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">dict_</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_optional_attributes</span><span class="p">:</span>
@@ -321,24 +335,40 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                            <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` must be a list, but got : &quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> .&quot;</span>
-                        <span class="p">)</span>
-                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
                             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` must be a list of type &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr_type</span><span class="si">}</span><span class="s2">, but got : </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> .&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` must be a list, but got : &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> .&quot;</span>
                             <span class="p">)</span>
-                <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
-                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` must be of type </span><span class="si">{</span><span class="n">attr_type</span><span class="si">}</span><span class="s2">, &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;but got : </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> .&quot;</span>
-                    <span class="p">)</span>
-                <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
+                                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                                    <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` must be a list of type &quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">attr_type</span><span class="si">}</span><span class="s2">, but got : </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">}</span><span class="s2"> .&quot;</span>
+                                <span class="p">)</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s2">&quot;`</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">` must be of type </span><span class="si">{</span><span class="n">attr_type</span><span class="si">}</span><span class="s2">, &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;but got : </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2"> .&quot;</span>
+                        <span class="p">)</span>
+                <span class="k">if</span> <span class="n">cast</span><span class="p">:</span>
+                    <span class="n">is_bad_input</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                            <span class="n">is_bad_input</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
+                                <span class="n">is_bad_input</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">if</span> <span class="n">is_bad_input</span><span class="p">:</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr_type</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
+                        <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span>
@@ -690,15 +720,15 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">_fix</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_fix_type</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
                     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                        <span class="n">item</span><span class="o">.</span><span class="n">fix</span><span class="p">()</span>
+                        <span class="n">item</span><span class="o">.</span><span class="n">fix_type</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">fix</span><span class="p">()</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">fix_type</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
@@ -711,9 +741,9 @@
         <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                    <span class="n">item</span><span class="o">.</span><span class="n">fix</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">fix_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">fix</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">fix_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.fix_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.fix_type">[docs]</a>    <span class="k">def</span> <span class="nf">fix_type</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -734,9 +764,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">attribute</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_fix</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_fix_type</span><span class="p">(</span><span class="n">attribute</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_fix</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fix_type</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
 
 
