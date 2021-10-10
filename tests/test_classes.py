@@ -18,6 +18,12 @@ def test_from_dict():
 
 
 def test_from_dict_strict():
+    Note.from_dict(
+        {"time": 0, "duration": 1, "pitch": 60}, strict=True,
+    )
+
+
+def test_from_dict_strict_error():
     with pytest.raises(TypeError):
         Note.from_dict(
             {"time": 0.0, "duration": "1", "pitch": np.int64([60])},

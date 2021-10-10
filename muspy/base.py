@@ -156,6 +156,9 @@ class Base:
         Constructed object.
 
         """
+        assert not (
+            strict and cast
+        ), "`strict` and `cast` cannot be both True."
         kwargs = {}
         for attr, attr_type in cls._attributes.items():
             if isinstance(attr_type, tuple):
