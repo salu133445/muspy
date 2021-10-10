@@ -529,15 +529,15 @@ class Base:
             self._adjust_time(func, attr, recursive)
         return self
 
-    def _fix(self: BaseType, attr: str, recursive: bool):
+    def _fix_type(self: BaseType, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
         if isclass(attr_type) and issubclass(attr_type, Base):
             if attr in self._list_attributes:
                 if getattr(self, attr):
                     for item in getattr(self, attr):
-                        item.fix()
+                        item.fix_type()
             else:
-                getattr(self, attr).fix()
+                getattr(self, attr).fix_type()
         else:
             value = getattr(self, attr)
             if not isinstance(value, attr_type):
@@ -550,9 +550,9 @@ class Base:
         if recursive and isclass(attr_type) and issubclass(attr_type, Base):
             if attr in self._list_attributes:
                 for item in getattr(self, attr):
-                    item.fix(recursive=recursive)
+                    item.fix_type(recursive=recursive)
             elif getattr(self, attr) is not None:
-                getattr(self, attr).fix(recursive=recursive)
+                getattr(self, attr).fix_type(recursive=recursive)
 
     def fix_type(
         self: BaseType, attr: str = None, recursive: bool = True
@@ -573,9 +573,9 @@ class Base:
         """
         if attr is None:
             for attribute in self._attributes:
-                self._fix(attribute, recursive)
+                self._fix_type(attribute, recursive)
         else:
-            self._fix(attr, recursive)
+            self._fix_type(attr, recursive)
         return self
 
 

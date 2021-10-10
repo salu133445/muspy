@@ -24,7 +24,7 @@ def test_to_ordered_dict():
     assert ordered_dict["pitch"] == 60
 
 
-def test_fix():
+def test_fix_type():
     note = Note(time=0.0, duration="1", pitch=np.int64([60]))
     note.fix_type()
     assert isinstance(note.time, int)
@@ -32,11 +32,21 @@ def test_fix():
     assert isinstance(note.pitch, int)
 
 
-def test_fix2():
+def test_fix_type2():
     tempo = Tempo(time=0.0, qpm=np.float64([72.0]))
     tempo.fix_type()
     assert isinstance(tempo.time, int)
     assert isinstance(tempo.qpm, float)
+
+
+def test_fix_recursive():
+    track = Track()
+    track.append(Note(time=0.0, duration="1", pitch=np.int64([60])))
+    track.append(Note(time=-1.0, duration="-1", pitch=np.int64([-1])))
+    track.fix_type()
+    assert isinstance(track[0].time, int)
+    assert isinstance(track[0].duration, int)
+    assert isinstance(track[0].pitch, int)
 
 
 def test_append():
