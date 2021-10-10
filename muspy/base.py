@@ -130,7 +130,12 @@ class Base:
         return self.from_dict(self.to_ordered_dict())
 
     @classmethod
-    def from_dict(cls: Type[BaseType], dict_: Mapping) -> BaseType:
+    def from_dict(
+        cls: Type[BaseType],
+        dict_: Mapping,
+        strict: bool = False,
+        cast: bool = False,
+    ) -> BaseType:
         """Return an instance constructed from a dictionary.
 
         Instantiate an object whose attributes and the corresponding
@@ -141,6 +146,10 @@ class Base:
         dict_ : dict or mapping
             A dictionary that stores the attributes and their values as
             key-value pairs, e.g., `{"attr1": value1, "attr2": value2}`.
+        strict : bool, default: False
+            Whether to raise errors for invalid input types.
+        cast : bool, default: False
+            Whether to cast types.
 
         Returns
         -------
@@ -149,6 +158,8 @@ class Base:
         """
         kwargs = {}
         for attr, attr_type in cls._attributes.items():
+            if isinstance(attr_type, tuple):
+                attr_type = attr_type[0]
             value = dict_.get(attr)
             if value is None:
                 if attr in cls._optional_attributes:
@@ -160,24 +171,40 @@ class Base:
                 else:
                     kwargs[attr] = attr_type.from_dict(value)
             else:
-                if attr in cls._list_attributes:
-                    if not isinstance(value, list):
-                        raise TypeError(
-                            f"`{attr}` must be a list, but got : "
-                            f"{type(value)} ."
-                        )
-                    for v in value:  # pylint: disable=invalid-name
-                        if not isinstance(v, attr_type):
+                if strict:
+                    if attr in cls._list_attributes:
+                        if not isinstance(value, list):
                             raise TypeError(
-                                f"`{attr}` must be a list of type "
-                                f"{attr_type}, but got : {type(v)} ."
+                                f"`{attr}` must be a list, but got : "
+                                f"{type(value)} ."
                             )
-                elif not isinstance(value, attr_type):
-                    raise TypeError(
-                        f"`{attr}` must be of type {attr_type}, "
-                        f"but got : {type(value)} ."
-                    )
-                kwargs[attr] = value
+                        for v in value:  # pylint: disable=invalid-name
+                            if not isinstance(v, attr_type):
+                                raise TypeError(
+                                    f"`{attr}` must be a list of type "
+                                    f"{attr_type}, but got : {type(v)} ."
+                                )
+                    elif not isinstance(value, attr_type):
+                        raise TypeError(
+                            f"`{attr}` must be of type {attr_type}, "
+                            f"but got : {type(value)} ."
+                        )
+                if cast:
+                    is_bad_input = False
+                    if attr in cls._list_attributes:
+                        if not isinstance(value, list):
+                            is_bad_input = True
+                        for v in value:  # pylint: disable=invalid-name
+                            if not isinstance(v, attr_type):
+                                is_bad_input = True
+                        if is_bad_input:
+                            kwargs[attr] = [attr_type(v) for v in value]
+                        else:
+                            kwargs[attr] = value
+                    elif not isinstance(value, attr_type):
+                        kwargs[attr] = attr_type(value)
+                else:
+                    kwargs[attr] = value
         return cls(**kwargs)
 
     def to_ordered_dict(

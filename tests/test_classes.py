@@ -1,7 +1,8 @@
 """Test cases for MusPy classes."""
 import numpy as np
+import pytest
 
-from muspy import Music, Note, Tempo, Track
+from muspy import Metadata, Music, Note, Tempo, Track
 
 
 def test_repr():
@@ -14,6 +15,32 @@ def test_from_dict():
     assert note.time == 0
     assert note.duration == 1
     assert note.pitch == 60
+
+
+def test_from_dict_strict():
+    with pytest.raises(TypeError):
+        Note.from_dict(
+            {"time": 0.0, "duration": "1", "pitch": np.int64([60])},
+            strict=True,
+        )
+
+
+def test_from_dict_cast():
+    note = Note.from_dict(
+        {"time": 0.0, "duration": "1", "pitch": np.int64([60])}, cast=True
+    )
+    assert isinstance(note.time, int)
+    assert isinstance(note.duration, int)
+    assert isinstance(note.pitch, int)
+
+
+def test_from_dict_cast_list_attributes():
+    metadata = Metadata.from_dict(
+        {"schema_version": "0.1", "creators": (1, True)}, cast=True
+    )
+    assert isinstance(metadata.creators, list)
+    assert metadata.creators[0] == "1"
+    assert metadata.creators[1] == "True"
 
 
 def test_to_ordered_dict():
