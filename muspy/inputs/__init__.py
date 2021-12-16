@@ -38,6 +38,7 @@ from .abc import read_abc, read_abc_string
 from .event import from_event_representation
 from .json import load_json
 from .midi import MIDIError, from_mido, from_pretty_midi, read_midi
+from .musescore import MuseScoreError, read_musescore
 from .music21 import (
     from_music21,
     from_music21_opus,
@@ -57,6 +58,7 @@ from .yaml import load_yaml
 
 __all__ = [
     "MIDIError",
+    "MuseScoreError",
     "MusicXMLError",
     "from_event_representation",
     "from_mido",
@@ -79,5 +81,6 @@ __all__ = [
     "read_abc",
     "read_abc_string",
     "read_midi",
+    "read_musescore",
     "read_musicxml",
 ]
