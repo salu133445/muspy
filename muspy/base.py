@@ -12,7 +12,17 @@ Classes
 import copy
 from collections import OrderedDict
 from inspect import isclass
-from typing import Any, Callable, Iterable, List, Mapping, Type, TypeVar, Union
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from .utils import yaml_dump
 
@@ -159,7 +169,7 @@ class Base:
         assert not (
             strict and cast
         ), "`strict` and `cast` cannot be both True."
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
         for attr, attr_type in cls._attributes.items():
             if isinstance(attr_type, tuple):
                 attr_type = attr_type[0]
@@ -211,7 +221,7 @@ class Base:
         return cls(**kwargs)
 
     def to_ordered_dict(
-        self, skip_missing: bool = True, deepcopy: bool = True,
+        self, skip_missing: bool = True, deepcopy: bool = True
     ) -> OrderedDict:
         """Return the object as an OrderedDict.
 
@@ -361,7 +371,7 @@ class Base:
                 getattr(self, attr).validate_type(recursive=recursive)
 
     def validate_type(
-        self: BaseType, attr: str = None, recursive: bool = True,
+        self: BaseType, attr: str = None, recursive: bool = True
     ) -> BaseType:
         """Raise an error if an attribute is of an invalid type.
 
@@ -418,7 +428,7 @@ class Base:
                 getattr(self, attr).validate(recursive=recursive)
 
     def validate(
-        self: BaseType, attr: str = None, recursive: bool = True,
+        self: BaseType, attr: str = None, recursive: bool = True
     ) -> BaseType:
         """Raise an error if an attribute has an invalid type or value.
 
@@ -450,7 +460,7 @@ class Base:
             self._validate(attr, recursive)
         return self
 
-    def is_valid_type(self, attr: str = None, recursive: bool = True,) -> bool:
+    def is_valid_type(self, attr: str = None, recursive: bool = True) -> bool:
         """Return True if an attribute is of a valid type.
 
         This will apply recursively to an attribute's attributes.
@@ -481,7 +491,7 @@ class Base:
             return False
         return True
 
-    def is_valid(self, attr: str = None, recursive: bool = True,) -> bool:
+    def is_valid(self, attr: str = None, recursive: bool = True) -> bool:
         """Return True if an attribute has a valid type and value.
 
         This will recursively apply to an attribute's attributes.
@@ -733,7 +743,7 @@ class ComplexBase(Base):
             value[:] = [item for item in value if isinstance(item, attr_type)]
 
     def remove_invalid(
-        self: ComplexBaseType, attr: str = None, recursive: bool = True,
+        self: ComplexBaseType, attr: str = None, recursive: bool = True
     ) -> ComplexBaseType:
         """Remove invalid items from a list attribute.
 
@@ -788,7 +798,7 @@ class ComplexBase(Base):
         value[:] = new_value
 
     def remove_duplicate(
-        self: ComplexBaseType, attr: str = None, recursive: bool = True,
+        self: ComplexBaseType, attr: str = None, recursive: bool = True
     ) -> ComplexBaseType:
         """Remove duplicate items from a list attribute.
 
@@ -828,7 +838,7 @@ class ComplexBase(Base):
                     value.sort(recursive=recursive)
 
     def sort(
-        self: ComplexBaseType, attr: str = None, recursive: bool = True,
+        self: ComplexBaseType, attr: str = None, recursive: bool = True
     ) -> ComplexBaseType:
         """Sort a list attribute.
 
