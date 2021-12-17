@@ -32,7 +32,7 @@ class MusicNetDataset(RemoteFolderDataset):
     _sources = {
         "musicnet": {
             "filename": "musicnet_midis.tar.gz",
-            "url": "https://homes.cs.washington.edu/~thickstn/media/musicnet_midis.tar.gz",
+            "url": "https://zenodo.org/record/5120004/files/musicnet_midis.tar.gz",
             "archive": True,
             "size": 2601302,
             "md5": "b5fa98a113bfc51c8a445def9f24dc7e",
