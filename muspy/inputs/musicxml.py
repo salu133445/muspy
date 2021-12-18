@@ -75,7 +75,9 @@ def _get_required(element: Element, path: str) -> Element:
     """Return a required element; raise ValueError if not found."""
     elem = element.find(path)
     if elem is None:
-        raise MusicXMLError("Element `{}` is required.".format(path))
+        raise MusicXMLError(
+            f"Element `{path}` is required for an '{element.tag}' element."
+        )
     return elem
 
 
@@ -83,7 +85,9 @@ def _get_required_attr(element: Element, attr: str) -> str:
     """Return a required attribute; raise MusicXMLError if not found."""
     attribute = element.get(attr)
     if attribute is None:
-        raise MusicXMLError("Attribute '{}' is required for an element ")
+        raise MusicXMLError(
+            f"Attribute '{attr}' is required for an '{element.tag}' element."
+        )
     return attribute
 
 
@@ -91,16 +95,11 @@ def _get_required_text(
     element: Element, path: str, remove_newlines: bool = False
 ) -> str:
     """Return a required text; raise MusicXMLError if not found."""
-    elem = element.find(path)
-    if elem is None:
-        raise MusicXMLError(
-            "Child element '{}' is required for an element '{}'."
-            "".format(path, element.tag)
-        )
+    elem = _get_required(element, path)
     if elem.text is None:
         raise MusicXMLError(
-            "Text content '{}' of an element '{}' must not be empty."
-            "".format(path, element.tag)
+            f"Text content '{path}' of an element '{element.tag}' must not be "
+            "empty."
         )
     if remove_newlines:
         return " ".join(elem.text.splitlines())
@@ -170,7 +169,7 @@ def parse_part_elem(
     transpose_semitone = 0
     transpose_octave = 0
     # Repeats
-    is_repeat = 0
+    is_repeat = False
     last_repeat = 0
     count_repeat = 1
     count_ending = 1
@@ -269,53 +268,50 @@ def parse_part_elem(
                 if sound_elem.get("dalsegno") is not None:
                     is_dalsegno = True
 
-        # Barline elements
-        for barline_elem in measure_elem.findall("barline"):
-            # Repeat elements
-            repeat_elem = barline_elem.find("repeat")
-            if repeat_elem is not None:
-                direction = _get_required_attr(repeat_elem, "direction")
-                if direction == "forward":
-                    last_repeat = measure_idx
-                elif direction == "backward":
-                    # Get after-jump infomation
-                    after_jump_attr = repeat_elem.get("after-jump")
-                    if after_jump_attr is None or after_jump_attr == "no":
-                        after_jump = False
-                    else:
-                        after_jump = True
-                    if not is_after_jump or (is_after_jump and after_jump):
-                        # Get repeat-times infomation
-                        repeat_times_attr = repeat_elem.get("times")
-                        if repeat_times_attr is None:
-                            repeat_times = 2
-                        else:
-                            repeat_times = int(repeat_times_attr)
-                        # Check if repeat times has reached
-                        if count_repeat < repeat_times:
-                            count_repeat += 1
-                            count_ending += 1
-                            is_repeat = True
-                        else:
-                            count_repeat = 1
-                            count_ending = 1
+        # Ending elements
+        ending_elem = measure_elem.find("barline/ending")
+        if ending_elem is not None:
+            ending_num_attr = _get_required_attr(ending_elem, "number")
+            ending_num = [int(num) for num in ending_num_attr.split(",")]
+            # Skip the current measure if not the correct ending
+            if count_ending not in ending_num:
+                measure_idx += 1
+                continue
+
+        # Repeat elements
+        repeat_elem = measure_elem.find("barline/repeat")
+        if repeat_elem is not None:
+            direction = _get_required_attr(repeat_elem, "direction")
+            if direction == "forward":
+                last_repeat = measure_idx
+            elif direction == "backward":
+                # Get after-jump infomation
+                after_jump_attr = repeat_elem.get("after-jump")
+                if after_jump_attr is None or after_jump_attr == "no":
+                    after_jump = False
                 else:
-                    raise MusicXMLError(
-                        "Unknown direction for a `repeat` element : "
-                        f"{direction}"
-                    )
-            # Ending elements
-            ending_elem = barline_elem.find("ending")
-            if ending_elem is not None:
-                ending_num_attr = _get_required_attr(ending_elem, "number")
-                if ending_num_attr:
-                    ending_num = [
-                        int(num) for num in ending_num_attr.split(",")
-                    ]
-                # Skip the current measure if not the correct ending
-                if not is_repeat and count_ending not in ending_num:
-                    measure_idx += 1
-                    continue
+                    after_jump = True
+                if not is_after_jump or (is_after_jump and after_jump):
+                    # Get repeat-times infomation
+                    repeat_times_attr = repeat_elem.get("times")
+                    if repeat_times_attr is None:
+                        repeat_times = 2
+                    else:
+                        repeat_times = int(repeat_times_attr)
+                    # Check if repeat times has reached
+                    if count_repeat < repeat_times:
+                        count_repeat += 1
+                        count_ending += 1
+                        is_repeat = True
+                    else:
+                        count_repeat = 1
+                        count_ending = 1
+                        is_repeat = False
+            else:
+                raise MusicXMLError(
+                    "Unknown direction for a `repeat` element : "
+                    f"{direction}"
+                )
 
         # Iterating over all elements in the current measure
         for elem in measure_elem:
@@ -704,7 +700,7 @@ def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
 
 
 def read_musicxml(
-    path: Union[str, Path], resolution: int = None, compressed: bool = None,
+    path: Union[str, Path], resolution: int = None, compressed: bool = None
 ) -> Music:
     """Read a MusicXML file into a Music object.
 
