@@ -147,7 +147,7 @@ def from_pianoroll_representation(
         raise TypeError(
             "Array must be of type int when `encode_velocity` is True."
         )
-    if not encode_velocity and not np.issubdtype(array.dtype, np.bool):
+    if not encode_velocity and not np.issubdtype(array.dtype, bool):
         raise TypeError(
             "Array must be of type bool when `encode_velocity` is False."
         )

@@ -56,7 +56,7 @@ def to_mido_tempo(tempo: Tempo) -> MetaMessage:
 
     """
     return MetaMessage(
-        "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.qpm),
+        "set_tempo", time=tempo.time, tempo=bpm2tempo(tempo.qpm)
     )
 
 
@@ -223,7 +223,9 @@ def to_mido_note_on_note_off(
 
 
 def to_mido_track(
-    track: Track, channel: int = None, use_note_off_message: bool = False,
+    track: Track,
+    channel: int = None,
+    use_note_off_message: bool = False,
 ) -> MidiTrack:
     """Return a Track object as a mido MidiTrack object.
 
@@ -337,7 +339,7 @@ def to_mido(music: "Music", use_note_off_message: bool = False):
 
 
 def write_midi_mido(
-    path: Union[str, Path], music: "Music", use_note_off_message: bool = False,
+    path: Union[str, Path], music: "Music", use_note_off_message: bool = False
 ):
     """Write a Music object to a MIDI file using mido as backend.
 
@@ -369,7 +371,7 @@ def to_pretty_midi_key_signature(
         return None
     key_name = PITCH_NAMES[key_signature.root] + " " + key_signature.mode
     return PmKeySignature(
-        key_number=key_name_to_key_number(key_name), time=key_signature.time,
+        key_number=key_name_to_key_number(key_name), time=key_signature.time
     )
 
 
@@ -451,8 +453,6 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
             else:
                 last_tempo = tempi[i]
                 i += 1
-        tempo_times = np.array(tempo_times)
-        tempi = np.array(tempi)
 
     if len(tempi) == 1:
 
@@ -460,16 +460,19 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
             return time * 60.0 / (music.resolution * tempi[0])
 
     else:
+        tempo_times_np = np.array(tempo_times)
+        tempi_np = np.array(tempi)
+
         # Compute the tempo time in absolute timing of each tempo change
         tempo_realtimes = np.cumsum(
-            np.diff(tempo_times) * 60.0 / (music.resolution * tempi[:-1])
+            np.diff(tempo_times_np) * 60.0 / (music.resolution * tempi_np[:-1])
         ).tolist()
         tempo_realtimes.insert(0, 0.0)
 
         def map_time(time):
-            idx = np.searchsorted(tempo_times, time, side="right") - 1
-            residual = time - tempo_times[idx]
-            factor = 60.0 / (music.resolution * tempi[idx])
+            idx = np.searchsorted(tempo_times_np, time, side="right") - 1
+            residual = time - tempo_times_np[idx]
+            factor = 60.0 / (music.resolution * tempi_np[idx])
             return tempo_realtimes[idx] + residual * factor
 
     # Key signatures

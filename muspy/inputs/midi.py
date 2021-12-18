@@ -567,7 +567,7 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
             np.diff(tempo_realtimes) * resolution * tempi[:-1] / 60.0
         )
         tempo_times = np.round(tempo_times).astype(int).tolist()
-        tempo_times.insert(0, 0)
+        tempo_times = np.insert(tempo_times, 0, 0)
 
         def map_time(time: float) -> int:
             idx = np.searchsorted(tempo_realtimes, time, side="right") - 1
