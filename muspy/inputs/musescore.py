@@ -24,7 +24,11 @@ T = TypeVar("T")
 
 
 class MuseScoreError(Exception):
-    """An error class for MuseScore related exceptions."""
+    """A class for MuseScore related errors."""
+
+
+class MuseScoreWarning(Warning):
+    """A class for MuseScore related warnings."""
 
 
 def _gcd(a: int, b: int) -> int:
@@ -163,24 +167,25 @@ def parse_staff_elem(
     # Initialize variables
     time = 0
     velocity = 64
-    division = 1
-    transpose_semitone = 0
-    transpose_octave = 0
+    # division = 1
+    # transpose_semitone = 0
+    # transpose_octave = 0
     # Repeats
     is_repeat = 0
-    last_repeat = 0
-    count_repeat = 1
-    count_ending = 1
-    # Coda, tocoda, dacapo, segno, dalsegno, fine
-    is_after_jump = False
-    is_fine = False
-    is_dacapo = False
-    is_dalsegno = False
-    is_segno = False
-    is_segno_found = False
-    is_tocoda = False
-    is_coda = False
-    is_coda_found = False
+    # last_repeat = 0
+    start_repeat = 0
+    # count_repeat = 1
+    # count_ending = 1
+    # # Coda, tocoda, dacapo, segno, dalsegno, fine
+    # is_after_jump = False
+    # is_fine = False
+    # is_dacapo = False
+    # is_dalsegno = False
+    # is_segno = False
+    # is_segno_found = False
+    # is_tocoda = False
+    # is_coda = False
+    # is_coda_found = False
     # Tuple
     is_tuple = False
 
@@ -192,129 +197,91 @@ def parse_staff_elem(
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
 
+        # Set the default next measure
+        next_measure_idx = measure_idx + 1
+
         # Initialize position
         position = 0
         last_note_position = None
 
-        # Look for segno
-        if is_dalsegno and not is_segno_found:
-            # Segno
-            for sound_elem in measure_elem.findall("sound"):
-                if sound_elem.get("segno") is not None:
-                    is_segno = True
-            for sound_elem in measure_elem.findall("direction/sound"):
-                if sound_elem.get("segno") is not None:
-                    is_segno = True
+        # # Look for segno
+        # if is_dalsegno and not is_segno_found:
+        #     # Segno
+        #     for sound_elem in measure_elem.findall("sound"):
+        #         if sound_elem.get("segno") is not None:
+        #             is_segno = True
+        #     for sound_elem in measure_elem.findall("direction/sound"):
+        #         if sound_elem.get("segno") is not None:
+        #             is_segno = True
 
-            # Skip if not segno
-            if not is_segno:
-                measure_idx += 1
-                continue
+        #     # Skip if not segno
+        #     if not is_segno:
+        #         measure_idx += 1
+        #         continue
 
-            is_segno_found = True
+        #     is_segno_found = True
 
-        # Look for coda
-        if is_tocoda and not is_coda_found:
-            # Coda
-            for sound_elem in measure_elem.findall("sound"):
-                if sound_elem.get("coda") is not None:
-                    is_coda = True
-            for sound_elem in measure_elem.findall("direction/sound"):
-                if sound_elem.get("coda") is not None:
-                    is_coda = True
+        # # Look for coda
+        # if is_tocoda and not is_coda_found:
+        #     # Coda
+        #     for sound_elem in measure_elem.findall("sound"):
+        #         if sound_elem.get("coda") is not None:
+        #             is_coda = True
+        #     for sound_elem in measure_elem.findall("direction/sound"):
+        #         if sound_elem.get("coda") is not None:
+        #             is_coda = True
 
-            # Skip if not coda
-            if not is_coda:
-                measure_idx += 1
-                continue
+        #     # Skip if not coda
+        #     if not is_coda:
+        #         measure_idx += 1
+        #         continue
 
-            is_coda_found = True
+        #     is_coda_found = True
 
-        # Sound element
-        for sound_elem in measure_elem.findall("sound"):
-            if is_after_jump:
-                # Tocoda
-                if sound_elem.get("tocoda") is not None:
-                    is_tocoda = True
+        # # Sound element
+        # for sound_elem in measure_elem.findall("sound"):
+        #     if is_after_jump:
+        #         # Tocoda
+        #         if sound_elem.get("tocoda") is not None:
+        #             is_tocoda = True
 
-                # Fine
-                if sound_elem.get("fine") is not None:
-                    is_fine = True
-            else:
-                # Dacapo
-                if sound_elem.get("dacapo") is not None:
-                    is_dacapo = True
+        #         # Fine
+        #         if sound_elem.get("fine") is not None:
+        #             is_fine = True
+        #     else:
+        #         # Dacapo
+        #         if sound_elem.get("dacapo") is not None:
+        #             is_dacapo = True
 
-                # Daselgno
-                if sound_elem.get("dalsegno") is not None:
-                    is_dalsegno = True
+        #         # Daselgno
+        #         if sound_elem.get("dalsegno") is not None:
+        #             is_dalsegno = True
 
-        # Sound elements under direction elements
-        for sound_elem in measure_elem.findall("direction/sound"):
-            if is_after_jump:
-                # Tocoda
-                if sound_elem.get("tocoda") is not None:
-                    is_tocoda = True
+        # # Sound elements under direction elements
+        # for sound_elem in measure_elem.findall("direction/sound"):
+        #     if is_after_jump:
+        #         # Tocoda
+        #         if sound_elem.get("tocoda") is not None:
+        #             is_tocoda = True
 
-                # Fine
-                if sound_elem.get("fine") is not None:
-                    is_fine = True
-            else:
-                # Dacapo
-                if sound_elem.get("dacapo") is not None:
-                    is_dacapo = True
+        #         # Fine
+        #         if sound_elem.get("fine") is not None:
+        #             is_fine = True
+        #     else:
+        #         # Dacapo
+        #         if sound_elem.get("dacapo") is not None:
+        #             is_dacapo = True
 
-                # Daselgno
-                if sound_elem.get("dalsegno") is not None:
-                    is_dalsegno = True
+        #         # Daselgno
+        #         if sound_elem.get("dalsegno") is not None:
+        #             is_dalsegno = True
 
-        # Barline elements
-        for barline_elem in measure_elem.findall("barline"):
-            # Repeat elements
-            repeat_elem = barline_elem.find("repeat")
-            if repeat_elem is not None:
-                direction = _get_required_attr(repeat_elem, "direction")
-                if direction == "forward":
-                    last_repeat = measure_idx
-                elif direction == "backward":
-                    # Get after-jump infomation
-                    after_jump_attr = repeat_elem.get("after-jump")
-                    if after_jump_attr is None or after_jump_attr == "no":
-                        after_jump = False
-                    else:
-                        after_jump = True
-                    if not is_after_jump or (is_after_jump and after_jump):
-                        # Get repeat-times infomation
-                        repeat_times_attr = repeat_elem.get("times")
-                        if repeat_times_attr is None:
-                            repeat_times = 2
-                        else:
-                            repeat_times = int(repeat_times_attr)
-                        # Check if repeat times has reached
-                        if count_repeat < repeat_times:
-                            count_repeat += 1
-                            count_ending += 1
-                            is_repeat = True
-                        else:
-                            count_repeat = 1
-                            count_ending = 1
-                else:
-                    raise MuseScoreError(
-                        "Unknown direction for a `repeat` element : "
-                        f"{direction}"
-                    )
-            # Ending elements
-            ending_elem = barline_elem.find("ending")
-            if ending_elem is not None:
-                ending_num_attr = _get_required_attr(ending_elem, "number")
-                if ending_num_attr:
-                    ending_num = [
-                        int(num) for num in ending_num_attr.split(",")
-                    ]
-                # Skip the current measure if not the correct ending
-                if not is_repeat and count_ending not in ending_num:
-                    measure_idx += 1
-                    continue
+        # # End repeat elements
+        # if elem.tag == "endRepeat":
+        #     pass
+
+        if measure_elem.find("startRepeat"):
+            start_repeat = measure_idx
 
         # Voice elements
         for voice_elem in measure_elem.findall("voice"):
@@ -396,6 +363,16 @@ def parse_staff_elem(
                         notes[-1].duration = new_duration
                         position += new_duration - duration
                     is_tuple = False
+
+                # Spanner elements
+                if elem.tag == "Spanner":
+                    if elem.get("type") == "Volta":
+                        # elem.find("Volta/endings")
+                        next_measure_location = _get_text(
+                            elem, "next/location/measures"
+                        )
+                        if next_measure_location is not None:
+                            next_measure_idx = int(next_measure_location)
 
         # # Iterating over all elements in the current measure
         # for elem in measure_elem:
@@ -622,17 +599,19 @@ def parse_staff_elem(
 
         time += position
 
-        if is_after_jump and is_fine:
-            break
+        # if is_after_jump and is_fine:
+        #     break
 
-        if not is_after_jump and (is_dacapo or is_dalsegno):
-            measure_idx = 0
-            is_after_jump = True
-        elif is_repeat:
-            is_repeat = False
-            measure_idx = last_repeat
-        else:
-            measure_idx += 1
+        # if not is_after_jump and (is_dacapo or is_dalsegno):
+        #     measure_idx = 0
+        #     is_after_jump = True
+        # elif is_repeat:
+        #     is_repeat = False
+        #     measure_idx = last_repeat
+        # else:
+        #     measure_idx += 1
+
+        measure_idx = next_measure_idx
 
     # Sort notes
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
@@ -750,7 +729,7 @@ def parse_part_elem_info(elem: Element) -> Tuple[List[str], OrderedDict]:
 
 
 def read_musescore(
-    path: Union[str, Path], resolution: int = None, compressed: bool = None,
+    path: Union[str, Path], resolution: int = None, compressed: bool = None
 ) -> Music:
     """Read a MuseScore file into a Music object.
 
