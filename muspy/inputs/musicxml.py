@@ -75,7 +75,9 @@ def _get_required(element: Element, path: str) -> Element:
     """Return a required element; raise ValueError if not found."""
     elem = element.find(path)
     if elem is None:
-        raise MusicXMLError("Element `{}` is required.".format(path))
+        raise MusicXMLError(
+            f"Element `{path}` is required for an '{element.tag}' element."
+        )
     return elem
 
 
@@ -83,7 +85,9 @@ def _get_required_attr(element: Element, attr: str) -> str:
     """Return a required attribute; raise MusicXMLError if not found."""
     attribute = element.get(attr)
     if attribute is None:
-        raise MusicXMLError("Attribute '{}' is required for an element ")
+        raise MusicXMLError(
+            f"Attribute '{attr}' is required for an '{element.tag}' element."
+        )
     return attribute
 
 
@@ -91,16 +95,11 @@ def _get_required_text(
     element: Element, path: str, remove_newlines: bool = False
 ) -> str:
     """Return a required text; raise MusicXMLError if not found."""
-    elem = element.find(path)
-    if elem is None:
-        raise MusicXMLError(
-            "Child element '{}' is required for an element '{}'."
-            "".format(path, element.tag)
-        )
+    elem = _get_required(element, path)
     if elem.text is None:
         raise MusicXMLError(
-            "Text content '{}' of an element '{}' must not be empty."
-            "".format(path, element.tag)
+            f"Text content '{path}' of an element '{element.tag}' must not be "
+            "empty."
         )
     if remove_newlines:
         return " ".join(elem.text.splitlines())
@@ -120,17 +119,38 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
     return None
 
 
-def parse_key_elem(elem: Element) -> Dict:
-    """Return a dictionary with data parsed from a key element."""
+def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
+    """Return the key parsed from a key element."""
     mode = _get_text(elem, "mode", "major")
     fifths = int(_get_required_text(elem, "fifths"))
     if mode is None:
-        return {"fifths": fifths}
+        return None, None, fifths, None
     idx = MODE_CENTERS[mode] + fifths
     if idx < 0 or idx > 20:
-        return {"fifths": fifths, "mode": mode}
+        return None, mode, fifths, None  # type: ignore
     root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + fifths]
-    return {"root": root, "mode": mode, "fifths": fifths, "root_str": root_str}
+    return root, mode, fifths, root_str
+
+
+def parse_time_elem(elem: Element) -> Tuple[int, int]:
+    """Return the numerator and denominator parsed from a time element."""
+    # Numerator
+    beats = _get_required_text(elem, "beats")
+    if "+" in beats:
+        numerator = sum(int(beat) for beat in beats.split("+"))
+    else:
+        numerator = int(beats)
+
+    # Denominator
+    beat_type = _get_required_text(elem, "beat-type")
+    if "+" in beat_type:
+        raise RuntimeError(
+            "Compound time signatures with separate fractions "
+            "are not supported."
+        )
+    denominator = int(beat_type)
+
+    return numerator, denominator
 
 
 def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
@@ -170,7 +190,7 @@ def parse_part_elem(
     transpose_semitone = 0
     transpose_octave = 0
     # Repeats
-    is_repeat = 0
+    is_repeat = False
     last_repeat = 0
     count_repeat = 1
     count_ending = 1
@@ -269,53 +289,50 @@ def parse_part_elem(
                 if sound_elem.get("dalsegno") is not None:
                     is_dalsegno = True
 
-        # Barline elements
-        for barline_elem in measure_elem.findall("barline"):
-            # Repeat elements
-            repeat_elem = barline_elem.find("repeat")
-            if repeat_elem is not None:
-                direction = _get_required_attr(repeat_elem, "direction")
-                if direction == "forward":
-                    last_repeat = measure_idx
-                elif direction == "backward":
-                    # Get after-jump infomation
-                    after_jump_attr = repeat_elem.get("after-jump")
-                    if after_jump_attr is None or after_jump_attr == "no":
-                        after_jump = False
-                    else:
-                        after_jump = True
-                    if not is_after_jump or (is_after_jump and after_jump):
-                        # Get repeat-times infomation
-                        repeat_times_attr = repeat_elem.get("times")
-                        if repeat_times_attr is None:
-                            repeat_times = 2
-                        else:
-                            repeat_times = int(repeat_times_attr)
-                        # Check if repeat times has reached
-                        if count_repeat < repeat_times:
-                            count_repeat += 1
-                            count_ending += 1
-                            is_repeat = True
-                        else:
-                            count_repeat = 1
-                            count_ending = 1
+        # Ending elements
+        ending_elem = measure_elem.find("barline/ending")
+        if ending_elem is not None:
+            ending_num_attr = _get_required_attr(ending_elem, "number")
+            ending_num = [int(num) for num in ending_num_attr.split(",")]
+            # Skip the current measure if not the correct ending
+            if count_ending not in ending_num:
+                measure_idx += 1
+                continue
+
+        # Repeat elements
+        repeat_elem = measure_elem.find("barline/repeat")
+        if repeat_elem is not None:
+            direction = _get_required_attr(repeat_elem, "direction")
+            if direction == "forward":
+                last_repeat = measure_idx
+            elif direction == "backward":
+                # Get after-jump infomation
+                after_jump_attr = repeat_elem.get("after-jump")
+                if after_jump_attr is None or after_jump_attr == "no":
+                    after_jump = False
                 else:
-                    raise MusicXMLError(
-                        "Unknown direction for a `repeat` element : "
-                        f"{direction}"
-                    )
-            # Ending elements
-            ending_elem = barline_elem.find("ending")
-            if ending_elem is not None:
-                ending_num_attr = _get_required_attr(ending_elem, "number")
-                if ending_num_attr:
-                    ending_num = [
-                        int(num) for num in ending_num_attr.split(",")
-                    ]
-                # Skip the current measure if not the correct ending
-                if not is_repeat and count_ending not in ending_num:
-                    measure_idx += 1
-                    continue
+                    after_jump = True
+                if not is_after_jump or (is_after_jump and after_jump):
+                    # Get repeat-times infomation
+                    repeat_times_attr = repeat_elem.get("times")
+                    if repeat_times_attr is None:
+                        repeat_times = 2
+                    else:
+                        repeat_times = int(repeat_times_attr)
+                    # Check if repeat times has reached
+                    if count_repeat < repeat_times:
+                        count_repeat += 1
+                        count_ending += 1
+                        is_repeat = True
+                    else:
+                        count_repeat = 1
+                        count_ending = 1
+                        is_repeat = False
+            else:
+                raise MusicXMLError(
+                    "Unknown direction for a `repeat` element : "
+                    f"{direction}"
+                )
 
         # Iterating over all elements in the current measure
         for elem in measure_elem:
@@ -339,24 +356,24 @@ def parse_part_elem(
                     if octave_change is not None:
                         transpose_octave = int(octave_change)
 
+                # Key elements
+                key_elem = elem.find("key")
+                if key_elem is not None:
+                    root, mode, fifths, root_str = parse_key_elem(key_elem)
+                    key_signatures.append(
+                        KeySignature(
+                            time=time + position,
+                            root=root,
+                            mode=mode,
+                            fifths=fifths,
+                            root_str=root_str,
+                        )
+                    )
+
                 # Time signatures
                 time_elem = elem.find("time")
                 if time_elem is not None:
-                    # Numerator
-                    beats = _get_required_text(time_elem, "beats")
-                    if "+" in beats:
-                        numerator = sum(int(beat) for beat in beats.split("+"))
-                    else:
-                        numerator = int(beats)
-
-                    # Denominator
-                    beat_type = _get_required_text(time_elem, "beat-type")
-                    if "+" in beat_type:
-                        raise RuntimeError(
-                            "Compound time signatures with separate fractions "
-                            "are not supported."
-                        )
-                    denominator = int(beat_type)
+                    numerator, denominator = parse_time_elem(time_elem)
                     time_signatures.append(
                         TimeSignature(
                             time=time + position,
@@ -364,20 +381,6 @@ def parse_part_elem(
                             denominator=denominator,
                         )
                     )
-
-                # Key elements
-                key_elem = elem.find("key")
-                if key_elem is not None:
-                    parsed_key = parse_key_elem(key_elem)
-                    if parsed_key is not None:
-                        key_signatures.append(
-                            KeySignature(
-                                time=time + position,
-                                root=parsed_key.get("root"),
-                                mode=parsed_key.get("mode"),
-                                root_str=parsed_key.get("root_str"),
-                            )
-                        )
 
             # Sound element
             elif elem.tag == "sound":
@@ -704,7 +707,7 @@ def parse_score_part_elem(elem: Element) -> Tuple[str, OrderedDict]:
 
 
 def read_musicxml(
-    path: Union[str, Path], resolution: int = None, compressed: bool = None,
+    path: Union[str, Path], resolution: int = None, compressed: bool = None
 ) -> Music:
     """Read a MusicXML file into a Music object.
 

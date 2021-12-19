@@ -5,6 +5,7 @@ from pathlib import Path
 import numpy as np
 
 import muspy
+from muspy.utils import CIRCLE_OF_FIFTHS, MODE_CENTERS
 
 from .utils import (
     TEST_JSON_PATH,
@@ -158,15 +159,15 @@ def test_key_signatures():
             assert key_signature.mode == "major"
         else:
             assert key_signature.mode == "minor"
+        assert key_signature.fifths == i // 2 - 11
 
     # TODO: Check root and root_str
-    # for i, key_signature in enumerate(music.key_signatures[:8]):
-    # fifths = None
-    # root, root_str = CIRCLE_OF_FIFTHS[
-    #     MODE_CENTERS[key_signature.mode] + fifths
-    # ]
-    # assert key_signature.root == root
-    # assert key_signature.root_str == root_str
+    for i, key_signature in enumerate(music.key_signatures[8:-4]):
+        root, root_str = CIRCLE_OF_FIFTHS[
+            MODE_CENTERS[key_signature.mode] + key_signature.fifths
+        ]
+        assert key_signature.root == root
+        assert key_signature.root_str == root_str
 
 
 def test_church_modes():

@@ -132,9 +132,9 @@ def to_music21(music: "Music") -> Score:
         # Add notes to part
         for note in track.notes:
             m21_note = M21Note(_get_pitch_name(note.pitch))
-            m21_note.offset = note.time / music.resolution
             m21_note.quarterLength = note.duration / music.resolution
-            part.append(m21_note)
+            offset = note.time / music.resolution
+            part.insert(offset, m21_note)
 
         # Append the part to score
         score.append(part)
