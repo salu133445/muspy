@@ -14,6 +14,7 @@ from .abc import read_abc
 from .event import from_event_representation
 from .json import load_json
 from .midi import from_mido, from_pretty_midi, read_midi
+from .musescore import read_musescore
 from .music21 import from_music21
 from .musicxml import read_musicxml
 from .note import from_note_representation
@@ -103,6 +104,8 @@ def read(
             kind = "midi"
         elif str(path).lower().endswith((".mxl", ".xml", ".musicxml")):
             kind = "musicxml"
+        elif str(path).lower().endswith((".mscx", ".mscz")):
+            kind = "musescore"
         elif str(path).lower().endswith(".abc"):
             kind = "abc"
         else:
@@ -114,10 +117,13 @@ def read(
         return read_midi(path, **kwargs)
     if kind.lower() == "musicxml":
         return read_musicxml(path, **kwargs)
+    if kind.lower() == "musescore":
+        return read_musescore(path, **kwargs)
     if kind.lower() == "abc":
         return read_abc(path, **kwargs)
     raise ValueError(
-        f"Expect `kind` to be 'midi', 'musicxml' or 'abc', but got : {kind}."
+        "Expect `kind` to be 'midi', 'musicxml', 'musescore' or 'abc', but "
+        f"got : {kind}."
     )
 
 

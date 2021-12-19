@@ -25,6 +25,7 @@ Functions
 - read_abc
 - read_abc_string
 - read_midi
+- read_musescore
 - read_musicxml
 
 Errors

@@ -124,17 +124,43 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
     return None
 
 
+def parse_time_elem(elem: Element) -> Tuple[int, int]:
+    """Return the numerator and denominator parsed from a time element."""
+    # Numerator
+    beats = _get_required_text(elem, "sigN")
+    if "+" in beats:
+        numerator = sum(int(beat) for beat in beats.split("+"))
+    else:
+        numerator = int(beats)
+
+    # Denominator
+    beat_type = _get_required_text(elem, "sigD")
+    if "+" in beat_type:
+        raise RuntimeError(
+            "Compound time signatures with separate fractions "
+            "are not supported."
+        )
+    denominator = int(beat_type)
+
+    return numerator, denominator
+
+
 def parse_key_elem(elem: Element) -> Dict:
     """Return a dictionary with data parsed from a key element."""
     mode = _get_text(elem, "mode", "major")
-    fifths = int(_get_required_text(elem, "fifths"))
+    accidental = int(_get_required_text(elem, "accidental"))
     if mode is None:
-        return {"fifths": fifths}
-    idx = MODE_CENTERS[mode] + fifths
+        return {"accidental": accidental}
+    idx = MODE_CENTERS[mode] + accidental
     if idx < 0 or idx > 20:
-        return {"fifths": fifths, "mode": mode}
-    root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + fifths]
-    return {"root": root, "mode": mode, "fifths": fifths, "root_str": root_str}
+        return {"accidental": accidental, "mode": mode}
+    root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + accidental]
+    return {
+        "root": root,
+        "mode": mode,
+        "accidental": accidental,
+        "root_str": root_str,
+    }
 
 
 def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
@@ -174,8 +200,8 @@ def parse_staff_elem(
     is_repeat = 0
     # last_repeat = 0
     start_repeat = 0
-    # count_repeat = 1
-    # count_ending = 1
+    count_repeat = 1
+    count_ending = 1
     # # Coda, tocoda, dacapo, segno, dalsegno, fine
     # is_after_jump = False
     # is_fine = False
@@ -276,33 +302,28 @@ def parse_staff_elem(
         #         if sound_elem.get("dalsegno") is not None:
         #             is_dalsegno = True
 
-        # # End repeat elements
-        # if elem.tag == "endRepeat":
-        #     pass
-
         if measure_elem.find("startRepeat"):
             start_repeat = measure_idx
 
         # Voice elements
         for voice_elem in measure_elem.findall("voice"):
             for elem in voice_elem:
+                # Ket signatures
+                if elem.tag == "KeySig":
+                    parsed_key = parse_key_elem(elem)
+                    if parsed_key is not None:
+                        key_signatures.append(
+                            KeySignature(
+                                time=time + position,
+                                root=parsed_key.get("root"),
+                                mode=parsed_key.get("mode"),
+                                root_str=parsed_key.get("root_str"),
+                            )
+                        )
+
                 # Time signatures
                 if elem.tag == "TimeSig":
-                    # Numerator
-                    beats = _get_required_text(elem, "sigN")
-                    if "+" in beats:
-                        numerator = sum(int(beat) for beat in beats.split("+"))
-                    else:
-                        numerator = int(beats)
-
-                    # Denominator
-                    beat_type = _get_required_text(elem, "sigD")
-                    if "+" in beat_type:
-                        raise RuntimeError(
-                            "Compound time signatures with separate fractions "
-                            "are not supported."
-                        )
-                    denominator = int(beat_type)
+                    numerator, denominator = parse_time_elem(elem)
                     time_signatures.append(
                         TimeSignature(
                             time=time + position,
@@ -335,10 +356,23 @@ def parse_staff_elem(
 
                 # Chord elements
                 if elem.tag == "Chord":
+                    # Compute duration
                     duration_type = _get_required_text(elem, "durationType")
-                    duration = round(NOTE_TYPE_MAP[duration_type] * resolution)
+                    duration = NOTE_TYPE_MAP[duration_type] * resolution
+
+                    # Handle tuplets
                     if is_tuple:
-                        duration = round(duration * tuple_ratio)
+                        duration *= tuple_ratio
+
+                    # Handle dots
+                    dots_elem = elem.find("dots")
+                    if dots_elem is not None and dots_elem.text:
+                        duration *= 2 - 0.5 ** int(dots_elem.text)
+
+                    # Round the duration
+                    duration = round(duration)
+
+                    # Collect notes
                     for note_elem in elem.findall("Note"):
                         pitch = int(_get_required_text(note_elem, "pitch"))
                         notes.append(
@@ -373,6 +407,9 @@ def parse_staff_elem(
                         )
                         if next_measure_location is not None:
                             next_measure_idx = int(next_measure_location)
+
+        if measure_elem.find("endRepeat"):
+            next_measure_idx = start_repeat
 
         # # Iterating over all elements in the current measure
         # for elem in measure_elem:
@@ -622,6 +659,11 @@ def parse_staff_elem(
     time_signatures.sort(key=attrgetter("time"))
     lyrics.sort(key=attrgetter("time"))
 
+    if not time_signatures or time_signatures[0].time > 0:
+        time_signatures.insert(
+            0, TimeSignature(time=0, numerator=4, denominator=4)
+        )
+
     return {
         "tempos": tempos,
         "key_signatures": key_signatures,
@@ -711,7 +753,7 @@ def parse_part_elem_info(elem: Element) -> Tuple[List[str], OrderedDict]:
 
     # Instrument
     instrument_elem = _get_required(elem, "Instrument")
-    part_info["id"] = _get_required_text(instrument_elem, "instrumentId")
+    part_info["id"] = _get_text(instrument_elem, "instrumentId")
     part_info["name"] = _get_text(elem, "trackName", remove_newlines=True)
 
     # MIDI program and channel
