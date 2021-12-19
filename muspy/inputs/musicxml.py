@@ -119,17 +119,38 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
     return None
 
 
-def parse_key_elem(elem: Element) -> Dict:
-    """Return a dictionary with data parsed from a key element."""
+def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
+    """Return the key parsed from a key element."""
     mode = _get_text(elem, "mode", "major")
     fifths = int(_get_required_text(elem, "fifths"))
     if mode is None:
-        return {"fifths": fifths}
+        return None, None, fifths, None
     idx = MODE_CENTERS[mode] + fifths
     if idx < 0 or idx > 20:
-        return {"fifths": fifths, "mode": mode}
+        return None, mode, fifths, None  # type: ignore
     root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + fifths]
-    return {"root": root, "mode": mode, "fifths": fifths, "root_str": root_str}
+    return root, mode, fifths, root_str
+
+
+def parse_time_elem(elem: Element) -> Tuple[int, int]:
+    """Return the numerator and denominator parsed from a time element."""
+    # Numerator
+    beats = _get_required_text(elem, "beats")
+    if "+" in beats:
+        numerator = sum(int(beat) for beat in beats.split("+"))
+    else:
+        numerator = int(beats)
+
+    # Denominator
+    beat_type = _get_required_text(elem, "beat-type")
+    if "+" in beat_type:
+        raise RuntimeError(
+            "Compound time signatures with separate fractions "
+            "are not supported."
+        )
+    denominator = int(beat_type)
+
+    return numerator, denominator
 
 
 def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
@@ -335,24 +356,24 @@ def parse_part_elem(
                     if octave_change is not None:
                         transpose_octave = int(octave_change)
 
+                # Key elements
+                key_elem = elem.find("key")
+                if key_elem is not None:
+                    root, mode, fifths, root_str = parse_key_elem(key_elem)
+                    key_signatures.append(
+                        KeySignature(
+                            time=time + position,
+                            root=root,
+                            mode=mode,
+                            fifths=fifths,
+                            root_str=root_str,
+                        )
+                    )
+
                 # Time signatures
                 time_elem = elem.find("time")
                 if time_elem is not None:
-                    # Numerator
-                    beats = _get_required_text(time_elem, "beats")
-                    if "+" in beats:
-                        numerator = sum(int(beat) for beat in beats.split("+"))
-                    else:
-                        numerator = int(beats)
-
-                    # Denominator
-                    beat_type = _get_required_text(time_elem, "beat-type")
-                    if "+" in beat_type:
-                        raise RuntimeError(
-                            "Compound time signatures with separate fractions "
-                            "are not supported."
-                        )
-                    denominator = int(beat_type)
+                    numerator, denominator = parse_time_elem(time_elem)
                     time_signatures.append(
                         TimeSignature(
                             time=time + position,
@@ -360,20 +381,6 @@ def parse_part_elem(
                             denominator=denominator,
                         )
                     )
-
-                # Key elements
-                key_elem = elem.find("key")
-                if key_elem is not None:
-                    parsed_key = parse_key_elem(key_elem)
-                    if parsed_key is not None:
-                        key_signatures.append(
-                            KeySignature(
-                                time=time + position,
-                                root=parsed_key.get("root"),
-                                mode=parsed_key.get("mode"),
-                                root_str=parsed_key.get("root_str"),
-                            )
-                        )
 
             # Sound element
             elif elem.tag == "sound":
