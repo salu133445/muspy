@@ -507,8 +507,8 @@ def test_percussion():
     assert music[0][1].duration == music.resolution * 2
     assert music[0][1].pitch == 45
 
-    assert len(music[1]) == 0
-    assert len(music[2]) == 0
+    assert len(music[1]) == 3
+    assert len(music[2]) == 3
 
 
 def test_compressed_musicxml():

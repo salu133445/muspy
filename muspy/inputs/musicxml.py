@@ -133,7 +133,7 @@ def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
 
 
 def parse_time_elem(elem: Element) -> Tuple[int, int]:
-    """Return the numerator and denominator parsed from a time element."""
+    """Return the numerator and denominator of a time element."""
     # Numerator
     beats = _get_required_text(elem, "beats")
     if "+" in beats:
@@ -154,7 +154,7 @@ def parse_time_elem(elem: Element) -> Tuple[int, int]:
 
 
 def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
-    """Return a (pitch, pitch_str) tuple parsed from a pitch element."""
+    """Return the pitch and pitch_str of a pitch element."""
     step = _get_required_text(elem, "step")
     octave = int(_get_required_text(elem, "octave"))
     alter = int(_get_text(elem, "alter", 0))
@@ -166,6 +166,29 @@ def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
     else:
         pitch_str = step + str(octave)
     return pitch, pitch_str
+
+
+def parse_unpitched_elem(elem: Element) -> Tuple[int, str]:
+    """Return the pitch and pitch_str of an unpitched element."""
+    step = _get_required_text(elem, "display-step")
+    octave = int(_get_required_text(elem, "display-octave"))
+    pitch = 12 * (octave + 1) + NOTE_MAP[step]
+    pitch_str = step + str(octave)
+    return pitch, pitch_str
+
+
+def parse_lyric_elem(elem: Element) -> str:
+    """Return the lyric text parsed from a lyric element."""
+    text = _get_required_text(elem, "text")
+    syllabic_elem = elem.find("syllabic")
+    if syllabic_elem is not None:
+        if syllabic_elem.text == "begin":
+            text = text + "-"
+        elif syllabic_elem.text == "middle":
+            text = "-" + text + "-"
+        elif syllabic_elem.text == "end":
+            text = "-" + text
+    return text
 
 
 def parse_part_elem(
@@ -440,23 +463,23 @@ def parse_part_elem(
                 if elem.find("cue") is not None:
                     continue
 
-                # Unpitched notes
-                # TODO: Handle unpitched notes
-                unpitched_elem = elem.find("unpitched")
-                if unpitched_elem is not None:
-                    continue
-
                 # Chord elements
                 if elem.find("chord") is not None:
                     # Move time position backward if it is in a chord
                     if last_note_position is not None:
                         position = last_note_position
 
-                # Compute pitch number
-                pitch, pitch_str = parse_pitch_elem(
-                    _get_required(elem, "pitch")
-                )
-                pitch += 12 * transpose_octave + transpose_semitone
+                # Get pitch number and string
+                unpitched_elem = elem.find("unpitched")
+                if unpitched_elem is not None:
+                    # Unpitched notes
+                    pitch, pitch_str = parse_unpitched_elem(unpitched_elem)
+                else:
+                    # Normal pitches
+                    pitch, pitch_str = parse_pitch_elem(
+                        _get_required(elem, "pitch")
+                    )
+                    pitch += 12 * transpose_octave + transpose_semitone
 
                 # Get instrument information
                 instrument_elem = elem.find("instrument")
@@ -529,15 +552,7 @@ def parse_part_elem(
                 # Lyrics
                 lyric_elem = elem.find("lyric")
                 if lyric_elem is not None:
-                    lyric_text = _get_required_text(lyric_elem, "text")
-                    syllabic_elem = lyric_elem.find("syllabic")
-                    if syllabic_elem is not None:
-                        if syllabic_elem.text == "begin":
-                            lyric_text += "-"
-                        elif syllabic_elem.text == "middle":
-                            lyric_text = "-" + lyric_text + "-"
-                        elif syllabic_elem.text == "end":
-                            lyric_text = "-" + lyric_text
+                    lyric_text = parse_lyric_elem(lyric_elem)
                     lyrics.append(
                         Lyric(time=time + position, lyric=lyric_text)
                     )
@@ -726,10 +741,6 @@ def read_musicxml(
     -------
     :class:`muspy.Music`
         Converted Music object.
-
-    Notes
-    -----
-    Grace notes and unpitched notes are not supported.
 
     """
     # Get element tree root
