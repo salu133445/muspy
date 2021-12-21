@@ -67,6 +67,44 @@ NOTE_TYPE_MAP: Dict[str, float] = {
     "maxima": 32.0,
 }
 
+TONAL_PITCH_CLASSES = {
+    -1: "Fbb",
+    0: "Cbb",
+    1: "Gbb",
+    2: "Dbb",
+    3: "Abb",
+    4: "Ebb",
+    5: "Bbb",
+    6: "Fb",
+    7: "Cb",
+    8: "Gb",
+    9: "Db",
+    10: "Ab",
+    11: "Eb",
+    12: "Bb",
+    13: "F",
+    14: "C",
+    15: "G",
+    16: "D",
+    17: "A",
+    18: "E",
+    19: "B",
+    20: "F#",
+    21: "C#",
+    22: "G#",
+    23: "D#",
+    24: "A#",
+    25: "E#",
+    26: "B#",
+    27: "F##",
+    28: "C##",
+    29: "G##",
+    30: "D##",
+    31: "A##",
+    32: "E##",
+    33: "B##",
+}
+
 
 def note_str_to_note_num(note_str: str):
     """Return the note number of a note string.

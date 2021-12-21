@@ -1,6 +1,7 @@
 """MuseScore input interface."""
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
+from fractions import Fraction
 from functools import reduce
 from operator import attrgetter
 from pathlib import Path
@@ -18,7 +19,13 @@ from ..classes import (
     Track,
 )
 from ..music import Music
-from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS, NOTE_MAP, NOTE_TYPE_MAP
+from ..utils import (
+    CIRCLE_OF_FIFTHS,
+    MODE_CENTERS,
+    NOTE_MAP,
+    NOTE_TYPE_MAP,
+    TONAL_PITCH_CLASSES,
+)
 
 T = TypeVar("T")
 
@@ -76,10 +83,12 @@ def _get_text(
 
 
 def _get_required(element: Element, path: str) -> Element:
-    """Return a required element; raise ValueError if not found."""
+    """Return a required element; raise MuseScoreError if not found."""
     elem = element.find(path)
     if elem is None:
-        raise MuseScoreError("Element `{}` is required.".format(path))
+        raise MuseScoreError(
+            f"Element `{path}` is required for an '{element.tag}' element."
+        )
     return elem
 
 
@@ -87,7 +96,9 @@ def _get_required_attr(element: Element, attr: str) -> str:
     """Return a required attribute; raise MuseScoreError if not found."""
     attribute = element.get(attr)
     if attribute is None:
-        raise MuseScoreError("Attribute '{}' is required for an element ")
+        raise MuseScoreError(
+            f"Attribute '{attr}' is required for an '{element.tag}' element."
+        )
     return attribute
 
 
@@ -95,16 +106,11 @@ def _get_required_text(
     element: Element, path: str, remove_newlines: bool = False
 ) -> str:
     """Return a required text; raise MuseScoreError if not found."""
-    elem = element.find(path)
-    if elem is None:
-        raise MuseScoreError(
-            "Child element '{}' is required for an element '{}'."
-            "".format(path, element.tag)
-        )
+    elem = _get_required(element, path)
     if elem.text is None:
         raise MuseScoreError(
-            "Text content '{}' of an element '{}' must not be empty."
-            "".format(path, element.tag)
+            f"Text content '{path}' of an element '{element.tag}' must not be "
+            "empty."
         )
     if remove_newlines:
         return " ".join(elem.text.splitlines())
@@ -145,37 +151,17 @@ def parse_time_elem(elem: Element) -> Tuple[int, int]:
     return numerator, denominator
 
 
-def parse_key_elem(elem: Element) -> Dict:
-    """Return a dictionary with data parsed from a key element."""
+def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
+    """Return the key parsed from a key element."""
     mode = _get_text(elem, "mode", "major")
-    accidental = int(_get_required_text(elem, "accidental"))
+    fifths = int(_get_required_text(elem, "accidental"))
     if mode is None:
-        return {"accidental": accidental}
-    idx = MODE_CENTERS[mode] + accidental
+        return None, None, fifths, None
+    idx = MODE_CENTERS[mode] + fifths
     if idx < 0 or idx > 20:
-        return {"accidental": accidental, "mode": mode}
-    root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + accidental]
-    return {
-        "root": root,
-        "mode": mode,
-        "accidental": accidental,
-        "root_str": root_str,
-    }
-
-
-def parse_pitch_elem(elem: Element) -> Tuple[int, str]:
-    """Return a (pitch, pitch_str) tuple parsed from a pitch element."""
-    step = _get_required_text(elem, "step")
-    octave = int(_get_required_text(elem, "octave"))
-    alter = int(_get_text(elem, "alter", 0))
-    pitch = 12 * (octave + 1) + NOTE_MAP[step] + alter
-    if alter > 0:
-        pitch_str = step + "#" * alter + str(octave)
-    elif alter < 0:
-        pitch_str = step + "b" * (-alter) + str(octave)
-    else:
-        pitch_str = step + str(octave)
-    return pitch, pitch_str
+        return None, mode, fifths, None  # type: ignore
+    root, root_str = CIRCLE_OF_FIFTHS[MODE_CENTERS[mode] + fifths]
+    return root, mode, fifths, root_str
 
 
 def parse_staff_elem(
@@ -193,136 +179,126 @@ def parse_staff_elem(
     # Initialize variables
     time = 0
     velocity = 64
-    # division = 1
-    # transpose_semitone = 0
-    # transpose_octave = 0
+    measure_len = round(resolution * 4)
     # Repeats
-    is_repeat = 0
-    # last_repeat = 0
-    start_repeat = 0
+    last_repeat = 0
     count_repeat = 1
     count_ending = 1
-    # # Coda, tocoda, dacapo, segno, dalsegno, fine
-    # is_after_jump = False
-    # is_fine = False
-    # is_dacapo = False
-    # is_dalsegno = False
-    # is_segno = False
-    # is_segno_found = False
-    # is_tocoda = False
-    # is_coda = False
-    # is_coda_found = False
-    # Tuple
+    # Jumps
+    is_after_jump = False
+    is_after_play_until = False
+    jump_to_label = None
+    play_until_label = None
+    continue_at_label = None
+    jump_to_measure_idx = None
+    play_until_measure_idx = None
+    continue_at_measure_idx = None
+    # Tuples
     is_tuple = False
+
+    # Find all markers
+    marker_measure_map: Dict[Optional[str], Optional[int]] = {
+        None: None,
+        "start": 0,
+    }
+    for i, measure_elem in enumerate(staff_elem.findall("Measure")):
+        for marker_elem in measure_elem.findall("Marker"):
+            label = _get_text(marker_elem, "label")
+            if label is not None:
+                marker_measure_map[label] = i
 
     # Iterate over all elements
     measure_idx = 0
     measure_elems = list(staff_elem.findall("Measure"))
     while measure_idx < len(measure_elems):
-
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
+
+        # Handle jumps
+        if is_after_jump and not is_after_play_until:
+            if (
+                jump_to_measure_idx is not None
+                and measure_idx < jump_to_measure_idx
+            ):
+                measure_idx += 1
+                continue
+            if (
+                play_until_measure_idx is not None
+                and measure_idx > play_until_measure_idx
+            ):
+                if continue_at_measure_idx is None:
+                    break
+                is_after_play_until = True
+                measure_idx = 0
+                continue
+        if (
+            is_after_play_until
+            and continue_at_measure_idx is not None
+            and measure_idx < continue_at_measure_idx
+        ):
+            measure_idx += 1
+            continue
 
         # Set the default next measure
         next_measure_idx = measure_idx + 1
 
-        # Initialize position
-        position = 0
-        last_note_position = None
+        # Get measure length
+        measure_len_text = measure_elem.get("len")
+        if measure_len_text is not None:
+            measure_len = round(resolution * 4 * Fraction(measure_len))
 
-        # # Look for segno
-        # if is_dalsegno and not is_segno_found:
-        #     # Segno
-        #     for sound_elem in measure_elem.findall("sound"):
-        #         if sound_elem.get("segno") is not None:
-        #             is_segno = True
-        #     for sound_elem in measure_elem.findall("direction/sound"):
-        #         if sound_elem.get("segno") is not None:
-        #             is_segno = True
+        # Jump elements
+        if not is_after_jump:
+            jump_elem = measure_elem.find("Jump")
+            if jump_elem is not None:
+                jump_to_label = _get_text(jump_elem, "jumpTo")
+                jump_to_measure_idx = marker_measure_map[jump_to_label]
+                play_until_label = _get_text(jump_elem, "playUntil")
+                play_until_measure_idx = marker_measure_map[play_until_label]
+                continue_at_label = _get_text(jump_elem, "continueAt")
+                continue_at_measure_idx = marker_measure_map[continue_at_label]
+                is_after_jump = True
+                next_measure_idx = 0
 
-        #     # Skip if not segno
-        #     if not is_segno:
-        #         measure_idx += 1
-        #         continue
-
-        #     is_segno_found = True
-
-        # # Look for coda
-        # if is_tocoda and not is_coda_found:
-        #     # Coda
-        #     for sound_elem in measure_elem.findall("sound"):
-        #         if sound_elem.get("coda") is not None:
-        #             is_coda = True
-        #     for sound_elem in measure_elem.findall("direction/sound"):
-        #         if sound_elem.get("coda") is not None:
-        #             is_coda = True
-
-        #     # Skip if not coda
-        #     if not is_coda:
-        #         measure_idx += 1
-        #         continue
-
-        #     is_coda_found = True
-
-        # # Sound element
-        # for sound_elem in measure_elem.findall("sound"):
-        #     if is_after_jump:
-        #         # Tocoda
-        #         if sound_elem.get("tocoda") is not None:
-        #             is_tocoda = True
-
-        #         # Fine
-        #         if sound_elem.get("fine") is not None:
-        #             is_fine = True
-        #     else:
-        #         # Dacapo
-        #         if sound_elem.get("dacapo") is not None:
-        #             is_dacapo = True
-
-        #         # Daselgno
-        #         if sound_elem.get("dalsegno") is not None:
-        #             is_dalsegno = True
-
-        # # Sound elements under direction elements
-        # for sound_elem in measure_elem.findall("direction/sound"):
-        #     if is_after_jump:
-        #         # Tocoda
-        #         if sound_elem.get("tocoda") is not None:
-        #             is_tocoda = True
-
-        #         # Fine
-        #         if sound_elem.get("fine") is not None:
-        #             is_fine = True
-        #     else:
-        #         # Dacapo
-        #         if sound_elem.get("dacapo") is not None:
-        #             is_dacapo = True
-
-        #         # Daselgno
-        #         if sound_elem.get("dalsegno") is not None:
-        #             is_dalsegno = True
-
+        # Repeat elements (forward)
         if measure_elem.find("startRepeat"):
-            start_repeat = measure_idx
+            last_repeat = measure_idx
+
+        # Volta elements
+        is_wrong_ending = False
+        for volta_elem in measure_elem.findall("voice/Spanner/Volta"):
+            ending_num_text = _get_required_text(volta_elem, "endings")
+            ending_num = [int(num) for num in ending_num_text.split(",")]
+            # Skip the current measure if not the correct ending
+            if count_ending not in ending_num:
+                is_wrong_ending = True
+        if is_wrong_ending:
+            measure_idx += 1
+            continue
 
         # Voice elements
         for voice_elem in measure_elem.findall("voice"):
+            # Initialize position
+            position = 0
+
+            # Iterate over child elements
             for elem in voice_elem:
-                # Ket signatures
+                # Key signatures
                 if elem.tag == "KeySig":
-                    parsed_key = parse_key_elem(elem)
-                    if parsed_key is not None:
-                        key_signatures.append(
-                            KeySignature(
-                                time=time + position,
-                                root=parsed_key.get("root"),
-                                mode=parsed_key.get("mode"),
-                                root_str=parsed_key.get("root_str"),
-                            )
+                    root, mode, fifths, root_str = parse_key_elem(elem)
+                    key_signatures.append(
+                        KeySignature(
+                            time=time + position,
+                            root=root,
+                            mode=mode,
+                            fifths=fifths,
+                            root_str=root_str,
                         )
+                    )
 
                 # Time signatures
                 if elem.tag == "TimeSig":
+                    print("Found!", elem)
                     numerator, denominator = parse_time_elem(elem)
                     time_signatures.append(
                         TimeSignature(
@@ -335,7 +311,7 @@ def parse_staff_elem(
                 # Dynamic elements
                 if elem.tag == "Dynamic":
                     velocity = round(
-                        float(_get_required_text(elem, "velocity"))
+                        float(_get_text(elem, "velocity", velocity))
                     )
 
                 # Tempo elements
@@ -353,6 +329,24 @@ def parse_staff_elem(
                     normal_notes = int(_get_required_text(elem, "normalNotes"))
                     actual_notes = int(_get_required_text(elem, "actualNotes"))
                     tuple_ratio = normal_notes / actual_notes
+
+                # Rest elements
+                if elem.tag == "Rest":
+                    # Move time position forward if it is a rest
+                    duration_type = _get_required_text(elem, "durationType")
+                    if duration_type == "measure":
+                        duration_text = _get_text(elem, "duration")
+                        if duration_text is not None:
+                            duration = (
+                                resolution * 4 * float(Fraction(duration_text))
+                            )
+                        else:
+                            duration = measure_len
+                        position += round(duration)
+                        continue
+                    duration = NOTE_TYPE_MAP[duration_type] * resolution
+                    position += round(duration)
+                    continue
 
                 # Chord elements
                 if elem.tag == "Chord":
@@ -372,18 +366,82 @@ def parse_staff_elem(
                     # Round the duration
                     duration = round(duration)
 
+                    # Grace notes
+                    is_grace = False
+                    for child in elem:
+                        if "grace" in child.tag or child.tag in (
+                            "appoggiatura",
+                            "acciaccatura",
+                        ):
+                            is_grace = True
+
+                    # Check if it is a tied chord
+                    is_outgoing_tie = False
+                    for spanner_elem in elem.findall("Spanner"):
+                        if (
+                            spanner_elem.get("type") == "Tie"
+                            and spanner_elem.find("next/location") is not None
+                        ):
+                            is_outgoing_tie = True
+
                     # Collect notes
                     for note_elem in elem.findall("Note"):
+                        # Get pitch
                         pitch = int(_get_required_text(note_elem, "pitch"))
-                        notes.append(
-                            Note(
-                                time=time + position,
-                                pitch=pitch,
-                                duration=duration,
-                                velocity=velocity,
+                        pitch_str = TONAL_PITCH_CLASSES[
+                            int(_get_required_text(note_elem, "tpc"))
+                        ]
+
+                        # Handle grace note
+                        if is_grace:
+                            # Append a new note to the note list
+                            notes.append(
+                                Note(
+                                    time=time + position,
+                                    pitch=pitch,
+                                    duration=duration,
+                                    velocity=velocity,
+                                    pitch_str=pitch_str,
+                                )
                             )
-                        )
-                    position += duration
+                            continue
+
+                        # Check if it is a tied note
+                        for spanner_elem in note_elem.findall("Spanner"):
+                            if (
+                                spanner_elem.get("type") == "Tie"
+                                and spanner_elem.find("next/location")
+                                is not None
+                            ):
+                                is_outgoing_tie = True
+
+                        # Check if it is an incoming tied note
+                        if pitch in ties:
+                            note_idx = ties[pitch]
+                            notes[note_idx].duration += duration
+
+                            if is_outgoing_tie:
+                                ties[pitch] = note_idx
+                            else:
+                                del ties[pitch]
+
+                        else:
+                            # Append a new note to the note list
+                            notes.append(
+                                Note(
+                                    time=time + position,
+                                    pitch=pitch,
+                                    duration=duration,
+                                    velocity=velocity,
+                                    pitch_str=pitch_str,
+                                )
+                            )
+
+                        if is_outgoing_tie:
+                            ties[pitch] = len(notes) - 1
+
+                    if not is_grace:
+                        position += duration
 
                 # Handle last tuplet note
                 if elem.tag == "endTuplet":
@@ -394,259 +452,29 @@ def parse_staff_elem(
                         actual_notes - 1
                     ) * round(old_duration * tuple_ratio)
                     if notes[-1].duration != new_duration:
-                        notes[-1].duration = new_duration
-                        position += new_duration - duration
+                        # notes[-1].duration = new_duration
+                        position += int(new_duration - duration)
                     is_tuple = False
 
-                # Spanner elements
-                if elem.tag == "Spanner":
-                    if elem.get("type") == "Volta":
-                        # elem.find("Volta/endings")
-                        next_measure_location = _get_text(
-                            elem, "next/location/measures"
-                        )
-                        if next_measure_location is not None:
-                            next_measure_idx = int(next_measure_location)
-
-        if measure_elem.find("endRepeat"):
-            next_measure_idx = start_repeat
-
-        # # Iterating over all elements in the current measure
-        # for elem in measure_elem:
-        #     # Attributes elements
-        #     if elem.tag == "attributes":
-        #         # Division elements
-        #         division_elem = elem.find("divisions")
-        #         if (
-        #             division_elem is not None
-        #             and division_elem.text is not None
-        #         ):
-        #             division = int(division_elem.text)
-
-        #         # Transpose elements
-        #         transpose_elem = elem.find("transpose")
-        #         if transpose_elem is not None:
-        #             transpose_semitone = int(
-        #                 _get_required_text(transpose_elem, "chromatic")
-        #             )
-        #             octave_change = _get_text(transpose_elem, "octave-change")
-        #             if octave_change is not None:
-        #                 transpose_octave = int(octave_change)
-
-        #         # Time signatures
-        #         time_elem = elem.find("time")
-        #         if time_elem is not None:
-        #             # Numerator
-        #             beats = _get_required_text(time_elem, "beats")
-        #             if "+" in beats:
-        #                 numerator = sum(int(beat) for beat in beats.split("+"))
-        #             else:
-        #                 numerator = int(beats)
-
-        #             # Denominator
-        #             beat_type = _get_required_text(time_elem, "beat-type")
-        #             if "+" in beat_type:
-        #                 raise RuntimeError(
-        #                     "Compound time signatures with separate fractions "
-        #                     "are not supported."
-        #                 )
-        #             denominator = int(beat_type)
-        #             time_signatures.append(
-        #                 TimeSignature(
-        #                     time=time + position,
-        #                     numerator=numerator,
-        #                     denominator=denominator,
-        #                 )
-        #             )
-
-        #         # Key elements
-        #         key_elem = elem.find("key")
-        #         if key_elem is not None:
-        #             parsed_key = parse_key_elem(key_elem)
-        #             if parsed_key is not None:
-        #                 key_signatures.append(
-        #                     KeySignature(
-        #                         time=time + position,
-        #                         root=parsed_key.get("root"),
-        #                         mode=parsed_key.get("mode"),
-        #                         root_str=parsed_key.get("root_str"),
-        #                     )
-        #                 )
-
-        #     # Sound element
-        #     elif elem.tag == "sound":
-        #         # Tempo elements
-        #         tempo = elem.get("tempo")
-        #         if tempo is not None:
-        #             tempos.append(Tempo(time + position, float(tempo)))
-
-        #         # Dynamics elements
-        #         dynamics = elem.get("dynamics")
-        #         if dynamics is not None:
-        #             velocity = round(float(dynamics))
-
-        #     # Direction elements
-        #     elif elem.tag == "direction":
-        #         # TODO: Handle symbolic dynamics and tempo
-
-        #         tempo_set = False
-
-        #         # Sound elements
-        #         sound_elem_ = elem.find("sound")
-        #         if sound_elem_ is not None:
-        #             # Tempo directions
-        #             tempo = sound_elem_.get("tempo")
-        #             if tempo is not None:
-        #                 tempos.append(
-        #                     Tempo(time=time + position, qpm=float(tempo))
-        #                 )
-        #                 tempo_set = True
-
-        #             # Dynamic directions
-        #             dynamics = sound_elem_.get("dynamics")
-        #             if dynamics is not None:
-        #                 velocity = round(float(dynamics))
-
-        #         # Metronome elements
-        #         if not tempo_set:
-        #             metronome_elem = elem.find("direction-type/metronome")
-        #             if metronome_elem is not None:
-        #                 qpm = parse_metronome_elem(metronome_elem)
-        #                 if qpm is not None:
-        #                     tempos.append(Tempo(time=time + position, qpm=qpm))
-
-        #     # Note elements
-        #     elif elem.tag == "note":
-        #         # TODO: Handle voice information
-
-        #         # Rest elements
-        #         rest_elem = elem.find("rest")
-        #         if rest_elem is not None:
-        #             # Move time position forward if it is a rest
-        #             duration = int(_get_required_text(elem, "duration"))
-        #             position += round(duration * resolution / division)
-        #             continue
-
-        #         # Cue notes
-        #         if elem.find("cue") is not None:
-        #             continue
-
-        #         # Unpitched notes
-        #         # TODO: Handle unpitched notes
-        #         unpitched_elem = elem.find("unpitched")
-        #         if unpitched_elem is not None:
-        #             continue
-
-        #         # Chord elements
-        #         if elem.find("chord") is not None:
-        #             # Move time position backward if it is in a chord
-        #             if last_note_position is not None:
-        #                 position = last_note_position
-
-        #         # Compute pitch number
-        #         pitch, pitch_str = parse_pitch_elem(
-        #             _get_required(elem, "pitch")
-        #         )
-        #         pitch += 12 * transpose_octave + transpose_semitone
-
-        #         # Grace notes
-        #         grace_elem = elem.find("grace")
-        #         if grace_elem is not None:
-        #             note_type = _get_required_text(elem, "type")
-        #             notes.append(
-        #                 Note(
-        #                     time=time + position,
-        #                     pitch=pitch,
-        #                     duration=round(
-        #                         NOTE_TYPE_MAP[note_type] * resolution
-        #                     ),
-        #                     velocity=velocity,
-        #                     pitch_str=pitch_str,
-        #                 )
-        #             )
-        #             continue
-
-        #         # Get duration
-        #         # TODO: Should we look for a duration or type element?
-        #         duration = int(_get_required_text(elem, "duration"))
-
-        #         # Check if it is a tied note
-        #         # TODO: Should we look for a tie or tied element?
-        #         is_outgoing_tie = False
-        #         for tie_elem in elem.findall("tie"):
-        #             if tie_elem.get("type") == "start":
-        #                 is_outgoing_tie = True
-
-        #         # Check if it is an incoming tied note
-        #         if pitch in ties:
-        #             note_idx = ties[pitch]
-        #             notes[note_idx].duration += round(
-        #                 duration * resolution / division
-        #             )
-
-        #             if is_outgoing_tie:
-        #                 ties[pitch] = note_idx
-        #             else:
-        #                 del ties[pitch]
-
-        #         else:
-        #             # Create a new note and append it to the note list
-        #             notes.append(
-        #                 Note(
-        #                     time=time + position,
-        #                     pitch=pitch,
-        #                     duration=round(duration * resolution / division),
-        #                     velocity=velocity,
-        #                     pitch_str=pitch_str,
-        #                 )
-        #             )
-
-        #             if is_outgoing_tie:
-        #                 ties[pitch] = len(notes) - 1
-
-        #         # Lyrics
-        #         lyric_elem = elem.find("lyric")
-        #         if lyric_elem is not None:
-        #             lyric_text = _get_required_text(lyric_elem, "text")
-        #             syllabic_elem = lyric_elem.find("syllabic")
-        #             if syllabic_elem is not None:
-        #                 if syllabic_elem.text == "begin":
-        #                     lyric_text += "-"
-        #                 elif syllabic_elem.text == "middle":
-        #                     lyric_text = "-" + lyric_text + "-"
-        #                 elif syllabic_elem.text == "end":
-        #                     lyric_text = "-" + lyric_text
-        #             lyrics.append(
-        #                 Lyric(time=time + position, lyric=lyric_text)
-        #             )
-
-        #         # Move time position forward if it is not in chord
-        #         last_note_position = position
-        #         position += round(duration * resolution / division)
-
-        #     # Forward elements
-        #     elif elem.tag == "forward":
-        #         duration = int(_get_required_text(elem, "duration"))
-        #         position += round(duration * resolution / division)
-
-        #     # Backup elements
-        #     elif elem.tag == "backup":
-        #         duration = int(_get_required_text(elem, "duration"))
-        #         position -= round(duration * resolution / division)
+        # Repeat elements (backward)
+        end_repeat_element = measure_elem.find("endRepeat")
+        if end_repeat_element is not None:
+            # Get repeat times
+            if end_repeat_element.text is None:
+                repeat_times = 2
+            else:
+                repeat_times = int(end_repeat_element.text)
+            # Check if repeat times has reached
+            if count_repeat < repeat_times:
+                count_repeat += 1
+                count_ending += 1
+                next_measure_idx = last_repeat
+            else:
+                # Reset counters
+                count_repeat = 1
+                count_ending = 1
 
         time += position
-
-        # if is_after_jump and is_fine:
-        #     break
-
-        # if not is_after_jump and (is_dacapo or is_dalsegno):
-        #     measure_idx = 0
-        #     is_after_jump = True
-        # elif is_repeat:
-        #     is_repeat = False
-        #     measure_idx = last_repeat
-        # else:
-        #     measure_idx += 1
 
         measure_idx = next_measure_idx
 
@@ -659,10 +487,10 @@ def parse_staff_elem(
     time_signatures.sort(key=attrgetter("time"))
     lyrics.sort(key=attrgetter("time"))
 
-    if not time_signatures or time_signatures[0].time > 0:
-        time_signatures.insert(
-            0, TimeSignature(time=0, numerator=4, denominator=4)
-        )
+    # if not time_signatures or time_signatures[0].time > 0:
+    #     time_signatures.insert(
+    #         0, TimeSignature(time=0, numerator=4, denominator=4)
+    #     )
 
     return {
         "tempos": tempos,
