@@ -177,6 +177,20 @@ def parse_unpitched_elem(elem: Element) -> Tuple[int, str]:
     return pitch, pitch_str
 
 
+def parse_lyric_elem(elem: Element) -> str:
+    """Return the lyric text parsed from a lyric element."""
+    text = _get_required_text(elem, "text")
+    syllabic_elem = elem.find("syllabic")
+    if syllabic_elem is not None:
+        if syllabic_elem.text == "begin":
+            text = text + "-"
+        elif syllabic_elem.text == "middle":
+            text = "-" + text + "-"
+        elif syllabic_elem.text == "end":
+            text = "-" + text
+    return text
+
+
 def parse_part_elem(
     part_elem: Element, resolution: int, instrument_info: dict
 ) -> dict:
@@ -538,15 +552,7 @@ def parse_part_elem(
                 # Lyrics
                 lyric_elem = elem.find("lyric")
                 if lyric_elem is not None:
-                    lyric_text = _get_required_text(lyric_elem, "text")
-                    syllabic_elem = lyric_elem.find("syllabic")
-                    if syllabic_elem is not None:
-                        if syllabic_elem.text == "begin":
-                            lyric_text += "-"
-                        elif syllabic_elem.text == "middle":
-                            lyric_text = "-" + lyric_text + "-"
-                        elif syllabic_elem.text == "end":
-                            lyric_text = "-" + lyric_text
+                    lyric_text = parse_lyric_elem(lyric_elem)
                     lyrics.append(
                         Lyric(time=time + position, lyric=lyric_text)
                     )
