@@ -432,12 +432,24 @@ def test_lyrics():
 
     assert len(music) == 1
     assert len(music[0]) == 12
+    assert len(music[0].lyrics) == 12
 
     # Answers
-    lyrics = "This This is is the the lyrics lyrics of of Voice1 Voice1".split(
-        " "
-    )
     times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+    lyrics = (
+        "This",
+        "This",
+        "is",
+        "is",
+        "the",
+        "the",
+        "lyrics",
+        "lyrics",
+        "of",
+        "of",
+        "Voice1",
+        "Voice1",
+    )
 
     for i, lyric in enumerate(music[0].lyrics):
         assert lyric.time == music.resolution * times[i]
@@ -449,14 +461,15 @@ def test_lyrics_syllables():
 
     assert len(music) == 1
     assert len(music[0]) == 11
+    assert len(music[0].lyrics) == 7
 
     # Answers
-    lyrics = "Tra- -la- -li Ja! Tra- -ra! Bah!".split(" ")
-    times = [0, 1, 2, 3, 5, 7, 9]
+    times = (0, 1, 2, 3, 5, 7, 9)
+    texts = ("Tra -", "- la -", "- li", "Ja!", "Tra -", "- ra!", "Bah!")
 
-    for i, lyric in enumerate(music[0].lyrics):
-        assert lyric.time == music.resolution * times[i]
-        assert lyric.lyric == lyrics[i]
+    for lyric, time, text in zip(music[0].lyrics, times, texts):
+        assert lyric.time == music.resolution * time
+        assert lyric.lyric == text
 
 
 def test_lyrics_chords():
@@ -464,14 +477,15 @@ def test_lyrics_chords():
 
     assert len(music) == 1
     assert len(music[0]) == 8
+    assert len(music[0].lyrics) == 4
 
     # Answers
-    lyrics = "Ly- -rics on chords".split(" ")
-    times = [0, 1, 2, 3]
+    times = (0, 1, 2, 3)
+    texts = ("Ly -", "- rics", "on", "chords")
 
-    for i, lyric in enumerate(music[0].lyrics):
-        assert lyric.time == music.resolution * times[i]
-        assert lyric.lyric == lyrics[i]
+    for lyric, time, text in zip(music[0].lyrics, times, texts):
+        assert lyric.time == music.resolution * time
+        assert lyric.lyric == text
 
 
 def test_piano_staff():

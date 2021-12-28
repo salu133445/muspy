@@ -183,11 +183,11 @@ def parse_lyric_elem(elem: Element) -> str:
     syllabic_elem = elem.find("syllabic")
     if syllabic_elem is not None:
         if syllabic_elem.text == "begin":
-            text = text + "-"
+            text = f"{text} -"
         elif syllabic_elem.text == "middle":
-            text = "-" + text + "-"
+            text = f"- {text} -"
         elif syllabic_elem.text == "end":
-            text = "-" + text
+            text = f"- {text}"
     return text
 
 
