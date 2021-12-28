@@ -442,24 +442,24 @@ def test_voices():
         assert note.pitch == pitches[i]
 
 
-# def test_lyrics():
-#     music = muspy.read(
-#         TEST_MUSESCORE_LILYPOND_DIR
-#         / "42a-MultiVoice-TwoVoicesOnStaff-Lyrics.mscx"
-#     )
+def test_lyrics():
+    music = muspy.read(
+        TEST_MUSESCORE_LILYPOND_DIR
+        / "42a-MultiVoice-TwoVoicesOnStaff-Lyrics.mscx"
+    )
 
-#     assert len(music) == 1
-#     assert len(music[0]) == 12
+    assert len(music) == 1
+    assert len(music[0]) == 12
 
-#     # Answers
-#     lyrics = "This This is is the the lyrics lyrics of of Voice1 Voice1".split(
-#         " "
-#     )
-#     times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+    # Answers
+    lyrics = "This This is is the the lyrics lyrics of of Voice1 Voice1".split(
+        " "
+    )
+    times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
 
-#     for i, lyric in enumerate(music[0].lyrics):
-#         assert lyric.time == music.resolution * times[i]
-#         assert lyric.lyric == lyrics[i]
+    for i, lyric in enumerate(music[0].lyrics):
+        assert lyric.time == music.resolution * times[i]
+        assert lyric.lyric == lyrics[i]
 
 
 def test_piano_staff():

@@ -535,6 +535,16 @@ def parse_staff_elem(
                         if is_outgoing_tie:
                             ties[pitch] = len(notes) - 1
 
+                    # Lyrics
+                    lyric_elem = elem.find("lyrics")
+                    if lyric_elem is not None:
+                        lyric_text = _get_required_text(
+                            lyric_elem, "text", remove_newlines=True
+                        )
+                        lyrics.append(
+                            Lyric(time=time + position, lyric=lyric_text)
+                        )
+
                     if not is_grace:
                         position += duration
 
