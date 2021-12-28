@@ -430,6 +430,36 @@ def test_lyrics():
         assert lyric.lyric == lyrics[i]
 
 
+def test_lyrics_syllables():
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "61a-Lyrics.xml")
+
+    assert len(music) == 1
+    assert len(music[0]) == 11
+
+    # Answers
+    lyrics = "Tra- -la- -li Ja! Tra- -ra! Bah!".split(" ")
+    times = [0, 1, 2, 3, 5, 7, 9]
+
+    for i, lyric in enumerate(music[0].lyrics):
+        assert lyric.time == music.resolution * times[i]
+        assert lyric.lyric == lyrics[i]
+
+
+def test_lyrics_chords():
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "61e-Lyrics-Chords.xml")
+
+    assert len(music) == 1
+    assert len(music[0]) == 8
+
+    # Answers
+    lyrics = "Ly- -rics on chords".split(" ")
+    times = [0, 1, 2, 3]
+
+    for i, lyric in enumerate(music[0].lyrics):
+        assert lyric.time == music.resolution * times[i]
+        assert lyric.lyric == lyrics[i]
+
+
 def test_piano_staff():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "43a-PianoStaff.xml")
 
