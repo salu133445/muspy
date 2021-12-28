@@ -22,7 +22,6 @@ from ..music import Music
 from ..utils import (
     CIRCLE_OF_FIFTHS,
     MODE_CENTERS,
-    NOTE_MAP,
     NOTE_TYPE_MAP,
     TONAL_PITCH_CLASSES,
 )
@@ -83,7 +82,11 @@ def _get_text(
 
 
 def _get_required(element: Element, path: str) -> Element:
-    """Return a required element; raise MuseScoreError if not found."""
+    """Return a required child element of an element.
+
+    Raise a MuseScoreError if not found.
+
+    """
     elem = element.find(path)
     if elem is None:
         raise MuseScoreError(
@@ -93,7 +96,11 @@ def _get_required(element: Element, path: str) -> Element:
 
 
 def _get_required_attr(element: Element, attr: str) -> str:
-    """Return a required attribute; raise MuseScoreError if not found."""
+    """Return a required attribute of an element.
+
+    Raise a MuseScoreError if not found.
+
+    """
     attribute = element.get(attr)
     if attribute is None:
         raise MuseScoreError(
@@ -105,7 +112,11 @@ def _get_required_attr(element: Element, attr: str) -> str:
 def _get_required_text(
     element: Element, path: str, remove_newlines: bool = False
 ) -> str:
-    """Return a required text; raise MuseScoreError if not found."""
+    """Return a required text from a child element of an element.
+
+    Raise a MuseScoreError otherwise.
+
+    """
     elem = _get_required(element, path)
     if elem.text is None:
         raise MuseScoreError(
@@ -131,7 +142,7 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
 
 
 def parse_time_elem(elem: Element) -> Tuple[int, int]:
-    """Return the numerator and denominator parsed from a time element."""
+    """Return the numerator and denominator of a time element."""
     # Numerator
     beats = _get_required_text(elem, "sigN")
     if "+" in beats:
@@ -164,8 +175,175 @@ def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
     return root, mode, fifths, root_str
 
 
+def parse_marker_measure_map(elem: Element) -> Dict[str, int]:
+    """Return a marker-measure map parsed from a staff element."""
+    # Initialize with a start marker
+    markers: Dict[str, int] = {"start": 0}
+
+    # Find all markers in all measures
+    for i, measure_elem in enumerate(elem.findall("Measure")):
+        for marker_elem in measure_elem.findall("Marker"):
+            label = _get_text(marker_elem, "label")
+            if label is not None:
+                markers[label] = i
+
+    return markers
+
+
+def parse_meta_staff_elem(elem: Element) -> List[int]:
+    """Return a list of measure indices parsed from a staff element.
+
+    This function returns the ordering of measures, considering all
+    repeats and jumps.
+
+    """
+    # Measure indices
+    measure_indices = []
+
+    # Repeats
+    last_repeat = 0
+    count_repeat = 1
+    count_ending = 1
+
+    # Flags
+    is_after_jump = False
+    is_after_play_until = False
+
+    # Jump-related measure indices
+    jump_to_idx = None
+    play_until_idx = None
+    continue_at_idx = None
+
+    # Get the marker measure map
+    marker_measure_map = parse_marker_measure_map(elem)
+
+    # Iterate over all measures
+    measure_idx = 0
+    measure_elems = list(elem.findall("Measure"))
+    while measure_idx < len(measure_elems):
+        # Get the measure element
+        measure_elem = measure_elems[measure_idx]
+
+        # Handle jumps
+        #
+        #   [Example]
+        #                                jump
+        #                                v
+        #       ║----|----|----|----|----|----|----║
+        #            ^         ^              ^
+        #            jump-to   play-until     continue at
+        #
+        #   [Expansion]
+        #
+        #       ║----|----|----|----|----|               (a)
+        #            ┌──────<─────<──────┘               (b)
+        #            |----|----|                         (c)
+        #                      └────>────>────┐          (d)
+        #                                     |----║     (e)
+
+        # (Stages b and c)
+        if is_after_jump and not is_after_play_until:
+            # (Stage b) Look for the jump-to measure
+            if jump_to_idx is not None and measure_idx < jump_to_idx:
+                # Skip the current measure if it is not the correct one
+                measure_idx += 1
+                continue
+            # (Stage c) Look for the play-until measure
+            if play_until_idx is not None and measure_idx > play_until_idx:
+                # If we reach the play-until measure but no continue-at
+                # measure is given, we reach the end of the score, e.g.,
+                # a "D.C. al Fine" or "D.S. al Fine".
+                if continue_at_idx is None:
+                    break
+                # Otherwise, we skip the current measure and look for
+                # the continue-at measure.
+                is_after_play_until = True
+                measure_idx = 0
+                continue
+        # (Stages d and e)
+        if is_after_play_until:
+            # Should never enter this if statement but have it here in
+            # case the file is corrupted.
+            if continue_at_idx is None:
+                break
+            # (Stage d) Look for the continue-at measure
+            if measure_idx < continue_at_idx:
+                measure_idx += 1
+                continue
+            # (Stage e) Reset all the flags to allow another jump
+            is_after_jump = False
+            is_after_play_until = False
+            jump_to_idx = None
+            play_until_idx = None
+            continue_at_idx = None
+
+        # Set the default next measure
+        next_measure_idx = measure_idx + 1
+
+        # Jump elements
+        if not is_after_jump:
+            jump_elem = measure_elem.find("Jump")
+            if jump_elem is not None:
+                jump_to_idx = marker_measure_map.get(
+                    _get_text(jump_elem, "jumpTo")
+                )
+                play_until_idx = marker_measure_map.get(
+                    _get_text(jump_elem, "playUntil")
+                )
+                continue_at_idx = marker_measure_map.get(
+                    _get_text(jump_elem, "continueAt")
+                )
+                is_after_jump = True
+                # Get back to the first measure to look for the
+                # jump-to measure
+                next_measure_idx = 0
+
+        # Repeat elements (forward)
+        if measure_elem.find("startRepeat"):
+            last_repeat = measure_idx
+
+        # Volta elements
+        is_wrong_ending = False
+        for volta_elem in measure_elem.findall("voice/Spanner/Volta"):
+            ending_num_text = _get_required_text(volta_elem, "endings")
+            ending_num = [int(num) for num in ending_num_text.split(",")]
+            # Skip this measure if it is not the correct ending
+            if count_ending not in ending_num:
+                is_wrong_ending = True
+        # Skip this measure if it is not the correct ending
+        if is_wrong_ending:
+            measure_idx += 1
+            continue
+
+        # Repeat elements (backward)
+        end_repeat_element = measure_elem.find("endRepeat")
+        if end_repeat_element is not None:
+            # Get repeat times
+            if end_repeat_element.text is None:
+                repeat_times = 2
+            else:
+                repeat_times = int(end_repeat_element.text)
+            # Check if repeat times has reached
+            if count_repeat < repeat_times:
+                count_repeat += 1
+                count_ending += 1
+                next_measure_idx = last_repeat
+            else:
+                # Reset repeat counters
+                count_repeat = 1
+                count_ending = 1
+
+        # Append the current measure index to the list to be return
+        measure_indices.append(measure_idx)
+
+        # Proceed to the next measure
+        measure_idx = next_measure_idx
+
+    return measure_indices
+
+
 def parse_staff_elem(
-    staff_elem: Element, resolution: int, instrument_info: dict
+    staff_elem: Element, resolution: int, measure_indices: List[int]
 ) -> dict:
     """Return a dictionary with data parsed from a staff element."""
     # Initialize lists and placeholders
@@ -180,101 +358,19 @@ def parse_staff_elem(
     time = 0
     velocity = 64
     measure_len = round(resolution * 4)
-    # Repeats
-    last_repeat = 0
-    count_repeat = 1
-    count_ending = 1
-    # Jumps
-    is_after_jump = False
-    is_after_play_until = False
-    jump_to_label = None
-    play_until_label = None
-    continue_at_label = None
-    jump_to_measure_idx = None
-    play_until_measure_idx = None
-    continue_at_measure_idx = None
     # Tuples
     is_tuple = False
 
-    # Find all markers
-    marker_measure_map: Dict[Optional[str], Optional[int]] = {
-        None: None,
-        "start": 0,
-    }
-    for i, measure_elem in enumerate(staff_elem.findall("Measure")):
-        for marker_elem in measure_elem.findall("Marker"):
-            label = _get_text(marker_elem, "label")
-            if label is not None:
-                marker_measure_map[label] = i
-
     # Iterate over all elements
-    measure_idx = 0
     measure_elems = list(staff_elem.findall("Measure"))
-    while measure_idx < len(measure_elems):
+    for measure_idx in measure_indices:
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
-
-        # Handle jumps
-        if is_after_jump and not is_after_play_until:
-            if (
-                jump_to_measure_idx is not None
-                and measure_idx < jump_to_measure_idx
-            ):
-                measure_idx += 1
-                continue
-            if (
-                play_until_measure_idx is not None
-                and measure_idx > play_until_measure_idx
-            ):
-                if continue_at_measure_idx is None:
-                    break
-                is_after_play_until = True
-                measure_idx = 0
-                continue
-        if (
-            is_after_play_until
-            and continue_at_measure_idx is not None
-            and measure_idx < continue_at_measure_idx
-        ):
-            measure_idx += 1
-            continue
-
-        # Set the default next measure
-        next_measure_idx = measure_idx + 1
 
         # Get measure length
         measure_len_text = measure_elem.get("len")
         if measure_len_text is not None:
             measure_len = round(resolution * 4 * Fraction(measure_len))
-
-        # Jump elements
-        if not is_after_jump:
-            jump_elem = measure_elem.find("Jump")
-            if jump_elem is not None:
-                jump_to_label = _get_text(jump_elem, "jumpTo")
-                jump_to_measure_idx = marker_measure_map[jump_to_label]
-                play_until_label = _get_text(jump_elem, "playUntil")
-                play_until_measure_idx = marker_measure_map[play_until_label]
-                continue_at_label = _get_text(jump_elem, "continueAt")
-                continue_at_measure_idx = marker_measure_map[continue_at_label]
-                is_after_jump = True
-                next_measure_idx = 0
-
-        # Repeat elements (forward)
-        if measure_elem.find("startRepeat"):
-            last_repeat = measure_idx
-
-        # Volta elements
-        is_wrong_ending = False
-        for volta_elem in measure_elem.findall("voice/Spanner/Volta"):
-            ending_num_text = _get_required_text(volta_elem, "endings")
-            ending_num = [int(num) for num in ending_num_text.split(",")]
-            # Skip the current measure if not the correct ending
-            if count_ending not in ending_num:
-                is_wrong_ending = True
-        if is_wrong_ending:
-            measure_idx += 1
-            continue
 
         # Voice elements
         for voice_elem in measure_elem.findall("voice"):
@@ -298,7 +394,6 @@ def parse_staff_elem(
 
                 # Time signatures
                 if elem.tag == "TimeSig":
-                    print("Found!", elem)
                     numerator, denominator = parse_time_elem(elem)
                     time_signatures.append(
                         TimeSignature(
@@ -456,27 +551,7 @@ def parse_staff_elem(
                         position += int(new_duration - duration)
                     is_tuple = False
 
-        # Repeat elements (backward)
-        end_repeat_element = measure_elem.find("endRepeat")
-        if end_repeat_element is not None:
-            # Get repeat times
-            if end_repeat_element.text is None:
-                repeat_times = 2
-            else:
-                repeat_times = int(end_repeat_element.text)
-            # Check if repeat times has reached
-            if count_repeat < repeat_times:
-                count_repeat += 1
-                count_ending += 1
-                next_measure_idx = last_repeat
-            else:
-                # Reset counters
-                count_repeat = 1
-                count_ending = 1
-
         time += position
-
-        measure_idx = next_measure_idx
 
     # Sort notes
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
@@ -486,11 +561,6 @@ def parse_staff_elem(
     key_signatures.sort(key=attrgetter("time"))
     time_signatures.sort(key=attrgetter("time"))
     lyrics.sort(key=attrgetter("time"))
-
-    # if not time_signatures or time_signatures[0].time > 0:
-    #     time_signatures.insert(
-    #         0, TimeSignature(time=0, numerator=4, denominator=4)
-    #     )
 
     return {
         "tempos": tempos,
@@ -619,10 +689,6 @@ def read_musescore(
     :class:`muspy.Music`
         Converted Music object.
 
-    Notes
-    -----
-    Grace notes and unpitched notes are not supported.
-
     """
     # Get element tree root
     root = _get_root(path, compressed)
@@ -657,50 +723,57 @@ def read_musescore(
     time_signatures: List[TimeSignature] = []
     tracks: List[Track] = []
 
-    # Raise an error if part-list information is missing for a
-    # multi-part piece
-    if not part_info:
-        if len(score_elem.findall("Staff")) > 1:
-            raise MuseScoreError(
-                "Part information is required for a multi-part piece."
-            )
-        staff_elem = _get_required(root, "Staff")
-        instrument_info = {"program": 0, "is_drum": False}
-        staff = parse_staff_elem(staff_elem, resolution, instrument_info)
-    else:
-        # Iterate over all staffs and measures
-        for staff_elem in score_elem.findall("Staff"):
-            staff_id = staff_elem.get("id")  # type: ignore
-            if staff_id is None:
-                if len(score_elem.findall("Staff")) > 1:
-                    continue
-                staff_id = next(iter(staff_part_map))
-            if staff_id not in staff_part_map:
-                continue
+    # Get the meta staff, assuming the first staff
+    meta_staff_elem = score_elem.find("Staff")
+    if meta_staff_elem is not None:
+        # Parse measure ordering from the meta staff, expanding all
+        # repeats and jumps
+        measure_indices = parse_meta_staff_elem(meta_staff_elem)
 
-            # Parse staff
-            staff = parse_staff_elem(
-                staff_elem, resolution, part_info[staff_part_map[staff_id]]
-            )
-
-            # Extend lists
-            tempos.extend(staff["tempos"])
-            key_signatures.extend(staff["key_signatures"])
-            time_signatures.extend(staff["time_signatures"])
-            tracks.append(
-                Track(
-                    program=part_info[staff_part_map[staff_id]]["program"],
-                    is_drum=part_info[staff_part_map[staff_id]]["is_drum"],
-                    name=part_info[staff_part_map[staff_id]]["name"],
-                    notes=staff["notes"],
-                    lyrics=staff["lyrics"],
+        # Raise an error if part-list information is missing for a
+        # multi-part piece
+        if not part_info:
+            if len(score_elem.findall("Staff")) > 1:
+                raise MuseScoreError(
+                    "Part information is required for a multi-part piece."
                 )
-            )
+            staff_elem = _get_required(root, "Staff")
+            staff = parse_staff_elem(staff_elem, resolution, measure_indices)
+        else:
+            # Iterate over all staffs and measures
+            for staff_elem in score_elem.findall("Staff"):
+                print("Yo!")
+                staff_id = staff_elem.get("id")  # type: ignore
+                if staff_id is None:
+                    if len(score_elem.findall("Staff")) > 1:
+                        continue
+                    staff_id = next(iter(staff_part_map))
+                if staff_id not in staff_part_map:
+                    continue
 
-    # Sort tempos, key signatures and time signatures
-    tempos.sort(key=attrgetter("time"))
-    key_signatures.sort(key=attrgetter("time"))
-    time_signatures.sort(key=attrgetter("time"))
+                # Parse staff
+                staff = parse_staff_elem(
+                    staff_elem, resolution, measure_indices
+                )
+
+                # Extend lists
+                tempos.extend(staff["tempos"])
+                key_signatures.extend(staff["key_signatures"])
+                time_signatures.extend(staff["time_signatures"])
+                tracks.append(
+                    Track(
+                        program=part_info[staff_part_map[staff_id]]["program"],
+                        is_drum=part_info[staff_part_map[staff_id]]["is_drum"],
+                        name=part_info[staff_part_map[staff_id]]["name"],
+                        notes=staff["notes"],
+                        lyrics=staff["lyrics"],
+                    )
+                )
+
+        # Sort tempos, key signatures and time signatures
+        tempos.sort(key=attrgetter("time"))
+        key_signatures.sort(key=attrgetter("time"))
+        time_signatures.sort(key=attrgetter("time"))
 
     return Music(
         metadata=metadata,
