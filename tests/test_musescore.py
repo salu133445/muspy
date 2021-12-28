@@ -462,18 +462,18 @@ def test_voices():
 #         assert lyric.lyric == lyrics[i]
 
 
-# def test_piano_staff():
-#     music = muspy.read(TEST_MUSESCORE_LILYPOND_DIR / "43a-PianoStaff.mscx")
+def test_piano_staff():
+    music = muspy.read(TEST_MUSESCORE_LILYPOND_DIR / "43a-PianoStaff.mscx")
 
-#     assert len(music) == 1
-#     assert len(music[0]) == 2
+    assert len(music) == 1
+    assert len(music[0]) == 2
 
-#     assert music[0][0].start == 0
-#     assert music[0][0].duration == music.resolution * 4
-#     assert music[0][0].pitch == 47
-#     assert music[0][1].start == 0
-#     assert music[0][1].duration == music.resolution * 4
-#     assert music[0][1].pitch == 65
+    assert music[0][0].time == 0
+    assert music[0][0].duration == music.resolution * 4
+    assert music[0][0].pitch == 47
+    assert music[0][1].time == 0
+    assert music[0][1].duration == music.resolution * 4
+    assert music[0][1].pitch == 65
 
 
 def test_repeat():
@@ -574,79 +574,39 @@ def test_dsalcoda():
     assert len(music[0]) == 5
 
 
-# def test_realworld():
-#     music = muspy.read(TEST_MUSESCORE_DIR / "fur-elise.mscx")
+def test_realworld():
+    music = muspy.read(TEST_MUSESCORE_DIR / "fur-elise.mscx")
 
-#     assert music.metadata.creators == ["Ludwig van Beethoven(1770–1827)"]
-#     assert music.metadata.source_filename == "fur-elise.mscx"
-#     assert music.metadata.source_format == "musescore"
+    assert music.metadata.creators == ["Ludwig van Beethoven(1770–1827)"]
+    assert music.metadata.source_filename == "fur-elise.mscx"
+    assert music.metadata.source_format == "musescore"
 
-#     assert len(music) == 2
+    assert len(music) == 1
 
-#     assert len(music.tempos) == 5
-#     assert music.tempos[0].qpm == 72
+    assert len(music.tempos) == 5
+    assert music.tempos[0].qpm == 72
 
-#     assert len(music.key_signatures) == 0
+    assert len(music.key_signatures) == 0
 
-#     assert len(music.time_signatures) == 4
-#     assert music.time_signatures[0].numerator == 3
-#     assert music.time_signatures[0].denominator == 8
-
-
-# def test_realworld_compressed():
-#     music = muspy.read(TEST_MUSESCORE_DIR / "fur-elise.mscz")
-
-#     assert music.metadata.creators == ["Ludwig van Beethoven(1770–1827)"]
-#     assert music.metadata.source_filename == "fur-elise.mscz"
-#     assert music.metadata.source_format == "musescore"
-
-#     assert len(music) == 2
-
-#     assert len(music.tempos) == 5
-#     assert music.tempos[0].qpm == 72
-
-#     assert len(music.key_signatures) == 0
-
-#     assert len(music.time_signatures) == 3
-#     assert music.time_signatures[0].numerator == 3
-#     assert music.time_signatures[0].denominator == 8
+    assert len(music.time_signatures) == 4
+    assert music.time_signatures[0].numerator == 3
+    assert music.time_signatures[0].denominator == 8
 
 
-# def test_write():
-#     music = muspy.load(TEST_JSON_PATH)
+def test_realworld_compressed():
+    music = muspy.read(TEST_MUSESCORE_DIR / "fur-elise.mscz")
 
-#     temp_dir = Path(tempfile.mkdtemp())
-#     music.write(temp_dir / "test.mscx")
+    assert music.metadata.creators == ["Ludwig van Beethoven(1770–1827)"]
+    assert music.metadata.source_filename == "fur-elise.mscz"
+    assert music.metadata.source_format == "musescore"
 
-#     loaded = muspy.read(temp_dir / "test.mscx")
+    assert len(music) == 1
 
-#     assert loaded.metadata.title == "Für Elise"
-#     assert loaded.metadata.source_filename == "test.mscx"
-#     assert loaded.metadata.source_format == "musicxml"
-#     assert loaded.resolution == 10080
+    assert len(music.tempos) == 5
+    assert music.tempos[0].qpm == 72
 
-#     check_tempos(loaded.tempos)
-#     check_key_signatures(loaded.key_signatures)
-#     check_time_signatures(loaded.time_signatures)
-#     check_tracks(loaded.tracks, 10080)
-#     # TODO: Check lyrics and annotations
+    assert len(music.key_signatures) == 0
 
-
-# def test_write_compressed():
-#     music = muspy.load(TEST_JSON_PATH)
-
-#     temp_dir = Path(tempfile.mkdtemp())
-#     music.write(temp_dir / "test.mxl")
-
-#     loaded = muspy.read(temp_dir / "test.mxl")
-
-#     assert loaded.metadata.title == "Für Elise"
-#     assert loaded.metadata.source_filename == "test.mxl"
-#     assert loaded.metadata.source_format == "musicxml"
-#     assert loaded.resolution == 10080
-
-#     check_tempos(loaded.tempos)
-#     check_key_signatures(loaded.key_signatures)
-#     check_time_signatures(loaded.time_signatures)
-#     check_tracks(loaded.tracks, 10080)
-#     # TODO: Check lyrics and annotations
+    assert len(music.time_signatures) == 4
+    assert music.time_signatures[0].numerator == 3
+    assert music.time_signatures[0].denominator == 8

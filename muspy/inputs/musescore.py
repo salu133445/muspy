@@ -730,41 +730,40 @@ def read_musescore(
         # repeats and jumps
         measure_indices = parse_meta_staff_elem(meta_staff_elem)
 
-        # Raise an error if part-list information is missing for a
-        # multi-part piece
+        # Raise an error if part-list information is missing
         if not part_info:
-            if len(score_elem.findall("Staff")) > 1:
-                raise MuseScoreError(
-                    "Part information is required for a multi-part piece."
-                )
-            staff_elem = _get_required(root, "Staff")
-            staff = parse_staff_elem(staff_elem, resolution, measure_indices)
-        else:
-            # Iterate over all staffs and measures
-            for staff_elem in score_elem.findall("Staff"):
-                print("Yo!")
-                staff_id = staff_elem.get("id")  # type: ignore
-                if staff_id is None:
-                    if len(score_elem.findall("Staff")) > 1:
-                        continue
-                    staff_id = next(iter(staff_part_map))
-                if staff_id not in staff_part_map:
+            raise MuseScoreError("Part information is missing.")
+
+        # Iterate over all staffs
+        part_track_map: Dict[int, int] = {}
+        for staff_elem in score_elem.findall("Staff"):
+            staff_id = staff_elem.get("id")  # type: ignore
+            if staff_id is None:
+                if len(score_elem.findall("Staff")) > 1:
                     continue
+                staff_id = next(iter(staff_part_map))
+            if staff_id not in staff_part_map:
+                continue
 
-                # Parse staff
-                staff = parse_staff_elem(
-                    staff_elem, resolution, measure_indices
-                )
+            # Parse the staff
+            staff = parse_staff_elem(staff_elem, resolution, measure_indices)
 
-                # Extend lists
-                tempos.extend(staff["tempos"])
-                key_signatures.extend(staff["key_signatures"])
-                time_signatures.extend(staff["time_signatures"])
+            # Extend lists
+            tempos.extend(staff["tempos"])
+            key_signatures.extend(staff["key_signatures"])
+            time_signatures.extend(staff["time_signatures"])
+            part_id = staff_part_map[staff_id]
+            if part_id in part_track_map:
+                track_id = part_track_map[part_id]
+                tracks[track_id].notes.extend(staff["notes"])
+                tracks[track_id].lyrics.extend(staff["lyrics"])
+            else:
+                part_track_map[part_id] = len(tracks)
                 tracks.append(
                     Track(
-                        program=part_info[staff_part_map[staff_id]]["program"],
-                        is_drum=part_info[staff_part_map[staff_id]]["is_drum"],
-                        name=part_info[staff_part_map[staff_id]]["name"],
+                        program=part_info[part_id]["program"],
+                        is_drum=part_info[part_id]["is_drum"],
+                        name=part_info[part_id]["name"],
                         notes=staff["notes"],
                         lyrics=staff["lyrics"],
                     )
@@ -774,6 +773,13 @@ def read_musescore(
         tempos.sort(key=attrgetter("time"))
         key_signatures.sort(key=attrgetter("time"))
         time_signatures.sort(key=attrgetter("time"))
+
+        # Sort notes and lyrics
+        for track in tracks:
+            track.notes.sort(
+                key=attrgetter("time", "pitch", "duration", "velocity")
+            )
+            track.lyrics.sort(key=attrgetter("time"))
 
     return Music(
         metadata=metadata,
