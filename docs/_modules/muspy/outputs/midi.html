@@ -217,7 +217,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">MetaMessage</span><span class="p">(</span>
-        <span class="s2">&quot;set_tempo&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">tempo</span><span class="o">=</span><span class="n">bpm2tempo</span><span class="p">(</span><span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">),</span>
+        <span class="s2">&quot;set_tempo&quot;</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">tempo</span><span class="o">=</span><span class="n">bpm2tempo</span><span class="p">(</span><span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span>
     <span class="p">)</span>
 
 
@@ -384,7 +384,9 @@
 
 
 <span class="k">def</span> <span class="nf">to_mido_track</span><span class="p">(</span>
-    <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">track</span><span class="p">:</span> <span class="n">Track</span><span class="p">,</span>
+    <span class="n">channel</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MidiTrack</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Return a Track object as a mido MidiTrack object.</span>
 
@@ -498,7 +500,7 @@
 
 
 <span class="k">def</span> <span class="nf">write_midi_mido</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">use_note_off_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI file using mido as backend.</span>
 
@@ -530,7 +532,7 @@
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">key_name</span> <span class="o">=</span> <span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span>
     <span class="k">return</span> <span class="n">PmKeySignature</span><span class="p">(</span>
-        <span class="n">key_number</span><span class="o">=</span><span class="n">key_name_to_key_number</span><span class="p">(</span><span class="n">key_name</span><span class="p">),</span> <span class="n">time</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">,</span>
+        <span class="n">key_number</span><span class="o">=</span><span class="n">key_name_to_key_number</span><span class="p">(</span><span class="n">key_name</span><span class="p">),</span> <span class="n">time</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">time</span>
     <span class="p">)</span>
 
 
@@ -612,8 +614,6 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">last_tempo</span> <span class="o">=</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">tempo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">)</span>
-        <span class="n">tempi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
 
@@ -621,16 +621,19 @@
             <span class="k">return</span> <span class="n">time</span> <span class="o">*</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="k">else</span><span class="p">:</span>
+        <span class="n">tempo_times_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">)</span>
+        <span class="n">tempi_np</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span>
+
         <span class="c1"># Compute the tempo time in absolute timing of each tempo change</span>
         <span class="n">tempo_realtimes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">)</span> <span class="o">*</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tempo_times_np</span><span class="p">)</span> <span class="o">*</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi_np</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">tempo_realtimes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">map_time</span><span class="p">(</span><span class="n">time</span><span class="p">):</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="n">residual</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">tempo_times</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
-            <span class="n">factor</span> <span class="o">=</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">tempo_times_np</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">residual</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">tempo_times_np</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">factor</span> <span class="o">=</span> <span class="mf">60.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi_np</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">residual</span> <span class="o">*</span> <span class="n">factor</span>
 
     <span class="c1"># Key signatures</span>

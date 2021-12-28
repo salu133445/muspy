@@ -208,6 +208,7 @@ commonly-used representations in music generation.</p>
 <li><p>read_abc</p></li>
 <li><p>read_abc_string</p></li>
 <li><p>read_midi</p></li>
+<li><p>read_musescore</p></li>
 <li><p>read_musicxml</p></li>
 </ul>
 </div>
@@ -221,6 +222,12 @@ commonly-used representations in music generation.</p>
 <dt id="muspy.inputs.MIDIError">
 <em class="property">exception </em><code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">MIDIError</code><a class="reference internal" href="../_modules/muspy/inputs/midi.html#MIDIError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.MIDIError" title="Permalink to this definition">¶</a></dt>
 <dd><p>An error class for MIDI related exceptions.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="muspy.inputs.MuseScoreError">
+<em class="property">exception </em><code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">MuseScoreError</code><a class="reference internal" href="../_modules/muspy/inputs/musescore.html#MuseScoreError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.MuseScoreError" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class for MuseScore related errors.</p>
 </dd></dl>
 
 <dl class="py exception">
@@ -768,6 +775,34 @@ is ‘mido’.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="muspy.inputs.read_musescore">
+<code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">read_musescore</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/musescore.html#read_musescore"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.read_musescore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a MuseScore file into a Music object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em>) – Path to the MuseScore file to read.</p></li>
+<li><p><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>optional</em>) – Time steps per quarter note. Defaults to the least common
+multiple of all divisions.</p></li>
+<li><p><strong>compressed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Whether it is a compressed MuseScore file. Defaults to infer
+from the filename.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Converted Music object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This function is based on MuseScore 3. Files created by an earlier
+version of MuseScore might not be read correctly.</p>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt id="muspy.inputs.read_musicxml">
 <code class="sig-prename descclassname">muspy.inputs.</code><code class="sig-name descname">read_musicxml</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">resolution</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">compressed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/inputs/musicxml.html#read_musicxml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#muspy.inputs.read_musicxml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read a MusicXML file into a Music object.</p>
@@ -788,8 +823,6 @@ from the filename.</p></li>
 <dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a></p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Grace notes and unpitched notes are not supported.</p>
 </dd></dl>
 
 </div>

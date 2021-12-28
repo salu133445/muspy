@@ -711,6 +711,12 @@ def read_musescore(
     :class:`muspy.Music`
         Converted Music object.
 
+    Note
+    ----
+    This function is based on MuseScore 3. Files created by an earlier
+    version of MuseScore might not be read correctly.
+
+
     """
     # Get element tree root
     root = _get_root(path, compressed)

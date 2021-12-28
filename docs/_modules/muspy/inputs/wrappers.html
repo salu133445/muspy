@@ -175,6 +175,7 @@
 <span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">from_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="kn">import</span> <span class="n">load_json</span>
 <span class="kn">from</span> <span class="nn">.midi</span> <span class="kn">import</span> <span class="n">from_mido</span><span class="p">,</span> <span class="n">from_pretty_midi</span><span class="p">,</span> <span class="n">read_midi</span>
+<span class="kn">from</span> <span class="nn">.musescore</span> <span class="kn">import</span> <span class="n">read_musescore</span>
 <span class="kn">from</span> <span class="nn">.music21</span> <span class="kn">import</span> <span class="n">from_music21</span>
 <span class="kn">from</span> <span class="nn">.musicxml</span> <span class="kn">import</span> <span class="n">read_musicxml</span>
 <span class="kn">from</span> <span class="nn">.note</span> <span class="kn">import</span> <span class="n">from_note_representation</span>
@@ -264,6 +265,8 @@
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;midi&quot;</span>
         <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mxl&quot;</span><span class="p">,</span> <span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musicxml&quot;</span>
+        <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.mscx&quot;</span><span class="p">,</span> <span class="s2">&quot;.mscz&quot;</span><span class="p">)):</span>
+            <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;musescore&quot;</span>
         <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.abc&quot;</span><span class="p">):</span>
             <span class="n">kind</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
         <span class="k">else</span><span class="p">:</span>
@@ -275,10 +278,13 @@
         <span class="k">return</span> <span class="n">read_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;musescore&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">read_musescore</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">read_abc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;Expect `kind` to be &#39;midi&#39;, &#39;musicxml&#39; or &#39;abc&#39;, but got : </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="s2">&quot;Expect `kind` to be &#39;midi&#39;, &#39;musicxml&#39;, &#39;musescore&#39; or &#39;abc&#39;, but &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;got : </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">.&quot;</span>
     <span class="p">)</span></div>
 
 

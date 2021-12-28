@@ -293,9 +293,9 @@
         <span class="c1"># Add notes to part</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
             <span class="n">m21_note</span> <span class="o">=</span> <span class="n">M21Note</span><span class="p">(</span><span class="n">_get_pitch_name</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
-            <span class="n">m21_note</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
             <span class="n">m21_note</span><span class="o">.</span><span class="n">quarterLength</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m21_note</span><span class="p">)</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">m21_note</span><span class="p">)</span>
 
         <span class="c1"># Append the part to score</span>
         <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>

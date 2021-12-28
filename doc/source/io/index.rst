@@ -18,6 +18,7 @@ MusPy provides three type of data I/O interfaces.
     json
     yaml
     mido
+    musescore
     music21
     pretty_midi
     pypianoroll

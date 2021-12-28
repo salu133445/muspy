@@ -1,0 +1,1029 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>muspy.inputs.musescore &mdash; MusPy  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html">
+          
+
+          
+            
+            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MusPy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>muspy.inputs.musescore</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for muspy.inputs.musescore</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;MuseScore input interface.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">fractions</span> <span class="kn">import</span> <span class="n">Fraction</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">reduce</span>
+<span class="kn">from</span> <span class="nn">operator</span> <span class="kn">import</span> <span class="n">attrgetter</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">zipfile</span> <span class="kn">import</span> <span class="n">ZipFile</span>
+
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">KeySignature</span><span class="p">,</span>
+    <span class="n">Lyric</span><span class="p">,</span>
+    <span class="n">Metadata</span><span class="p">,</span>
+    <span class="n">Note</span><span class="p">,</span>
+    <span class="n">Tempo</span><span class="p">,</span>
+    <span class="n">TimeSignature</span><span class="p">,</span>
+    <span class="n">Track</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">,</span>
+    <span class="n">MODE_CENTERS</span><span class="p">,</span>
+    <span class="n">NOTE_TYPE_MAP</span><span class="p">,</span>
+    <span class="n">TONAL_PITCH_CLASSES</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="MuseScoreError"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.MuseScoreError">[docs]</a><span class="k">class</span> <span class="nc">MuseScoreError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for MuseScore related errors.&quot;&quot;&quot;</span></div>
+
+
+<span class="k">class</span> <span class="nc">MuseScoreWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A class for MuseScore related warnings.&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">_gcd</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return greatest common divisor using Euclid&#39;s Algorithm.</span>
+
+<span class="sd">    Code copied from https://stackoverflow.com/a/147539.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="n">b</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">%</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">a</span>
+
+
+<span class="k">def</span> <span class="nf">_lcm_two_args</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return least common multiple.</span>
+
+<span class="sd">    Code copied from https://stackoverflow.com/a/147539.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span> <span class="o">//</span> <span class="n">_gcd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_lcm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return lcm of args.</span>
+
+<span class="sd">    Code copied from https://stackoverflow.com/a/147539.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">reduce</span><span class="p">(</span><span class="n">_lcm_two_args</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+
+<span class="k">def</span> <span class="nf">_get_text</span><span class="p">(</span>
+    <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">default</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">remove_newlines</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return the text of the first matching element.&quot;&quot;&quot;</span>
+    <span class="n">elem</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">remove_newlines</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span>
+    <span class="k">return</span> <span class="n">default</span>  <span class="c1"># type: ignore</span>
+
+
+<span class="k">def</span> <span class="nf">_get_required</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a required child element of an element.</span>
+
+<span class="sd">    Raise a MuseScoreError if not found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">elem</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">elem</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Element `</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">` is required for an &#39;</span><span class="si">{</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2">&#39; element.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">elem</span>
+
+
+<span class="k">def</span> <span class="nf">_get_required_attr</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a required attribute of an element.</span>
+
+<span class="sd">    Raise a MuseScoreError if not found.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attribute</span> <span class="o">=</span> <span class="n">element</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">attribute</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Attribute &#39;</span><span class="si">{</span><span class="n">attr</span><span class="si">}</span><span class="s2">&#39; is required for an &#39;</span><span class="si">{</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2">&#39; element.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">attribute</span>
+
+
+<span class="k">def</span> <span class="nf">_get_required_text</span><span class="p">(</span>
+    <span class="n">element</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a required text from a child element of an element.</span>
+
+<span class="sd">    Raise a MuseScoreError otherwise.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">elem</span> <span class="o">=</span> <span class="n">_get_required</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Text content &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; of an element &#39;</span><span class="si">{</span><span class="n">element</span><span class="o">.</span><span class="n">tag</span><span class="si">}</span><span class="s2">&#39; must not be &quot;</span>
+            <span class="s2">&quot;empty.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">remove_newlines</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">elem</span><span class="o">.</span><span class="n">text</span>
+
+
+<span class="k">def</span> <span class="nf">parse_metronome_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a qpm value parsed from a metronome element.&quot;&quot;&quot;</span>
+    <span class="n">beat_unit</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;beat-unit&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">beat_unit</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">per_minute</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;per-minute&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">per_minute</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">beat_unit</span> <span class="ow">in</span> <span class="n">NOTE_TYPE_MAP</span><span class="p">:</span>
+            <span class="n">qpm</span> <span class="o">=</span> <span class="n">NOTE_TYPE_MAP</span><span class="p">[</span><span class="n">beat_unit</span><span class="p">]</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">per_minute</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;beat-unit-dot&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">qpm</span> <span class="o">*=</span> <span class="mf">1.5</span>
+            <span class="k">return</span> <span class="n">qpm</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">parse_time_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return the numerator and denominator of a time element.&quot;&quot;&quot;</span>
+    <span class="c1"># Numerator</span>
+    <span class="n">beats</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;sigN&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;+&quot;</span> <span class="ow">in</span> <span class="n">beats</span><span class="p">:</span>
+        <span class="n">numerator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">beat</span><span class="p">)</span> <span class="k">for</span> <span class="n">beat</span> <span class="ow">in</span> <span class="n">beats</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;+&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">numerator</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">beats</span><span class="p">)</span>
+
+    <span class="c1"># Denominator</span>
+    <span class="n">beat_type</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;sigD&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">&quot;+&quot;</span> <span class="ow">in</span> <span class="n">beat_type</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;Compound time signatures with separate fractions &quot;</span>
+            <span class="s2">&quot;are not supported.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">beat_type</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span>
+
+
+<span class="k">def</span> <span class="nf">parse_key_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return the key parsed from a key element.&quot;&quot;&quot;</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;mode&quot;</span><span class="p">,</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
+    <span class="n">fifths</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;accidental&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">fifths</span><span class="p">,</span> <span class="kc">None</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">+</span> <span class="n">fifths</span>
+    <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">20</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">fifths</span><span class="p">,</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
+    <span class="n">root</span><span class="p">,</span> <span class="n">root_str</span> <span class="o">=</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">[</span><span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">mode</span><span class="p">]</span> <span class="o">+</span> <span class="n">fifths</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">root</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">fifths</span><span class="p">,</span> <span class="n">root_str</span>
+
+
+<span class="k">def</span> <span class="nf">parse_lyric_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return the lyric text parsed from a lyric element.&quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">)</span>
+    <span class="n">syllabic_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;syllabic&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">syllabic_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">syllabic_elem</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;begin&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> -&quot;</span>
+        <span class="k">elif</span> <span class="n">syllabic_elem</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;middle&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2"> -&quot;</span>
+        <span class="k">elif</span> <span class="n">syllabic_elem</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">text</span>
+
+
+<span class="k">def</span> <span class="nf">parse_marker_measure_map</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a marker-measure map parsed from a staff element.&quot;&quot;&quot;</span>
+    <span class="c1"># Initialize with a start marker</span>
+    <span class="n">markers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;start&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+    <span class="c1"># Find all markers in all measures</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">measure_elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Measure&quot;</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">marker_elem</span> <span class="ow">in</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Marker&quot;</span><span class="p">):</span>
+            <span class="n">label</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">marker_elem</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">markers</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="k">return</span> <span class="n">markers</span>
+
+
+<span class="k">def</span> <span class="nf">parse_meta_staff_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of measure indices parsed from a staff element.</span>
+
+<span class="sd">    This function returns the ordering of measures, considering all</span>
+<span class="sd">    repeats and jumps.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Measure indices</span>
+    <span class="n">measure_indices</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Repeats</span>
+    <span class="n">last_repeat</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">count_repeat</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">count_ending</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="c1"># Flags</span>
+    <span class="n">is_after_jump</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">is_after_play_until</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Jump-related measure indices</span>
+    <span class="n">jump_to_idx</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">play_until_idx</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">continue_at_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="c1"># Get the marker measure map</span>
+    <span class="n">marker_measure_map</span> <span class="o">=</span> <span class="n">parse_marker_measure_map</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+
+    <span class="c1"># Iterate over all measures</span>
+    <span class="n">measure_idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">measure_elems</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Measure&quot;</span><span class="p">))</span>
+    <span class="k">while</span> <span class="n">measure_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">measure_elems</span><span class="p">):</span>
+        <span class="c1"># Get the measure element</span>
+        <span class="n">measure_elem</span> <span class="o">=</span> <span class="n">measure_elems</span><span class="p">[</span><span class="n">measure_idx</span><span class="p">]</span>
+
+        <span class="c1"># Handle jumps</span>
+        <span class="c1">#</span>
+        <span class="c1">#   [Example]</span>
+        <span class="c1">#                                jump</span>
+        <span class="c1">#                                v</span>
+        <span class="c1">#       ║----|----|----|----|----|----|----║</span>
+        <span class="c1">#            ^         ^              ^</span>
+        <span class="c1">#            jump-to   play-until     continue at</span>
+        <span class="c1">#</span>
+        <span class="c1">#   [Expansion]</span>
+        <span class="c1">#</span>
+        <span class="c1">#       ║----|----|----|----|----|               (a)</span>
+        <span class="c1">#            ┌──────&lt;─────&lt;──────┘               (b)</span>
+        <span class="c1">#            |----|----|                         (c)</span>
+        <span class="c1">#                      └────&gt;────&gt;────┐          (d)</span>
+        <span class="c1">#                                     |----║     (e)</span>
+
+        <span class="c1"># (Stages b and c)</span>
+        <span class="k">if</span> <span class="n">is_after_jump</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_after_play_until</span><span class="p">:</span>
+            <span class="c1"># (Stage b) Look for the jump-to measure</span>
+            <span class="k">if</span> <span class="n">jump_to_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">measure_idx</span> <span class="o">&lt;</span> <span class="n">jump_to_idx</span><span class="p">:</span>
+                <span class="c1"># Skip the current measure if it is not the correct one</span>
+                <span class="n">measure_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="c1"># (Stage c) Look for the play-until measure</span>
+            <span class="k">if</span> <span class="n">play_until_idx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">measure_idx</span> <span class="o">&gt;</span> <span class="n">play_until_idx</span><span class="p">:</span>
+                <span class="c1"># If we reach the play-until measure but no continue-at</span>
+                <span class="c1"># measure is given, we reach the end of the score, e.g.,</span>
+                <span class="c1"># a &quot;D.C. al Fine&quot; or &quot;D.S. al Fine&quot;.</span>
+                <span class="k">if</span> <span class="n">continue_at_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="c1"># Otherwise, we skip the current measure and look for</span>
+                <span class="c1"># the continue-at measure.</span>
+                <span class="n">is_after_play_until</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">measure_idx</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">continue</span>
+        <span class="c1"># (Stages d and e)</span>
+        <span class="k">if</span> <span class="n">is_after_play_until</span><span class="p">:</span>
+            <span class="c1"># Should never enter this if statement but have it here in</span>
+            <span class="c1"># case the file is corrupted.</span>
+            <span class="k">if</span> <span class="n">continue_at_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="c1"># (Stage d) Look for the continue-at measure</span>
+            <span class="k">if</span> <span class="n">measure_idx</span> <span class="o">&lt;</span> <span class="n">continue_at_idx</span><span class="p">:</span>
+                <span class="n">measure_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="c1"># (Stage e) Reset all the flags to allow another jump</span>
+            <span class="n">is_after_jump</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">is_after_play_until</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">jump_to_idx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">play_until_idx</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">continue_at_idx</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Set the default next measure</span>
+        <span class="n">next_measure_idx</span> <span class="o">=</span> <span class="n">measure_idx</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># Jump elements</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_after_jump</span><span class="p">:</span>
+            <span class="n">jump_elem</span> <span class="o">=</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Jump&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">jump_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">jump_to_idx</span> <span class="o">=</span> <span class="n">marker_measure_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">_get_text</span><span class="p">(</span><span class="n">jump_elem</span><span class="p">,</span> <span class="s2">&quot;jumpTo&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">play_until_idx</span> <span class="o">=</span> <span class="n">marker_measure_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">_get_text</span><span class="p">(</span><span class="n">jump_elem</span><span class="p">,</span> <span class="s2">&quot;playUntil&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">continue_at_idx</span> <span class="o">=</span> <span class="n">marker_measure_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="n">_get_text</span><span class="p">(</span><span class="n">jump_elem</span><span class="p">,</span> <span class="s2">&quot;continueAt&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">is_after_jump</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="c1"># Get back to the first measure to look for the</span>
+                <span class="c1"># jump-to measure</span>
+                <span class="n">next_measure_idx</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Repeat elements (forward)</span>
+        <span class="k">if</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;startRepeat&quot;</span><span class="p">):</span>
+            <span class="n">last_repeat</span> <span class="o">=</span> <span class="n">measure_idx</span>
+
+        <span class="c1"># Volta elements</span>
+        <span class="n">is_wrong_ending</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">volta_elem</span> <span class="ow">in</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;voice/Spanner/Volta&quot;</span><span class="p">):</span>
+            <span class="n">ending_num_text</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">volta_elem</span><span class="p">,</span> <span class="s2">&quot;endings&quot;</span><span class="p">)</span>
+            <span class="n">ending_num</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="k">for</span> <span class="n">num</span> <span class="ow">in</span> <span class="n">ending_num_text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)]</span>
+            <span class="c1"># Skip this measure if it is not the correct ending</span>
+            <span class="k">if</span> <span class="n">count_ending</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ending_num</span><span class="p">:</span>
+                <span class="n">is_wrong_ending</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Skip this measure if it is not the correct ending</span>
+        <span class="k">if</span> <span class="n">is_wrong_ending</span><span class="p">:</span>
+            <span class="n">measure_idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Repeat elements (backward)</span>
+        <span class="n">end_repeat_element</span> <span class="o">=</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;endRepeat&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">end_repeat_element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Get repeat times</span>
+            <span class="k">if</span> <span class="n">end_repeat_element</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">repeat_times</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">repeat_times</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">end_repeat_element</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+            <span class="c1"># Check if repeat times has reached</span>
+            <span class="k">if</span> <span class="n">count_repeat</span> <span class="o">&lt;</span> <span class="n">repeat_times</span><span class="p">:</span>
+                <span class="n">count_repeat</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">count_ending</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">next_measure_idx</span> <span class="o">=</span> <span class="n">last_repeat</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Reset repeat counters</span>
+                <span class="n">count_repeat</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">count_ending</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="c1"># Append the current measure index to the list to be return</span>
+        <span class="n">measure_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">measure_idx</span><span class="p">)</span>
+
+        <span class="c1"># Proceed to the next measure</span>
+        <span class="n">measure_idx</span> <span class="o">=</span> <span class="n">next_measure_idx</span>
+
+    <span class="k">return</span> <span class="n">measure_indices</span>
+
+
+<span class="k">def</span> <span class="nf">parse_staff_elem</span><span class="p">(</span>
+    <span class="n">staff_elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">measure_indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a dictionary with data parsed from a staff element.&quot;&quot;&quot;</span>
+    <span class="c1"># Initialize lists and placeholders</span>
+    <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">time_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Note</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lyrics</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Lyric</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">ties</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># Initialize variables</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">velocity</span> <span class="o">=</span> <span class="mi">64</span>
+    <span class="n">measure_len</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">resolution</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="c1"># Tuples</span>
+    <span class="n">is_tuple</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># Iterate over all elements</span>
+    <span class="n">measure_elems</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">staff_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Measure&quot;</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">measure_idx</span> <span class="ow">in</span> <span class="n">measure_indices</span><span class="p">:</span>
+        <span class="c1"># Get the measure element</span>
+        <span class="n">measure_elem</span> <span class="o">=</span> <span class="n">measure_elems</span><span class="p">[</span><span class="n">measure_idx</span><span class="p">]</span>
+
+        <span class="c1"># Get measure length</span>
+        <span class="n">measure_len_text</span> <span class="o">=</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;len&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">measure_len_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">measure_len</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">resolution</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">measure_len</span><span class="p">))</span>
+
+        <span class="c1"># Voice elements</span>
+        <span class="k">for</span> <span class="n">voice_elem</span> <span class="ow">in</span> <span class="n">measure_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;voice&quot;</span><span class="p">):</span>
+            <span class="c1"># Initialize position</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># Iterate over child elements</span>
+            <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">voice_elem</span><span class="p">:</span>
+                <span class="c1"># Key signatures</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;KeySig&quot;</span><span class="p">:</span>
+                    <span class="n">root</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">fifths</span><span class="p">,</span> <span class="n">root_str</span> <span class="o">=</span> <span class="n">parse_key_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+                    <span class="n">key_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">KeySignature</span><span class="p">(</span>
+                            <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
+                            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+                            <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+                            <span class="n">fifths</span><span class="o">=</span><span class="n">fifths</span><span class="p">,</span>
+                            <span class="n">root_str</span><span class="o">=</span><span class="n">root_str</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Time signatures</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;TimeSig&quot;</span><span class="p">:</span>
+                    <span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span> <span class="o">=</span> <span class="n">parse_time_elem</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+                    <span class="n">time_signatures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">TimeSignature</span><span class="p">(</span>
+                            <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
+                            <span class="n">numerator</span><span class="o">=</span><span class="n">numerator</span><span class="p">,</span>
+                            <span class="n">denominator</span><span class="o">=</span><span class="n">denominator</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Dynamic elements</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;Dynamic&quot;</span><span class="p">:</span>
+                    <span class="n">velocity</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+                        <span class="nb">float</span><span class="p">(</span><span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="n">velocity</span><span class="p">))</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Tempo elements</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;Tempo&quot;</span><span class="p">:</span>
+                    <span class="n">tempos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">Tempo</span><span class="p">(</span>
+                            <span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
+                            <span class="mi">60</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;tempo&quot;</span><span class="p">)),</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># Tuplet elements</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;Tuplet&quot;</span><span class="p">:</span>
+                    <span class="n">is_tuple</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">normal_notes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;normalNotes&quot;</span><span class="p">))</span>
+                    <span class="n">actual_notes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;actualNotes&quot;</span><span class="p">))</span>
+                    <span class="n">tuple_ratio</span> <span class="o">=</span> <span class="n">normal_notes</span> <span class="o">/</span> <span class="n">actual_notes</span>
+
+                <span class="c1"># Rest elements</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;Rest&quot;</span><span class="p">:</span>
+                    <span class="c1"># Move time position forward if it is a rest</span>
+                    <span class="n">duration_type</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;durationType&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">duration_type</span> <span class="o">==</span> <span class="s2">&quot;measure&quot;</span><span class="p">:</span>
+                        <span class="n">duration_text</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">duration_text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">resolution</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">Fraction</span><span class="p">(</span><span class="n">duration_text</span><span class="p">))</span>
+                            <span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">duration</span> <span class="o">=</span> <span class="n">measure_len</span>
+                        <span class="n">position</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    <span class="n">duration</span> <span class="o">=</span> <span class="n">NOTE_TYPE_MAP</span><span class="p">[</span><span class="n">duration_type</span><span class="p">]</span> <span class="o">*</span> <span class="n">resolution</span>
+                    <span class="n">position</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># Chord elements</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;Chord&quot;</span><span class="p">:</span>
+                    <span class="c1"># Compute duration</span>
+                    <span class="n">duration_type</span> <span class="o">=</span> <span class="n">_get_required_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;durationType&quot;</span><span class="p">)</span>
+                    <span class="n">duration</span> <span class="o">=</span> <span class="n">NOTE_TYPE_MAP</span><span class="p">[</span><span class="n">duration_type</span><span class="p">]</span> <span class="o">*</span> <span class="n">resolution</span>
+
+                    <span class="c1"># Handle tuplets</span>
+                    <span class="k">if</span> <span class="n">is_tuple</span><span class="p">:</span>
+                        <span class="n">duration</span> <span class="o">*=</span> <span class="n">tuple_ratio</span>
+
+                    <span class="c1"># Handle dots</span>
+                    <span class="n">dots_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;dots&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">dots_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">dots_elem</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+                        <span class="n">duration</span> <span class="o">*=</span> <span class="mi">2</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">**</span> <span class="nb">int</span><span class="p">(</span><span class="n">dots_elem</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+                    <span class="c1"># Round the duration</span>
+                    <span class="n">duration</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+                    <span class="c1"># Grace notes</span>
+                    <span class="n">is_grace</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">elem</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;grace&quot;</span> <span class="ow">in</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span> <span class="ow">or</span> <span class="n">child</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="p">(</span>
+                            <span class="s2">&quot;appoggiatura&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;acciaccatura&quot;</span><span class="p">,</span>
+                        <span class="p">):</span>
+                            <span class="n">is_grace</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="c1"># Check if it is a tied chord</span>
+                    <span class="n">is_outgoing_tie</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">spanner_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Spanner&quot;</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="p">(</span>
+                            <span class="n">spanner_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Tie&quot;</span>
+                            <span class="ow">and</span> <span class="n">spanner_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;next/location&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                        <span class="p">):</span>
+                            <span class="n">is_outgoing_tie</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="c1"># Collect notes</span>
+                    <span class="k">for</span> <span class="n">note_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Note&quot;</span><span class="p">):</span>
+                        <span class="c1"># Get pitch</span>
+                        <span class="n">pitch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">note_elem</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">))</span>
+                        <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">TONAL_PITCH_CLASSES</span><span class="p">[</span>
+                            <span class="nb">int</span><span class="p">(</span><span class="n">_get_required_text</span><span class="p">(</span><span class="n">note_elem</span><span class="p">,</span> <span class="s2">&quot;tpc&quot;</span><span class="p">))</span>
+                        <span class="p">]</span>
+
+                        <span class="c1"># Handle grace note</span>
+                        <span class="k">if</span> <span class="n">is_grace</span><span class="p">:</span>
+                            <span class="c1"># Append a new note to the note list</span>
+                            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">Note</span><span class="p">(</span>
+                                    <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
+                                    <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
+                                    <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+                                    <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+                                    <span class="n">pitch_str</span><span class="o">=</span><span class="n">pitch_str</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                            <span class="k">continue</span>
+
+                        <span class="c1"># Check if it is a tied note</span>
+                        <span class="k">for</span> <span class="n">spanner_elem</span> <span class="ow">in</span> <span class="n">note_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Spanner&quot;</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="p">(</span>
+                                <span class="n">spanner_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Tie&quot;</span>
+                                <span class="ow">and</span> <span class="n">spanner_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;next/location&quot;</span><span class="p">)</span>
+                                <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="p">):</span>
+                                <span class="n">is_outgoing_tie</span> <span class="o">=</span> <span class="kc">True</span>
+
+                        <span class="c1"># Check if it is an incoming tied note</span>
+                        <span class="k">if</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="n">ties</span><span class="p">:</span>
+                            <span class="n">note_idx</span> <span class="o">=</span> <span class="n">ties</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span>
+                            <span class="n">notes</span><span class="p">[</span><span class="n">note_idx</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span> <span class="o">+=</span> <span class="n">duration</span>
+
+                            <span class="k">if</span> <span class="n">is_outgoing_tie</span><span class="p">:</span>
+                                <span class="n">ties</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="n">note_idx</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">del</span> <span class="n">ties</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="c1"># Append a new note to the note list</span>
+                            <span class="n">notes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                                <span class="n">Note</span><span class="p">(</span>
+                                    <span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span>
+                                    <span class="n">pitch</span><span class="o">=</span><span class="n">pitch</span><span class="p">,</span>
+                                    <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
+                                    <span class="n">velocity</span><span class="o">=</span><span class="n">velocity</span><span class="p">,</span>
+                                    <span class="n">pitch_str</span><span class="o">=</span><span class="n">pitch_str</span><span class="p">,</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+
+                        <span class="k">if</span> <span class="n">is_outgoing_tie</span><span class="p">:</span>
+                            <span class="n">ties</span><span class="p">[</span><span class="n">pitch</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">notes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+
+                    <span class="c1"># Lyrics</span>
+                    <span class="n">lyric_elem</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Lyrics&quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">lyric_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">lyric_text</span> <span class="o">=</span> <span class="n">parse_lyric_elem</span><span class="p">(</span><span class="n">lyric_elem</span><span class="p">)</span>
+                        <span class="n">lyrics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="n">Lyric</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="n">time</span> <span class="o">+</span> <span class="n">position</span><span class="p">,</span> <span class="n">lyric</span><span class="o">=</span><span class="n">lyric_text</span><span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_grace</span><span class="p">:</span>
+                        <span class="n">position</span> <span class="o">+=</span> <span class="n">duration</span>
+
+                <span class="c1"># Handle last tuplet note</span>
+                <span class="k">if</span> <span class="n">elem</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="s2">&quot;endTuplet&quot;</span><span class="p">:</span>
+                    <span class="n">old_duration</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span>
+                        <span class="n">NOTE_TYPE_MAP</span><span class="p">[</span><span class="n">duration_type</span><span class="p">]</span> <span class="o">*</span> <span class="n">resolution</span>
+                    <span class="p">)</span>
+                    <span class="n">new_duration</span> <span class="o">=</span> <span class="n">normal_notes</span> <span class="o">*</span> <span class="n">old_duration</span> <span class="o">-</span> <span class="p">(</span>
+                        <span class="n">actual_notes</span> <span class="o">-</span> <span class="mi">1</span>
+                    <span class="p">)</span> <span class="o">*</span> <span class="nb">round</span><span class="p">(</span><span class="n">old_duration</span> <span class="o">*</span> <span class="n">tuple_ratio</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">notes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">duration</span> <span class="o">!=</span> <span class="n">new_duration</span><span class="p">:</span>
+                        <span class="c1"># notes[-1].duration = new_duration</span>
+                        <span class="n">position</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">new_duration</span> <span class="o">-</span> <span class="n">duration</span><span class="p">)</span>
+                    <span class="n">is_tuple</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">time</span> <span class="o">+=</span> <span class="n">position</span>
+
+    <span class="c1"># Sort notes</span>
+    <span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">))</span>
+
+    <span class="c1"># Sort tempos, key signatures, time signatures and lyrics</span>
+    <span class="n">tempos</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+    <span class="n">key_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+    <span class="n">time_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+    <span class="n">lyrics</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;tempos&quot;</span><span class="p">:</span> <span class="n">tempos</span><span class="p">,</span>
+        <span class="s2">&quot;key_signatures&quot;</span><span class="p">:</span> <span class="n">key_signatures</span><span class="p">,</span>
+        <span class="s2">&quot;time_signatures&quot;</span><span class="p">:</span> <span class="n">time_signatures</span><span class="p">,</span>
+        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">notes</span><span class="p">,</span>
+        <span class="s2">&quot;lyrics&quot;</span><span class="p">:</span> <span class="n">lyrics</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a Metadata object parsed from a MuseScore file.&quot;&quot;&quot;</span>
+    <span class="c1"># Creators and copyrights</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">creators</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">copyrights</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Iterate over meta tags</span>
+    <span class="k">for</span> <span class="n">meta_tag</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Score/metaTag&quot;</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">meta_tag</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;movementTitle&quot;</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">meta_tag</span><span class="o">.</span><span class="n">text</span>
+        <span class="c1"># Only use &#39;workTitle&#39; when movementTitle is not found</span>
+        <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;workTitle&quot;</span><span class="p">:</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="n">meta_tag</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;arranger&quot;</span><span class="p">,</span> <span class="s2">&quot;composer&quot;</span><span class="p">,</span> <span class="s2">&quot;lyricist&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">meta_tag</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">creators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meta_tag</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;copyright&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">meta_tag</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">copyrights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meta_tag</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Metadata</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">creators</span><span class="o">=</span><span class="n">creators</span><span class="p">,</span>
+        <span class="n">copyright</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">copyrights</span><span class="p">)</span> <span class="k">if</span> <span class="n">copyrights</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">source_format</span><span class="o">=</span><span class="s2">&quot;musescore&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_root</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return root of the element tree.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">compressed</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mscz&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">compressed</span><span class="p">:</span>
+        <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">tree</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+
+    <span class="c1"># Find out the main MSCX file in the compressed ZIP archive</span>
+    <span class="n">zip_file</span> <span class="o">=</span> <span class="n">ZipFile</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">if</span> <span class="s2">&quot;META-INF/container.xml&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">zip_file</span><span class="o">.</span><span class="n">namelist</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span><span class="s2">&quot;Container file (&#39;container.xml&#39;) not found.&quot;</span><span class="p">)</span>
+    <span class="n">container</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;META-INF/container.xml&quot;</span><span class="p">))</span>
+    <span class="n">rootfile</span> <span class="o">=</span> <span class="n">container</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;rootfiles/rootfile&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rootfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span>
+            <span class="s2">&quot;Element &#39;rootfile&#39; tag not found in the container file &quot;</span>
+            <span class="s2">&quot;(&#39;container.xml&#39;).&quot;</span>
+        <span class="p">)</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">rootfile</span><span class="p">,</span> <span class="s2">&quot;full-path&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">zip_file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_get_divisions</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a list of divisions.&quot;&quot;&quot;</span>
+    <span class="n">divisions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">division_elem</span> <span class="ow">in</span> <span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Score/Division&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">division_elem</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">float</span><span class="p">(</span><span class="n">division_elem</span><span class="o">.</span><span class="n">text</span><span class="p">)</span><span class="o">.</span><span class="n">is_integer</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span>
+                <span class="s2">&quot;Noninteger &#39;division&#39; values are not supported.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">divisions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">division_elem</span><span class="o">.</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">divisions</span>
+
+
+<span class="k">def</span> <span class="nf">parse_part_elem_info</span><span class="p">(</span><span class="n">elem</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">OrderedDict</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Return part information parsed from a score part element.&quot;&quot;&quot;</span>
+    <span class="n">part_info</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+
+    <span class="c1"># Staff IDs</span>
+    <span class="n">staff_ids</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">_get_required_attr</span><span class="p">(</span><span class="n">staff_elem</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">staff_elem</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Staff&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="c1"># Instrument</span>
+    <span class="n">instrument_elem</span> <span class="o">=</span> <span class="n">_get_required</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;Instrument&quot;</span><span class="p">)</span>
+    <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">instrument_elem</span><span class="p">,</span> <span class="s2">&quot;instrumentId&quot;</span><span class="p">)</span>
+    <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_text</span><span class="p">(</span><span class="n">elem</span><span class="p">,</span> <span class="s2">&quot;trackName&quot;</span><span class="p">,</span> <span class="n">remove_newlines</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># MIDI program and channel</span>
+    <span class="n">program_elem</span> <span class="o">=</span> <span class="n">instrument_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Channel/program&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">program_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">program</span> <span class="o">=</span> <span class="n">program_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">program</span><span class="p">)</span> <span class="k">if</span> <span class="n">program</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;program&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">part_info</span><span class="p">[</span><span class="s2">&quot;is_drum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">_get_text</span><span class="p">(</span><span class="n">instrument_elem</span><span class="p">,</span> <span class="s2">&quot;Channel/midiChannel&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="o">==</span> <span class="mi">10</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">staff_ids</span><span class="p">,</span> <span class="n">part_info</span>
+
+
+<div class="viewcode-block" id="read_musescore"><a class="viewcode-back" href="../../../io/musescore.html#muspy.inputs.read_musescore">[docs]</a><span class="k">def</span> <span class="nf">read_musescore</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Read a MuseScore file into a Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to the MuseScore file to read.</span>
+<span class="sd">    resolution : int, optional</span>
+<span class="sd">        Time steps per quarter note. Defaults to the least common</span>
+<span class="sd">        multiple of all divisions.</span>
+<span class="sd">    compressed : bool, optional</span>
+<span class="sd">        Whether it is a compressed MuseScore file. Defaults to infer</span>
+<span class="sd">        from the filename.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    :class:`muspy.Music`</span>
+<span class="sd">        Converted Music object.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is based on MuseScore 3. Files created by an earlier</span>
+<span class="sd">    version of MuseScore might not be read correctly.</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get element tree root</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">_get_root</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">compressed</span><span class="p">)</span>
+
+    <span class="c1"># Get the score element</span>
+    <span class="n">score_elem</span> <span class="o">=</span> <span class="n">_get_required</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s2">&quot;Score&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Meta data</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">parse_metadata</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="c1"># Set resolution to the least common multiple of all divisions</span>
+    <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">divisions</span> <span class="o">=</span> <span class="n">_get_divisions</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">resolution</span> <span class="o">=</span> <span class="n">_lcm</span><span class="p">(</span><span class="o">*</span><span class="n">divisions</span><span class="p">)</span> <span class="k">if</span> <span class="n">divisions</span> <span class="k">else</span> <span class="mi">1</span>
+
+    <span class="c1"># Staff information</span>
+    <span class="n">part_info</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">OrderedDict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">staff_part_map</span><span class="p">:</span> <span class="n">OrderedDict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">part_id</span><span class="p">,</span> <span class="n">part_elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">score_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Part&quot;</span><span class="p">)):</span>
+        <span class="n">staff_ids</span><span class="p">,</span> <span class="n">part_elem_info</span> <span class="o">=</span> <span class="n">parse_part_elem_info</span><span class="p">(</span><span class="n">part_elem</span><span class="p">)</span>
+        <span class="n">part_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part_elem_info</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">staff_id</span> <span class="ow">in</span> <span class="n">staff_ids</span><span class="p">:</span>
+            <span class="n">staff_part_map</span><span class="p">[</span><span class="n">staff_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">part_id</span>
+
+    <span class="k">if</span> <span class="n">score_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Staff&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Music</span><span class="p">(</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">)</span>
+
+    <span class="c1"># Initialize lists</span>
+    <span class="n">tempos</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tempo</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">key_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">KeySignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">time_signatures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TimeSignature</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tracks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Track</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Get the meta staff, assuming the first staff</span>
+    <span class="n">meta_staff_elem</span> <span class="o">=</span> <span class="n">score_elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;Staff&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">meta_staff_elem</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Parse measure ordering from the meta staff, expanding all</span>
+        <span class="c1"># repeats and jumps</span>
+        <span class="n">measure_indices</span> <span class="o">=</span> <span class="n">parse_meta_staff_elem</span><span class="p">(</span><span class="n">meta_staff_elem</span><span class="p">)</span>
+
+        <span class="c1"># Raise an error if part-list information is missing</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">part_info</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MuseScoreError</span><span class="p">(</span><span class="s2">&quot;Part information is missing.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Iterate over all staffs</span>
+        <span class="n">part_track_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">staff_elem</span> <span class="ow">in</span> <span class="n">score_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Staff&quot;</span><span class="p">):</span>
+            <span class="n">staff_id</span> <span class="o">=</span> <span class="n">staff_elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">if</span> <span class="n">staff_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">score_elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;Staff&quot;</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">staff_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">staff_part_map</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">staff_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">staff_part_map</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Parse the staff</span>
+            <span class="n">staff</span> <span class="o">=</span> <span class="n">parse_staff_elem</span><span class="p">(</span><span class="n">staff_elem</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">measure_indices</span><span class="p">)</span>
+
+            <span class="c1"># Extend lists</span>
+            <span class="n">tempos</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;tempos&quot;</span><span class="p">])</span>
+            <span class="n">key_signatures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;key_signatures&quot;</span><span class="p">])</span>
+            <span class="n">time_signatures</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;time_signatures&quot;</span><span class="p">])</span>
+            <span class="n">part_id</span> <span class="o">=</span> <span class="n">staff_part_map</span><span class="p">[</span><span class="n">staff_id</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">part_id</span> <span class="ow">in</span> <span class="n">part_track_map</span><span class="p">:</span>
+                <span class="n">track_id</span> <span class="o">=</span> <span class="n">part_track_map</span><span class="p">[</span><span class="n">part_id</span><span class="p">]</span>
+                <span class="n">tracks</span><span class="p">[</span><span class="n">track_id</span><span class="p">]</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">])</span>
+                <span class="n">tracks</span><span class="p">[</span><span class="n">track_id</span><span class="p">]</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">part_track_map</span><span class="p">[</span><span class="n">part_id</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">tracks</span><span class="p">)</span>
+                <span class="n">tracks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Track</span><span class="p">(</span>
+                        <span class="n">program</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="s2">&quot;program&quot;</span><span class="p">],</span>
+                        <span class="n">is_drum</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="s2">&quot;is_drum&quot;</span><span class="p">],</span>
+                        <span class="n">name</span><span class="o">=</span><span class="n">part_info</span><span class="p">[</span><span class="n">part_id</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                        <span class="n">notes</span><span class="o">=</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;notes&quot;</span><span class="p">],</span>
+                        <span class="n">lyrics</span><span class="o">=</span><span class="n">staff</span><span class="p">[</span><span class="s2">&quot;lyrics&quot;</span><span class="p">],</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Sort tempos, key signatures and time signatures</span>
+        <span class="n">tempos</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+        <span class="n">key_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+        <span class="n">time_signatures</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Sort notes and lyrics</span>
+        <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">tracks</span><span class="p">:</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">track</span><span class="o">.</span><span class="n">lyrics</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">attrgetter</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+        <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">,</span>
+        <span class="n">key_signatures</span><span class="o">=</span><span class="n">key_signatures</span><span class="p">,</span>
+        <span class="n">time_signatures</span><span class="o">=</span><span class="n">time_signatures</span><span class="p">,</span>
+        <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
+    <span class="p">)</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Hao-Wen Dong
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
