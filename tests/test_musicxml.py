@@ -31,16 +31,16 @@ def test_pitches():
             pitches.append(12 * octave + pitch)
 
     # Without accidentals
-    for i, note in enumerate(music[0][:32]):
-        assert note.pitch == pitches[i]
+    for note, pitch in zip(music[0], pitches):
+        assert note.pitch == pitch
 
     # With a sharp
-    for i, note in enumerate(music[0][32:64]):
-        assert note.pitch == pitches[i] + 1
+    for note, pitch in zip(music[0][32:64], pitches):
+        assert note.pitch == pitch + 1
 
     # With a flat
-    for i, note in enumerate(music[0][64:96]):
-        assert note.pitch == pitches[i] - 1
+    for note, pitch in zip(music[0][64:96], pitches):
+        assert note.pitch == pitch - 1
 
     # Double alterations
     assert music[0][96].pitch == 74
@@ -84,16 +84,31 @@ def test_durations():
     )
 
     # Without dots
-    for i, note in enumerate(music[0][:11]):
-        assert note.duration == 64 * durations[i]
+    for note, duration in zip(music[0][:11], durations):
+        assert note.duration == 64 * duration
 
     # With a dot
-    for i, note in enumerate(music[0][11:22]):
-        assert note.duration == 64 * durations[i] * 1.5
+    for note, duration in zip(music[0][11:22], durations):
+        assert note.duration == 64 * duration * 1.5
 
     # With double dots
-    for i, note in enumerate(music[0][22:]):
-        assert note.duration == 64 * durations_double_dotted[i] * 1.75
+    for note, duration in zip(music[0][22:], durations_double_dotted):
+        assert note.duration == 64 * duration * 1.75
+
+
+def test_rhythm_backup():
+    music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "03b-Rhythm-Backup.xml")
+
+    assert len(music) == 1
+    assert len(music[0]) == 4
+
+    # Answers
+    times = [0, 1, 1, 2]
+    pitches = [60, 57, 60, 57]
+
+    for note, pitch, time in zip(music[0], pitches, times):
+        assert note.time == time * music.resolution
+        assert note.pitch == pitch
 
 
 def test_divisions():
@@ -127,12 +142,12 @@ def test_time_signatures():
     # Answers
     numerators = (2, 4, 2, 3, 2, 3, 4, 5, 3, 6, 12)
     denominators = (2, 4, 2, 2, 4, 4, 4, 4, 8, 8, 8)
-    starts = np.insert(
+    times = np.insert(
         np.cumsum(4 * np.array(numerators) / np.array(denominators)), 0, 0
     )
 
     for i, time_signature in enumerate(music.time_signatures):
-        assert time_signature.time == int(music.resolution * starts[i])
+        assert time_signature.time == int(music.resolution * times[i])
         assert time_signature.numerator == numerators[i]
         assert time_signature.denominator == denominators[i]
 
@@ -161,7 +176,6 @@ def test_key_signatures():
             assert key_signature.mode == "minor"
         assert key_signature.fifths == i // 2 - 11
 
-    # TODO: Check root and root_str
     for i, key_signature in enumerate(music.key_signatures[8:-4]):
         root, root_str = CIRCLE_OF_FIFTHS[
             MODE_CENTERS[key_signature.mode] + key_signature.fifths
@@ -200,10 +214,10 @@ def test_chords():
 
     assert len(music[0]) == 2
 
-    assert music[0][0].start == 0
+    assert music[0][0].time == 0
     assert music[0][0].duration == music.resolution
     assert music[0][0].pitch == 65
-    assert music[0][1].start == 0
+    assert music[0][1].time == 0
     assert music[0][1].duration == music.resolution
     assert music[0][1].pitch == 69
 
@@ -227,9 +241,9 @@ def test_chords_and_durations():
     )
     durations = [1.5, 1.5, 1.5] + [0.5, 0.5] + [1, 1, 1] * 4 + [2, 2, 2]
 
-    for i, note in enumerate(music[0]):
-        assert note.duration == music.resolution * durations[i]
-        assert note.pitch == pitches[i]
+    for note, pitch, duration in zip(music[0], pitches, durations):
+        assert note.duration == music.resolution * duration
+        assert note.pitch == pitch
 
 
 def test_pickup_measures():
@@ -240,13 +254,13 @@ def test_pickup_measures():
     assert len(music[0]) == 6
 
     # Answers
+    times = (0, 1, 1, 1, 2, 2)
     pitches = (72, 65, 69, 72, 69, 72)
-    starts = (0, 1, 1, 1, 2, 2)
     durations = (1, 1, 1, 1, 1, 1)
 
     for i, note in enumerate(music[0]):
-        assert note.start == music.resolution * starts[i]
-        assert note.duration == music.resolution * durations[i]
+        assert note.time == times[i] * music.resolution
+        assert note.duration == durations[i] * music.resolution
         assert note.pitch == pitches[i]
 
 
@@ -264,9 +278,9 @@ def test_tuplets():
     durations += [3 / 7] * 7
     durations += [2 / 6] * 6
 
-    for i, note in enumerate(music[0]):
-        assert note.pitch == pitches[i]
-        assert note.duration == round(music.resolution * durations[i])
+    for note, pitch, duration in zip(music[0], pitches, durations):
+        assert note.pitch == pitch
+        assert note.duration == round(duration * music.resolution)
 
 
 def test_grace_notes():
@@ -306,9 +320,9 @@ def test_grace_notes():
         + [1]
     )
 
-    for i, note in enumerate(music[0]):
-        assert note.pitch == pitches[i]
-        assert note.duration == round(music.resolution * durations[i])
+    for note, pitch, duration in zip(music[0], pitches, durations):
+        assert note.pitch == pitch
+        assert note.duration == round(music.resolution * duration)
 
 
 def test_directions():
@@ -361,11 +375,11 @@ def test_parts():
     # Answers
     pitches = [60, 64, 67, 71]
 
-    for i, track in enumerate(music.tracks):
+    for i, (track, pitch) in enumerate(zip(music, pitches)):
         assert track.name == "Part " + str(i + 1)
-        assert track[0].start == 0
+        assert track[0].time == 0
         assert track[0].duration == music.resolution
-        assert track[0].pitch == pitches[i]
+        assert track[0].pitch == pitch
 
 
 def test_part_names_with_line_breaks():
@@ -401,12 +415,12 @@ def test_voices():
 
     # Answers
     pitches = (72, 76, 71, 74, 67, 71, 71, 74, 55, 59, 69, 72)
-    starts = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+    times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
     durations = (2, 2, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 0.5, 0.5)
 
     for i, note in enumerate(music[0]):
-        assert note.start == music.resolution * starts[i]
-        assert note.duration == music.resolution * durations[i]
+        assert note.time == times[i] * music.resolution
+        assert note.duration == durations[i] * music.resolution
         assert note.pitch == pitches[i]
 
 
@@ -466,16 +480,17 @@ def test_piano_staff():
     assert len(music) == 1
     assert len(music[0]) == 2
 
-    assert music[0][0].start == 0
+    assert music[0][0].time == 0
     assert music[0][0].duration == music.resolution * 4
     assert music[0][0].pitch == 47
-    assert music[0][1].start == 0
+    assert music[0][1].time == 0
     assert music[0][1].duration == music.resolution * 4
     assert music[0][1].pitch == 65
 
 
 def test_repeat():
     music = muspy.read(TEST_MUSICXML_LILYPOND_DIR / "45a-SimpleRepeat.xml")
+
     assert len(music) == 1
     assert len(music[0]) == 6
 
@@ -484,6 +499,7 @@ def test_repeat_with_alternatives():
     music = muspy.read(
         TEST_MUSICXML_LILYPOND_DIR / "45b-RepeatWithAlternatives.xml"
     )
+
     assert len(music) == 1
     assert len(music[0]) == 5
 
