@@ -175,6 +175,20 @@ def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
     return root, mode, fifths, root_str
 
 
+def parse_lyric_elem(elem: Element) -> str:
+    """Return the lyric text parsed from a lyric element."""
+    text = _get_required_text(elem, "text")
+    syllabic_elem = elem.find("syllabic")
+    if syllabic_elem is not None:
+        if syllabic_elem.text == "begin":
+            text = f"{text} -"
+        elif syllabic_elem.text == "middle":
+            text = f"- {text} -"
+        elif syllabic_elem.text == "end":
+            text = f"- {text}"
+    return text
+
+
 def parse_marker_measure_map(elem: Element) -> Dict[str, int]:
     """Return a marker-measure map parsed from a staff element."""
     # Initialize with a start marker
@@ -536,11 +550,9 @@ def parse_staff_elem(
                             ties[pitch] = len(notes) - 1
 
                     # Lyrics
-                    lyric_elem = elem.find("lyrics")
+                    lyric_elem = elem.find("Lyrics")
                     if lyric_elem is not None:
-                        lyric_text = _get_required_text(
-                            lyric_elem, "text", remove_newlines=True
-                        )
+                        lyric_text = parse_lyric_elem(lyric_elem)
                         lyrics.append(
                             Lyric(time=time + position, lyric=lyric_text)
                         )

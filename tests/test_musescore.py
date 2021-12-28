@@ -1,22 +1,12 @@
 """Test cases for MUSESCORE I/O."""
 import math
-import tempfile
-from pathlib import Path
 
 import numpy as np
 
 import muspy
 from muspy.utils import CIRCLE_OF_FIFTHS, MODE_CENTERS
 
-from .utils import (
-    TEST_JSON_PATH,
-    TEST_MUSESCORE_DIR,
-    TEST_MUSESCORE_LILYPOND_DIR,
-    check_key_signatures,
-    check_tempos,
-    check_time_signatures,
-    check_tracks,
-)
+from .utils import TEST_MUSESCORE_DIR, TEST_MUSESCORE_LILYPOND_DIR
 
 
 def test_pitches():
@@ -231,12 +221,12 @@ def test_chords():
 
     assert len(music[0]) == 2
 
-    assert music[0][0].start == 0
-    assert music[0][0].duration == music.resolution
     assert music[0][0].pitch == 65
-    assert music[0][1].start == 0
-    assert music[0][1].duration == music.resolution
+    assert music[0][0].time == 0
+    assert music[0][0].duration == music.resolution
     assert music[0][1].pitch == 69
+    assert music[0][1].time == 0
+    assert music[0][1].duration == music.resolution
 
 
 def test_chords_and_durations():
@@ -259,8 +249,8 @@ def test_chords_and_durations():
     durations = [1.5, 1.5, 1.5] + [0.5, 0.5] + [1, 1, 1] * 4 + [2, 2, 2]
 
     for i, note in enumerate(music[0]):
-        assert note.duration == music.resolution * durations[i]
         assert note.pitch == pitches[i]
+        assert note.duration == music.resolution * durations[i]
 
 
 def test_pickup_measures():
@@ -272,13 +262,13 @@ def test_pickup_measures():
 
     # Answers
     pitches = (72, 65, 69, 72, 69, 72)
-    starts = (0, 1, 1, 1, 2, 2)
+    times = (0, 1, 1, 1, 2, 2)
     durations = (1, 1, 1, 1, 1, 1)
 
     for i, note in enumerate(music[0]):
-        assert note.start == music.resolution * starts[i]
-        assert note.duration == music.resolution * durations[i]
         assert note.pitch == pitches[i]
+        assert note.time == music.resolution * times[i]
+        assert note.duration == music.resolution * durations[i]
 
 
 def test_tuplets():
@@ -407,7 +397,7 @@ def test_parts():
 
     for i, track in enumerate(music.tracks):
         assert track.name == "Part " + str(i + 1)
-        assert track[0].start == 0
+        assert track[0].time == 0
         assert track[0].duration == music.resolution
         assert track[0].pitch == pitches[i]
 
@@ -431,11 +421,10 @@ def test_voices():
     assert len(music[0]) == 12
 
     # Answers
-    pitches = (72, 76, 71, 74, 67, 71, 71, 74, 55, 59, 69, 72)
     times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+    pitches = (72, 76, 71, 74, 67, 71, 71, 74, 55, 59, 69, 72)
     durations = (2, 2, 1, 1, 1, 1, 1, 1, 1.5, 1.5, 0.5, 0.5)
 
-    print(music[0].notes)
     for i, note in enumerate(music[0]):
         assert note.time == music.resolution * times[i]
         assert note.duration == music.resolution * durations[i]
@@ -450,16 +439,60 @@ def test_lyrics():
 
     assert len(music) == 1
     assert len(music[0]) == 12
+    assert len(music[0].lyrics) == 12
 
     # Answers
-    lyrics = "This This is is the the lyrics lyrics of of Voice1 Voice1".split(
-        " "
-    )
     times = (0, 0, 2, 2, 3, 3, 5, 5, 6, 6, 7.5, 7.5)
+    lyrics = (
+        "This",
+        "This",
+        "is",
+        "is",
+        "the",
+        "the",
+        "lyrics",
+        "lyrics",
+        "of",
+        "of",
+        "Voice1",
+        "Voice1",
+    )
 
     for i, lyric in enumerate(music[0].lyrics):
         assert lyric.time == music.resolution * times[i]
         assert lyric.lyric == lyrics[i]
+
+
+def test_lyrics_syllables():
+    music = muspy.read(TEST_MUSESCORE_LILYPOND_DIR / "61a-Lyrics.mscx")
+
+    assert len(music) == 1
+    assert len(music[0]) == 11
+    assert len(music[0].lyrics) == 7
+
+    # Answers
+    times = (0, 1, 2, 3, 5, 7, 9)
+    texts = ("Tra -", "- la -", "- li", "Ja!", "Tra -", "- ra!", "Bah!")
+
+    for lyric, time, text in zip(music[0].lyrics, times, texts):
+        assert lyric.time == music.resolution * time
+        assert lyric.lyric == text
+
+
+def test_lyrics_chords():
+    music = muspy.read(TEST_MUSESCORE_LILYPOND_DIR / "61e-Lyrics-Chords.mscx")
+
+    assert len(music) == 1
+    assert len(music[0]) == 8
+    assert len(music[0].lyrics) == 4
+
+    # Answers
+    times = (0, 1, 2, 3)
+    texts = ("Ly -", "- rics", "on", "chords")
+
+    for lyric, time, text in zip(music[0].lyrics, times, texts):
+        assert lyric.time == music.resolution * time
+        assert lyric.lyric == text
 
 
 def test_piano_staff():
@@ -531,7 +564,6 @@ def test_percussion():
     music = muspy.read(TEST_MUSESCORE_LILYPOND_DIR / "73a-Percussion.mscx")
 
     assert len(music) == 3
-
     assert len(music[0]) == 2
 
     assert music[0][0].duration == music.resolution * 6
@@ -583,12 +615,12 @@ def test_realworld():
 
     assert len(music) == 1
 
-    assert len(music.tempos) == 5
+    assert len(music.tempos) == 5  # Due to the repeat and ritardando
     assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 0
 
-    assert len(music.time_signatures) == 4
+    assert len(music.time_signatures) == 4  # Due to the repeat
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
 
@@ -602,11 +634,11 @@ def test_realworld_compressed():
 
     assert len(music) == 1
 
-    assert len(music.tempos) == 5
+    assert len(music.tempos) == 5  # Due to the repeat and ritardando
     assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 0
 
-    assert len(music.time_signatures) == 4
+    assert len(music.time_signatures) == 4  # Due to the repeat
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
