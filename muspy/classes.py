@@ -24,12 +24,15 @@ Variables
 
 """
 from collections import OrderedDict
-from typing import Any, Callable, List
+from typing import Any, Callable, List, TypeVar
 
 from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
 
 DEFAULT_VELOCITY = 64
+NoteType = TypeVar("NoteType", bound="Note")
+ChordType = TypeVar("ChordType", bound="Chord")
+TrackType = TypeVar("TrackType", bound="Track")
 
 __all__ = [
     "Annotation",
@@ -359,11 +362,11 @@ class Note(Base):
         raise NotImplementedError
 
     def adjust_time(
-        self,
+        self: NoteType,
         func: Callable[[int], int],
         attr: str = None,
         recursive: bool = True,
-    ) -> "Note":
+    ) -> NoteType:
         """Adjust the timing of the note.
 
         Parameters
@@ -389,7 +392,7 @@ class Note(Base):
         self.duration = func(old_time + self.duration) - self.time
         return self
 
-    def transpose(self, semitone: int) -> "Note":
+    def transpose(self: NoteType, semitone: int) -> NoteType:
         """Transpose the note by a number of semitones.
 
         Parameters
@@ -406,7 +409,7 @@ class Note(Base):
         self.pitch += semitone
         return self
 
-    def clip(self, lower: int = 0, upper: int = 127) -> "Note":
+    def clip(self: NoteType, lower: int = 0, upper: int = 127) -> NoteType:
         """Clip the velocity of the note.
 
         Parameters
@@ -513,11 +516,11 @@ class Chord(Base):
         raise NotImplementedError
 
     def adjust_time(
-        self,
+        self: ChordType,
         func: Callable[[int], int],
         attr: str = None,
         recursive: bool = True,
-    ) -> "Chord":
+    ) -> ChordType:
         """Adjust the timing of the chord.
 
         Parameters
@@ -543,7 +546,7 @@ class Chord(Base):
         self.duration = func(old_time + self.duration) - self.time
         return self
 
-    def transpose(self, semitone: int) -> "Chord":
+    def transpose(self: ChordType, semitone: int) -> ChordType:
         """Transpose the notes by a number of semitones.
 
         Parameters
@@ -561,7 +564,7 @@ class Chord(Base):
         self.pitches += [pitch + semitone for pitch in self.pitches]
         return self
 
-    def clip(self, lower: int = 0, upper: int = 127) -> "Chord":
+    def clip(self: ChordType, lower: int = 0, upper: int = 127) -> ChordType:
         """Clip the velocity of the chord.
 
         Parameters
@@ -690,7 +693,7 @@ class Track(ComplexBase):
             _get_end_time(self.annotations),
         )
 
-    def clip(self, lower: int = 0, upper: int = 127) -> "Track":
+    def clip(self: TrackType, lower: int = 0, upper: int = 127) -> TrackType:
         """Clip the velocity of each note.
 
         Parameters
@@ -709,7 +712,7 @@ class Track(ComplexBase):
             note.clip(lower, upper)
         return self
 
-    def transpose(self, semitone: int) -> "Track":
+    def transpose(self: TrackType, semitone: int) -> TrackType:
         """Transpose the notes by a number of semitones.
 
         Parameters

@@ -18,11 +18,13 @@ Functions
 
 """
 from collections import OrderedDict
-from typing import Callable, Union
+from typing import Callable, TypeVar, Union
 
-from .base import Base, ComplexBase
+from .base import Base, BaseType, ComplexBaseType
 from .classes import Note, Track
-from .music import Music
+from .music import Music, MusicType
+
+MTNType = TypeVar("MTNType", Music, Track, Note)
 
 __all__ = [
     "adjust_resolution",
@@ -39,11 +41,11 @@ __all__ = [
 
 
 def adjust_resolution(
-    music: Music,
+    music: MusicType,
     target: int = None,
     factor: float = None,
     rounding: Union[str, Callable] = "round",
-) -> Music:
+) -> MusicType:
     """Adjust resolution and timing of all time-stamped objects.
 
     Parameters
@@ -66,7 +68,7 @@ def adjust_resolution(
     )
 
 
-def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
+def adjust_time(obj: BaseType, func: Callable[[int], int]) -> BaseType:
     """Adjust the timing of time-stamped objects.
 
     Parameters
@@ -90,7 +92,7 @@ def adjust_time(obj: Base, func: Callable[[int], int]) -> Base:
     return obj.adjust_time(func=func)
 
 
-def append(obj1: ComplexBase, obj2) -> ComplexBase:
+def append(obj1: ComplexBaseType, obj2) -> ComplexBaseType:
     """Append an object to the correseponding list.
 
     This will automatically determine the list attributes to append
@@ -121,7 +123,9 @@ def append(obj1: ComplexBase, obj2) -> ComplexBase:
     return obj1.append(obj2)
 
 
-def extend(obj1: ComplexBase, obj2, deepcopy: bool = False) -> ComplexBase:
+def extend(
+    obj1: ComplexBaseType, obj2, deepcopy: bool = False
+) -> ComplexBaseType:
     """Extend the list(s) with another object or iterable.
 
     Parameters
@@ -144,9 +148,7 @@ def extend(obj1: ComplexBase, obj2, deepcopy: bool = False) -> ComplexBase:
     return obj1.extend(obj2, deepcopy=deepcopy)
 
 
-def clip(
-    obj: Union[Music, Track, Note], lower: int = 0, upper: int = 127,
-) -> Union[Music, Track, Note]:
+def clip(obj: MTNType, lower: int = 0, upper: int = 127) -> MTNType:
     """Clip the velocity of each note.
 
     Parameters
@@ -198,7 +200,7 @@ def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
     return music.get_real_end_time(is_sorted=is_sorted)
 
 
-def remove_duplicate(obj: ComplexBase) -> ComplexBase:
+def remove_duplicate(obj: ComplexBaseType) -> ComplexBaseType:
     """Remove duplicate change events.
 
     Parameters
@@ -210,7 +212,7 @@ def remove_duplicate(obj: ComplexBase) -> ComplexBase:
     return obj.remove_duplicate()
 
 
-def sort(obj: ComplexBase) -> ComplexBase:
+def sort(obj: ComplexBaseType) -> ComplexBaseType:
     """Sort all the time-stamped objects with respect to event time.
 
     - If a :class:`muspy.Music` is given, this will sort key signatures,
@@ -252,9 +254,7 @@ def to_ordered_dict(
     return obj.to_ordered_dict(skip_missing=skip_missing, deepcopy=deepcopy)
 
 
-def transpose(
-    obj: Union[Music, Track, Note], semitone: int
-) -> Union[Music, Track, Note]:
+def transpose(obj: MTNType, semitone: int) -> MTNType:
     """Transpose all the notes by a number of semitones.
 
     Parameters

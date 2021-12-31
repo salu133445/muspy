@@ -17,7 +17,7 @@ Variables
 from collections import OrderedDict
 from math import ceil, floor
 from pathlib import Path
-from typing import Any, Callable, List, Union
+from typing import Any, Callable, List, TypeVar, Union
 
 import numpy as np
 from mido import MidiFile
@@ -40,9 +40,10 @@ from .classes import (
 from .outputs import save, synthesize, to_object, to_representation, write
 from .visualization import show
 
-__all__ = ["Music", "DEFAULT_RESOLUTION"]
-
 DEFAULT_RESOLUTION = 24
+MusicType = TypeVar("MusicType", bound="Music")
+
+__all__ = ["Music", "DEFAULT_RESOLUTION"]
 
 # pylint: disable=super-init-not-called
 
@@ -266,11 +267,11 @@ class Music(ComplexBase):
         return beats
 
     def adjust_resolution(
-        self,
+        self: MusicType,
         target: int = None,
         factor: float = None,
         rounding: Union[str, Callable] = "round",
-    ) -> "Music":
+    ) -> MusicType:
         """Adjust resolution and timing of all time-stamped objects.
 
         Parameters
@@ -330,7 +331,7 @@ class Music(ComplexBase):
         self.adjust_time(lambda time: rounding(time * factor_))  # type: ignore
         return self
 
-    def clip(self, lower: int = 0, upper: int = 127) -> "Music":
+    def clip(self: MusicType, lower: int = 0, upper: int = 127) -> MusicType:
         """Clip the velocity of each note for each track.
 
         Parameters
@@ -349,7 +350,7 @@ class Music(ComplexBase):
             track.clip(lower, upper)
         return self
 
-    def transpose(self, semitone: int) -> "Music":
+    def transpose(self: MusicType, semitone: int) -> MusicType:
         """Transpose all the notes by a number of semitones.
 
         Parameters
