@@ -191,58 +191,43 @@ def parse_lyric_elem(elem: Element) -> str:
     return text
 
 
-def parse_part_elem(
-    part_elem: Element, resolution: int, instrument_info: dict
-) -> dict:
-    """Return a dictionary with data parsed from a part element."""
-    # Initialize lists and placeholders
-    tempos: List[Tempo] = []
-    key_signatures: List[KeySignature] = []
-    time_signatures: List[TimeSignature] = []
-    notes: Dict[str, List[Note]] = {
-        instrument_id: [] for instrument_id in instrument_info
-    }
-    lyrics: List[Lyric] = []
-    ties: Dict[Tuple[str, int], int] = {}
+def parse_meta_part_elem(elem: Element) -> List[int]:
+    """Return a list of measure indices parsed from a staff element.
 
-    # Initialize variables
-    time = 0
-    velocity = 64
-    division = 1
-    default_instrument_id = next(iter(instrument_info))
-    transpose_semitone = 0
-    transpose_octave = 0
+    This function returns the ordering of measures, considering all
+    repeats and jumps.
+
+    """
+    # Measure indices
+    measure_indices = []
+
     # Repeats
-    is_repeat = False
     last_repeat = 0
     count_repeat = 1
     count_ending = 1
+
     # Coda, tocoda, dacapo, segno, dalsegno, fine
     is_after_jump = False
-    is_fine = False
     is_dacapo = False
+    is_fine = False
     is_dalsegno = False
     is_segno = False
-    is_segno_found = False
+    is_after_segno = False
     is_tocoda = False
     is_coda = False
-    is_coda_found = False
+    is_after_coda = False
 
     # Iterate over all elements
     measure_idx = 0
-    measure_elems = list(part_elem.findall("measure"))
+    measure_elems = list(elem.findall("measure"))
     while measure_idx < len(measure_elems):
 
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
 
-        # Initialize position
-        position = 0
-        last_note_position = None
-
-        # Look for segno
-        if is_dalsegno and not is_segno_found:
-            # Segno
+        # Handle segno
+        if is_dalsegno and not is_after_segno:
+            # Look for segno
             for sound_elem in measure_elem.findall("sound"):
                 if sound_elem.get("segno") is not None:
                     is_segno = True
@@ -250,16 +235,16 @@ def parse_part_elem(
                 if sound_elem.get("segno") is not None:
                     is_segno = True
 
-            # Skip if not segno
+            # Skip if it is not segno
             if not is_segno:
                 measure_idx += 1
                 continue
 
-            is_segno_found = True
+            is_after_segno = True
 
-        # Look for coda
-        if is_tocoda and not is_coda_found:
-            # Coda
+        # Handle coda
+        if is_tocoda and not is_after_coda:
+            # Look for coda
             for sound_elem in measure_elem.findall("sound"):
                 if sound_elem.get("coda") is not None:
                     is_coda = True
@@ -267,12 +252,15 @@ def parse_part_elem(
                 if sound_elem.get("coda") is not None:
                     is_coda = True
 
-            # Skip if not coda
+            # Skip if it is not coda
             if not is_coda:
                 measure_idx += 1
                 continue
 
-            is_coda_found = True
+            is_after_coda = True
+
+        # Set the default next measure
+        next_measure_idx = measure_idx + 1
 
         # Sound element
         for sound_elem in measure_elem.findall("sound"):
@@ -288,10 +276,12 @@ def parse_part_elem(
                 # Dacapo
                 if sound_elem.get("dacapo") is not None:
                     is_dacapo = True
+                    next_measure_idx = 0
 
                 # Daselgno
                 if sound_elem.get("dalsegno") is not None:
                     is_dalsegno = True
+                    next_measure_idx = 0
 
         # Sound elements under direction elements
         for sound_elem in measure_elem.findall("direction/sound"):
@@ -307,10 +297,17 @@ def parse_part_elem(
                 # Dacapo
                 if sound_elem.get("dacapo") is not None:
                     is_dacapo = True
+                    next_measure_idx = 0
 
                 # Daselgno
                 if sound_elem.get("dalsegno") is not None:
                     is_dalsegno = True
+                    next_measure_idx = 0
+
+        # Break the loop if it is fine
+        if is_after_jump and is_fine:
+            measure_indices.append(measure_idx)
+            break
 
         # Ending elements
         ending_elem = measure_elem.find("barline/ending")
@@ -346,16 +343,62 @@ def parse_part_elem(
                     if count_repeat < repeat_times:
                         count_repeat += 1
                         count_ending += 1
-                        is_repeat = True
+                        next_measure_idx = last_repeat
                     else:
                         count_repeat = 1
                         count_ending = 1
-                        is_repeat = False
             else:
                 raise MusicXMLError(
                     "Unknown direction for a `repeat` element : "
                     f"{direction}"
                 )
+
+        # Append the current measure index to the list to be return
+        measure_indices.append(measure_idx)
+
+        if not is_after_jump and (is_dacapo or is_dalsegno):
+            is_after_jump = True
+
+        measure_idx = next_measure_idx
+
+    return measure_indices
+
+
+def parse_part_elem(
+    part_elem: Element,
+    resolution: int,
+    instrument_info: dict,
+    measure_indices: List[int],
+) -> dict:
+    """Return a dictionary with data parsed from a part element."""
+    # Initialize lists and placeholders
+    tempos: List[Tempo] = []
+    key_signatures: List[KeySignature] = []
+    time_signatures: List[TimeSignature] = []
+    notes: Dict[str, List[Note]] = {
+        instrument_id: [] for instrument_id in instrument_info
+    }
+    lyrics: List[Lyric] = []
+    ties: Dict[Tuple[str, int], int] = {}
+
+    # Initialize variables
+    time = 0
+    velocity = 64
+    division = 1
+    default_instrument_id = next(iter(instrument_info))
+    transpose_semitone = 0
+    transpose_octave = 0
+
+    # Iterate over all elements
+    measure_elems = list(part_elem.findall("measure"))
+    for measure_idx in measure_indices:
+
+        # Get the measure element
+        measure_elem = measure_elems[measure_idx]
+
+        # Initialize position
+        position = 0
+        last_note_position = None
 
         # Iterating over all elements in the current measure
         for elem in measure_elem:
@@ -573,18 +616,6 @@ def parse_part_elem(
 
         time += position
 
-        if is_after_jump and is_fine:
-            break
-
-        if not is_after_jump and (is_dacapo or is_dalsegno):
-            measure_idx = 0
-            is_after_jump = True
-        elif is_repeat:
-            is_repeat = False
-            measure_idx = last_repeat
-        else:
-            measure_idx += 1
-
     # Sort notes
     for instrument_notes in notes.values():
         instrument_notes.sort(
@@ -764,8 +795,16 @@ def read_musicxml(
         part_id, info = parse_score_part_elem(part_elem)
         part_info[part_id] = info
 
-    if root.find("part") is None:
+    # Get the meta staff, assuming the first staff
+    meta_part_elem = root.find("part")
+
+    # Return empty music object with metadata if no staff is found
+    if meta_part_elem is None:
         return Music(metadata=metadata, resolution=resolution)
+
+    # Parse measure ordering from the meta part, expanding all repeats
+    # and jumps
+    measure_indices = parse_meta_part_elem(meta_part_elem)
 
     # Initialize lists
     tempos: List[Tempo] = []
@@ -782,7 +821,9 @@ def read_musicxml(
             )
         part_elem = _get_required(root, "part")
         instrument_info = {"": {"program": 0, "is_drum": False}}
-        part = parse_part_elem(part_elem, resolution, instrument_info)
+        part = parse_part_elem(
+            part_elem, resolution, instrument_info, measure_indices
+        )
 
     else:
         # Iterate over all parts and measures
@@ -796,7 +837,9 @@ def read_musicxml(
                 continue
 
             # Parse part
-            part = parse_part_elem(part_elem, resolution, part_info[part_id])
+            part = parse_part_elem(
+                part_elem, resolution, part_info[part_id], measure_indices
+            )
 
             # Extend lists
             tempos.extend(part["tempos"])

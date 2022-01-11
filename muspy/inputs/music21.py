@@ -48,7 +48,7 @@ def parse_metadata(stream: Stream) -> Union[Metadata, None]:
             copyright_ = item[1]
 
     return Metadata(
-        title=stream.metadata.title, creators=creators, copyright=copyright_,
+        title=stream.metadata.title, creators=creators, copyright=copyright_
     )
 
 

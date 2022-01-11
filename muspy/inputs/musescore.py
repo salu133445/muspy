@@ -399,6 +399,7 @@ def parse_staff_elem(
     # Iterate over all elements
     measure_elems = list(staff_elem.findall("Measure"))
     for measure_idx in measure_indices:
+
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
 
@@ -801,8 +802,20 @@ def read_musescore(
                 staff_part_map[str(staff_id)] = part_id
                 staff_id += 1
 
-    if score_elem.find("Staff") is None:
+    # Raise an error if part-list information is missing
+    if not part_info:
+        raise MuseScoreError("Part information is missing.")
+
+    # Get the meta staff, assuming the first staff
+    meta_staff_elem = score_elem.find("Staff")
+
+    # Return empty music object with metadata if no staff is found
+    if meta_staff_elem is None:
         return Music(metadata=metadata, resolution=resolution)
+
+    # Parse measure ordering from the meta staff, expanding all repeats
+    # and jumps
+    measure_indices = parse_meta_staff_elem(meta_staff_elem)
 
     # Initialize lists
     tempos: List[Tempo] = []
@@ -810,63 +823,52 @@ def read_musescore(
     time_signatures: List[TimeSignature] = []
     tracks: List[Track] = []
 
-    # Get the meta staff, assuming the first staff
-    meta_staff_elem = score_elem.find("Staff")
-    if meta_staff_elem is not None:
-        # Parse measure ordering from the meta staff, expanding all
-        # repeats and jumps
-        measure_indices = parse_meta_staff_elem(meta_staff_elem)
-
-        # Raise an error if part-list information is missing
-        if not part_info:
-            raise MuseScoreError("Part information is missing.")
-
-        # Iterate over all staffs
-        part_track_map: Dict[int, int] = {}
-        for staff_elem in score_elem.findall("Staff"):
-            staff_id = staff_elem.get("id")  # type: ignore
-            if staff_id is None:
-                if len(score_elem.findall("Staff")) > 1:
-                    continue
-                staff_id = next(iter(staff_part_map))
-            if staff_id not in staff_part_map:
+    # Iterate over all staffs
+    part_track_map: Dict[int, int] = {}
+    for staff_elem in score_elem.findall("Staff"):
+        staff_id = staff_elem.get("id")  # type: ignore
+        if staff_id is None:
+            if len(score_elem.findall("Staff")) > 1:
                 continue
+            staff_id = next(iter(staff_part_map))
+        if staff_id not in staff_part_map:
+            continue
 
-            # Parse the staff
-            staff = parse_staff_elem(staff_elem, resolution, measure_indices)
+        # Parse the staff
+        staff = parse_staff_elem(staff_elem, resolution, measure_indices)
 
-            # Extend lists
-            tempos.extend(staff["tempos"])
-            key_signatures.extend(staff["key_signatures"])
-            time_signatures.extend(staff["time_signatures"])
-            part_id = staff_part_map[staff_id]
-            if part_id in part_track_map:
-                track_id = part_track_map[part_id]
-                tracks[track_id].notes.extend(staff["notes"])
-                tracks[track_id].lyrics.extend(staff["lyrics"])
-            else:
-                part_track_map[part_id] = len(tracks)
-                tracks.append(
-                    Track(
-                        program=part_info[part_id]["program"],
-                        is_drum=part_info[part_id]["is_drum"],
-                        name=part_info[part_id]["name"],
-                        notes=staff["notes"],
-                        lyrics=staff["lyrics"],
-                    )
+        # Extend lists
+        tempos.extend(staff["tempos"])
+        key_signatures.extend(staff["key_signatures"])
+        time_signatures.extend(staff["time_signatures"])
+        part_id = staff_part_map[staff_id]
+        if part_id in part_track_map:
+            track_id = part_track_map[part_id]
+            tracks[track_id].notes.extend(staff["notes"])
+            tracks[track_id].lyrics.extend(staff["lyrics"])
+        else:
+            part_track_map[part_id] = len(tracks)
+            tracks.append(
+                Track(
+                    program=part_info[part_id]["program"],
+                    is_drum=part_info[part_id]["is_drum"],
+                    name=part_info[part_id]["name"],
+                    notes=staff["notes"],
+                    lyrics=staff["lyrics"],
                 )
-
-        # Sort tempos, key signatures and time signatures
-        tempos.sort(key=attrgetter("time"))
-        key_signatures.sort(key=attrgetter("time"))
-        time_signatures.sort(key=attrgetter("time"))
-
-        # Sort notes and lyrics
-        for track in tracks:
-            track.notes.sort(
-                key=attrgetter("time", "pitch", "duration", "velocity")
             )
-            track.lyrics.sort(key=attrgetter("time"))
+
+    # Sort tempos, key signatures and time signatures
+    tempos.sort(key=attrgetter("time"))
+    key_signatures.sort(key=attrgetter("time"))
+    time_signatures.sort(key=attrgetter("time"))
+
+    # Sort notes and lyrics
+    for track in tracks:
+        track.notes.sort(
+            key=attrgetter("time", "pitch", "duration", "velocity")
+        )
+        track.lyrics.sort(key=attrgetter("time"))
 
     return Music(
         metadata=metadata,
