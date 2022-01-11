@@ -2,11 +2,37 @@
 import math
 
 import numpy as np
+import pytest
 
 import muspy
+from muspy.inputs.musescore import MuseScoreWarning
 from muspy.utils import CIRCLE_OF_FIFTHS, MODE_CENTERS
 
 from .utils import TEST_MUSESCORE_DIR, TEST_MUSESCORE_LILYPOND_DIR
+
+
+def check_legacy_version(music):
+    assert len(music) == 1
+    assert len(music[0]) == 8
+
+    pitches = [60, 62, 64, 65, 67, 69, 71, 72]
+    for note, pitch in zip(music[0], pitches):
+        assert note.pitch == pitch
+        assert note.duration == music.resolution
+
+
+def test_legacy_version_v1():
+    with pytest.warns(MuseScoreWarning):
+        music = muspy.read(TEST_MUSESCORE_DIR / "v1.mscx")
+
+    check_legacy_version(music)
+
+
+def test_legacy_version_v2():
+    with pytest.warns(MuseScoreWarning):
+        music = muspy.read(TEST_MUSESCORE_DIR / "v2.mscx")
+
+    check_legacy_version(music)
 
 
 def test_pitches():

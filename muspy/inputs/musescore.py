@@ -1,4 +1,5 @@
 """MuseScore input interface."""
+import warnings
 import xml.etree.ElementTree as ET
 from collections import OrderedDict
 from fractions import Fraction
@@ -144,14 +145,26 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
 def parse_time_elem(elem: Element) -> Tuple[int, int]:
     """Return the numerator and denominator of a time element."""
     # Numerator
-    beats = _get_required_text(elem, "sigN")
+    beats = _get_text(elem, "sigN")
+    if beats is None:
+        beats = _get_text(elem, "nom1")
+    if beats is None:
+        raise MuseScoreError(
+            "Neither 'sigN' nor 'nom1' element is found for a TimeSig element."
+        )
     if "+" in beats:
         numerator = sum(int(beat) for beat in beats.split("+"))
     else:
         numerator = int(beats)
 
     # Denominator
-    beat_type = _get_required_text(elem, "sigD")
+    beat_type = _get_text(elem, "sigD")
+    if beat_type is None:
+        beat_type = _get_text(elem, "den")
+    if beat_type is None:
+        raise MuseScoreError(
+            "Neither 'sigD' nor 'den' element is found for a TimeSig element."
+        )
     if "+" in beat_type:
         raise RuntimeError(
             "Compound time signatures with separate fractions "
@@ -165,7 +178,15 @@ def parse_time_elem(elem: Element) -> Tuple[int, int]:
 def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
     """Return the key parsed from a key element."""
     mode = _get_text(elem, "mode", "major")
-    fifths = int(_get_required_text(elem, "accidental"))
+    fifths_text = _get_text(elem, "accidental")  # MuseScore 2.x and 3.x
+    if fifths_text is None:
+        fifths_text = _get_text(elem, "subtype")  # MuseScore 1.x
+    if fifths_text is None:
+        raise MuseScoreError(
+            "Neither 'accidental' nor 'subtype' element is found for a KeySig "
+            "element."
+        )
+    fifths = int(fifths_text)
     if mode is None:
         return None, None, fifths, None
     idx = MODE_CENTERS[mode] + fifths
@@ -386,8 +407,16 @@ def parse_staff_elem(
         if measure_len_text is not None:
             measure_len = round(resolution * 4 * Fraction(measure_len))
 
-        # Voice elements
-        for voice_elem in measure_elem.findall("voice"):
+        # Initialize position
+        position = 0
+
+        # Get voice elements
+        voice_elems = list(measure_elem.findall("voice"))  # MuseScore 3.x
+        if not voice_elems:
+            voice_elems = [measure_elem]  # MuseScore 1.x and 2.x
+
+        # Iterate over voice elements
+        for voice_elem in voice_elems:
             # Initialize position
             position = 0
 
@@ -661,15 +690,20 @@ def _get_divisions(root: Element):
     return divisions
 
 
-def parse_part_elem_info(elem: Element) -> Tuple[List[str], OrderedDict]:
+def parse_part_elem_info(
+    elem: Element, has_staff_id: bool = True
+) -> Tuple[Optional[List[str]], OrderedDict]:
     """Return part information parsed from a score part element."""
     part_info: OrderedDict = OrderedDict()
 
     # Staff IDs
-    staff_ids = [
-        _get_required_attr(staff_elem, "id")
-        for staff_elem in elem.findall("Staff")
-    ]
+    if has_staff_id:
+        staff_ids = [
+            _get_required_attr(staff_elem, "id")
+            for staff_elem in elem.findall("Staff")
+        ]  # MuseScore 2.x and 3.x
+    else:
+        staff_ids = None  # MuseScore 1.x
 
     # Instrument
     instrument_elem = _get_required(elem, "Instrument")
@@ -721,8 +755,19 @@ def read_musescore(
     # Get element tree root
     root = _get_root(path, compressed)
 
+    # Detect MuseScore version
+    musescore_version = root.get("version")
+    if not musescore_version.startswith("3."):
+        warnings.warn(
+            f"Detected a legacy MuseScore version of {musescore_version}. "
+            "Data might not be loaded correctly.",
+            MuseScoreWarning,
+        )
+
     # Get the score element
-    score_elem = _get_required(root, "Score")
+    score_elem = root.find("Score")  # MuseScore 3.x
+    if score_elem is None:
+        score_elem = root  # MuseScore 1.x and 2.x
 
     # Meta data
     metadata = parse_metadata(root)
@@ -733,14 +778,28 @@ def read_musescore(
         divisions = _get_divisions(root)
         resolution = _lcm(*divisions) if divisions else 1
 
+    # Detect if has staff id is available
+    has_staff_id = True
+    first_staff_elem = score_elem.find("part/Staff")
+    if first_staff_elem is None or first_staff_elem.get("id") is None:
+        has_staff_id = False
+
     # Staff information
     part_info: List[OrderedDict] = []
     staff_part_map: OrderedDict = OrderedDict()
+    staff_id = 1
     for part_id, part_elem in enumerate(score_elem.findall("Part")):
-        staff_ids, part_elem_info = parse_part_elem_info(part_elem)
+        staff_ids, part_elem_info = parse_part_elem_info(
+            part_elem, has_staff_id
+        )
         part_info.append(part_elem_info)
-        for staff_id in staff_ids:
-            staff_part_map[staff_id] = part_id
+        if has_staff_id:  # MuseScore 2.x and 3.x
+            for staff_id in staff_ids:  # type: ignore
+                staff_part_map[staff_id] = part_id
+        else:  # MuseScore 1.x
+            for _ in range(len(part_elem.findall("Staff"))):
+                staff_part_map[str(staff_id)] = part_id
+                staff_id += 1
 
     if score_elem.find("Staff") is None:
         return Music(metadata=metadata, resolution=resolution)
