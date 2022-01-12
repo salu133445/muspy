@@ -11,6 +11,7 @@ from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
 from ..classes import (
+    Beat,
     KeySignature,
     Lyric,
     Metadata,
@@ -26,6 +27,7 @@ from ..utils import (
     NOTE_TYPE_MAP,
     TONAL_PITCH_CLASSES,
 )
+from .musicxml import get_beats
 
 T = TypeVar("T")
 
@@ -225,7 +227,7 @@ def parse_marker_measure_map(elem: Element) -> Dict[str, int]:
     return markers
 
 
-def parse_meta_staff_elem(elem: Element) -> List[int]:
+def get_measure_ordering(elem: Element) -> List[int]:
     """Return a list of measure indices parsed from a staff element.
 
     This function returns the ordering of measures, considering all
@@ -377,24 +379,193 @@ def parse_meta_staff_elem(elem: Element) -> List[int]:
     return measure_indices
 
 
-def parse_staff_elem(
+def parse_meta_staff_elem(
     staff_elem: Element, resolution: int, measure_indices: List[int]
-) -> dict:
-    """Return a dictionary with data parsed from a staff element."""
-    # Initialize lists and placeholders
+) -> Tuple[List[Tempo], List[KeySignature], List[TimeSignature], List[Beat]]:
+    """Return data parsed from a meta staff element.
+
+    This function only parses the tempos, key and time signatures. Use
+    `parse_staff_elem` to parse the notes and lyrics.
+
+    """
+    # Initialize lists
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
     time_signatures: List[TimeSignature] = []
+
+    # Initialize variables
+    time = 0
+    measure_len = round(resolution * 4)
+    is_tuple = False
+    downbeat_times: List[int] = []
+
+    # Iterate over all elements
+    measure_elems = list(staff_elem.findall("Measure"))
+    for measure_idx in measure_indices:
+
+        # Get the measure element
+        measure_elem = measure_elems[measure_idx]
+
+        # Collect the measure start times
+        downbeat_times.append(time)
+
+        # Get measure length
+        measure_len_text = measure_elem.get("len")
+        if measure_len_text is not None:
+            measure_len = round(resolution * 4 * Fraction(measure_len))
+
+        # Initialize position
+        position = 0
+
+        # Get voice elements
+        voice_elems = list(measure_elem.findall("voice"))  # MuseScore 3.x
+        if not voice_elems:
+            voice_elems = [measure_elem]  # MuseScore 1.x and 2.x
+
+        # Iterate over voice elements
+        for voice_elem in voice_elems:
+            # Initialize position
+            position = 0
+
+            # Iterate over child elements
+            for elem in voice_elem:
+
+                # Key signatures
+                if elem.tag == "KeySig":
+                    root, mode, fifths, root_str = parse_key_elem(elem)
+                    key_signatures.append(
+                        KeySignature(
+                            time=time + position,
+                            root=root,
+                            mode=mode,
+                            fifths=fifths,
+                            root_str=root_str,
+                        )
+                    )
+
+                # Time signatures
+                if elem.tag == "TimeSig":
+                    numerator, denominator = parse_time_elem(elem)
+                    time_signatures.append(
+                        TimeSignature(
+                            time=time + position,
+                            numerator=numerator,
+                            denominator=denominator,
+                        )
+                    )
+
+                # Tempo elements
+                if elem.tag == "Tempo":
+                    tempos.append(
+                        Tempo(
+                            time + position,
+                            60 * float(_get_required_text(elem, "tempo")),
+                        )
+                    )
+
+                # Tuplet elements
+                if elem.tag == "Tuplet":
+                    is_tuple = True
+                    normal_notes = int(_get_required_text(elem, "normalNotes"))
+                    actual_notes = int(_get_required_text(elem, "actualNotes"))
+                    tuple_ratio = normal_notes / actual_notes
+
+                # Rest elements
+                if elem.tag == "Rest":
+                    # Move time position forward if it is a rest
+                    duration_type = _get_required_text(elem, "durationType")
+                    if duration_type == "measure":
+                        duration_text = _get_text(elem, "duration")
+                        if duration_text is not None:
+                            duration = (
+                                resolution * 4 * float(Fraction(duration_text))
+                            )
+                        else:
+                            duration = measure_len
+                        position += round(duration)
+                        continue
+                    duration = NOTE_TYPE_MAP[duration_type] * resolution
+                    position += round(duration)
+                    continue
+
+                # Chord elements
+                if elem.tag == "Chord":
+                    # Compute duration
+                    duration_type = _get_required_text(elem, "durationType")
+                    duration = NOTE_TYPE_MAP[duration_type] * resolution
+
+                    # Handle tuplets
+                    if is_tuple:
+                        duration *= tuple_ratio
+
+                    # Handle dots
+                    dots_elem = elem.find("dots")
+                    if dots_elem is not None and dots_elem.text:
+                        duration *= 2 - 0.5 ** int(dots_elem.text)
+
+                    # Round the duration
+                    duration = round(duration)
+
+                    # Grace notes
+                    is_grace = False
+                    for child in elem:
+                        if "grace" in child.tag or child.tag in (
+                            "appoggiatura",
+                            "acciaccatura",
+                        ):
+                            is_grace = True
+
+                    if not is_grace:
+                        position += duration
+
+                # Handle last tuplet note
+                if elem.tag == "endTuplet":
+                    old_duration = round(
+                        NOTE_TYPE_MAP[duration_type] * resolution
+                    )
+                    new_duration = normal_notes * old_duration - (
+                        actual_notes - 1
+                    ) * round(old_duration * tuple_ratio)
+                    if duration != new_duration:
+                        position += int(new_duration - duration)
+                    is_tuple = False
+
+        time += position
+
+    # Sort tempos, key and time signatures
+    tempos.sort(key=attrgetter("time"))
+    key_signatures.sort(key=attrgetter("time"))
+    time_signatures.sort(key=attrgetter("time"))
+
+    # Get the beats
+    beats = get_beats(
+        downbeat_times, time_signatures, resolution, is_sorted=True
+    )
+
+    return tempos, key_signatures, time_signatures, beats
+
+
+def parse_staff_elem(
+    staff_elem: Element, resolution: int, measure_indices: List[int]
+) -> tuple[List[Note], List[Lyric]]:
+    """Return notes and lyrics parsed from a staff element.
+
+    This function only parses the notes and lyrics. Use
+    `parse_meta_staff_elem` to parse the tempos, key and time signatures.
+
+    """
+    # Initialize lists
     notes: List[Note] = []
     lyrics: List[Lyric] = []
-    ties: Dict[int, int] = {}
 
     # Initialize variables
     time = 0
     velocity = 64
     measure_len = round(resolution * 4)
-    # Tuples
     is_tuple = False
+
+    # Create a dictionary to handle ties
+    ties: Dict[int, int] = {}
 
     # Iterate over all elements
     measure_elems = list(staff_elem.findall("Measure"))
@@ -423,43 +594,11 @@ def parse_staff_elem(
 
             # Iterate over child elements
             for elem in voice_elem:
-                # Key signatures
-                if elem.tag == "KeySig":
-                    root, mode, fifths, root_str = parse_key_elem(elem)
-                    key_signatures.append(
-                        KeySignature(
-                            time=time + position,
-                            root=root,
-                            mode=mode,
-                            fifths=fifths,
-                            root_str=root_str,
-                        )
-                    )
-
-                # Time signatures
-                if elem.tag == "TimeSig":
-                    numerator, denominator = parse_time_elem(elem)
-                    time_signatures.append(
-                        TimeSignature(
-                            time=time + position,
-                            numerator=numerator,
-                            denominator=denominator,
-                        )
-                    )
 
                 # Dynamic elements
                 if elem.tag == "Dynamic":
                     velocity = round(
                         float(_get_text(elem, "velocity", velocity))
-                    )
-
-                # Tempo elements
-                if elem.tag == "Tempo":
-                    tempos.append(
-                        Tempo(
-                            time + position,
-                            60 * float(_get_required_text(elem, "tempo")),
-                        )
                     )
 
                 # Tuplet elements
@@ -608,19 +747,10 @@ def parse_staff_elem(
     # Sort notes
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
 
-    # Sort tempos, key signatures, time signatures and lyrics
-    tempos.sort(key=attrgetter("time"))
-    key_signatures.sort(key=attrgetter("time"))
-    time_signatures.sort(key=attrgetter("time"))
+    # Sort lyrics
     lyrics.sort(key=attrgetter("time"))
 
-    return {
-        "tempos": tempos,
-        "key_signatures": key_signatures,
-        "time_signatures": time_signatures,
-        "notes": notes,
-        "lyrics": lyrics,
-    }
+    return notes, lyrics
 
 
 def parse_metadata(root: Element) -> Metadata:
@@ -815,12 +945,14 @@ def read_musescore(
 
     # Parse measure ordering from the meta staff, expanding all repeats
     # and jumps
-    measure_indices = parse_meta_staff_elem(meta_staff_elem)
+    measure_indices = get_measure_ordering(meta_staff_elem)
+
+    # Parse the meta part element
+    tempos, key_signatures, time_signatures, beats = parse_meta_staff_elem(
+        meta_staff_elem, resolution, measure_indices
+    )
 
     # Initialize lists
-    tempos: List[Tempo] = []
-    key_signatures: List[KeySignature] = []
-    time_signatures: List[TimeSignature] = []
     tracks: List[Track] = []
 
     # Iterate over all staffs
@@ -835,17 +967,16 @@ def read_musescore(
             continue
 
         # Parse the staff
-        staff = parse_staff_elem(staff_elem, resolution, measure_indices)
+        notes, lyrics = parse_staff_elem(
+            staff_elem, resolution, measure_indices
+        )
 
         # Extend lists
-        tempos.extend(staff["tempos"])
-        key_signatures.extend(staff["key_signatures"])
-        time_signatures.extend(staff["time_signatures"])
         part_id = staff_part_map[staff_id]
         if part_id in part_track_map:
             track_id = part_track_map[part_id]
-            tracks[track_id].notes.extend(staff["notes"])
-            tracks[track_id].lyrics.extend(staff["lyrics"])
+            tracks[track_id].notes.extend(notes)
+            tracks[track_id].lyrics.extend(lyrics)
         else:
             part_track_map[part_id] = len(tracks)
             tracks.append(
@@ -853,17 +984,15 @@ def read_musescore(
                     program=part_info[part_id]["program"],
                     is_drum=part_info[part_id]["is_drum"],
                     name=part_info[part_id]["name"],
-                    notes=staff["notes"],
-                    lyrics=staff["lyrics"],
+                    notes=notes,
+                    lyrics=lyrics,
                 )
             )
 
-    # Sort tempos, key signatures and time signatures
+    # Make sure everything is sorted
     tempos.sort(key=attrgetter("time"))
     key_signatures.sort(key=attrgetter("time"))
     time_signatures.sort(key=attrgetter("time"))
-
-    # Sort notes and lyrics
     for track in tracks:
         track.notes.sort(
             key=attrgetter("time", "pitch", "duration", "velocity")
@@ -876,5 +1005,6 @@ def read_musescore(
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
+        beats=beats,
         tracks=tracks,
     )

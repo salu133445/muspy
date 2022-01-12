@@ -646,7 +646,7 @@ def test_realworld():
 
     assert len(music.key_signatures) == 0
 
-    assert len(music.time_signatures) == 4  # Due to the repeat
+    assert len(music.time_signatures) == 2  # Due to the repeat
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
 
@@ -665,6 +665,6 @@ def test_realworld_compressed():
 
     assert len(music.key_signatures) == 0
 
-    assert len(music.time_signatures) == 4  # Due to the repeat
+    assert len(music.time_signatures) == 2  # Due to the repeat
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8

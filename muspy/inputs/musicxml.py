@@ -195,7 +195,7 @@ def parse_lyric_elem(elem: Element) -> str:
 
 
 def get_measure_ordering(elem: Element) -> List[int]:
-    """Return a list of measure indices parsed from a staff element.
+    """Return a list of measure indices parsed from a part element.
 
     This function returns the ordering of measures, considering all
     repeats and jumps.
@@ -448,8 +448,13 @@ def get_beats(
 def parse_meta_part_elem(
     part_elem: Element, resolution: int, measure_indices: List[int]
 ) -> Tuple[List[Tempo], List[KeySignature], List[TimeSignature], List[Beat]]:
-    """Return a dictionary with data parsed from a meta part element."""
-    # Initialize lists and placeholders
+    """Return data parsed from a meta part element.
+
+    This function only parses the tempos, key and time signatures. Use
+    `parse_part_elem` to parse the notes and lyrics.
+
+    """
+    # Initialize lists
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
     time_signatures: List[TimeSignature] = []
@@ -463,11 +468,11 @@ def parse_meta_part_elem(
     measure_elems = list(part_elem.findall("measure"))
     for measure_idx in measure_indices:
 
-        # Collect the measure start times
-        downbeat_times.append(time)
-
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
+
+        # Collect the measure start times
+        downbeat_times.append(time)
 
         # Initialize position
         position = 0
@@ -590,7 +595,7 @@ def parse_meta_part_elem(
 
         time += position
 
-    # Sort tempos, key signatures, time signatures and lyrics
+    # Sort tempos, key and time signatures
     tempos.sort(key=attrgetter("time"))
     key_signatures.sort(key=attrgetter("time"))
     time_signatures.sort(key=attrgetter("time"))
@@ -609,13 +614,17 @@ def parse_part_elem(
     instrument_info: dict,
     measure_indices: List[int],
 ) -> tuple[Dict[str, List[Note]], List[Lyric]]:
-    """Return a dictionary with data parsed from a part element."""
-    # Initialize lists and placeholders
+    """Return notes and lyrics parsed from a part element.
+
+    This function only parses the notes and lyrics. Use
+    `parse_meta_part_elem` to parse the tempos, key and time signatures.
+
+    """
+    # Initialize lists
     notes: Dict[str, List[Note]] = {
         instrument_id: [] for instrument_id in instrument_info
     }
     lyrics: List[Lyric] = []
-    ties: Dict[Tuple[str, int], int] = {}
 
     # Initialize variables
     time = 0
@@ -624,6 +633,9 @@ def parse_part_elem(
     default_instrument_id = next(iter(instrument_info))
     transpose_semitone = 0
     transpose_octave = 0
+
+    # Create a dictionary to handle ties
+    ties: Dict[Tuple[str, int], int] = {}
 
     # Iterate over all elements
     measure_elems = list(part_elem.findall("measure"))
@@ -989,11 +1001,6 @@ def read_musicxml(
         meta_part_elem, resolution, measure_indices
     )
 
-    # Sort tempos, key signatures and time signatures
-    tempos.sort(key=attrgetter("time"))
-    key_signatures.sort(key=attrgetter("time"))
-    time_signatures.sort(key=attrgetter("time"))
-
     # Initialize lists
     tracks: List[Track] = []
 
@@ -1039,6 +1046,16 @@ def read_musicxml(
                     lyrics=lyrics,
                 )
                 tracks.append(track)
+
+    # Make sure everything is sorted
+    tempos.sort(key=attrgetter("time"))
+    key_signatures.sort(key=attrgetter("time"))
+    time_signatures.sort(key=attrgetter("time"))
+    for track in tracks:
+        track.notes.sort(
+            key=attrgetter("time", "pitch", "duration", "velocity")
+        )
+        track.lyrics.sort(key=attrgetter("time"))
 
     return Music(
         metadata=metadata,
