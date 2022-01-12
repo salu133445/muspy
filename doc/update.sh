@@ -9,7 +9,7 @@ set -ex
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
 
 # Build documentation
-rm -rf "$DIR/_build"
+rm -rf "$DIR/build"
 cd "$DIR"
 make html
 cd -
@@ -19,7 +19,7 @@ rm -rf "$DIR/../docs/"*
 rm -rf "$DIR/../docs/".[!.]*
 
 # Copy updated documentation
-cp -r "$DIR/_build/html/"* "$DIR/../docs"
-cp -r "$DIR/_build/html/".[!.]* "$DIR/../docs"
+cp -r "$DIR/build/html/"* "$DIR/../docs"
+cp -r "$DIR/build/html/".[!.]* "$DIR/../docs"
 cp -r "$DIR/source/pdf/" "$DIR/../docs/"
 cp -r "$DIR/source/examples/" "$DIR/../docs/"
