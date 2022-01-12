@@ -3,8 +3,10 @@
 # Build and update the documentation.
 # Usage: ./update.sh
 
+set -ex
+
+# Find the working directory
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" > /dev/null && pwd )"
-set -e
 
 # Build documentation
 rm -rf "$DIR/_build"
