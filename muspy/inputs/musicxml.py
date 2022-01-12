@@ -8,7 +8,10 @@ from typing import Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
+import numpy as np
+
 from ..classes import (
+    Beat,
     KeySignature,
     Lyric,
     Metadata,
@@ -17,7 +20,7 @@ from ..classes import (
     TimeSignature,
     Track,
 )
-from ..music import Music
+from ..music import DEFAULT_RESOLUTION, Music
 from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS, NOTE_MAP, NOTE_TYPE_MAP
 
 T = TypeVar("T")
@@ -191,7 +194,7 @@ def parse_lyric_elem(elem: Element) -> str:
     return text
 
 
-def parse_meta_part_elem(elem: Element) -> List[int]:
+def get_measure_ordering(elem: Element) -> List[int]:
     """Return a list of measure indices parsed from a staff element.
 
     This function returns the ordering of measures, considering all
@@ -364,34 +367,104 @@ def parse_meta_part_elem(elem: Element) -> List[int]:
     return measure_indices
 
 
-def parse_part_elem(
-    part_elem: Element,
-    resolution: int,
-    instrument_info: dict,
-    measure_indices: List[int],
-) -> dict:
-    """Return a dictionary with data parsed from a part element."""
+def get_beats(
+    downbeat_times: List[int],
+    time_signatures: List[TimeSignature],
+    resolution: int = DEFAULT_RESOLUTION,
+    is_sorted: bool = False,
+) -> List[Beat]:
+    """Return beats given downbeat positions and time signatures.
+
+    Parameters
+    ----------
+    downbeat_times : list of int
+        Positions of the downbeats.
+    time_signatures : list of :class:`muspy.TimeSignature`
+        Time signature objects.
+    resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
+        Time steps per quarter note.
+    is_sorted : bool, default: False
+        Whether the downbeat times and time signatures are sorted.
+
+    Returns
+    -------
+    list of :class:`muspy.Beat`
+        Computed beats.
+
+    """
+    # Return a list of downbeats if no time signatures is given
+    if not time_signatures:
+        return [
+            Beat(time=int(round(time)), is_downbeat=True)
+            for time in downbeat_times
+        ]
+
+    # Sort the downbeats and time signatures if necessary
+    if not is_sorted:
+        downbeat_times = sorted(downbeat_times)
+        time_signatures = sorted(time_signatures, key=attrgetter("time"))
+
+    # Compute the beats
+    beats: List[Beat] = []
+    sign_idx = 0
+    downbeat_idx = 0
+    while downbeat_idx < len(downbeat_times):
+        # Select the correct time signatures
+        if (
+            sign_idx + 1 < len(time_signatures)
+            and downbeat_times[downbeat_idx]
+            < time_signatures[sign_idx + 1].time
+        ):
+            sign_idx += 1
+            continue
+
+        # Set time signature
+        time_sign = time_signatures[sign_idx]
+        beat_resolution = resolution / (time_sign.denominator / 4)
+
+        # Get the next downbeat
+        if downbeat_idx < len(downbeat_times) - 1:
+            end: float = downbeat_times[downbeat_idx + 1]
+        else:
+            end = (
+                downbeat_times[downbeat_idx]
+                + beat_resolution * time_sign.numerator
+            )
+
+        # Append the downbeat
+        start = int(round(downbeat_times[downbeat_idx]))
+        beats.append(Beat(time=start, is_downbeat=True))
+
+        # Append beats
+        beat_times = np.arange(start + beat_resolution, end, beat_resolution)
+        for time in beat_times:
+            beats.append(Beat(time=int(round(time)), is_downbeat=False))
+
+        downbeat_idx += 1
+
+    return beats
+
+
+def parse_meta_part_elem(
+    part_elem: Element, resolution: int, measure_indices: List[int]
+) -> Tuple[List[Tempo], List[KeySignature], List[TimeSignature], List[Beat]]:
+    """Return a dictionary with data parsed from a meta part element."""
     # Initialize lists and placeholders
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
     time_signatures: List[TimeSignature] = []
-    notes: Dict[str, List[Note]] = {
-        instrument_id: [] for instrument_id in instrument_info
-    }
-    lyrics: List[Lyric] = []
-    ties: Dict[Tuple[str, int], int] = {}
 
     # Initialize variables
     time = 0
-    velocity = 64
     division = 1
-    default_instrument_id = next(iter(instrument_info))
-    transpose_semitone = 0
-    transpose_octave = 0
+    downbeat_times: List[int] = []
 
     # Iterate over all elements
     measure_elems = list(part_elem.findall("measure"))
     for measure_idx in measure_indices:
+
+        # Collect the measure start times
+        downbeat_times.append(time)
 
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
@@ -402,6 +475,7 @@ def parse_part_elem(
 
         # Iterating over all elements in the current measure
         for elem in measure_elem:
+
             # Attributes elements
             if elem.tag == "attributes":
                 # Division elements
@@ -411,16 +485,6 @@ def parse_part_elem(
                     and division_elem.text is not None
                 ):
                     division = int(division_elem.text)
-
-                # Transpose elements
-                transpose_elem = elem.find("transpose")
-                if transpose_elem is not None:
-                    transpose_semitone = int(
-                        _get_required_text(transpose_elem, "chromatic")
-                    )
-                    octave_change = _get_text(transpose_elem, "octave-change")
-                    if octave_change is not None:
-                        transpose_octave = int(octave_change)
 
                 # Key elements
                 key_elem = elem.find("key")
@@ -455,15 +519,9 @@ def parse_part_elem(
                 if tempo is not None:
                     tempos.append(Tempo(time + position, float(tempo)))
 
-                # Dynamics elements
-                dynamics = elem.get("dynamics")
-                if dynamics is not None:
-                    velocity = round(float(dynamics))
-
             # Direction elements
             elif elem.tag == "direction":
-                # TODO: Handle symbolic dynamics and tempo
-
+                # TODO: Handle textual tempo markings
                 tempo_set = False
 
                 # Sound elements
@@ -477,11 +535,6 @@ def parse_part_elem(
                         )
                         tempo_set = True
 
-                    # Dynamic directions
-                    dynamics = sound_elem_.get("dynamics")
-                    if dynamics is not None:
-                        velocity = round(float(dynamics))
-
                 # Metronome elements
                 if not tempo_set:
                     metronome_elem = elem.find("direction-type/metronome")
@@ -489,6 +542,140 @@ def parse_part_elem(
                         qpm = parse_metronome_elem(metronome_elem)
                         if qpm is not None:
                             tempos.append(Tempo(time=time + position, qpm=qpm))
+
+            # Note elements
+            elif elem.tag == "note":
+                # TODO: Handle voice information
+
+                # Rest elements
+                rest_elem = elem.find("rest")
+                if rest_elem is not None:
+                    # Move time position forward if it is a rest
+                    duration = int(_get_required_text(elem, "duration"))
+                    position += round(duration * resolution / division)
+                    continue
+
+                # Cue notes
+                if elem.find("cue") is not None:
+                    continue
+
+                # Chord elements
+                if elem.find("chord") is not None:
+                    # Move time position backward if it is in a chord
+                    if last_note_position is not None:
+                        position = last_note_position
+
+                # Grace notes
+                grace_elem = elem.find("grace")
+                if grace_elem is not None:
+                    continue
+
+                # Get duration
+                # TODO: Should we look for a duration or type element?
+                duration = int(_get_required_text(elem, "duration"))
+
+                # Move time position forward if it is not in chord
+                last_note_position = position
+                position += round(duration * resolution / division)
+
+            # Forward elements
+            elif elem.tag == "forward":
+                duration = int(_get_required_text(elem, "duration"))
+                position += round(duration * resolution / division)
+
+            # Backup elements
+            elif elem.tag == "backup":
+                duration = int(_get_required_text(elem, "duration"))
+                position -= round(duration * resolution / division)
+
+        time += position
+
+    # Sort tempos, key signatures, time signatures and lyrics
+    tempos.sort(key=attrgetter("time"))
+    key_signatures.sort(key=attrgetter("time"))
+    time_signatures.sort(key=attrgetter("time"))
+
+    # Get the beats
+    beats = get_beats(
+        downbeat_times, time_signatures, resolution, is_sorted=True
+    )
+
+    return tempos, key_signatures, time_signatures, beats
+
+
+def parse_part_elem(
+    part_elem: Element,
+    resolution: int,
+    instrument_info: dict,
+    measure_indices: List[int],
+) -> tuple[Dict[str, List[Note]], List[Lyric]]:
+    """Return a dictionary with data parsed from a part element."""
+    # Initialize lists and placeholders
+    notes: Dict[str, List[Note]] = {
+        instrument_id: [] for instrument_id in instrument_info
+    }
+    lyrics: List[Lyric] = []
+    ties: Dict[Tuple[str, int], int] = {}
+
+    # Initialize variables
+    time = 0
+    velocity = 64
+    division = 1
+    default_instrument_id = next(iter(instrument_info))
+    transpose_semitone = 0
+    transpose_octave = 0
+
+    # Iterate over all elements
+    measure_elems = list(part_elem.findall("measure"))
+    for measure_idx in measure_indices:
+
+        # Get the measure element
+        measure_elem = measure_elems[measure_idx]
+
+        # Initialize position
+        position = 0
+        last_note_position = None
+
+        # Iterating over all elements in the current measure
+        for elem in measure_elem:
+
+            # Attributes elements
+            if elem.tag == "attributes":
+                # Division elements
+                division_elem = elem.find("divisions")
+                if (
+                    division_elem is not None
+                    and division_elem.text is not None
+                ):
+                    division = int(division_elem.text)
+
+                # Transpose elements
+                transpose_elem = elem.find("transpose")
+                if transpose_elem is not None:
+                    transpose_semitone = int(
+                        _get_required_text(transpose_elem, "chromatic")
+                    )
+                    octave_change = _get_text(transpose_elem, "octave-change")
+                    if octave_change is not None:
+                        transpose_octave = int(octave_change)
+
+            # Sound element
+            elif elem.tag == "sound":
+                # Dynamics elements
+                dynamics = elem.get("dynamics")
+                if dynamics is not None:
+                    velocity = round(float(dynamics))
+
+            # Direction elements
+            elif elem.tag == "direction":
+                # TODO: Handle textual dynamic markings
+                # Sound elements
+                sound_elem_ = elem.find("sound")
+                if sound_elem_ is not None:
+                    # Dynamic directions
+                    dynamics = sound_elem_.get("dynamics")
+                    if dynamics is not None:
+                        velocity = round(float(dynamics))
 
             # Note elements
             elif elem.tag == "note":
@@ -622,19 +809,10 @@ def parse_part_elem(
             key=attrgetter("time", "pitch", "duration", "velocity")
         )
 
-    # Sort tempos, key signatures, time signatures and lyrics
-    tempos.sort(key=attrgetter("time"))
-    key_signatures.sort(key=attrgetter("time"))
-    time_signatures.sort(key=attrgetter("time"))
+    # Sort lyrics
     lyrics.sort(key=attrgetter("time"))
 
-    return {
-        "tempos": tempos,
-        "key_signatures": key_signatures,
-        "time_signatures": time_signatures,
-        "notes": notes,
-        "lyrics": lyrics,
-    }
+    return notes, lyrics
 
 
 def parse_metadata(root: Element) -> Metadata:
@@ -667,7 +845,7 @@ def parse_metadata(root: Element) -> Metadata:
 
 
 def _get_root(path: Union[str, Path], compressed: bool = None):
-    """Return root of the element tree."""
+    """Return the root of the element tree."""
     if compressed is None:
         compressed = str(path).endswith(".mxl")
 
@@ -804,12 +982,19 @@ def read_musicxml(
 
     # Parse measure ordering from the meta part, expanding all repeats
     # and jumps
-    measure_indices = parse_meta_part_elem(meta_part_elem)
+    measure_indices = get_measure_ordering(meta_part_elem)
+
+    # Parse the meta part element
+    tempos, key_signatures, time_signatures, beats = parse_meta_part_elem(
+        meta_part_elem, resolution, measure_indices
+    )
+
+    # Sort tempos, key signatures and time signatures
+    tempos.sort(key=attrgetter("time"))
+    key_signatures.sort(key=attrgetter("time"))
+    time_signatures.sort(key=attrgetter("time"))
 
     # Initialize lists
-    tempos: List[Tempo] = []
-    key_signatures: List[KeySignature] = []
-    time_signatures: List[TimeSignature] = []
     tracks: List[Track] = []
 
     # Raise an error if part-list information is missing for a
@@ -821,14 +1006,17 @@ def read_musicxml(
             )
         part_elem = _get_required(root, "part")
         instrument_info = {"": {"program": 0, "is_drum": False}}
-        part = parse_part_elem(
+        notes, lyrics = parse_part_elem(
             part_elem, resolution, instrument_info, measure_indices
+        )
+        tracks.append(
+            Track(program=0, is_drum=False, notes=notes[""], lyrics=lyrics)
         )
 
     else:
         # Iterate over all parts and measures
         for part_elem in root.findall("part"):
-            part_id = part_elem.get("id")  # type: ignore
+            part_id = part_elem.get("id")
             if part_id is None:
                 if len(root.findall("part")) > 1:
                     continue
@@ -837,28 +1025,20 @@ def read_musicxml(
                 continue
 
             # Parse part
-            part = parse_part_elem(
+            notes, lyrics = parse_part_elem(
                 part_elem, resolution, part_info[part_id], measure_indices
             )
 
             # Extend lists
-            tempos.extend(part["tempos"])
-            key_signatures.extend(part["key_signatures"])
-            time_signatures.extend(part["time_signatures"])
-            for instrument_id, notes in part["notes"].items():
+            for instrument_id, instrument_notes in notes.items():
                 track = Track(
                     program=part_info[part_id][instrument_id]["program"],
                     is_drum=part_info[part_id][instrument_id]["is_drum"],
                     name=part_info[part_id][instrument_id]["name"],
-                    notes=notes,
-                    lyrics=part["lyrics"],
+                    notes=instrument_notes,
+                    lyrics=lyrics,
                 )
                 tracks.append(track)
-
-    # Sort tempos, key signatures and time signatures
-    tempos.sort(key=attrgetter("time"))
-    key_signatures.sort(key=attrgetter("time"))
-    time_signatures.sort(key=attrgetter("time"))
 
     return Music(
         metadata=metadata,
@@ -866,5 +1046,6 @@ def read_musicxml(
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
+        beats=beats,
         tracks=tracks,
     )

@@ -172,10 +172,10 @@ def parse_beats(
     """
     beats: List[Beat] = []
     measure_offset_map = stream.measureOffsetMap()
-    downbeats = list(
+    downbeats = [
         round(float(offset * resolution))
         for offset in measure_offset_map.keys()
-    )
+    ]
     downbeats.sort()
     time_sign_idx = 0
     downbeat_idx = 0
@@ -202,9 +202,9 @@ def parse_beats(
             np.arange(downbeats[downbeat_idx], end, beat_resolution)
         ):
             if j % time_sign.numerator == 0:
-                beats.append(Beat(time=round(time), is_downbeat=True))
+                beats.append(Beat(time=int(round(time)), is_downbeat=True))
             else:
-                beats.append(Beat(time=round(time), is_downbeat=False))
+                beats.append(Beat(time=int(round(time)), is_downbeat=False))
         downbeat_idx += 1
     return beats
 
