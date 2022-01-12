@@ -1,4 +1,5 @@
 """Piano-roll output interface."""
+import math
 from operator import attrgetter
 from typing import TYPE_CHECKING, Union
 
@@ -26,7 +27,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
         Converted Multitrack object.
 
     """
-    length = (music.get_end_time() // music.resolution + 1) * music.resolution
+    length = music.get_end_time()
 
     # Tracks
     tracks = []
@@ -63,7 +64,7 @@ def to_pypianoroll(music: "Music") -> Multitrack:
     if not music.beats:
         downbeat_arr = None
     else:
-        downbeat_arr = np.ones(length, bool)
+        downbeat_arr = np.zeros(length, bool)
         for beat in music.beats:
             if beat.is_downbeat:
                 downbeat_arr[beat.time] = True

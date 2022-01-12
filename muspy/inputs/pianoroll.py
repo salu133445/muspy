@@ -7,7 +7,7 @@ from numpy import ndarray
 from pypianoroll import Multitrack
 from pypianoroll import Track as PypianorollTrack
 
-from ..classes import DEFAULT_VELOCITY, Metadata, Note, Tempo, Track
+from ..classes import DEFAULT_VELOCITY, Beat, Metadata, Note, Tempo, Track
 from ..music import DEFAULT_RESOLUTION, Music
 
 
@@ -93,15 +93,24 @@ def from_pypianoroll(
         Tempo(time, qpm=float(multitrack.tempo[time]))
         for time in tempo_change_timings
     ]
+
+    # Beats
+    beats = [
+        Beat(time=int(time), is_downbeat=True)
+        for time in np.nonzero(multitrack.downbeat)[0]
+    ]
+
     # Tracks
     tracks = [
         from_pypianoroll_track(track, default_velocity)
         for track in multitrack.tracks
     ]
+
     return Music(
         resolution=int(multitrack.resolution),
         metadata=Metadata(title=multitrack.name) if multitrack.name else None,
         tempos=tempos,
+        beats=beats,
         tracks=tracks,
     )
 
