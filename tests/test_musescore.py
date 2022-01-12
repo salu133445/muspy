@@ -305,15 +305,21 @@ def test_tuplets():
     # Answers
     pitches = [60, 62, 64, 65, 67, 69, 71, 72, 74, 76, 77, 79, 81, 83, 84]
     pitches += pitches[::-1]
-    durations = [2 / 3] * 9
-    durations += [2 / 4] * 4
-    durations += [1 / 4] * 4
-    durations += [3 / 7] * 7
-    durations += [2 / 6] * 6
+    durations = [
+        round(music.resolution * 2 / 3),
+        round(music.resolution * 2 / 3),
+        music.resolution * 2 - round(music.resolution * 4 / 3),
+    ] * 3
+    durations += [round(music.resolution * 2 / 4)] * 4
+    durations += [round(music.resolution * 1 / 4)] * 4
+    durations += [round(music.resolution * 3 / 7)] * 6 + [
+        music.resolution * 3 - round(music.resolution * 3 / 7) * 6
+    ]
+    durations += [round(music.resolution * 2 / 6)] * 6
 
-    for i, note in enumerate(music[0]):
-        assert note.pitch == pitches[i]
-        assert note.duration == round(music.resolution * durations[i])
+    for note, pitch, duration in zip(music[0], pitches, durations):
+        assert note.pitch == pitch
+        assert note.duration == duration
 
 
 def test_grace_notes():

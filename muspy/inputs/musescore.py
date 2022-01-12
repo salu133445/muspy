@@ -738,7 +738,7 @@ def parse_staff_elem(
                         actual_notes - 1
                     ) * round(old_duration * tuple_ratio)
                     if notes[-1].duration != new_duration:
-                        # notes[-1].duration = new_duration
+                        notes[-1].duration = new_duration
                         position += int(new_duration - duration)
                     is_tuple = False
 
