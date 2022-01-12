@@ -547,7 +547,7 @@ def parse_meta_staff_elem(
 
 def parse_staff_elem(
     staff_elem: Element, resolution: int, measure_indices: List[int]
-) -> tuple[List[Note], List[Lyric]]:
+) -> Tuple[List[Note], List[Lyric]]:
     """Return notes and lyrics parsed from a staff element.
 
     This function only parses the notes and lyrics. Use

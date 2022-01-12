@@ -613,7 +613,7 @@ def parse_part_elem(
     resolution: int,
     instrument_info: dict,
     measure_indices: List[int],
-) -> tuple[Dict[str, List[Note]], List[Lyric]]:
+) -> Tuple[Dict[str, List[Note]], List[Lyric]]:
     """Return notes and lyrics parsed from a part element.
 
     This function only parses the notes and lyrics. Use
