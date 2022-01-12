@@ -82,7 +82,7 @@
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Track</span> <span class="k">as</span> <span class="n">PypianorollTrack</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">Track</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">,</span> <span class="n">Beat</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">Track</span>
 <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">DEFAULT_RESOLUTION</span><span class="p">,</span> <span class="n">Music</span>
 
 
@@ -168,15 +168,24 @@
         <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">qpm</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">multitrack</span><span class="o">.</span><span class="n">tempo</span><span class="p">[</span><span class="n">time</span><span class="p">]))</span>
         <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">tempo_change_timings</span>
     <span class="p">]</span>
+
+    <span class="c1"># Beats</span>
+    <span class="n">beats</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Beat</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">is_downbeat</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">time</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">multitrack</span><span class="o">.</span><span class="n">downbeat</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="p">]</span>
+
     <span class="c1"># Tracks</span>
     <span class="n">tracks</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">from_pypianoroll_track</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">default_velocity</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">multitrack</span><span class="o">.</span><span class="n">tracks</span>
     <span class="p">]</span>
+
     <span class="k">return</span> <span class="n">Music</span><span class="p">(</span>
         <span class="n">resolution</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">multitrack</span><span class="o">.</span><span class="n">resolution</span><span class="p">),</span>
         <span class="n">metadata</span><span class="o">=</span><span class="n">Metadata</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">multitrack</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">if</span> <span class="n">multitrack</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">tempos</span><span class="o">=</span><span class="n">tempos</span><span class="p">,</span>
+        <span class="n">beats</span><span class="o">=</span><span class="n">beats</span><span class="p">,</span>
         <span class="n">tracks</span><span class="o">=</span><span class="n">tracks</span><span class="p">,</span>
     <span class="p">)</span></div>
 

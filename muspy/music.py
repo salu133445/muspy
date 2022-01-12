@@ -54,15 +54,15 @@ class Music(ComplexBase):
     This is the core class of MusPy. A Music object can be constructed
     in the following ways.
 
-    - :meth:`muspy.Music`: Construct by setting values for attributes.
+    - :meth:`muspy.Music`: Construct by setting values for attributes
     - :meth:`muspy.Music.from_dict`: Construct from a dictionary that
-      stores the attributes and their values as key-value pairs.
-    - :func:`muspy.read`: Read from a MIDI, a MusicXML or an ABC file.
+      stores the attributes and their values as key-value pairs
+    - :func:`muspy.read`: Read from a MIDI, a MusicXML or an ABC file
     - :func:`muspy.load`: Load from a JSON or a YAML file saved by
-      :func:`muspy.save`.
-    - :func:`muspy.from_object`: Convert from a `music21.Stream`, a
-      :class:`mido.MidiFile`, a :class:`pretty_midi.PrettyMIDI` or a
-      :class:`pypianoroll.Multitrack` object.
+      :func:`muspy.save`
+    - :func:`muspy.from_object`: Convert from a `music21.Stream`,
+      :class:`mido.MidiFile`, :class:`pretty_midi.PrettyMIDI` or
+      :class:`pypianoroll.Multitrack` object
 
     Attributes
     ----------

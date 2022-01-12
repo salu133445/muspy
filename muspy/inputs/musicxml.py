@@ -377,9 +377,9 @@ def get_beats(
 
     Parameters
     ----------
-    downbeat_times : list of int
+    downbeat_times : sequence of int
         Positions of the downbeats.
-    time_signatures : list of :class:`muspy.TimeSignature`
+    time_signatures : sequence of :class:`muspy.TimeSignature`
         Time signature objects.
     resolution : int, default: `muspy.DEFAULT_RESOLUTION` (24)
         Time steps per quarter note.
