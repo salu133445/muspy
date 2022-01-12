@@ -60,7 +60,7 @@ def download_bravura_font(overwrite: bool = False):
     )
     print(
         "Bravura font has successfully been downloaded to : "
-        "{}.".format(get_musescore_soundfont_dir())
+        f"{get_musescore_soundfont_dir()}."
     )
 
     # Download the license
@@ -103,7 +103,7 @@ def download_musescore_soundfont(overwrite: bool = False):
     )
     print(
         "MuseScore General soundfont has successfully been downloaded to : "
-        "{}.".format(get_musescore_soundfont_dir())
+        f"{get_musescore_soundfont_dir()}."
     )
 
     # Download the license

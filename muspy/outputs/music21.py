@@ -56,7 +56,7 @@ def to_music21_time_signature(
 ) -> M21TimeSignature:
     """Return a TimeSignature object as a music21 TimeSignature."""
     m21_time_signature = M21TimeSignature(
-        "{}/{}".format(time_signature.numerator, time_signature.denominator)
+        f"{time_signature.numerator}/{time_signature.denominator}"
     )
     m21_time_signature.offset = time_signature.time
     return m21_time_signature

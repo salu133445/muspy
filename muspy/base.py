@@ -344,22 +344,19 @@ class Base:
         if value is None:
             if attr in self._optional_attributes:
                 return
-            raise TypeError("`{}` must not be None".format(attr))
+            raise TypeError(f"`{attr}` must not be None")
         if attr in self._list_attributes:
             if not isinstance(value, list):
-                raise TypeError("`{}` must be a list.".format(attr))
+                raise TypeError(f"`{attr}` must be a list.")
             for item in value:
                 if not isinstance(item, attr_type):
                     raise TypeError(
-                        "`{}` must be a list of type {}.".format(
-                            attr, _get_type_string(attr_type)
-                        )
+                        f"`{attr}` must be a list of type "
+                        f"{_get_type_string(attr_type)}."
                     )
         elif not isinstance(value, attr_type):
             raise TypeError(
-                "`{}` must be of type {}.".format(
-                    attr, _get_type_string(attr_type)
-                )
+                f"`{attr}` must be of type {_get_type_string(attr_type)}."
             )
 
         # Apply recursively

@@ -7,7 +7,6 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     List,
     Sequence,
     Tuple,
@@ -286,9 +285,10 @@ class Dataset:
             )
 
         try:
+            # pylint: disable=import-outside-toplevel
             from torch.utils.data import Dataset as TorchDataset
-        except ImportError:
-            raise ImportError("Optional package pytorch is required.")
+        except ImportError as err:
+            raise ImportError("Optional package pytorch is required.") from err
 
         class TorchMusicFactoryDataset(TorchDataset):
             """A PyTorch dataset built from a Music dataset.
@@ -386,11 +386,12 @@ class Dataset:
         for key, value in indices_list.items():
             if representation is not None:
                 datasets[key] = TorchRepresentationDataset(
-                    self, representation, key, value, **kwargs,
+                    self, representation, key, value, **kwargs
                 )
             else:
+
                 datasets[key] = TorchMusicFactoryDataset(
-                    self, factory, key, value,  # type: ignore
+                    self, factory, key, value  # type: ignore
                 )
 
         return datasets
@@ -447,10 +448,13 @@ class Dataset:
             )
 
         try:
+            # pylint: disable=import-outside-toplevel
             import tensorflow as tf
             from tensorflow.data import Dataset as TFDataset
-        except ImportError:
-            raise ImportError("Optional package tensorflow is required.")
+        except ImportError as err:
+            raise ImportError(
+                "Optional package tensorflow is required."
+            ) from err
 
         if representation is not None:
 
@@ -579,7 +583,7 @@ class RemoteDataset(Dataset):
             )
 
     def __repr__(self) -> str:
-        return "{}(root={})".format(type(self).__name__, self.root)
+        return f"{type(self).__name__}(root={self.root})"
 
     def __getitem__(self, index) -> Music:
         raise NotImplementedError
