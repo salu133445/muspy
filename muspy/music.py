@@ -165,6 +165,9 @@ class Music(ComplexBase):
     def __setitem__(self, key: int, value: Track):
         self.tracks[key] = value
 
+    def __delitem__(self, key: int):
+        del self.tracks[key]
+
     def get_end_time(self, is_sorted: bool = False) -> int:
         """Return the the time of the last event in all tracks.
 

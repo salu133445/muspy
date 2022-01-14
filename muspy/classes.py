@@ -662,6 +662,9 @@ class Track(ComplexBase):
     def __setitem__(self, key: int, value: Note):
         self.notes[key] = value
 
+    def __delitem__(self, key: int):
+        del self.notes[key]
+
     def _validate(self, attr: str, recursive: bool):
         super()._validate(attr, recursive)
         if attr == "program" and self.program < 0 or self.program > 127:
