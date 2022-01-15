@@ -24,6 +24,7 @@ Variables
 
 """
 from collections import OrderedDict
+from math import ceil
 from typing import Any, Callable, List, TypeVar
 
 from .base import Base, ComplexBase
@@ -49,6 +50,37 @@ __all__ = [
 ]
 
 # pylint: disable=super-init-not-called
+
+
+def get_end_time(list_: List, is_sorted: bool = False, attr: str = "time"):
+    """Return the end time of a list of objects.
+
+    Parameters
+    ----------
+    list_ : list
+        List of objects.
+    is_sorted : bool, default: False
+        Whether the list is sorted.
+    attr : str, default: 'time'
+        Attribute to look for.
+
+    """
+    if not list_:
+        return 0
+    if is_sorted:
+        return getattr(list_[-1], attr)
+    return max(getattr(item, attr) for item in list_)
+
+
+def _trim_list(list_: List, end: int):
+    new_list = []
+    for item in list_:
+        if item.time >= end:
+            continue
+        if item.end > end:
+            item.end = end
+        new_list.append(item)
+    return new_list
 
 
 class Metadata(Base):
@@ -681,19 +713,11 @@ class Track(ComplexBase):
             Whether all the list attributes are sorted.
 
         """
-
-        def _get_end_time(list_, ref_attr="time"):
-            if not list_:
-                return 0
-            if is_sorted:
-                return getattr(list_[-1], ref_attr)
-            return max(getattr(item, ref_attr) for item in list_)
-
         return max(
-            _get_end_time(self.notes, "end"),
-            _get_end_time(self.chords, "end"),
-            _get_end_time(self.lyrics),
-            _get_end_time(self.annotations),
+            get_end_time(self.notes, is_sorted, "end"),
+            get_end_time(self.chords, is_sorted, "end"),
+            get_end_time(self.lyrics, is_sorted),
+            get_end_time(self.annotations, is_sorted),
         )
 
     def clip(self: TrackType, lower: int = 0, upper: int = 127) -> TrackType:
@@ -732,4 +756,21 @@ class Track(ComplexBase):
         """
         for note in self.notes:
             note.transpose(semitone)
+        return self
+
+    def trim(self: TrackType, end: int) -> TrackType:
+        """Trim the track.
+
+        Parameters
+        ----------
+        end : int
+            End time, excluding (i.e, the max time will be `end` - 1).
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        self.notes = _trim_list(self.notes, end)
+        self.chords = _trim_list(self.chords, end)
         return self

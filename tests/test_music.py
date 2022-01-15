@@ -74,6 +74,15 @@ def test_transpose():
         assert note.pitch == pitch
 
 
+def test_trim():
+    music = muspy.load(TEST_JSON_PATH)
+
+    music.trim(24)
+    assert len(music.beats) == 2
+    assert len(music[0].notes) == 4
+    assert music.get_end_time() == 24
+
+
 def test_deepcopy():
     music = muspy.load(TEST_JSON_PATH)
     music2 = deepcopy(music)

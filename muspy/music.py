@@ -36,6 +36,7 @@ from .classes import (
     Tempo,
     TimeSignature,
     Track,
+    get_end_time,
 )
 from .outputs import save, synthesize, to_object, to_representation, write
 from .visualization import show
@@ -180,14 +181,6 @@ class Music(ComplexBase):
             Whether all the list attributes are sorted.
 
         """
-
-        def _get_end_time(list_):
-            if not list_:
-                return 0
-            if is_sorted:
-                return list_[-1].time
-            return max(item.time for item in list_)
-
         if self.tracks:
             track_end_time = max(
                 track.get_end_time(is_sorted) for track in self.tracks
@@ -196,12 +189,12 @@ class Music(ComplexBase):
             track_end_time = 0
 
         end_time = max(
-            _get_end_time(self.tempos),
-            _get_end_time(self.key_signatures),
-            _get_end_time(self.time_signatures),
-            _get_end_time(self.beats),
-            _get_end_time(self.lyrics),
-            _get_end_time(self.annotations),
+            get_end_time(self.tempos, is_sorted),
+            get_end_time(self.key_signatures, is_sorted),
+            get_end_time(self.time_signatures, is_sorted),
+            get_end_time(self.beats, is_sorted),
+            get_end_time(self.lyrics, is_sorted),
+            get_end_time(self.annotations, is_sorted),
             track_end_time,
         )
 
@@ -375,6 +368,31 @@ class Music(ComplexBase):
         for track in self.tracks:
             if not track.is_drum:
                 track.transpose(semitone)
+        return self
+
+    def trim(self: MusicType, end: int) -> MusicType:
+        """Trim the track.
+
+        Parameters
+        ----------
+        end : int
+            End time, excluding (i.e, the max time will be `end` - 1).
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        self.tempos = [x for x in self.tempos if x.time < end]
+        self.key_signatures = [x for x in self.key_signatures if x.time < end]
+        self.time_signatures = [
+            x for x in self.time_signatures if x.time < end
+        ]
+        self.beats = [x for x in self.beats if x.time < end]
+        self.lyrics = [x for x in self.lyrics if x.time < end]
+        self.annotations = [x for x in self.annotations if x.time < end]
+        for track in self.tracks:
+            track.trim(end)
         return self
 
     def save(self, path: Union[str, Path], kind: str = None, **kwargs: Any):
