@@ -17,6 +17,7 @@ MusPy provides several classes for working with symbolic music. Here is an illus
     tempo
     key-signature
     time-signature
+    beat
     lyric
     annotation
     note

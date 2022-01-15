@@ -12,7 +12,7 @@ resolution      Time steps per beat    int                                  ``mu
 tempos          Tempo changes          list of :class:`muspy.Tempo`         []
 key_signatures  Key signature changes  list of :class:`muspy.KeySignature`  []
 time_signatures Time signature changes list of :class:`muspy.TimeSignature` []
-downbeats       Downbeat positions     list of int                          []
+beats           Beats                  list of :class:`muspy.Beat`          []
 lyrics          Lyrics                 list of :class:`muspy.Lyric`         []
 annotations     Annotations            list of :class:`muspy.Annotation`    []
 tracks          Music tracks           list of :class:`muspy.Track`         []

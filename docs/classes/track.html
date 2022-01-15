@@ -48,6 +48,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tempo.html">Tempo Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="key-signature.html">KeySignature Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="time-signature.html">TimeSignature Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="beat.html">Beat Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lyric.html">Lyric Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="annotation.html">Annotation Class</a></li>
 <li class="toctree-l2"><a class="reference internal" href="note.html">Note Class</a></li>
@@ -374,6 +375,18 @@ key-value pairs, e.g., <cite>{“attr1”: value1, “attr2”: value2}</cite>.<
 
 <dl class="py method">
 <dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_end_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.get_end_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Return the time of the last event.</p>
+<p>This includes notes, chords, lyrics and annotations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>is_sorted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether all the list attributes are sorted.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
 <dd><p>Return True if an attribute has a valid type and value.</p>
 <p>This will recursively apply to an attribute’s attributes.</p>
@@ -622,18 +635,6 @@ key-value pairs, e.g., <cite>{“attr1”: value1, “attr2”: value2}</cite>.<
 
 <dl class="py method">
 <dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">get_end_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.get_end_time"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
-<dd><p>Return the time of the last event.</p>
-<p>This includes notes, chords, lyrics and annotations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>is_sorted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether all the list attributes are sorted.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lower</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">127</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
 <dd><p>Clip the velocity of each note.</p>
 <dl class="field-list simple">
@@ -661,6 +662,23 @@ key-value pairs, e.g., <cite>{“attr1”: value1, “attr2”: value2}</cite>.<
 <dd class="field-odd"><p><strong>semitone</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – Number of semitones to transpose the notes. A positive value
 raises the pitches, while a negative value lowers the
 pitches.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Object itself.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">trim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/classes.html#Track.trim"><span class="viewcode-link"><span class="pre">[source]</span></span></a></dt>
+<dd><p>Trim the track.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>end</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a>) – End time, excluding (i.e, the max time will be <cite>end</cite> - 1).</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p></p>

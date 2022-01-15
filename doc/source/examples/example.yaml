@@ -5,112 +5,120 @@ metadata:
 
   # Song title
   title: Für Elise
-  # Creators of the song
+  # Creator(s) of the song
   creators:
     - Ludwig van Beethoven
-  # Copyright notice of the source file
+  # Copyright notice
   copyright: null
 
   # Name of the collection
   collection: Example dataset
   # Name of the source file
   source_filename: example.yaml
-  # Format of the source file {midi, musicxml, abc, null}
-  source_format: null
+  # Format of the source file
+  source_format: yaml
 
 # Time steps per quarter note
-resolution: 4
+resolution: 24
 
 # Tempo changes
 tempos:
-  - # Event time
+  - # Start time of the tempo, in time steps
     time: 0
     # Tempo in qpm (quarters per minute)
     qpm: 72
 
 # Key signature changes
 key_signatures:
-  - # Event time
+  - # Start time of the key signature, in time steps
     time: 0
-    # Root: {A, B, C, D, E, F, G} with optional accidentals {#, b, ##, bb}
+    # Root (tonic) of the key signature
     root: 9
-    # Mode: {major, minor}
+    # Mode of the key signature
     mode: minor
+    # Number of sharps or flats (positive numbers for sharps and negative
+    # numbers for flats)
+    fifths: 0
 
 # Time signature changes
 time_signatures:
-  - # Event time
+  - # Start time of the time signature, in time steps
     time: 0
-    # Numerator of time signature
+    # Numerator of the time signature
     numerator: 3
-    # Denominator of time signature
+    # Denominator of the time signature
     denominator: 8
 
-# Downbeat positions
-downbeats:
-  # Downbeat time
-  - 4
-  - 16
+# Beats
+beats:
+  - # Time of the beat, in time steps
+    time: 0
+    # Whether it is a downbeat
+    is_downbeat: false
+  - {time: 12, is_downbeat: true}
+  - {time: 24, is_downbeat: false}
+  - {time: 36, is_downbeat: false}
+  - {time: 48, is_downbeat: true}
 
 # Global lyrics
 lyrics:
-  - # Event time
+  - # Start time of the lyric, in time steps
     time: 0
-    # Content of lyric
+    # Lyric (sentence, word, syllable, etc.)
     lyric: Nothing but a lyric
 
 # Global annotations
 annotations:
-  - # Event time
+  - # Start time of the annotation, in time steps
     time: 0
-    # Content of annotation
+    # Annotation of any type
     annotation: Nothing but an annotation
-    # Annotation group
+    # Group name (for better organizing the annotations)
     group: null
 
 # Tracks
 tracks:
-  - # Program number (according to General MIDI specification)
+  - # Program number, according to General MIDI specification
     program: 0
-    # A boolean indicator that indicates whether it is a percussion track
+    # Whether it is a percussion track
     is_drum: false
-    # Name of track
+    # Track name
     name: Melody
 
-    # Notes
+    # Musical notes
     notes:
-      - # Start time
+      - # Start time of the note, in time steps
         time: 0
-        # Note duration
-        duration: 2
-        # Note pitch
+        # Note pitch, as a MIDI note number
         pitch: 76
+        # Duration of the note, in time steps
+        duration: 6
         # Note velocity
         velocity: 64
-      - {time: 2, duration: 2, pitch: 75, velocity: 64}
-      - {time: 4, duration: 2, pitch: 76, velocity: 64}
-      - {time: 6, duration: 2, pitch: 75, velocity: 64}
-      - {time: 8, duration: 2, pitch: 76, velocity: 64}
-      - {time: 10, duration: 2, pitch: 71, velocity: 64}
-      - {time: 12, duration: 2, pitch: 74, velocity: 64}
-      - {time: 14, duration: 2, pitch: 72, velocity: 64}
-      - {time: 16, duration: 2, pitch: 69, velocity: 64}
+      - {time: 1, pitch: 75, duration: 6, velocity: 64}
+      - {time: 12, pitch: 76, duration: 6, velocity: 64}
+      - {time: 18, pitch: 75, duration: 6, velocity: 64}
+      - {time: 24, pitch: 76, duration: 6, velocity: 64}
+      - {time: 30, pitch: 71, duration: 6, velocity: 64}
+      - {time: 36, pitch: 74, duration: 6, velocity: 64}
+      - {time: 42, pitch: 72, duration: 6, velocity: 64}
+      - {time: 48, pitch: 69, duration: 6, velocity: 64}
 
     # Chords
     chords: null
 
     # Track-specific lyric
     lyrics:
-      - # Event time
+      - # Start time of the lyric, in time steps
         time: 0
-        # Content of lyric
+        # Lyric (sentence, word, syllable, etc.)
         lyric: Nothing but a lyric
 
     # Track-specific annotations
     annotations:
-      - # Event time
+      - # Start time of the annotation, in time steps
         time: 0
-        # Content of annotation
+        # Annotation of any type
         annotation: Nothing but an annotation
-        # Annotation group
+        # Group name (for better organizing the annotations)
         group: null
