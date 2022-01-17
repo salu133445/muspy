@@ -381,7 +381,7 @@ def to_performance_event_sequence(music: "Music") -> PerformanceEventSequence:
 
 
 def to_performance_event_representation(music: "Music", dtype=int) -> ndarray:
-    """Encode a Music object into the performance event representation."""
+    """Encode a Music object to the performance event representation."""
     seq = to_performance_event_sequence(music)
     return np.array(seq, dtype=dtype)
 

@@ -1,5 +1,4 @@
 """Piano-roll output interface."""
-import math
 from operator import attrgetter
 from typing import TYPE_CHECKING, Union
 

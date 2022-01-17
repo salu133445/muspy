@@ -551,7 +551,8 @@ def parse_staff_elem(
     """Return notes and lyrics parsed from a staff element.
 
     This function only parses the notes and lyrics. Use
-    `parse_meta_staff_elem` to parse the tempos, key and time signatures.
+    `parse_meta_staff_elem` to parse the tempos, key and time
+    signatures.
 
     """
     # Initialize lists

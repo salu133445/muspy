@@ -298,8 +298,9 @@ class Dataset:
             dataset : :class:`muspy.Dataset`
                 Dataset object to base on.
             factory : Callable
-                Function to be applied to the Music objects. The input is a
-                Music object, and the output is an array or a tensor.
+                Function to be applied to the Music objects. The input
+                is a Music object, and the output is an array or a
+                tensor.
 
             """
 
