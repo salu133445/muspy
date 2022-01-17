@@ -24,7 +24,6 @@ Variables
 
 """
 from collections import OrderedDict
-from math import ceil
 from typing import Any, Callable, List, TypeVar
 
 from .base import Base, ComplexBase
@@ -773,4 +772,6 @@ class Track(ComplexBase):
         """
         self.notes = _trim_list(self.notes, end)
         self.chords = _trim_list(self.chords, end)
+        self.lyrics = [x for x in self.lyrics if x.time < end]
+        self.annotations = [x for x in self.annotations if x.time < end]
         return self
