@@ -334,7 +334,7 @@ def test_default_event_representation():
         "time_shift_6",
         "note_off_69",
     ]
-    assert seq.events() == answer_events
+    assert seq.events == answer_events
 
 
 def test_performance_event_representation():
@@ -422,15 +422,18 @@ def test_performance_event_representation():
         "time_shift_6",
         "note_off_69",
     ]
-    assert seq.events() == answer_events
+    assert seq.events == answer_events
 
 
-# def test_remi_event_representation():
-#     music = muspy.load(TEST_JSON_PATH)
+def test_remi_event_representation():
+    music = muspy.load(TEST_JSON_PATH)
 
-#     seq = muspy.outputs.event.to_remi_event_sequence(music)
+    seq = muspy.outputs.event.to_remi_event_sequence(music)
+    for event in seq.events:
+        print(event)
 
-#     assert len(seq) == 57
+    assert len(seq) == 57
+
 
 #     answer = [
 #         216,

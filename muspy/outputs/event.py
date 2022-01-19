@@ -132,51 +132,92 @@ def to_event_representation(
     return np.array(events, dtype=dtype).reshape(-1, 1)
 
 
-class EventSequence(list):
+class EventSequence:
     """A class for handling an event sequence.
 
-    The EventSequence inherits from the builtin list. The elements are
-    integer codes of the events defined by its `indexer` attribute. The
-    corresponding events can be accessed by calling `events(idx)`.
+    This class serves as a containter for an event sequence. The
+    elements are stored as integer codes, where the corresponding events
+    are defined by the `indexer` attribute. The event sequence can also
+    be accessed as a list of strings by calling `events`.
 
     Attributes
     ----------
+    codes : list of int
+        List of event codes.
     indexer : bidict, optional
         Indexer that defines the mapping between events and their codes.
 
     """
 
-    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
-        if iterable is not None:
-            super().__init__(iterable)
-        else:
-            super().__init__()
+    def __init__(
+        self, codes: List[int] = None, indexer: bidict[str, int] = None
+    ):
+        self.codes = codes if codes is not None else []
         self.indexer = indexer if indexer is not None else bidict()
 
-    def event(self, idx: int) -> str:
-        """Return the event at a given index."""
-        return self.indexer.inverse[self[idx]]
+    def __len__(self) -> int:
+        return len(self.codes)
 
+    def __repr__(self) -> str:
+        return f"EventSequence({repr(self.codes)})"
+
+    def __getitem__(self, key: int) -> int:
+        return self.codes[key]
+
+    def __setitem__(self, key: int, value: int):
+        self.codes[key] = value
+
+    def __delitem__(self, key: int):
+        del self.codes[key]
+
+    def __eq__(self, other) -> bool:
+        if isinstance(other, EventSequence):
+            return self.codes == other.codes
+        return self.codes == other
+
+    @property
     def events(self) -> List[str]:
-        """Return a list of all events."""
-        return [self.indexer.inverse[elem] for elem in self]
+        """Return a list of all events as strings."""
+        return [self.indexer.inverse[elem] for elem in self.codes]
+
+    def get_event(self, idx: int) -> str:
+        """Return the event string at a given index."""
+        return self.indexer.inverse[self.codes[idx]]
+
+    def to_event(self, code: int) -> str:
+        """Return an event code as its corresponding event string.
+
+        This is equivalent to `self.indexer.inverse[code]`.
+
+        """
+        return self.indexer.inverse[code]
+
+    def to_code(self, event: str) -> int:
+        """Return an event code as its corresponding event string.
+
+        This is equivalent to `self.indexer[event]`.
+
+        """
+        return self.indexer[event]
+
+    def append(self, code: int):
+        """Append an event code to the event sequence."""
+        self.codes.append(code)
+
+    def extend(self, codes: Iterable[int]):
+        """Append an event code to the event sequence."""
+        self.codes.extend(codes)
 
     def append_event(self, event: str):
-        """Append an event to the event sequence."""
-        # pylint: disable=unsubscriptable-object
-        self.append(self.indexer[event])
+        """Append an event string to the event sequence."""
+        self.codes.append(self.to_code(event))
 
     def extend_events(self, events: List[str]):
         """Extend the event sequence by a list of events."""
-        # pylint: disable=unsubscriptable-object
-        self.extend(self.indexer[event] for event in events)
-
-    def inverse(self, idx) -> str:
-        """Return the corresponding event by its code."""
-        return self.indexer.inverse[idx]
+        self.codes.extend(self.indexer[event] for event in events)
 
 
-def get_default_indexer() -> bidict:
+def get_default_indexer() -> bidict[str, int]:
     """Return the default indexer."""
     indexer = {}
     idx = 0
@@ -205,11 +246,11 @@ class DefaultEventSequence(EventSequence):
 
     """
 
-    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
+    def __init__(self, codes: List[int] = None, indexer: bidict = None):
         if indexer is not None:
-            super().__init__(iterable, indexer)
+            super().__init__(codes, indexer)
         else:
-            super().__init__(iterable, get_default_indexer())
+            super().__init__(codes, get_default_indexer())
 
     @classmethod
     def to_note_on_event(cls, pitch) -> str:
@@ -276,7 +317,7 @@ def to_default_event_representation(music: "Music", dtype=int) -> ndarray:
     return np.array(seq, dtype=dtype)
 
 
-def get_performance_indexer() -> bidict:
+def get_performance_indexer() -> bidict[str, int]:
     """Return the default indexer."""
     indexer = {}
     idx = 0
@@ -309,11 +350,11 @@ class PerformanceEventSequence(EventSequence):
 
     """
 
-    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
+    def __init__(self, codes: List[int] = None, indexer: bidict = None):
         if indexer is not None:
-            super().__init__(iterable, indexer)
+            super().__init__(codes, indexer)
         else:
-            super().__init__(iterable, get_performance_indexer())
+            super().__init__(codes, get_performance_indexer())
 
     @classmethod
     def to_note_on_event(cls, pitch) -> str:
@@ -386,7 +427,7 @@ def to_performance_event_representation(music: "Music", dtype=int) -> ndarray:
     return np.array(seq, dtype=dtype)
 
 
-def get_remi_indexer() -> bidict:
+def get_remi_indexer() -> bidict[str, int]:
     """Return the REMI indexer."""
     indexer = {}
     idx = 0
