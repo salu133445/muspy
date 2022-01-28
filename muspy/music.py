@@ -247,8 +247,9 @@ class Music(ComplexBase):
 
         """
         beats: List[Beat] = []
+        last_index_time_signatures: int = len(self.time_signatures) - 1
         for i, time_sign in enumerate(self.time_signatures):
-            if i == len(self.time_signatures) - 1:
+            if i == last_index_time_signatures:
                 end = self.get_end_time()
             else:
                 end = self.time_signatures[i + 1].time
