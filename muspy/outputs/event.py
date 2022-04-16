@@ -1,6 +1,7 @@
 """Event-based representation output interface."""
+from math import ceil
 from operator import attrgetter, itemgetter
-from typing import TYPE_CHECKING, Iterable, List
+from typing import TYPE_CHECKING, Iterable, List, Tuple
 
 import numpy as np
 from bidict import bidict
@@ -276,8 +277,14 @@ class DefaultEventSequence(EventSequence):
         return events
 
 
-def to_default_event_sequence(music: "Music") -> DefaultEventSequence:
+def to_default_event_sequence(
+    music: "Music", resolution: int = None
+) -> DefaultEventSequence:
     """Return a Music object as a DefaultEventSequence object."""
+    # Adjust resolution
+    if resolution is not None:
+        music.adjust_resolution(resolution)
+
     # Collect notes
     notes = []
     for track in music.tracks:
@@ -385,8 +392,14 @@ class PerformanceEventSequence(EventSequence):
         return events
 
 
-def to_performance_event_sequence(music: "Music") -> PerformanceEventSequence:
+def to_performance_event_sequence(
+    music: "Music", resolution: int = None
+) -> PerformanceEventSequence:
     """Return a Music object as a PerformanceEventSequence object."""
+    # Adjust resolution
+    if resolution is not None:
+        music.adjust_resolution(resolution)
+
     # Collect notes
     notes = []
     for track in music.tracks:
@@ -439,12 +452,16 @@ def get_remi_indexer() -> bidict[str, int]:
     for i in range(1, 65):
         indexer[f"note_duration_{i}"] = idx
         idx += 1
+    # Note-velocity events
+    for i in range(32):
+        indexer[f"note_velocity_{i}"] = idx
+        idx += 1
     # Position events
-    for i in range(0, 24):
+    for i in range(16):
         indexer[f"position_{i}"] = idx
         idx += 1
     # Beat event
-    indexer["beat"] = idx
+    indexer["bar"] = idx
     idx += 1
     # Tempo events
     for i in range(30, 210):
@@ -454,25 +471,33 @@ def get_remi_indexer() -> bidict[str, int]:
 
 
 class REMIEventSequence(EventSequence):
-    """A class for handling a MIDI-like event sequence.
+    """A class for handling the REMI event sequence [1].
+
+    This by default will adjust the resolution to 16.
 
     Attributes
     ----------
     indexer : bidict, optional
         Indexer that defines the mapping between events and their codes.
 
-    Note
-    ----
-    Bar events are replaced by beat events. Chord events are currently
-    not supported.
+    Warnings
+    --------
+    Chord events are not supported.
+
+    References
+    ----------
+    1. Yu-Siang Huang and Yi-Hsuan Yang, “Pop Music Transformer:
+       Beat-based Modeling and Generation of Expressive Pop Piano
+       Compositions,” in The 28th ACM International Conference on
+       Multimedia (MMR), 2020.
 
     """
 
-    def __init__(self, iterable: Iterable = None, indexer: bidict = None):
+    def __init__(self, codes: List[int] = None, indexer: bidict = None):
         if indexer is not None:
-            super().__init__(iterable, indexer)
+            super().__init__(codes, indexer)
         else:
-            super().__init__(iterable, get_remi_indexer())
+            super().__init__(codes, get_remi_indexer())
 
     @classmethod
     def to_note_on_event(cls, pitch) -> str:
@@ -481,8 +506,13 @@ class REMIEventSequence(EventSequence):
 
     @classmethod
     def to_note_duration_event(cls, duration) -> str:
-        """Return a note-duration event for a given pitch."""
+        """Return a note-duration event for a given duration."""
         return f"note_duration_{duration}"
+
+    @classmethod
+    def to_note_velocity_event(cls, velocity) -> str:
+        """Return a note-velocity event for a given velocity."""
+        return f"note_velocity_{velocity // 4}"
 
     @classmethod
     def to_position_event(cls, position) -> str:
@@ -490,9 +520,9 @@ class REMIEventSequence(EventSequence):
         return f"position_{position}"
 
     @classmethod
-    def to_beat_event(cls) -> str:
-        """Return a beat event."""
-        return "beat"
+    def to_bar_event(cls) -> str:
+        """Return a bar event."""
+        return "bar"
 
     @classmethod
     def to_tempo_event(cls, tempo) -> str:
@@ -502,6 +532,9 @@ class REMIEventSequence(EventSequence):
 
 def to_remi_event_sequence(music: "Music") -> REMIEventSequence:
     """Return a Music object as a REMIEventSequence object."""
+    # Adjust resolution
+    music.adjust_resolution(16)
+
     # Collect notes
     notes = []
     for track in music.tracks:
@@ -514,29 +547,61 @@ def to_remi_event_sequence(music: "Music") -> REMIEventSequence:
     # Create a REMIEventSequence object
     seq = REMIEventSequence()
 
+    # Collect measure times
+    barline_times = [barline.time for barline in music.barlines]
+    if barline_times[0] != 0:
+        barline_times.insert(0, 0)
+    measure_times = np.sort(barline_times)
+    assert len(measure_times) > 1
+
+    def _get_measure_position(time) -> Tuple[int, int]:
+        measure_idx = np.searchsorted(measure_times, time, "right") - 1
+        if measure_idx < len(measure_times) - 1:
+            measure_length = (
+                measure_times[measure_idx + 1] - measure_times[measure_idx]
+            )
+        else:
+            measure_length = (
+                measure_times[measure_idx] - measure_times[measure_idx - 1]
+            )
+        position = ceil(
+            16 * (time - measure_times[measure_idx]) / measure_length
+        )
+        return measure_idx, position
+
     # Collect events
-    events = []
+    events: List[Tuple[Tuple[int, int], List[str]]] = []
+    for barline_time in barline_times:
+        events.append(
+            (_get_measure_position(barline_time), [seq.to_bar_event()])
+        )
     for tempo in music.tempos:
-        events.append((tempo.time, seq.to_tempo_event(tempo.qpm)))
+        events.append(
+            (
+                _get_measure_position(tempo.time),
+                [seq.to_tempo_event(tempo.qpm)],
+            )
+        )
     for note in notes:
-        events.append((note.time, seq.to_note_on_event(note.pitch)))
-        events.append((note.end, seq.to_note_duration_event(note.duration)))
+        events.append(
+            (
+                _get_measure_position(note.time),
+                [
+                    seq.to_note_on_event(note.pitch),
+                    seq.to_note_velocity_event(note.velocity),
+                    seq.to_note_duration_event(min(note.duration, 32)),
+                ],
+            )
+        )
 
     # Sort the events by time
     events.sort(key=itemgetter(0))
 
-    # Create event sequence
-    last_beat = -1
-    last_position = -1
+    # Append the events to the event sequence
     for event in events:
-        beat, position = divmod(event[0], music.resolution)
-        if beat > last_beat:
-            seq.append_event(seq.to_beat_event())
-        if position > last_position:
-            seq.append_event(
-                seq.to_position_event(24 * position // music.resolution)
-            )
-        seq.append_event(event[1])
+        if event[1][0] != "bar":
+            seq.append_event(seq.to_position_event(event[0][1]))
+        seq.extend_events(event[1])
 
     return seq
 
