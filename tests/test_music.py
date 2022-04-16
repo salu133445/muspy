@@ -33,14 +33,31 @@ def test_get_real_end_time():
     assert music.get_real_end_time() == 1.875  # 2.25 / 72 * 60
 
 
-def test_infer_beats():
+def test_infer_barlines():
     music = muspy.load(TEST_JSON_PATH)
-    beats = music.infer_beats()
-    assert len(beats) == 5
-    assert beats[0].time == 0
-    assert beats[0].is_downbeat
-    assert beats[1].time == 12
-    assert not beats[1].is_downbeat
+    music.infer_barlines(overwrite=True)
+
+    assert len(music.barlines) == 2
+
+    times = [0, 36]
+    for barline, time in zip(music.barlines, times):
+        assert barline.time == time
+
+
+def test_infer_barlines_and_beats():
+    music = muspy.load(TEST_JSON_PATH)
+    music.infer_barlines_and_beats(overwrite=True)
+
+    assert len(music.barlines) == 2
+    assert len(music.beats) == 5
+
+    times = [0, 36]
+    for barline, time in zip(music.barlines, times):
+        assert barline.time == time
+
+    times = [0, 12, 24, 36, 48]
+    for beat, time in zip(music.beats, times):
+        assert beat.time == time
 
 
 def test_adjust_resolution():

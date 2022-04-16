@@ -425,15 +425,14 @@ def test_performance_event_representation():
     assert seq.events == answer_events
 
 
-def test_remi_event_representation():
-    music = muspy.load(TEST_JSON_PATH)
+# def test_remi_event_representation():
+#     music = muspy.load(TEST_JSON_PATH)
 
-    seq = muspy.outputs.event.to_remi_event_sequence(music)
-    for event in seq.events:
-        print(event)
+#     seq = muspy.outputs.event.to_remi_event_sequence(music)
+#     for event in seq.events:
+#         print(event)
 
-    assert len(seq) == 57
-
+#     assert len(seq) == 57
 
 #     answer = [
 #         216,

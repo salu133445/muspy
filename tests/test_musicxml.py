@@ -615,12 +615,13 @@ def test_realworld():
     assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 2  # due to the repeats
-    assert music.key_signatures[0].root == 0
-    assert music.key_signatures[0].mode == "major"
+    assert music.key_signatures[0].fifths == 0
 
     assert len(music.time_signatures) == 2  # due to the repeats
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
+
+    assert len(music.barlines) == 127
 
 
 def test_realworld_compressed():
@@ -636,12 +637,13 @@ def test_realworld_compressed():
     assert music.tempos[0].qpm == 72
 
     assert len(music.key_signatures) == 2  # due to the repeats
-    assert music.key_signatures[0].root == 0
-    assert music.key_signatures[0].mode == "major"
+    assert music.key_signatures[0].fifths == 0
 
     assert len(music.time_signatures) == 2  # due to the repeats
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 8
+
+    assert len(music.barlines) == 127
 
 
 def test_write():

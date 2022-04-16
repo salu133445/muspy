@@ -13,12 +13,13 @@ def test_to_pypianoroll():
 
     assert len(multitrack) == 1
     assert np.all(multitrack.tempo == 72)
-    assert np.all(np.nonzero(multitrack.downbeat)[0] == [12, 48])
+    assert np.all(np.nonzero(multitrack.downbeat)[0] == [0, 12, 48])
     assert multitrack[0].pianoroll.shape == (54, 128)
 
     loaded = muspy.from_object(multitrack)
 
     check_tempos(loaded.tempos)
-    assert loaded.beats[0].time == music.resolution // 2
-    assert loaded.beats[1].time == music.resolution * 2
+    assert loaded.barlines[0].time == 0
+    assert loaded.barlines[1].time == music.resolution // 2
+    assert loaded.barlines[2].time == music.resolution * 2
     check_tracks(loaded.tracks, loaded.resolution)

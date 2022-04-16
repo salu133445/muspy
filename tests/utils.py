@@ -55,13 +55,20 @@ def check_time_signatures(time_signatures):
     assert time_signatures[0].denominator == 8
 
 
+def check_barlines(barlines):
+    """Check barlines."""
+    assert len(barlines) == 3
+    assert barlines[0].time == 0
+    assert barlines[1].time == 12
+    assert barlines[2].time == 48
+
+
 def check_beats(beats):
     """Check beats."""
     assert len(beats) == 5
-    assert beats[0].time == 0
-    assert not beats[0].is_downbeat
-    assert beats[1].time == 12
-    assert beats[1].is_downbeat
+    times = [0, 12, 24, 36, 48]
+    for beat, time in zip(beats, times):
+        assert beat.time == time
 
 
 def check_lyrics(lyrics):
@@ -104,6 +111,7 @@ def check_music(music, ext=None, resolution=24):
     check_tempos(music.tempos)
     check_key_signatures(music.key_signatures)
     check_time_signatures(music.time_signatures)
+    check_barlines(music.barlines)
     check_beats(music.beats)
     check_lyrics(music.lyrics)
     check_annotations(music.annotations)
