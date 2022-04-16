@@ -71,6 +71,7 @@ def synthesize(
         write_midi(midi_path, music)
 
         # Synthesize the MIDI file using fluidsynth
+        option_list = options.split(" ") if options is not None else []
         result = subprocess.run(
             [
                 "fluidsynth",
@@ -83,9 +84,9 @@ def synthesize(
                 str(gain),
                 "-i",
                 str(soundfont_path),
-                options if options is not None else "",
-                str(midi_path),
-            ],
+            ]
+            + option_list
+            + [str(midi_path)],
             check=True,
             stdout=subprocess.PIPE,
         )
@@ -144,6 +145,7 @@ def write_audio(
         write_midi(midi_path, music)
 
         # Synthesize the MIDI file using fluidsynth
+        option_list = options.split(" ") if options is not None else []
         subprocess.run(
             [
                 "fluidsynth",
@@ -157,9 +159,9 @@ def write_audio(
                 "-g",
                 str(gain),
                 str(soundfont_path),
-                options if options is not None else "",
-                str(midi_path),
-            ],
+            ]
+            + option_list
+            + [str(midi_path)],
             check=True,
             stdout=subprocess.DEVNULL,
         )
