@@ -1,2 +1,2 @@
 """Schema version."""
-DEFAULT_SCHEMA_VERSION = "0.1"
+DEFAULT_SCHEMA_VERSION = "0.2"

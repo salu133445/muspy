@@ -9,6 +9,7 @@ from music21.key import KeySignature as M21KeySignature
 from music21.stream import Opus, Part, Score, Stream
 
 from ..classes import (
+    Barline,
     Beat,
     Chord,
     KeySignature,
@@ -48,7 +49,10 @@ def parse_metadata(stream: Stream) -> Union[Metadata, None]:
             copyright_ = item[1]
 
     return Metadata(
-        title=stream.metadata.title, creators=creators, copyright=copyright_
+        title=stream.metadata.title,
+        creators=creators,
+        copyright=copyright_,
+        source_format="music21",
     )
 
 
@@ -148,12 +152,12 @@ def parse_time_signatures(
     return sorted(time_signatures, key=attrgetter("time"))
 
 
-def parse_beats(
+def parse_barlines_and_beats(
     stream: Stream,
     time_signatures: List[TimeSignature],
     resolution: int = DEFAULT_RESOLUTION,
-) -> List[Beat]:
-    """Return beats parsed from a music21 Stream object.
+) -> Tuple[List[Barline], List[Beat]]:
+    """Return barlines and beats parsed from a music21 Stream object.
 
     Parameters
     ----------
@@ -166,47 +170,56 @@ def parse_beats(
 
     Returns
     -------
+    list of :class:`muspy.Barline`
+        Parsed barlines.
     list of :class:`muspy.Beat`
         Parsed beats.
 
     """
+    # Initialize return lists
+    barlines: List[Barline] = []
     beats: List[Beat] = []
+
+    # Get barline positions
     measure_offset_map = stream.measureOffsetMap()
-    downbeats = [
-        round(float(offset * resolution))
-        for offset in measure_offset_map.keys()
-    ]
-    downbeats.sort()
+    for offset in measure_offset_map.keys():
+        barlines.append(Barline(time=round(float(offset * resolution))))
+
+    # Sort the barlines by time
+    barlines.sort(key=attrgetter("time"))
+
     time_sign_idx = 0
-    downbeat_idx = 0
-    while downbeat_idx < len(downbeats):
+    barline_idx = 0
+    while barline_idx < len(barlines):
         # Use next time signature
         if (
             time_sign_idx < len(time_signatures) - 1
-            and downbeats[downbeat_idx] >= time_signatures[time_sign_idx].time
+            and barlines[barline_idx].time
+            >= time_signatures[time_sign_idx].time
         ):
             time_sign_idx += 1
             continue
+
         # Set time signature
         time_sign = time_signatures[time_sign_idx]
         beat_resolution = resolution / (time_sign.denominator / 4)
+
         # Get the next downbeat
-        if downbeat_idx < len(downbeats) - 1:
-            end: float = downbeats[downbeat_idx + 1]
+        if barline_idx < len(barlines) - 1:
+            end: float = barlines[barline_idx + 1].time
         else:
             end = (
-                downbeats[downbeat_idx] + beat_resolution * time_sign.numerator
+                barlines[barline_idx].time
+                + beat_resolution * time_sign.numerator
             )
         # Append beats
-        for j, time in enumerate(
-            np.arange(downbeats[downbeat_idx], end, beat_resolution)
+        for time in np.arange(
+            barlines[barline_idx].time, end, beat_resolution
         ):
-            if j % time_sign.numerator == 0:
-                beats.append(Beat(time=int(round(time)), is_downbeat=True))
-            else:
-                beats.append(Beat(time=int(round(time)), is_downbeat=False))
-        downbeat_idx += 1
-    return beats
+            beats.append(Beat(time=int(round(time))))
+        barline_idx += 1
+
+    return barlines, beats
 
 
 def parse_notes_and_chords(
@@ -364,9 +377,21 @@ def from_music21_score(
     :class:`muspy.Music`
         Converted Music object.
 
+    Warnings
+    --------
+    This function uses :method:`music21.Stream.expandRepeats` to
+    expand the repeats. However, this does not always get the
+    correct results. In particular, repeats with multiple endings are
+    not yet supported in MusicXML parser of Music21.
+
     """
+    if score.hasMeasures():
+        score = score.expandRepeats()
+
     tracks = []
     for part in score.parts:
+        if part.hasMeasures():
+            part = part.expandRepeats()
         instruments = partitionByInstrument(part)
         if instruments:
             for instrument in instruments:
@@ -374,15 +399,22 @@ def from_music21_score(
         elif len(part.flat.notesAndRests) > 0:
             tracks.append(parse_track(part))
 
-    time_signatures = parse_time_signatures(score, resolution)
-    beats = parse_beats(score, time_signatures, resolution)
+    meta_part = score.parts[0]
+    if meta_part.hasMeasures():
+        meta_part = meta_part.expandRepeats()
+    key_signatures = parse_key_signatures(meta_part, resolution)
+    time_signatures = parse_time_signatures(meta_part, resolution)
+    barlines, beats = parse_barlines_and_beats(
+        meta_part, time_signatures, resolution
+    )
 
     return Music(
         metadata=parse_metadata(score),
         resolution=DEFAULT_RESOLUTION,
-        tempos=parse_tempos(score),
-        key_signatures=parse_key_signatures(score, resolution),
+        tempos=parse_tempos(meta_part),
+        key_signatures=key_signatures,
         time_signatures=time_signatures,
+        barlines=barlines,
         beats=beats,
         tracks=tracks,
     )

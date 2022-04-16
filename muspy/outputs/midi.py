@@ -1,10 +1,17 @@
 """MIDI output interface."""
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, Union
 
 import numpy as np
+from miditoolkit import Instrument as MtkInstrument
+from miditoolkit import KeySignature as MtkKeySignature
+from miditoolkit import Lyric as MtkLyric
+from miditoolkit import Note as MtkNote
+from miditoolkit import TempoChange as MtkTempo
+from miditoolkit import TimeSignature as MtkTimeSignature
+from miditoolkit.midi.parser import MidiFile as MtkMidiFile
 from mido import Message, MetaMessage, MidiFile, MidiTrack, bpm2tempo
-from pretty_midi import Instrument
+from pretty_midi import Instrument as PmInstrument
 from pretty_midi import KeySignature as PmKeySignature
 from pretty_midi import Lyric as PmLyric
 from pretty_midi import Note as PmNote
@@ -223,9 +230,7 @@ def to_mido_note_on_note_off(
 
 
 def to_mido_track(
-    track: Track,
-    channel: int = None,
-    use_note_off_message: bool = False,
+    track: Track, channel: int = None, use_note_off_message: bool = False,
 ) -> MidiTrack:
     """Return a Track object as a mido MidiTrack object.
 
@@ -361,7 +366,7 @@ def write_midi_mido(
 
 
 def to_pretty_midi_key_signature(
-    key_signature: KeySignature,
+    key_signature: KeySignature, map_time: Callable = None
 ) -> Optional[PmKeySignature]:
     """Return a KeySignature object as a pretty_midi KeySignature."""
     # TODO: `key_signature.root_str` might be given
@@ -369,43 +374,61 @@ def to_pretty_midi_key_signature(
         return None
     if key_signature.mode not in ("major", "minor"):
         return None
-    key_name = PITCH_NAMES[key_signature.root] + " " + key_signature.mode
+    key_name = f"{PITCH_NAMES[key_signature.root]} {key_signature.mode}"
+    if map_time is not None:
+        time = map_time(key_signature.time)
+    else:
+        time = key_signature.time
     return PmKeySignature(
-        key_number=key_name_to_key_number(key_name), time=key_signature.time
+        key_number=key_name_to_key_number(key_name), time=time
     )
 
 
 def to_pretty_midi_time_signature(
-    time_signature: TimeSignature,
+    time_signature: TimeSignature, map_time: Callable = None
 ) -> PmTimeSignature:
     """Return a TimeSignature object as a pretty_midi TimeSignature."""
+    if map_time is not None:
+        time = map_time(time_signature.time)
+    else:
+        time = time_signature.time
     return PmTimeSignature(
         numerator=time_signature.numerator,
         denominator=time_signature.denominator,
-        time=time_signature.time,
+        time=time,
     )
 
 
-def to_pretty_midi_lyric(lyric: Lyric) -> PmLyric:
+def to_pretty_midi_lyric(lyric: Lyric, map_time: Callable = None) -> PmLyric:
     """Return a Lyric object as a pretty_midi Lyric object."""
-    return PmLyric(lyric.lyric, lyric.time)
+    if map_time is not None:
+        time = map_time(lyric.time)
+    else:
+        time = lyric.time
+    return PmLyric(text=lyric.lyric, time=time)
 
 
-def to_pretty_midi_note(note: Note) -> PmNote:
+def to_pretty_midi_note(note: Note, map_time: Callable = None) -> PmNote:
     """Return a Note object as a pretty_midi Note object."""
+    if map_time is not None:
+        start = map_time(note.start)
+        end = map_time(note.end)
+    else:
+        start = note.start
+        end = note.end
     velocity = note.velocity if note.velocity is not None else DEFAULT_VELOCITY
-    return PmNote(
-        velocity=velocity, pitch=note.pitch, start=note.time, end=note.end
-    )
+    return PmNote(velocity=velocity, pitch=note.pitch, start=start, end=end,)
 
 
-def to_pretty_midi_instrument(track: Track) -> Instrument:
+def to_pretty_midi_instrument(
+    track: Track, map_time: Callable = None
+) -> PmInstrument:
     """Return a Track object as a pretty_midi Instrument object."""
-    instrument = Instrument(
+    instrument = PmInstrument(
         program=track.program, is_drum=track.is_drum, name=track.name
     )
     for note in track.notes:
-        instrument.notes.append(to_pretty_midi_note(note))
+        instrument.notes.append(to_pretty_midi_note(note, map_time=map_time))
     return instrument
 
 
@@ -477,24 +500,25 @@ def to_pretty_midi(music: "Music") -> PrettyMIDI:
 
     # Key signatures
     for key_signature in music.key_signatures:
-        pm_key_signature = to_pretty_midi_key_signature(key_signature)
+        pm_key_signature = to_pretty_midi_key_signature(
+            key_signature, map_time
+        )
         if pm_key_signature is not None:
-            pm_key_signature.time = map_time(pm_key_signature.time)
             midi.key_signature_changes.append(pm_key_signature)
 
     # Time signatures
     for time_signature in music.time_signatures:
         midi.time_signature_changes.append(
-            to_pretty_midi_time_signature(time_signature)
+            to_pretty_midi_time_signature(time_signature, map_time)
         )
 
     # Lyrics
     for lyric in music.lyrics:
-        midi.lyrics.append(to_pretty_midi_lyric(lyric))
+        midi.lyrics.append(to_pretty_midi_lyric(lyric, map_time))
 
     # Tracks
     for track in music.tracks:
-        midi.instruments.append(to_pretty_midi_instrument(track))
+        midi.instruments.append(to_pretty_midi_instrument(track, map_time))
 
     return midi
 
@@ -524,7 +548,7 @@ def write_midi(
     path: Union[str, Path],
     music: "Music",
     backend: str = "mido",
-    **kwargs: Any
+    **kwargs: Any,
 ):
     """Write a Music object to a MIDI file.
 
@@ -551,3 +575,111 @@ def write_midi(
     if backend == "pretty_midi":
         return write_midi_pretty_midi(path, music)
     raise ValueError("`backend` must by one of 'mido' and 'pretty_midi'.")
+
+
+def to_miditoolkit_tempo(tempo: Tempo) -> Optional[MtkTempo]:
+    """Return a Tempo object as a miditoolkit TempoChange."""
+    return MtkTempo(tempo=tempo.qpm, time=tempo.time)
+
+
+def to_miditoolkit_key_signature(
+    key_signature: KeySignature,
+) -> Optional[MtkKeySignature]:
+    """Return a KeySignature object as a miditoolkit KeySignature."""
+    # TODO: `key_signature.root_str` might be given
+    if key_signature.root is None:
+        return None
+    if key_signature.mode not in ("major", "minor"):
+        return None
+    suffix = "m" if key_signature.mode == "minor" else ""
+    return MtkKeySignature(
+        key_name=PITCH_NAMES[key_signature.root] + suffix,
+        time=key_signature.time,
+    )
+
+
+def to_miditoolkit_time_signature(
+    time_signature: TimeSignature,
+) -> MtkTimeSignature:
+    """Return a TimeSignature object as a miditoolkit TimeSignature."""
+    return MtkTimeSignature(
+        numerator=time_signature.numerator,
+        denominator=time_signature.denominator,
+        time=time_signature.time,
+    )
+
+
+def to_miditoolkit_lyric(lyric: Lyric) -> MtkLyric:
+    """Return a Lyric object as a miditoolkit Lyric object."""
+    return MtkLyric(text=lyric.lyric, time=lyric.time)
+
+
+def to_miditoolkit_note(note: Note) -> MtkNote:
+    """Return a Note object as a miditoolkit Note object."""
+    velocity = note.velocity if note.velocity is not None else DEFAULT_VELOCITY
+    return MtkNote(
+        velocity=velocity, pitch=note.pitch, start=note.time, end=note.end
+    )
+
+
+def to_miditoolkit_instrument(track: Track) -> MtkInstrument:
+    """Return a Track object as a miditoolkit Instrument object."""
+    instrument = MtkInstrument(
+        program=track.program, is_drum=track.is_drum, name=track.name
+    )
+    for note in track.notes:
+        instrument.notes.append(to_miditoolkit_note(note))
+    return instrument
+
+
+def to_miditoolkit(music: "Music") -> MtkMidiFile:
+    """Return a Music object as a miditoolkit object.
+
+    Tempo changes are not supported yet.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music` object
+        Music object to convert.
+
+    Returns
+    -------
+    :class:`pretty_midi.PrettyMIDI`
+        Converted PrettyMIDI object.
+
+    Notes
+    -----
+    Tempo information will not be included in the output.
+
+    """
+    # Create an PrettyMIDI instance
+    midi = MtkMidiFile(ticks_per_beat=music.resolution)
+
+    # Tempos
+    for tempo in music.tempos:
+        midi.tempo_changes.append(to_miditoolkit_tempo(tempo))
+
+    # Key signatures
+    for key_signature in music.key_signatures:
+        mtk_key_signature = to_miditoolkit_key_signature(key_signature)
+        if mtk_key_signature is not None:
+            midi.key_signature_changes.append(mtk_key_signature)
+
+    # Time signatures
+    for time_signature in music.time_signatures:
+        midi.time_signature_changes.append(
+            to_miditoolkit_time_signature(time_signature)
+        )
+
+    # Lyrics
+    for lyric in music.lyrics:
+        midi.lyrics.append(to_miditoolkit_lyric(lyric))
+
+    # Tracks
+    for track in music.tracks:
+        midi.instruments.append(to_miditoolkit_instrument(track))
+
+    # Compute max tick
+    midi.max_tick = music.get_end_time()
+
+    return midi

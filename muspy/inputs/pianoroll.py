@@ -7,7 +7,15 @@ from numpy import ndarray
 from pypianoroll import Multitrack
 from pypianoroll import Track as PypianorollTrack
 
-from ..classes import DEFAULT_VELOCITY, Beat, Metadata, Note, Tempo, Track
+from ..classes import (
+    DEFAULT_VELOCITY,
+    Barline,
+    Beat,
+    Metadata,
+    Note,
+    Tempo,
+    Track,
+)
 from ..music import DEFAULT_RESOLUTION, Music
 
 
@@ -83,33 +91,59 @@ def from_pypianoroll(
 
     Returns
     -------
-    music : :class:`muspy.Music`
+    :class:`muspy.Music`
         Converted MusPy Music object.
 
     """
+    # Metadata
+    metadata = Metadata(
+        title=multitrack.name if multitrack.name else None,
+        source_format="pypianoroll",
+    )
+
     # Tempos
-    tempo_change_timings = np.diff(multitrack.tempo, prepend=-1).nonzero()[0]
-    tempos = [
-        Tempo(time, qpm=float(multitrack.tempo[time]))
-        for time in tempo_change_timings
-    ]
+    if multitrack.tempo is not None:
+        tempo_change_timings = np.diff(multitrack.tempo, prepend=-1).nonzero()[
+            0
+        ]
+        tempos = [
+            Tempo(time, qpm=float(multitrack.tempo[time]))
+            for time in tempo_change_timings
+        ]
+    else:
+        tempos = None
 
     # Beats
-    beats = [
-        Beat(time=int(time), is_downbeat=True)
-        for time in np.nonzero(multitrack.downbeat)[0]
-    ]
+    if hasattr(multitrack, "beat") and multitrack.beat is not None:
+        beats = [
+            Beat(time=int(time)) for time in np.nonzero(multitrack.beat)[0]
+        ]
+    else:
+        beats = None
+
+    # Barlines
+    if multitrack.downbeat is not None:
+        barlines = [
+            Barline(time=int(time))
+            for time in np.nonzero(multitrack.downbeat)[0]
+        ]
+    else:
+        barlines = None
 
     # Tracks
-    tracks = [
-        from_pypianoroll_track(track, default_velocity)
-        for track in multitrack.tracks
-    ]
+    if multitrack.tracks is not None:
+        tracks = [
+            from_pypianoroll_track(track, default_velocity)
+            for track in multitrack.tracks
+        ]
+    else:
+        tracks = None
 
     return Music(
         resolution=int(multitrack.resolution),
-        metadata=Metadata(title=multitrack.name) if multitrack.name else None,
+        metadata=metadata,
         tempos=tempos,
+        barlines=barlines,
         beats=beats,
         tracks=tracks,
     )

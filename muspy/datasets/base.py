@@ -35,8 +35,8 @@ if TYPE_CHECKING:
     from torch.utils.data import Dataset as TorchDataset
 
 
-RemoteDatasetType = TypeVar("RemoteDatasetType", bound="RemoteDataset")
-FolderDatasetType = TypeVar("FolderDatasetType", bound="FolderDataset")
+RemoteDatasetT = TypeVar("RemoteDatasetT", bound="RemoteDataset")
+FolderDatasetT = TypeVar("FolderDatasetT", bound="FolderDataset")
 
 
 class DatasetInfo:
@@ -190,7 +190,7 @@ class Dataset:
 
         """
         if filename is not None and Path(filename).is_file():
-            with open(str(filename)) as f:
+            with open(str(filename), encoding="utf-8") as f:
                 return json.load(f)
 
         if not isinstance(splits, (float, list, tuple)):
@@ -228,7 +228,7 @@ class Dataset:
 
         if filename is not None:
             indices_ = {key: value.tolist() for key, value in indices.items()}
-            with open(str(filename), "w") as f:
+            with open(str(filename), "w", encoding="utf-8") as f:
                 f.write(json.dumps(indices_))
 
         return indices
@@ -311,6 +311,7 @@ class Dataset:
                 subset: str = "Full",
                 indices: Sequence[int] = None,
             ):
+                super().__init__()
                 self.dataset = dataset
                 self.factory = factory
                 self.subset = subset
@@ -615,8 +616,8 @@ class RemoteDataset(Dataset):
         return True
 
     def download(
-        self: RemoteDatasetType, overwrite: bool = False, verbose: bool = True
-    ) -> RemoteDatasetType:
+        self: RemoteDatasetT, overwrite: bool = False, verbose: bool = True
+    ) -> RemoteDatasetT:
         """Download the dataset source(s).
 
         Parameters
@@ -651,8 +652,8 @@ class RemoteDataset(Dataset):
         return self
 
     def extract(
-        self: RemoteDatasetType, cleanup: bool = False, verbose: bool = True
-    ) -> RemoteDatasetType:
+        self: RemoteDatasetT, cleanup: bool = False, verbose: bool = True
+    ) -> RemoteDatasetT:
         """Extract the downloaded archive(s).
 
         Parameters
@@ -682,11 +683,11 @@ class RemoteDataset(Dataset):
         return self
 
     def download_and_extract(
-        self: RemoteDatasetType,
+        self: RemoteDatasetT,
         overwrite: bool = False,
         cleanup: bool = False,
         verbose: bool = True,
-    ) -> RemoteDatasetType:
+    ) -> RemoteDatasetT:
         """Download source datasets and extract the downloaded archives.
 
         Parameters
@@ -957,7 +958,7 @@ class FolderDataset(Dataset):
         """Return a list of converted filenames."""
         return sorted(self.converted_dir.rglob("*." + self.kind))
 
-    def use_converted(self: FolderDatasetType) -> FolderDatasetType:
+    def use_converted(self: FolderDatasetT) -> FolderDatasetT:
         """Disable on-the-fly mode and use converted data.
 
         Returns
@@ -989,7 +990,7 @@ class FolderDataset(Dataset):
             )
         )
 
-    def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
+    def on_the_fly(self: FolderDatasetT) -> FolderDatasetT:
         """Enable on-the-fly mode and convert the data on the fly.
 
         Returns
@@ -1005,13 +1006,13 @@ class FolderDataset(Dataset):
         return self
 
     def convert(
-        self: FolderDatasetType,
+        self: FolderDatasetT,
         kind: str = "json",
         n_jobs: int = 1,
         ignore_exceptions: bool = True,
         verbose: bool = True,
         **kwargs,
-    ) -> FolderDatasetType:
+    ) -> FolderDatasetT:
         """Convert and save the Music objects.
 
         The converted files will be named by its index and saved to
@@ -1150,13 +1151,13 @@ class ABCFolderDataset(FolderDataset):
         """Read a file into a Music object."""
         filename_, (start, end) = filename
         data = []
-        with open(filename_) as f:
+        with open(filename_, encoding="utf-8") as f:
             for idx, line in enumerate(f):
                 if start <= idx < end and not line.startswith("%"):
                     data.append(line)
         return read_abc_string("".join(data))  # type: ignore
 
-    def on_the_fly(self: FolderDatasetType) -> FolderDatasetType:
+    def on_the_fly(self: FolderDatasetT) -> FolderDatasetT:
         """Enable on-the-fly mode and convert the data on the fly.
 
         Returns
@@ -1178,7 +1179,7 @@ class ABCFolderDataset(FolderDataset):
             for filename in filenames:
                 idx = 0
                 start = 0
-                with open(filename, errors="ignore") as f:
+                with open(filename, errors="ignore", encoding="utf-8") as f:
 
                     # Detect parts in a file
                     for idx, line in enumerate(f):

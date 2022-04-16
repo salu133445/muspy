@@ -54,9 +54,9 @@ def validate_json(path: Union[str, Path]):
             "The jsonschema library is required for JSON schema validation. "
             "You could install it by `pip install muspy[schema]`."
         )
-    with open(str(path)) as f:
+    with open(str(path), encoding="utf-8") as f:
         data = json.load(f)
-    with open(str(get_json_schema_path())) as f:
+    with open(str(get_json_schema_path()), encoding="utf-8") as f:
         schema = json.load(f)
     jsonschema.validate(data, schema)
 

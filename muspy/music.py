@@ -29,6 +29,7 @@ from pypianoroll import Multitrack
 from .base import ComplexBase
 from .classes import (
     Annotation,
+    Barline,
     Beat,
     KeySignature,
     Lyric,
@@ -42,7 +43,7 @@ from .outputs import save, synthesize, to_object, to_representation, write
 from .visualization import show
 
 DEFAULT_RESOLUTION = 24
-MusicType = TypeVar("MusicType", bound="Music")
+MusicT = TypeVar("MusicT", bound="Music")
 
 __all__ = ["Music", "DEFAULT_RESOLUTION"]
 
@@ -77,6 +78,8 @@ class Music(ComplexBase):
         Key signatures changes.
     time_signatures : list of :class:`muspy.TimeSignature`, default: []
         Time signature changes.
+    barlines : list of :class:`muspy.Barline`, default: []
+        Barlines.
     beats : list of :class:`muspy.Beat`, default: []
         Beats.
     lyrics : list of :class:`muspy.Lyric`, default: []
@@ -102,6 +105,7 @@ class Music(ComplexBase):
             ("tempos", Tempo),
             ("key_signatures", KeySignature),
             ("time_signatures", TimeSignature),
+            ("barlines", Barline),
             ("beats", Beat),
             ("lyrics", Lyric),
             ("annotations", Annotation),
@@ -114,6 +118,7 @@ class Music(ComplexBase):
         "tempos",
         "key_signatures",
         "time_signatures",
+        "barlines",
         "beats",
         "lyrics",
         "annotations",
@@ -123,6 +128,7 @@ class Music(ComplexBase):
         "tempos",
         "key_signatures",
         "time_signatures",
+        "barlines",
         "beats",
         "lyrics",
         "annotations",
@@ -136,6 +142,7 @@ class Music(ComplexBase):
         tempos: List[Tempo] = None,
         key_signatures: List[KeySignature] = None,
         time_signatures: List[TimeSignature] = None,
+        barlines: List[Barline] = None,
         beats: List[Beat] = None,
         lyrics: List[Lyric] = None,
         annotations: List[Annotation] = None,
@@ -153,6 +160,7 @@ class Music(ComplexBase):
             time_signatures if time_signatures is not None else []
         )
         self.beats = beats if beats is not None else []
+        self.barlines = barlines if barlines is not None else []
         self.lyrics = lyrics if lyrics is not None else []
         self.annotations = annotations if annotations is not None else []
         self.tracks = tracks if tracks is not None else []
@@ -170,10 +178,10 @@ class Music(ComplexBase):
         del self.tracks[key]
 
     def get_end_time(self, is_sorted: bool = False) -> int:
-        """Return the the time of the last event in all tracks.
+        """Return the time of the last event across all the tracks.
 
-        This includes tempos, key signatures, time signatures, note
-        offsets, lyrics and annotations.
+        This includes tempos, key signatures, time signatures, barlines,
+        beats, lyrics, annotations, note offsets and chord offsets.
 
         Parameters
         ----------
@@ -192,6 +200,7 @@ class Music(ComplexBase):
             get_end_time(self.tempos, is_sorted),
             get_end_time(self.key_signatures, is_sorted),
             get_end_time(self.time_signatures, is_sorted),
+            get_end_time(self.barlines, is_sorted),
             get_end_time(self.beats, is_sorted),
             get_end_time(self.lyrics, is_sorted),
             get_end_time(self.annotations, is_sorted),
@@ -233,41 +242,104 @@ class Music(ComplexBase):
 
         return real_end_time
 
-    def infer_beats(self) -> List[Beat]:
-        """Infer beats from the time signature changes.
+    def infer_barlines(self: MusicT, overwrite: bool = False) -> MusicT:
+        """Infer barlines from the time signatures.
 
-        This assumes that there is a downbeat at each time signature
-        change (this is not always true, e.g., for a pickup measure).
+        This assumes that there is a barline at each time signature
+        change.
+
+        Parameters
+        ----------
+        overwrite : bool, default: False
+            Whether to overwrite existing barlines.
 
         Returns
         -------
-        list of :class:`muspy.Beat`
-            List of beats inferred from the time signature changes.
-            Return an empty list if no time signature is found.
+        Object itself.
+
+        Raises
+        ------
+        ValueError
+            If no time signature is found.
 
         """
-        beats: List[Beat] = []
+        if not overwrite and self.beats:
+            return self
+        if not self.time_signatures:
+            raise ValueError(
+                "Cannot infer barlines as no time signature is found."
+            )
+        self.barlines = []
         for i, time_sign in enumerate(self.time_signatures):
             if i == len(self.time_signatures) - 1:
                 end = self.get_end_time()
             else:
                 end = self.time_signatures[i + 1].time
-            beat_resolution = self.resolution / (time_sign.denominator / 4)
-            for j, time in enumerate(
-                np.arange(time_sign.time, end, beat_resolution)
-            ):
-                if j % time_sign.numerator == 0:
-                    beats.append(Beat(time=round(time), is_downbeat=True))
-                else:
-                    beats.append(Beat(time=round(time), is_downbeat=False))
-        return beats
+            # NOTE: `resolution`` denotes the number of time steps per
+            # quarter note
+            bar_length = (4 * self.resolution) * (
+                time_sign.numerator / time_sign.denominator
+            )
+            for time in np.arange(time_sign.time, end, bar_length):
+                self.barlines.append(Barline(time=int(round(time))))
+        return self
+
+    def infer_barlines_and_beats(
+        self: MusicT, overwrite: bool = False
+    ) -> MusicT:
+        """Infer barlines and beats from the time signature changes.
+
+        This assumes that there is a downbeat at each time signature
+        change (this is not always true, e.g., for a pickup measure).
+        Return an empty list if no time signature is found.
+
+        Parameters
+        ----------
+        overwrite : bool, default: False
+            Whether to overwrite existing barlines or beats.
+
+        Returns
+        -------
+        Object itself.
+
+        Raises
+        ------
+        ValueError
+            If no time signature is found.
+
+        """
+        if not overwrite and (self.barlines or self.beats):
+            return self
+        if not self.time_signatures:
+            raise ValueError(
+                "Cannot infer barlines and beats as no time signature is "
+                "found."
+            )
+        self.barlines = []
+        self.beats = []
+        for i, time_sign in enumerate(self.time_signatures):
+            if i == len(self.time_signatures) - 1:
+                end = self.get_end_time()
+            else:
+                end = self.time_signatures[i + 1].time
+            # NOTE: `resolution`` denotes the number of time steps per
+            # quarter note
+            bar_length = (4 * self.resolution) * (
+                time_sign.numerator / time_sign.denominator
+            )
+            for time in np.arange(time_sign.time, end, bar_length):
+                self.barlines.append(Barline(time=int(round(time))))
+            beat_length = 4 * self.resolution / time_sign.denominator
+            for time in np.arange(time_sign.time, end, beat_length):
+                self.beats.append(Beat(time=int(round(time))))
+        return self
 
     def adjust_resolution(
-        self: MusicType,
+        self: MusicT,
         target: int = None,
         factor: float = None,
         rounding: Union[str, Callable] = "round",
-    ) -> MusicType:
+    ) -> MusicT:
         """Adjust resolution and timing of all time-stamped objects.
 
         Parameters
@@ -298,6 +370,9 @@ class Music(ComplexBase):
         if target is not None and factor is not None:
             raise ValueError("Only one of `target` and `factor` can be given.")
 
+        if target is None and self.resolution == target:
+            return self
+
         if rounding is None or rounding == "round":
             rounding = round
         elif rounding == "ceil":
@@ -327,7 +402,7 @@ class Music(ComplexBase):
         self.adjust_time(lambda time: rounding(time * factor_))  # type: ignore
         return self
 
-    def clip(self: MusicType, lower: int = 0, upper: int = 127) -> MusicType:
+    def clip(self: MusicT, lower: int = 0, upper: int = 127) -> MusicT:
         """Clip the velocity of each note for each track.
 
         Parameters
@@ -346,7 +421,7 @@ class Music(ComplexBase):
             track.clip(lower, upper)
         return self
 
-    def transpose(self: MusicType, semitone: int) -> MusicType:
+    def transpose(self: MusicT, semitone: int) -> MusicT:
         """Transpose all the notes by a number of semitones.
 
         Parameters
@@ -370,7 +445,7 @@ class Music(ComplexBase):
                 track.transpose(semitone)
         return self
 
-    def trim(self: MusicType, end: int) -> MusicType:
+    def trim(self: MusicT, end: int) -> MusicT:
         """Trim the track.
 
         Parameters
@@ -388,6 +463,7 @@ class Music(ComplexBase):
         self.time_signatures = [
             x for x in self.time_signatures if x.time < end
         ]
+        self.barlines = [x for x in self.barlines if x.time < end]
         self.beats = [x for x in self.beats if x.time < end]
         self.lyrics = [x for x in self.lyrics if x.time < end]
         self.annotations = [x for x in self.annotations if x.time < end]

@@ -59,24 +59,43 @@ def to_pypianoroll(music: "Music") -> Multitrack:
             qpm = tempo.qpm
         tempo_arr[position:] = qpm
 
-    # Downbeats
-    if not music.beats:
+    # Beats
+    if not music.barlines:
         downbeat_arr = None
     else:
         downbeat_arr = np.zeros(length, bool)
+        for barline in music.barlines:
+            downbeat_arr[barline.time] = True
+
+    # Downbeats
+    if not music.beats:
+        beat_arr = None
+    else:
+        beat_arr = np.zeros(length, bool)
         for beat in music.beats:
-            if beat.is_downbeat:
-                downbeat_arr[beat.time] = True
+            beat_arr[beat.time] = True
 
     has_title = music.metadata is not None and music.metadata.title is not None
 
-    return Multitrack(
-        name=music.metadata.title if has_title else None,
-        resolution=music.resolution,
-        tempo=tempo_arr,
-        downbeat=downbeat_arr,
-        tracks=tracks,
-    )
+    try:
+        # pylint: disable=unexpected-keyword-arg
+        multitrack = Multitrack(
+            name=music.metadata.title if has_title else None,
+            resolution=music.resolution,
+            tempo=tempo_arr,
+            beat=beat_arr,
+            downbeat=downbeat_arr,
+            tracks=tracks,
+        )
+    except TypeError:
+        multitrack = Multitrack(
+            name=music.metadata.title if has_title else None,
+            resolution=music.resolution,
+            tempo=tempo_arr,
+            downbeat=downbeat_arr,
+            tracks=tracks,
+        )
+    return multitrack
 
 
 def to_pianoroll_representation(

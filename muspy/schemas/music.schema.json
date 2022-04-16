@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "MusPy JSON schema v0.1",
+    "title": "MusPy JSON schema v0.2",
     "description": "A simple, intuitive format for symbolic music",
     "type": "object",
     "properties": {
@@ -56,11 +56,12 @@
                         "description": "Start time of the tempo, in time steps",
                         "type": "integer"
                     },
-                    "tempo": {
+                    "qpm": {
                         "description": "Tempo in qpm (quarters per minute)",
                         "type": "number"
                     }
-                }
+                },
+                "required": ["time", "qpm"]
             }
 
         },
@@ -90,7 +91,8 @@
                         "description": "Root of the key signature as a string",
                         "type": "string"
                     }
-                }
+                },
+                "required": ["time"]
             }
         },
         "time_signatures": {
@@ -111,7 +113,22 @@
                         "description": "Denominator of the time signature",
                         "type": "integer"
                     }
-                }
+                },
+                "required": ["time"]
+            }
+        },
+        "barlines": {
+            "description": "Barlines",
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "description": "Time of the barline, in time steps",
+                        "type": "integer"
+                    }
+                },
+                "required": ["time"]
             }
         },
         "beats": {
@@ -123,12 +140,9 @@
                     "time": {
                         "description": "Time of the beat, in time steps",
                         "type": "integer"
-                    },
-                    "is_downbeat": {
-                        "description": "Whether it is a downbeat",
-                        "type": "boolean"
                     }
-                }
+                },
+                "required": ["time"]
             }
         },
         "lyrics": {
@@ -145,7 +159,8 @@
                         "description": "Lyric (sentence, word, syllable, etc.)",
                         "type": "string"
                     }
-                }
+                },
+                "required": ["time", "lyric"]
             }
         },
         "annotations": {
@@ -165,7 +180,8 @@
                         "description": "Group name (for better organizing the annotations)",
                         "type": ["string", "null"]
                     }
-                }
+                },
+                "required": ["time", "annotation"]
             }
         },
         "tracks": {
@@ -212,7 +228,8 @@
                                     "description": "Note pitch as a string (useful for distinguishing, e.g., C# and Db)",
                                     "type": "integer"
                                 }
-                            }
+                            },
+                            "required": ["time", "pitch", "duration", "velocity"]
                         }
                     },
                     "chords": {
@@ -249,7 +266,8 @@
                                         "type": "integer"
                                     }
                                 }
-                            }
+                            },
+                            "required": ["time", "pitch", "duration", "velocity"]
                         }
                     },
                     "lyrics": {
@@ -266,7 +284,8 @@
                                     "description": "Lyric (sentence, word, syllable, etc.)",
                                     "type": "string"
                                 }
-                            }
+                            },
+                            "required": ["time", "lyric"]
                         }
                     },
                     "annotations": {
@@ -286,10 +305,12 @@
                                     "description": "Group name (for better organizing the annotations)",
                                     "type": ["string", "null"]
                                 }
-                            }
+                            },
+                            "required": ["time", "annotation"]
                         }
                     }
-                }
+                },
+                "required": ["program", "is_drum"]
             }
         }
     }

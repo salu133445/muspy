@@ -6,6 +6,7 @@ Classes
 -------
 
 - Annotation
+- Barline
 - Beat
 - Chord
 - KeySignature
@@ -30,12 +31,13 @@ from .base import Base, ComplexBase
 from .schemas import DEFAULT_SCHEMA_VERSION
 
 DEFAULT_VELOCITY = 64
-NoteType = TypeVar("NoteType", bound="Note")
-ChordType = TypeVar("ChordType", bound="Chord")
-TrackType = TypeVar("TrackType", bound="Track")
+NoteT = TypeVar("NoteT", bound="Note")
+ChordT = TypeVar("ChordT", bound="Chord")
+TrackT = TypeVar("TrackT", bound="Track")
 
 __all__ = [
     "Annotation",
+    "Barline",
     "Beat",
     "Chord",
     "DEFAULT_VELOCITY",
@@ -257,17 +259,29 @@ class Beat(Base):
     ----------
     time : int
         Time of the beat, in time steps.
-    is_downbeat : bool, default: False
-        Whether it is a downbeat.
 
     """
 
-    _attributes = OrderedDict([("time", int), ("is_downbeat", bool)])
-    _optional_attributes = ["is_downbeat"]
+    _attributes = OrderedDict([("time", int)])
 
-    def __init__(self, time: int, is_downbeat: bool = False):
+    def __init__(self, time: int):
         self.time = time
-        self.is_downbeat = is_downbeat
+
+
+class Barline(Base):
+    """A container for barlines.
+
+    Attributes
+    ----------
+    time : int
+        Time of the barline, in time steps.
+
+    """
+
+    _attributes = OrderedDict([("time", int)])
+
+    def __init__(self, time: int):
+        self.time = time
 
 
 class Lyric(Base):
@@ -393,11 +407,11 @@ class Note(Base):
         raise NotImplementedError
 
     def adjust_time(
-        self: NoteType,
+        self: NoteT,
         func: Callable[[int], int],
         attr: str = None,
         recursive: bool = True,
-    ) -> NoteType:
+    ) -> NoteT:
         """Adjust the timing of the note.
 
         Parameters
@@ -423,7 +437,7 @@ class Note(Base):
         self.duration = func(old_time + self.duration) - self.time
         return self
 
-    def transpose(self: NoteType, semitone: int) -> NoteType:
+    def transpose(self: NoteT, semitone: int) -> NoteT:
         """Transpose the note by a number of semitones.
 
         Parameters
@@ -440,7 +454,7 @@ class Note(Base):
         self.pitch += semitone
         return self
 
-    def clip(self: NoteType, lower: int = 0, upper: int = 127) -> NoteType:
+    def clip(self: NoteT, lower: int = 0, upper: int = 127) -> NoteT:
         """Clip the velocity of the note.
 
         Parameters
@@ -547,11 +561,11 @@ class Chord(Base):
         raise NotImplementedError
 
     def adjust_time(
-        self: ChordType,
+        self: ChordT,
         func: Callable[[int], int],
         attr: str = None,
         recursive: bool = True,
-    ) -> ChordType:
+    ) -> ChordT:
         """Adjust the timing of the chord.
 
         Parameters
@@ -577,7 +591,7 @@ class Chord(Base):
         self.duration = func(old_time + self.duration) - self.time
         return self
 
-    def transpose(self: ChordType, semitone: int) -> ChordType:
+    def transpose(self: ChordT, semitone: int) -> ChordT:
         """Transpose the notes by a number of semitones.
 
         Parameters
@@ -595,7 +609,7 @@ class Chord(Base):
         self.pitches += [pitch + semitone for pitch in self.pitches]
         return self
 
-    def clip(self: ChordType, lower: int = 0, upper: int = 127) -> ChordType:
+    def clip(self: ChordT, lower: int = 0, upper: int = 127) -> ChordT:
         """Clip the velocity of the chord.
 
         Parameters
@@ -719,7 +733,7 @@ class Track(ComplexBase):
             get_end_time(self.annotations, is_sorted),
         )
 
-    def clip(self: TrackType, lower: int = 0, upper: int = 127) -> TrackType:
+    def clip(self: TrackT, lower: int = 0, upper: int = 127) -> TrackT:
         """Clip the velocity of each note.
 
         Parameters
@@ -738,7 +752,7 @@ class Track(ComplexBase):
             note.clip(lower, upper)
         return self
 
-    def transpose(self: TrackType, semitone: int) -> TrackType:
+    def transpose(self: TrackT, semitone: int) -> TrackT:
         """Transpose the notes by a number of semitones.
 
         Parameters
@@ -757,7 +771,7 @@ class Track(ComplexBase):
             note.transpose(semitone)
         return self
 
-    def trim(self: TrackType, end: int) -> TrackType:
+    def trim(self: TrackT, end: int) -> TrackT:
         """Trim the track.
 
         Parameters

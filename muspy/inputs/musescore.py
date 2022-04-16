@@ -1,16 +1,18 @@
 """MuseScore input interface."""
+import time
 import warnings
 import xml.etree.ElementTree as ET
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from fractions import Fraction
 from functools import reduce
 from operator import attrgetter
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, TypeVar, Union
+from typing import DefaultDict, Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
 from ..classes import (
+    Barline,
     Beat,
     KeySignature,
     Lyric,
@@ -179,7 +181,7 @@ def parse_time_elem(elem: Element) -> Tuple[int, int]:
 
 def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
     """Return the key parsed from a key element."""
-    mode = _get_text(elem, "mode", "major")
+    mode = _get_text(elem, "mode")
     fifths_text = _get_text(elem, "accidental")  # MuseScore 2.x and 3.x
     if fifths_text is None:
         fifths_text = _get_text(elem, "subtype")  # MuseScore 1.x
@@ -227,7 +229,7 @@ def parse_marker_measure_map(elem: Element) -> Dict[str, int]:
     return markers
 
 
-def get_measure_ordering(elem: Element) -> List[int]:
+def get_measure_ordering(elem: Element, timeout: int = None) -> List[int]:
     """Return a list of measure indices parsed from a staff element.
 
     This function returns the ordering of measures, considering all
@@ -239,12 +241,15 @@ def get_measure_ordering(elem: Element) -> List[int]:
 
     # Repeats
     last_repeat = 0
-    count_repeat = 1
+    count_repeat: DefaultDict[int, int] = defaultdict(lambda: 1)
     count_ending = 1
 
     # Flags
+    is_after_repeat = False
     is_after_jump = False
     is_after_play_until = False
+    is_repeat_done: DefaultDict[int, bool] = defaultdict(lambda: False)
+    is_jump_done: DefaultDict[int, bool] = defaultdict(lambda: False)
 
     # Jump-related measure indices
     jump_to_idx = None
@@ -254,10 +259,21 @@ def get_measure_ordering(elem: Element) -> List[int]:
     # Get the marker measure map
     marker_measure_map = parse_marker_measure_map(elem)
 
+    # Record start time to check for timeout
+    if timeout is not None:
+        start_time = time.time()
+
     # Iterate over all measures
     measure_idx = 0
     measure_elems = list(elem.findall("Measure"))
     while measure_idx < len(measure_elems):
+
+        # Check for timeout
+        if timeout is not None and time.time() - start_time > timeout:
+            raise TimeoutError(
+                f"Abort the process as it runned over {timeout} seconds."
+            )
+
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
 
@@ -318,7 +334,7 @@ def get_measure_ordering(elem: Element) -> List[int]:
         next_measure_idx = measure_idx + 1
 
         # Jump elements
-        if not is_after_jump:
+        if not is_jump_done[measure_idx] and not is_after_jump:
             jump_elem = measure_elem.find("Jump")
             if jump_elem is not None:
                 jump_to_idx = marker_measure_map.get(
@@ -330,14 +346,20 @@ def get_measure_ordering(elem: Element) -> List[int]:
                 continue_at_idx = marker_measure_map.get(
                     _get_text(jump_elem, "continueAt")
                 )
+                # Set flaps
                 is_after_jump = True
+                is_jump_done[measure_idx] = True
                 # Get back to the first measure to look for the
                 # jump-to measure
                 next_measure_idx = 0
 
         # Repeat elements (forward)
-        if measure_elem.find("startRepeat"):
+        if measure_elem.find("startRepeat") is not None:
             last_repeat = measure_idx
+            # Reset repeat counters
+            if not is_after_repeat:
+                count_repeat[measure_idx] = 1
+                count_ending = 1
 
         # Volta elements
         is_wrong_ending = False
@@ -350,25 +372,34 @@ def get_measure_ordering(elem: Element) -> List[int]:
         # Skip this measure if it is not the correct ending
         if is_wrong_ending:
             measure_idx += 1
+            # Reset the flag
+            is_after_repeat = False
             continue
 
         # Repeat elements (backward)
-        end_repeat_element = measure_elem.find("endRepeat")
-        if end_repeat_element is not None:
-            # Get repeat times
-            if end_repeat_element.text is None:
-                repeat_times = 2
-            else:
-                repeat_times = int(end_repeat_element.text)
-            # Check if repeat times has reached
-            if count_repeat < repeat_times:
-                count_repeat += 1
-                count_ending += 1
-                next_measure_idx = last_repeat
-            else:
-                # Reset repeat counters
-                count_repeat = 1
-                count_ending = 1
+        if not is_after_jump:
+            end_repeat_element = measure_elem.find("endRepeat")
+            if end_repeat_element is not None:
+                # Get repeat times
+                if end_repeat_element.text is None:
+                    repeat_times = 2
+                else:
+                    repeat_times = int(end_repeat_element.text)
+                # Check if repeat times has reached
+                if (
+                    not is_repeat_done[measure_idx]
+                    and count_repeat[measure_idx] < repeat_times
+                ):
+                    is_after_repeat = True
+                    count_repeat[measure_idx] += 1
+                    count_ending += 1
+                    next_measure_idx = last_repeat
+                else:
+                    # Reset the repeat counter
+                    is_after_repeat = False
+                    is_repeat_done[measure_idx] = True
+                    count_repeat[measure_idx] = 1
+                    count_ending = 1
 
         # Append the current measure index to the list to be return
         measure_indices.append(measure_idx)
@@ -380,8 +411,17 @@ def get_measure_ordering(elem: Element) -> List[int]:
 
 
 def parse_meta_staff_elem(
-    staff_elem: Element, resolution: int, measure_indices: List[int]
-) -> Tuple[List[Tempo], List[KeySignature], List[TimeSignature], List[Beat]]:
+    staff_elem: Element,
+    resolution: int,
+    measure_indices: List[int],
+    timeout: int = None,
+) -> Tuple[
+    List[Tempo],
+    List[KeySignature],
+    List[TimeSignature],
+    List[Barline],
+    List[Beat],
+]:
     """Return data parsed from a meta staff element.
 
     This function only parses the tempos, key and time signatures. Use
@@ -392,27 +432,41 @@ def parse_meta_staff_elem(
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
     time_signatures: List[TimeSignature] = []
+    barlines: List[Barline] = []
 
     # Initialize variables
-    time = 0
+    time_ = 0
     measure_len = round(resolution * 4)
     is_tuple = False
     downbeat_times: List[int] = []
+
+    # Record start time to check for timeout
+    if timeout is not None:
+        start_time = time.time()
 
     # Iterate over all elements
     measure_elems = list(staff_elem.findall("Measure"))
     for measure_idx in measure_indices:
 
+        # Check for timeout
+        if timeout is not None and time.time() - start_time > timeout:
+            raise TimeoutError(
+                f"Abort the process as it runned over {timeout} seconds."
+            )
+
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
 
+        # Barlines
+        barlines.append(Barline(time=time_))
+
         # Collect the measure start times
-        downbeat_times.append(time)
+        downbeat_times.append(time_)
 
         # Get measure length
         measure_len_text = measure_elem.get("len")
         if measure_len_text is not None:
-            measure_len = round(resolution * 4 * Fraction(measure_len))
+            measure_len = round(resolution * 4 * Fraction(measure_len_text))
 
         # Initialize position
         position = 0
@@ -424,7 +478,7 @@ def parse_meta_staff_elem(
 
         # Iterate over voice elements
         for voice_elem in voice_elems:
-            # Initialize position
+            # Reset position
             position = 0
 
             # Iterate over child elements
@@ -435,7 +489,7 @@ def parse_meta_staff_elem(
                     root, mode, fifths, root_str = parse_key_elem(elem)
                     key_signatures.append(
                         KeySignature(
-                            time=time + position,
+                            time=time_ + position,
                             root=root,
                             mode=mode,
                             fifths=fifths,
@@ -448,7 +502,7 @@ def parse_meta_staff_elem(
                     numerator, denominator = parse_time_elem(elem)
                     time_signatures.append(
                         TimeSignature(
-                            time=time + position,
+                            time=time_ + position,
                             numerator=numerator,
                             denominator=denominator,
                         )
@@ -458,7 +512,7 @@ def parse_meta_staff_elem(
                 if elem.tag == "Tempo":
                     tempos.append(
                         Tempo(
-                            time + position,
+                            time_ + position,
                             60 * float(_get_required_text(elem, "tempo")),
                         )
                     )
@@ -530,7 +584,7 @@ def parse_meta_staff_elem(
                         position += int(new_duration - duration)
                     is_tuple = False
 
-        time += position
+        time_ += position
 
     # Sort tempos, key and time signatures
     tempos.sort(key=attrgetter("time"))
@@ -542,11 +596,14 @@ def parse_meta_staff_elem(
         downbeat_times, time_signatures, resolution, is_sorted=True
     )
 
-    return tempos, key_signatures, time_signatures, beats
+    return tempos, key_signatures, time_signatures, barlines, beats
 
 
 def parse_staff_elem(
-    staff_elem: Element, resolution: int, measure_indices: List[int]
+    staff_elem: Element,
+    resolution: int,
+    measure_indices: List[int],
+    timeout: int = None,
 ) -> Tuple[List[Note], List[Lyric]]:
     """Return notes and lyrics parsed from a staff element.
 
@@ -560,10 +617,14 @@ def parse_staff_elem(
     lyrics: List[Lyric] = []
 
     # Initialize variables
-    time = 0
+    time_ = 0
     velocity = 64
     measure_len = round(resolution * 4)
     is_tuple = False
+
+    # Record start time to check for timeout
+    if timeout is not None:
+        start_time = time.time()
 
     # Create a dictionary to handle ties
     ties: Dict[int, int] = {}
@@ -572,13 +633,19 @@ def parse_staff_elem(
     measure_elems = list(staff_elem.findall("Measure"))
     for measure_idx in measure_indices:
 
+        # Check for timeout
+        if timeout is not None and time.time() - start_time > timeout:
+            raise TimeoutError(
+                f"Abort the process as it runned over {timeout} seconds."
+            )
+
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
 
         # Get measure length
         measure_len_text = measure_elem.get("len")
         if measure_len_text is not None:
-            measure_len = round(resolution * 4 * Fraction(measure_len))
+            measure_len = round(resolution * 4 * Fraction(measure_len_text))
 
         # Initialize position
         position = 0
@@ -676,7 +743,7 @@ def parse_staff_elem(
                             # Append a new note to the note list
                             notes.append(
                                 Note(
-                                    time=time + position,
+                                    time=time_ + position,
                                     pitch=pitch,
                                     duration=duration,
                                     velocity=velocity,
@@ -708,7 +775,7 @@ def parse_staff_elem(
                             # Append a new note to the note list
                             notes.append(
                                 Note(
-                                    time=time + position,
+                                    time=time_ + position,
                                     pitch=pitch,
                                     duration=duration,
                                     velocity=velocity,
@@ -724,7 +791,7 @@ def parse_staff_elem(
                     if lyric_elem is not None:
                         lyric_text = parse_lyric_elem(lyric_elem)
                         lyrics.append(
-                            Lyric(time=time + position, lyric=lyric_text)
+                            Lyric(time=time_ + position, lyric=lyric_text)
                         )
 
                     if not is_grace:
@@ -743,7 +810,7 @@ def parse_staff_elem(
                         position += int(new_duration - duration)
                     is_tuple = False
 
-        time += position
+        time_ += position
 
     # Sort notes
     notes.sort(key=attrgetter("time", "pitch", "duration", "velocity"))
@@ -857,7 +924,10 @@ def parse_part_elem_info(
 
 
 def read_musescore(
-    path: Union[str, Path], resolution: int = None, compressed: bool = None
+    path: Union[str, Path],
+    resolution: int = None,
+    compressed: bool = None,
+    timeout: int = None,
 ) -> Music:
     """Read a MuseScore file into a Music object.
 
@@ -877,11 +947,10 @@ def read_musescore(
     :class:`muspy.Music`
         Converted Music object.
 
-    Note
-    ----
+    Warnings
+    --------
     This function is based on MuseScore 3. Files created by an earlier
     version of MuseScore might not be read correctly.
-
 
     """
     # Get element tree root
@@ -946,19 +1015,35 @@ def read_musescore(
 
     # Parse measure ordering from the meta staff, expanding all repeats
     # and jumps
-    measure_indices = get_measure_ordering(meta_staff_elem)
+    measure_indices = get_measure_ordering(meta_staff_elem, timeout)
 
     # Parse the meta part element
-    tempos, key_signatures, time_signatures, beats = parse_meta_staff_elem(
-        meta_staff_elem, resolution, measure_indices
+    (
+        tempos,
+        key_signatures,
+        time_signatures,
+        barlines,
+        beats,
+    ) = parse_meta_staff_elem(
+        meta_staff_elem, resolution, measure_indices, timeout
     )
 
     # Initialize lists
     tracks: List[Track] = []
 
+    # Record start time to check for timeout
+    start_time = time.time()
+
     # Iterate over all staffs
     part_track_map: Dict[int, int] = {}
     for staff_elem in score_elem.findall("Staff"):
+        # Check for timeout
+        if timeout is not None and time.time() - start_time > timeout:
+            raise TimeoutError(
+                f"Abort the process as it runned over {timeout} seconds."
+            )
+
+        # Get the staff ID
         staff_id = staff_elem.get("id")  # type: ignore
         if staff_id is None:
             if len(score_elem.findall("Staff")) > 1:
@@ -969,7 +1054,7 @@ def read_musescore(
 
         # Parse the staff
         notes, lyrics = parse_staff_elem(
-            staff_elem, resolution, measure_indices
+            staff_elem, resolution, measure_indices, timeout
         )
 
         # Extend lists
@@ -1006,6 +1091,7 @@ def read_musescore(
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
+        barlines=barlines,
         beats=beats,
         tracks=tracks,
     )

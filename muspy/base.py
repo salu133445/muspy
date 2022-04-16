@@ -28,8 +28,8 @@ from .utils import yaml_dump
 
 __all__ = ["Base", "ComplexBase"]
 
-BaseType = TypeVar("BaseType", bound="Base")
-ComplexBaseType = TypeVar("ComplexBaseType", bound="ComplexBase")
+BaseT = TypeVar("BaseT", bound="Base")
+ComplexBaseT = TypeVar("ComplexBaseT", bound="ComplexBase")
 
 
 def _get_type_string(attr_type):
@@ -136,16 +136,16 @@ class Base:
             return True
         return False
 
-    def __deepcopy__(self: BaseType, memo: dict) -> BaseType:
+    def __deepcopy__(self: BaseT, memo: dict) -> BaseT:
         return self.from_dict(self.to_ordered_dict())
 
     @classmethod
     def from_dict(
-        cls: Type[BaseType],
+        cls: Type[BaseT],
         dict_: Mapping,
         strict: bool = False,
         cast: bool = False,
-    ) -> BaseType:
+    ) -> BaseT:
         """Return an instance constructed from a dictionary.
 
         Instantiate an object whose attributes and the corresponding
@@ -273,7 +273,7 @@ class Base:
                 ordered_dict[attr] = value
         return ordered_dict
 
-    def copy(self: BaseType) -> BaseType:
+    def copy(self: BaseT) -> BaseT:
         """Return a shallow copy of the object.
 
         This is equivalent to :py:func:`copy.copy(self)`.
@@ -285,7 +285,7 @@ class Base:
         """
         return copy.copy(self)
 
-    def deepcopy(self: BaseType) -> BaseType:
+    def deepcopy(self: BaseT) -> BaseT:
         """Return a deep copy of the object.
 
         This is equivalent to :py:func:`copy.deepcopy(self)`
@@ -368,8 +368,8 @@ class Base:
                 getattr(self, attr).validate_type(recursive=recursive)
 
     def validate_type(
-        self: BaseType, attr: str = None, recursive: bool = True
-    ) -> BaseType:
+        self: BaseT, attr: str = None, recursive: bool = True
+    ) -> BaseT:
         """Raise an error if an attribute is of an invalid type.
 
         This will apply recursively to an attribute's attributes.
@@ -425,8 +425,8 @@ class Base:
                 getattr(self, attr).validate(recursive=recursive)
 
     def validate(
-        self: BaseType, attr: str = None, recursive: bool = True
-    ) -> BaseType:
+        self: BaseT, attr: str = None, recursive: bool = True
+    ) -> BaseT:
         """Raise an error if an attribute has an invalid type or value.
 
         This will apply recursively to an attribute's attributes.
@@ -537,11 +537,11 @@ class Base:
                 getattr(self, attr).adjust_time(func, recursive=recursive)
 
     def adjust_time(
-        self: BaseType,
+        self: BaseT,
         func: Callable[[int], int],
         attr: str = None,
         recursive: bool = True,
-    ) -> BaseType:
+    ) -> BaseT:
         """Adjust the timing of time-stamped objects.
 
         Parameters
@@ -566,7 +566,7 @@ class Base:
             self._adjust_time(func, attr, recursive)
         return self
 
-    def _fix_type(self: BaseType, attr: str, recursive: bool):
+    def _fix_type(self: BaseT, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
         if isclass(attr_type) and issubclass(attr_type, Base):
             if attr in self._list_attributes:
@@ -592,8 +592,8 @@ class Base:
                 getattr(self, attr).fix_type(recursive=recursive)
 
     def fix_type(
-        self: BaseType, attr: str = None, recursive: bool = True
-    ) -> BaseType:
+        self: BaseT, attr: str = None, recursive: bool = True
+    ) -> BaseT:
         """Fix the types of attributes.
 
         Parameters
@@ -630,13 +630,11 @@ class ComplexBase(Base):
     """
 
     def __iadd__(
-        self: ComplexBaseType, other: Union[ComplexBaseType, Iterable]
-    ) -> ComplexBaseType:
+        self: ComplexBaseT, other: Union[ComplexBaseT, Iterable]
+    ) -> ComplexBaseT:
         return self.extend(other)
 
-    def __add__(
-        self: ComplexBaseType, other: ComplexBaseType
-    ) -> ComplexBaseType:
+    def __add__(self: ComplexBaseT, other: ComplexBaseT) -> ComplexBaseT:
         if not isinstance(other, type(self)):
             raise TypeError(
                 "Expect the second operand to be of type "
@@ -658,7 +656,7 @@ class ComplexBase(Base):
             f"Cannot find a list attribute for type {type(obj).__name__}."
         )
 
-    def append(self: ComplexBaseType, obj) -> ComplexBaseType:
+    def append(self: ComplexBaseT, obj) -> ComplexBaseT:
         """Append an object to the corresponding list.
 
         This will automatically determine the list attributes to append
@@ -674,10 +672,10 @@ class ComplexBase(Base):
         return self
 
     def extend(
-        self: ComplexBaseType,
-        other: Union[ComplexBaseType, Iterable],
+        self: ComplexBaseT,
+        other: Union[ComplexBaseT, Iterable],
         deepcopy: bool = False,
-    ) -> ComplexBaseType:
+    ) -> ComplexBaseT:
         """Extend the list(s) with another object or iterable.
 
         Parameters
@@ -740,8 +738,8 @@ class ComplexBase(Base):
             value[:] = [item for item in value if isinstance(item, attr_type)]
 
     def remove_invalid(
-        self: ComplexBaseType, attr: str = None, recursive: bool = True
-    ) -> ComplexBaseType:
+        self: ComplexBaseT, attr: str = None, recursive: bool = True
+    ) -> ComplexBaseT:
         """Remove invalid items from a list attribute.
 
         Parameters
@@ -795,8 +793,8 @@ class ComplexBase(Base):
         value[:] = new_value
 
     def remove_duplicate(
-        self: ComplexBaseType, attr: str = None, recursive: bool = True
-    ) -> ComplexBaseType:
+        self: ComplexBaseT, attr: str = None, recursive: bool = True
+    ) -> ComplexBaseT:
         """Remove duplicate items from a list attribute.
 
         Parameters
@@ -835,8 +833,8 @@ class ComplexBase(Base):
                     value.sort(recursive=recursive)
 
     def sort(
-        self: ComplexBaseType, attr: str = None, recursive: bool = True
-    ) -> ComplexBaseType:
+        self: ComplexBaseT, attr: str = None, recursive: bool = True
+    ) -> ComplexBaseT:
         """Sort a list attribute.
 
         Parameters

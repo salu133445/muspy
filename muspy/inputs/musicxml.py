@@ -1,16 +1,17 @@
 """MusicXML input interface."""
 import xml.etree.ElementTree as ET
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from functools import reduce
 from operator import attrgetter
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, TypeVar, Union
+from typing import DefaultDict, Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
 
 import numpy as np
 
 from ..classes import (
+    Barline,
     Beat,
     KeySignature,
     Lyric,
@@ -124,7 +125,7 @@ def parse_metronome_elem(elem: Element) -> Optional[float]:
 
 def parse_key_elem(elem: Element) -> Tuple[int, str, int, str]:
     """Return the key parsed from a key element."""
-    mode = _get_text(elem, "mode", "major")
+    mode = _get_text(elem, "mode")
     fifths = int(_get_required_text(elem, "fifths"))
     if mode is None:
         return None, None, fifths, None
@@ -180,9 +181,11 @@ def parse_unpitched_elem(elem: Element) -> Tuple[int, str]:
     return pitch, pitch_str
 
 
-def parse_lyric_elem(elem: Element) -> str:
+def parse_lyric_elem(elem: Element) -> Optional[str]:
     """Return the lyric text parsed from a lyric element."""
-    text = _get_required_text(elem, "text")
+    text = _get_text(elem, "text")
+    if text is None:
+        return None
     syllabic_elem = elem.find("syllabic")
     if syllabic_elem is not None:
         if syllabic_elem.text == "begin":
@@ -205,9 +208,11 @@ def get_measure_ordering(elem: Element) -> List[int]:
     measure_indices = []
 
     # Repeats
+    is_after_repeat = False
     last_repeat = 0
-    count_repeat = 1
+    count_repeat: DefaultDict[int, int] = defaultdict(lambda: 1)
     count_ending = 1
+    is_repeat_done: DefaultDict[int, bool] = defaultdict(lambda: False)
 
     # Coda, tocoda, dacapo, segno, dalsegno, fine
     is_after_jump = False
@@ -219,6 +224,7 @@ def get_measure_ordering(elem: Element) -> List[int]:
     is_tocoda = False
     is_coda = False
     is_after_coda = False
+    is_jump_done: DefaultDict[int, bool] = defaultdict(lambda: False)
 
     # Iterate over all elements
     measure_idx = 0
@@ -275,7 +281,7 @@ def get_measure_ordering(elem: Element) -> List[int]:
                 # Fine
                 if sound_elem.get("fine") is not None:
                     is_fine = True
-            else:
+            elif not is_jump_done[measure_idx]:
                 # Dacapo
                 if sound_elem.get("dacapo") is not None:
                     is_dacapo = True
@@ -296,7 +302,7 @@ def get_measure_ordering(elem: Element) -> List[int]:
                 # Fine
                 if sound_elem.get("fine") is not None:
                     is_fine = True
-            else:
+            elif not is_jump_done[measure_idx]:
                 # Dacapo
                 if sound_elem.get("dacapo") is not None:
                     is_dacapo = True
@@ -320,6 +326,8 @@ def get_measure_ordering(elem: Element) -> List[int]:
             # Skip the current measure if not the correct ending
             if count_ending not in ending_num:
                 measure_idx += 1
+                # Reset the flag
+                is_after_repeat = False
                 continue
 
         # Repeat elements
@@ -328,6 +336,10 @@ def get_measure_ordering(elem: Element) -> List[int]:
             direction = _get_required_attr(repeat_elem, "direction")
             if direction == "forward":
                 last_repeat = measure_idx
+                # Reset repeat counters
+                if not is_after_repeat:
+                    count_repeat[measure_idx] = 1
+                    count_ending = 1
             elif direction == "backward":
                 # Get after-jump infomation
                 after_jump_attr = repeat_elem.get("after-jump")
@@ -343,12 +355,18 @@ def get_measure_ordering(elem: Element) -> List[int]:
                     else:
                         repeat_times = int(repeat_times_attr)
                     # Check if repeat times has reached
-                    if count_repeat < repeat_times:
-                        count_repeat += 1
+                    if (
+                        not is_repeat_done[measure_idx]
+                        and count_repeat[measure_idx] < repeat_times
+                    ):
+                        is_after_repeat = True
+                        count_repeat[measure_idx] += 1
                         count_ending += 1
                         next_measure_idx = last_repeat
                     else:
-                        count_repeat = 1
+                        is_after_repeat = False
+                        is_repeat_done[measure_idx] = True
+                        count_repeat[measure_idx] = 1
                         count_ending = 1
             else:
                 raise MusicXMLError(
@@ -361,6 +379,7 @@ def get_measure_ordering(elem: Element) -> List[int]:
 
         if not is_after_jump and (is_dacapo or is_dalsegno):
             is_after_jump = True
+            is_jump_done[measure_idx] = True
 
         measure_idx = next_measure_idx
 
@@ -394,10 +413,7 @@ def get_beats(
     """
     # Return a list of downbeats if no time signatures is given
     if not time_signatures:
-        return [
-            Beat(time=int(round(time)), is_downbeat=True)
-            for time in downbeat_times
-        ]
+        return [Beat(time=int(round(time))) for time in downbeat_times]
 
     # Sort the downbeats and time signatures if necessary
     if not is_sorted:
@@ -431,14 +447,11 @@ def get_beats(
                 + beat_resolution * time_sign.numerator
             )
 
-        # Append the downbeat
-        start = int(round(downbeat_times[downbeat_idx]))
-        beats.append(Beat(time=start, is_downbeat=True))
-
         # Append beats
-        beat_times = np.arange(start + beat_resolution, end, beat_resolution)
+        start = int(round(downbeat_times[downbeat_idx]))
+        beat_times = np.arange(start, end, beat_resolution)
         for time in beat_times:
-            beats.append(Beat(time=int(round(time)), is_downbeat=False))
+            beats.append(Beat(time=int(round(time))))
 
         downbeat_idx += 1
 
@@ -447,7 +460,13 @@ def get_beats(
 
 def parse_meta_part_elem(
     part_elem: Element, resolution: int, measure_indices: List[int]
-) -> Tuple[List[Tempo], List[KeySignature], List[TimeSignature], List[Beat]]:
+) -> Tuple[
+    List[Tempo],
+    List[KeySignature],
+    List[TimeSignature],
+    List[Barline],
+    List[Beat],
+]:
     """Return data parsed from a meta part element.
 
     This function only parses the tempos, key and time signatures. Use
@@ -458,6 +477,7 @@ def parse_meta_part_elem(
     tempos: List[Tempo] = []
     key_signatures: List[KeySignature] = []
     time_signatures: List[TimeSignature] = []
+    barlines: List[Barline] = []
 
     # Initialize variables
     time = 0
@@ -470,6 +490,9 @@ def parse_meta_part_elem(
 
         # Get the measure element
         measure_elem = measure_elems[measure_idx]
+
+        # Barlines
+        barlines.append(Barline(time=time))
 
         # Collect the measure start times
         downbeat_times.append(time)
@@ -576,7 +599,6 @@ def parse_meta_part_elem(
                     continue
 
                 # Get duration
-                # TODO: Should we look for a duration or type element?
                 duration = int(_get_required_text(elem, "duration"))
 
                 # Move time position forward if it is not in chord
@@ -596,6 +618,7 @@ def parse_meta_part_elem(
         time += position
 
     # Sort tempos, key and time signatures
+    barlines.sort(key=attrgetter("time"))
     tempos.sort(key=attrgetter("time"))
     key_signatures.sort(key=attrgetter("time"))
     time_signatures.sort(key=attrgetter("time"))
@@ -605,7 +628,7 @@ def parse_meta_part_elem(
         downbeat_times, time_signatures, resolution, is_sorted=True
     )
 
-    return tempos, key_signatures, time_signatures, beats
+    return tempos, key_signatures, time_signatures, barlines, beats
 
 
 def parse_part_elem(
@@ -753,11 +776,10 @@ def parse_part_elem(
                     continue
 
                 # Get duration
-                # TODO: Should we look for a duration or type element?
                 duration = int(_get_required_text(elem, "duration"))
 
                 # Check if it is a tied note
-                # TODO: Should we look for a tie or tied element?
+                # (Should we look for a tie or tied element?)
                 is_outgoing_tie = False
                 for tie_elem in elem.findall("tie"):
                     if tie_elem.get("type") == "start":
@@ -795,9 +817,10 @@ def parse_part_elem(
                 lyric_elem = elem.find("lyric")
                 if lyric_elem is not None:
                     lyric_text = parse_lyric_elem(lyric_elem)
-                    lyrics.append(
-                        Lyric(time=time + position, lyric=lyric_text)
-                    )
+                    if lyric_text is not None:
+                        lyrics.append(
+                            Lyric(time=time + position, lyric=lyric_text)
+                        )
 
                 # Move time position forward if it is not in chord
                 last_note_position = position
@@ -997,9 +1020,13 @@ def read_musicxml(
     measure_indices = get_measure_ordering(meta_part_elem)
 
     # Parse the meta part element
-    tempos, key_signatures, time_signatures, beats = parse_meta_part_elem(
-        meta_part_elem, resolution, measure_indices
-    )
+    (
+        tempos,
+        key_signatures,
+        time_signatures,
+        barlines,
+        beats,
+    ) = parse_meta_part_elem(meta_part_elem, resolution, measure_indices)
 
     # Initialize lists
     tracks: List[Track] = []
@@ -1063,6 +1090,7 @@ def read_musicxml(
         tempos=tempos,
         key_signatures=key_signatures,
         time_signatures=time_signatures,
+        barlines=barlines,
         beats=beats,
         tracks=tracks,
     )
