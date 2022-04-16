@@ -31,7 +31,7 @@ def synthesize(
     music: "Music",
     soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
-    gain: float = None,
+    gain: float = 1,
     options: str = None,
 ) -> ndarray:
     """Synthesize a Music object to raw audio.
@@ -45,10 +45,10 @@ def synthesize(
         downloaded MuseScore General soundfont.
     rate : int, default: 44100
         Sample rate (in samples per sec).
-    gain : float, optional
-        Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,
-        where n is the number of tracks. This can be used to prevent
-        distortions caused by clipping.
+    gain : float, default: 1
+        Master gain (`-g` option) for Fluidsynth. The value must be
+        in between 0 and 10, excluding. This can be used to avoid
+        clipping.
     options : str, optional
         Additional options to be passed to the FluidSynth call. The
         full command called is: `fluidsynth -T raw -F- -r {rate}
@@ -60,9 +60,6 @@ def synthesize(
         Synthesized waveform.
 
     """
-    if gain is None:
-        gain = 1 / len(music)
-
     # Check soundfont
     soundfont_path = _check_soundfont(soundfont_path)
 
@@ -102,10 +99,11 @@ def synthesize(
 def write_audio(
     path: Union[str, Path],
     music: "Music",
-    audio_format: str = None,
+    audio_format: str = "auto",
     soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
-    gain: float = None,
+    gain: float = 1,
+    options: str = None,
 ):
     """Write a Music object to an audio file.
 
@@ -117,24 +115,24 @@ def write_audio(
         Path to write the audio file.
     music : :class:`muspy.Music`
         Music object to write.
-    audio_format : str, {'wav', 'aiff', 'flac', 'oga'}, optional
+    audio_format : str, default: 'auto'
         File format to write. Defaults to infer from the extension.
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
     rate : int, default: 44100
         Sample rate (in samples per sec).
-    gain : float, optional
-        Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,
-        where n is the number of tracks. This can be used to prevent
-        distortions caused by clipping.
+    gain : float, default: 1
+        Master gain (`-g` option) for Fluidsynth. The value must be
+        in between 0 and 10, excluding. This can be used to avoid
+        clipping.
+    options : str, optional
+        Additional options to be passed to the FluidSynth call. The
+        full command called is: `fluidsynth -ni -F {path}
+        -T {audio_format} -r {rate} -g {gain} -i {soundfont_path}
+        {options} {midi_path}`.
 
     """
-    if audio_format is None:
-        audio_format = "auto"
-    if gain is None:
-        gain = 1 / len(music)
-
     # Check soundfont
     soundfont_path = _check_soundfont(soundfont_path)
 
@@ -159,6 +157,7 @@ def write_audio(
                 "-g",
                 str(gain),
                 str(soundfont_path),
+                options if options is not None else "",
                 str(midi_path),
             ],
             check=True,
