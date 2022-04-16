@@ -32,6 +32,7 @@ def synthesize(
     soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
     gain: float = None,
+    options: str = None,
 ) -> ndarray:
     """Synthesize a Music object to raw audio.
 
@@ -48,6 +49,10 @@ def synthesize(
         Master gain (`-g` option) for Fluidsynth. Defaults to 1/n,
         where n is the number of tracks. This can be used to prevent
         distortions caused by clipping.
+    options : str, optional
+        Additional options to be passed to the FluidSynth call. The
+        full command called is: `fluidsynth -T raw -F- -r {rate}
+        -g {gain} -i {soundfont_path} {options} {midi_path}`.
 
     Returns
     -------
@@ -81,6 +86,7 @@ def synthesize(
                 str(gain),
                 "-i",
                 str(soundfont_path),
+                options if options is not None else "",
                 str(midi_path),
             ],
             check=True,
