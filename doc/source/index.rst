@@ -64,9 +64,9 @@ Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A To
 
 [`homepage <https://salu133445.github.io/muspy/>`_]
 [`video <https://youtu.be/atdHMEuAYno>`_]
-[`paper <https://salu133445.github.io/muspy/pdf/muspy-ismir2020-paper.pdf>`_]
-[`slides <https://salu133445.github.io/muspy/pdf/muspy-ismir2020-slides.pdf>`_]
-[`poster <https://salu133445.github.io/muspy/pdf/muspy-ismir2020-poster.pdf>`_]
+[`paper <https://salu133445.github.io/muspy/pdf/muspy_ismir2020_paper.pdf>`_]
+[`slides <https://salu133445.github.io/muspy/pdf/muspy_ismir2020_slides.pdf>`_]
+[`poster <https://salu133445.github.io/muspy/pdf/muspy_ismir2020_poster.pdf>`_]
 [`arXiv <https://arxiv.org/abs/2008.01951>`_]
 [`code <https://github.com/salu133445/muspy>`_]
 [`documentation <https://salu133445.github.io/muspy/>`_]
