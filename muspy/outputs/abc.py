@@ -5,10 +5,12 @@ from typing import Union
 from music21.pitch import Pitch
 from ..music import Music
 
+from typing import List
+
 
 def generate_header(
     music: Music
-) -> list[str]:
+) -> List[str]:
     """Generate ABC header from Music object.
 
     Parameters
@@ -20,7 +22,8 @@ def generate_header(
 
     # TODO: set filename as title if no other title
     header_lines.append(f"T:{music.metadata.title}")
-    if (creators := music.metadata.creators):
+    creators = music.metadata.creators
+    if (creators):
         header_lines.append(f"C:{','.join(creators)}")
     numerator = music.time_signatures[0].numerator
     denominator = music.time_signatures[0].denominator
