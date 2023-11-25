@@ -1,13 +1,15 @@
 """ABC output interface."""
 from pathlib import Path
-from typing import Union, List
+from typing import TYPE_CHECKING, Union, List
 
 from music21.pitch import Pitch
-from ..music import Music
+
+if TYPE_CHECKING:
+    from ..music import Music
 
 
 def generate_header(
-    music: Music
+    music: "Music"
 ) -> List[str]:
     """Generate ABC header from Music object.
 
@@ -31,7 +33,7 @@ def generate_header(
     header_lines.append(f"L: 1/{denominator}")
     note = Pitch(music.key_signatures[0].root)
     mode = music.key_signatures[0].mode if music.key_signatures[0].mode is not None else ''
-    header_lines.append(f"K: {note.name+mode}")
+    header_lines.append(f"K: {note.name + mode}")
     return header_lines
 
 
@@ -76,7 +78,8 @@ def note_lenght_to_str(
 def get_note_lenght(
         note: Pitch, resolution: int, dflt_lenght_in_quarters: float
 ) -> str:
-    """Generate a note length indication from Music object. Use numeric symbols without '>', '<' signs.
+    """Generate a note length indication from Music object.
+    Use numeric symbols without '>', '<' signs.
 
     Parameters
     ----------
@@ -87,14 +90,14 @@ def get_note_lenght(
     dflt_lenght_in_quarters: float
         default note length relative to the quarters
     """
-    note_length_in_quarters = note.duration/resolution
-    note_lenght_in_dflt_lenght = note_length_in_quarters*dflt_lenght_in_quarters
+    note_length_in_quarters = note.duration / resolution
+    note_lenght_in_dflt_lenght = note_length_in_quarters * dflt_lenght_in_quarters
     note_lenght_str = note_lenght_to_str(note_lenght_in_dflt_lenght)
     return note_lenght_str
 
 
 def generate_note_body(
-    music: Music
+    music: "Music"
 ) -> str:
     """Generate ABC note body from Music object.
 
@@ -104,7 +107,7 @@ def generate_note_body(
         Music object to generate ABC note body.
     """
     resolution = music.resolution
-    dflt_len_in_quarters = music.time_signatures[0].denominator/4
+    dflt_len_in_quarters = music.time_signatures[0].denominator / 4
     barlines = music.barlines
     bar_iter = 0
     notes = music.tracks[0].notes
@@ -117,11 +120,13 @@ def generate_note_body(
             bar_iter += 1
         else:
             note_str += note_to_abc_str(Pitch(midi=notes[note_iter].pitch))
-            note_str += get_note_lenght(notes[note_iter], resolution, dflt_len_in_quarters)
+            note_str += get_note_lenght(notes[note_iter],
+                                        resolution, dflt_len_in_quarters)
             note_iter += 1
     while note_iter < len(notes):
         note_str += note_to_abc_str(Pitch(midi=notes[note_iter].pitch))
-        note_str += get_note_lenght(notes[note_iter], resolution, dflt_len_in_quarters)
+        note_str += get_note_lenght(notes[note_iter],
+                                    resolution, dflt_len_in_quarters)
         note_iter += 1
     note_str += ' |'
     return note_str.lstrip()
