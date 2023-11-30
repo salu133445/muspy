@@ -8,6 +8,28 @@ if TYPE_CHECKING:
     from ..music import Music
 
 
+def meter_and_unit(
+    music: "Music"
+) -> List[str]:
+    """Return meter and note unit from Music object
+    in abc header format.
+
+    Parameters
+    ----------
+    music : :class:`muspy.Music`
+        Music object to generate ABC header.
+    """
+    numerator = music.time_signatures[0].numerator
+    denominator = music.time_signatures[0].denominator
+    if numerator == 4 and denominator == 4:
+        meter = "M: C"      # common time
+    elif numerator == 2 and denominator == 2:
+        meter = "M: C|"     # cut time
+    else:
+        meter = f"M: {numerator}/{denominator}"
+    return [meter, f"L: 1/{denominator}"]
+
+
 def generate_header(
     music: "Music"
 ) -> List[str]:
@@ -25,12 +47,8 @@ def generate_header(
     creators = music.metadata.creators
     if (creators):
         header_lines.append(f"C: {','.join(creators)}")
-    numerator = music.time_signatures[0].numerator
-    denominator = music.time_signatures[0].denominator
 
-    # TODO:  4/4 should be C and 2/2 should be C|
-    header_lines.append(f"M: {numerator}/{denominator}")
-    header_lines.append(f"L: 1/{denominator}")
+    header_lines += meter_and_unit(music=music)
     note = Pitch(music.key_signatures[0].root)
     mode = music.key_signatures[0].mode if music.key_signatures[0].mode is not None else ''
     header_lines.append(f"K: {note.name + mode}")
