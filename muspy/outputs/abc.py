@@ -5,7 +5,39 @@ from typing import TYPE_CHECKING, Union, List
 from music21.pitch import Pitch
 
 if TYPE_CHECKING:
-    from ..music import Music
+    from ..music import Music, Barline
+    from ..classes import Note
+
+
+class ObjectABC:
+    def __init__(self, time=0, abc_str='',
+                 pitch=None, duration=None, velocity=None) -> None:
+        self.is_note = False
+        self.time = time
+        self.abc_str = abc_str
+
+        # note
+        self.pitch = pitch
+        self.duration = duration
+        self.velocity = velocity
+
+    def __str__(self) -> str:
+        return self.abc_str
+
+    def __lt__(self, other):
+        if (self.time == other.time):
+            return not self.is_note
+        return self.time < other.time
+
+    def __gt__(self, other):
+        if (self.time == other.time):
+            return self.is_note
+        return self.time > other.time
+
+    def __eq__(self, other):
+        if (self.is_note == other.is_note):
+            return self.time == other.time
+        return False
 
 
 def meter_and_unit(
@@ -98,7 +130,7 @@ def note_lenght_to_str(
     return note_lenght_str
 
 
-def get_note_lenght(
+def get_note_length(
         note: Pitch, resolution: int, dflt_lenght_in_quarters: float
 ) -> str:
     """Generate a note length indication from Music object.
@@ -119,6 +151,44 @@ def get_note_lenght(
     return note_lenght_str
 
 
+def objectify_barlines(
+    barlines: List["Barline"]
+) -> List[ObjectABC]:
+    """Generate list of ABC barlines.
+
+    Parameters
+    ----------
+    barlines : :class:`List[muspy.Barline]`
+        List of muspy Barline objects.
+    """
+    abc_barlines = []
+    for barline in barlines:
+        abc_barlines.append(ObjectABC(time=barline.time, abc_str=' | '))
+    return abc_barlines
+
+
+def objectify_notes(
+    notes: List["Note"], resolution, note_len
+) -> List[ObjectABC]:
+    """Generate list of ABC notes.
+
+    Parameters
+    ----------
+    notes : :class:`List[muspy.Note]`
+        List of muspy Note objects.
+    """
+    abc_notes = []
+    for note in notes:
+        new_note = ObjectABC(time=note.time, pitch=Pitch(midi=note.pitch),
+                             duration=note.duration, velocity=note.velocity)
+        new_note.is_note = True
+        note_str = note_to_abc_str(new_note.pitch)
+        note_str += get_note_length(new_note, resolution, note_len)
+        new_note.abc_str = note_str
+        abc_notes.append(new_note)
+    return abc_notes
+
+
 def generate_note_body(
     music: "Music"
 ) -> str:
@@ -129,30 +199,17 @@ def generate_note_body(
     music : :class:`muspy.Music`
         Music object to generate ABC note body.
     """
+    abc_objects = []
+    abc_objects += objectify_barlines(music.barlines)
+
     resolution = music.resolution
     dflt_len_in_quarters = music.time_signatures[0].denominator / 4
-    barlines = music.barlines
-    bar_iter = 0
-    notes = music.tracks[0].notes
-    note_iter = 0
-    note_str = ''
-    # TODO generate notes in several lines instead of 1
-    while bar_iter < len(barlines) and note_iter < len(notes):
-        if barlines[bar_iter].time <= notes[note_iter].time:
-            note_str += ' | '
-            bar_iter += 1
-        else:
-            note_str += note_to_abc_str(Pitch(midi=notes[note_iter].pitch))
-            note_str += get_note_lenght(notes[note_iter],
-                                        resolution, dflt_len_in_quarters)
-            note_iter += 1
-    while note_iter < len(notes):
-        note_str += note_to_abc_str(Pitch(midi=notes[note_iter].pitch))
-        note_str += get_note_lenght(notes[note_iter],
-                                    resolution, dflt_len_in_quarters)
-        note_iter += 1
-    note_str += ' |'
-    return note_str.lstrip()
+    abc_objects += objectify_notes(music.tracks[0].notes,
+                                   resolution=resolution,
+                                   note_len=dflt_len_in_quarters)
+    abc_objects.sort()
+    note_str = ''.join(str(abc) for abc in abc_objects)
+    return note_str.lstrip().rstrip()
 
 
 def write_abc(
