@@ -5,14 +5,14 @@ from typing import TYPE_CHECKING, Union, List
 from music21.pitch import Pitch
 
 if TYPE_CHECKING:
-    from ..music import Music, Barline
+    from ..music import Music, Barline, KeySignature
     from ..classes import Note
 
 
 class ObjectABC:
-    def __init__(self, time=0, abc_str='',
+    def __init__(self, time=0, abc_str='', priority=0,
                  pitch=None, duration=None, velocity=None) -> None:
-        self.is_note = False
+        self.priority = priority
         self.time = time
         self.abc_str = abc_str
 
@@ -26,12 +26,12 @@ class ObjectABC:
 
     def __lt__(self, other):
         if (self.time == other.time):
-            return not self.is_note
+            return self.priority < other.priority
         return self.time < other.time
 
     def __gt__(self, other):
         if (self.time == other.time):
-            return self.is_note
+            return self.priority > other.priority
         return self.time > other.time
 
     def __eq__(self, other):
@@ -150,6 +150,23 @@ def get_note_length(
     note_lenght_str = note_lenght_to_str(note_lenght_in_dflt_lenght)
     return note_lenght_str
 
+def objectify_keys(
+    keys: List["KeySignature"]
+) -> List[ObjectABC]:
+    """Generate list of ABC keys.
+
+    Parameters
+    ----------
+    keys : :class:`List[muspy.KeySignature]`
+        List of muspy KeySignature objects.
+    """
+    abc_keys = []
+    for key in keys:
+        note = Pitch(key.root)
+        mode = key.mode
+        key_str = f"\nK:{note.name+mode}\n"
+        abc_keys.append(ObjectABC(time=key.time, priority=1, abc_str=key_str))
+    return abc_keys
 
 def objectify_barlines(
     barlines: List["Barline"]
@@ -163,7 +180,7 @@ def objectify_barlines(
     """
     abc_barlines = []
     for barline in barlines:
-        abc_barlines.append(ObjectABC(time=barline.time, abc_str=' | '))
+        abc_barlines.append(ObjectABC(time=barline.time, priority=2, abc_str=' | '))
     return abc_barlines
 
 
@@ -179,9 +196,8 @@ def objectify_notes(
     """
     abc_notes = []
     for note in notes:
-        new_note = ObjectABC(time=note.time, pitch=Pitch(midi=note.pitch),
+        new_note = ObjectABC(time=note.time, priority=3, pitch=Pitch(midi=note.pitch),
                              duration=note.duration, velocity=note.velocity)
-        new_note.is_note = True
         note_str = note_to_abc_str(new_note.pitch)
         note_str += get_note_length(new_note, resolution, note_len)
         new_note.abc_str = note_str
