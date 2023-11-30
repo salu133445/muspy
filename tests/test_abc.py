@@ -169,3 +169,10 @@ def test_generate_header():
     assert header[3] == "M: 3/4"
     assert header[4] == "L: 1/4"
     assert header[5] == "K: Cmajor"
+
+
+def test_empty_title():
+    music = muspy.read(TEST_ABC_DIR / "empty_title.abc")
+    header = muspy.outputs.abc.generate_header(music)
+
+    assert header[1] == "T: empty_title"

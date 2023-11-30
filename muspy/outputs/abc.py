@@ -42,8 +42,11 @@ def generate_header(
     """
     header_lines = ["X: 1"]
 
-    # TODO: set filename as title if no other title
-    header_lines.append(f"T: {music.metadata.title}")
+    # set filename as title if no other title
+    title = music.metadata.title
+    if title is None:
+        title = Path(music.metadata.source_filename).stem
+    header_lines.append(f"T: {title}")
     creators = music.metadata.creators
     if (creators):
         header_lines.append(f"C: {','.join(creators)}")
