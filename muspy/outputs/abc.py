@@ -52,6 +52,8 @@ def generate_header(
         header_lines.append(f"C: {','.join(creators)}")
 
     header_lines += meter_and_unit(music=music)
+    if music.tempos[0].qpm != 120:  # tempo if is different than default 120
+        header_lines.append(f"Q: {int(music.tempos[0].qpm)}")
     note = Pitch(music.key_signatures[0].root)
     mode = music.key_signatures[0].mode if music.key_signatures[0].mode is not None else ''
     header_lines.append(f"K: {note.name + mode}")

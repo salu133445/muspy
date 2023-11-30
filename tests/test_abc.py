@@ -168,7 +168,8 @@ def test_generate_header():
     assert header[2] == "C: Composer"
     assert header[3] == "M: 3/4"
     assert header[4] == "L: 1/4"
-    assert header[5] == "K: Cmajor"
+    assert header[5] == "Q: 115"
+    assert header[6] == "K: Cmajor"
 
 
 def test_empty_title():
