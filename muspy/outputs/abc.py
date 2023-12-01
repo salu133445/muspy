@@ -86,9 +86,9 @@ def generate_header(
     header_lines += meter_and_unit(music=music)
     if music.tempos[0].qpm != 120:  # tempo if is different than default 120
         header_lines.append(f"Q: {int(music.tempos[0].qpm)}")
-    note = Pitch(music.key_signatures[0].root)
-    mode = music.key_signatures[0].mode if music.key_signatures[0].mode is not None else ''
-    header_lines.append(f"K: {note.name + mode}")
+    # note = Pitch(music.key_signatures[0].root)
+    # mode = music.key_signatures[0].mode if music.key_signatures[0].mode is not None else ''
+    # header_lines.append(f"K: {note.name + mode}")
     return header_lines
 
 
@@ -165,7 +165,7 @@ def objectify_keys(
         note = Pitch(key.root)
         mode = key.mode
         key_str = f"\nK:{note.name+mode}\n"
-        abc_keys.append(ObjectABC(time=key.time, priority=1, abc_str=key_str))
+        abc_keys.append(ObjectABC(time=key.time, priority=2, abc_str=key_str))
     return abc_keys
 
 def objectify_barlines(
@@ -178,9 +178,11 @@ def objectify_barlines(
     barlines : :class:`List[muspy.Barline]`
         List of muspy Barline objects.
     """
+    if barlines[0].time==0: # The first barline is skipped. Assumption that barlines are sorted
+        barlines = barlines[1:]
     abc_barlines = []
     for barline in barlines:
-        abc_barlines.append(ObjectABC(time=barline.time, priority=2, abc_str=' | '))
+        abc_barlines.append(ObjectABC(time=barline.time, priority=1, abc_str=' | '))
     return abc_barlines
 
 
@@ -216,6 +218,7 @@ def generate_note_body(
         Music object to generate ABC note body.
     """
     abc_objects = []
+    abc_objects += objectify_keys(music.key_signatures)
     abc_objects += objectify_barlines(music.barlines)
 
     resolution = music.resolution
