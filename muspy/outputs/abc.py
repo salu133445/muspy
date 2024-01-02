@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, List, Union
 from music21.pitch import Pitch
 
 if TYPE_CHECKING:
+    from ..base import Base
     from ..classes import Note
     from ..music import Barline, KeySignature, Music
 
@@ -45,6 +46,26 @@ class ObjectABC:
         if self.is_note == other.is_note:
             return self.time == other.time
         return False
+
+
+def _no_time_equal(a: "Base", b: "Base"):
+    """Check if two objects are equal with no regard to time of their occurence
+
+    Parameters
+    ----------
+    a: :class:`muspy.Base` and its subclasses
+        Pitch object to generate ABC note.
+    a: :class:`muspy.Base` and its subclasses
+        Pitch object to generate ABC note.
+    """
+    try:
+        temp_time = getattr(b, "time")
+        setattr(b, "time", getattr(a, "time"))
+        result = a == b
+        setattr(b, "time", temp_time)
+    except AttributeError:  # Either a, b or both have no 'time' attribute
+        result = a == b
+    return result
 
 
 def meter_and_unit(music: "Music") -> List[str]:
@@ -160,6 +181,15 @@ def objectify_keys(keys: List["KeySignature"]) -> List[ObjectABC]:
     keys : :class:`List[muspy.KeySignature]`
         List of muspy KeySignature objects.
     """
+    repetitions_indices = []
+    for i in range(len(keys) - 1):
+        a, b = keys[i : i + 2]
+        if _no_time_equal(a, b):
+            repetitions_indices.append(i + 1)
+    repetitions_indices.reverse()
+    for index in repetitions_indices:
+        keys.pop(index)
+
     abc_keys = []
     for key in keys:
         note = Pitch(key.root)
