@@ -6,8 +6,8 @@ from music21.pitch import Pitch
 
 if TYPE_CHECKING:
     from ..base import Base
-    from ..classes import Note
-    from ..music import Barline, KeySignature, Music
+    from ..classes import Barline, KeySignature, Note
+    from ..music import Music
 
 
 class ObjectABC:
