@@ -73,7 +73,7 @@ class _ABCTrackElement(ABC):
 
 
 class _ABCKeySignature(_ABCTrackElement):
-    PRIORITY = 2
+    PRIORITY = 1
 
     def __init__(self, represented: "KeySignature"):
         self.represented: "KeySignature"
@@ -86,7 +86,7 @@ class _ABCKeySignature(_ABCTrackElement):
 
 
 class _ABCBarline(_ABCTrackElement):
-    PRIORITY = 1
+    PRIORITY = 2
 
     def __init__(self, represented: "Barline"):
         self.represented: "Barline"
