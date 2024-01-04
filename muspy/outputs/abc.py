@@ -1,4 +1,5 @@
 """ABC output interface."""
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 
@@ -10,62 +11,124 @@ if TYPE_CHECKING:
     from ..music import Music
 
 
-class ObjectABC:
-    def __init__(
-        self,
-        time=0,
-        abc_str="",
-        priority=0,
-        pitch=None,
-        duration=None,
-        velocity=None,
-    ) -> None:
-        self.priority = priority
-        self.time = time
-        self.abc_str = abc_str
+class _ABCTrackElement(ABC):
+    """
+    Base class for wrappers around MusPy classes.
+    Handles converting elements of the music track to ABC notation and
+    ordering them in it.
+    """
 
-        # note
-        self.pitch = pitch
-        self.duration = duration
-        self.velocity = velocity
+    PRIORITY = 0
 
-    def __str__(self) -> str:
-        return self.abc_str
+    def __init__(self, represented: "Base") -> None:
+        self.represented = represented
 
-    def __lt__(self, other):
-        if self.time == other.time:
-            return self.priority < other.priority
-        return self.time < other.time
+    def __eq__(self, other: "_ABCTrackElement"):
+        """
+        Check if `other` represents the same set of musical data, possibly
+        occuring in a different moment of music track
+        """
+        try:
+            temp_time = getattr(other.represented, "time")
+            setattr(
+                other.represented, "time", getattr(self.represented, "time")
+            )
+            result = self.represented == other.represented
+            setattr(other.represented, "time", temp_time)
+        except AttributeError:
+            result = self.represented == other.represented
+        return result
 
-    def __gt__(self, other):
-        if self.time == other.time:
-            return self.priority > other.priority
-        return self.time > other.time
-
-    def __eq__(self, other):
-        if self.is_note == other.is_note:
-            return self.time == other.time
+    def __lt__(self, other: "_ABCTrackElement"):
+        """
+        Check if element should be written in ABC notation before `other`.
+        """
+        if self.represented < other.represented:
+            return True
+        if (
+            getattr(self.represented, "time")
+            == getattr(other.represented, "time")
+            and self.PRIORITY < other.PRIORITY
+        ):
+            return True
         return False
 
+    def __gt__(self, other: "_ABCTrackElement"):
+        """
+        Check if element should be written in ABC notation after `other`.
+        """
+        if self.represented > other.represented:
+            return True
+        if (
+            getattr(self.represented, "time")
+            == getattr(other.represented, "time")
+            and self.PRIORITY > other.PRIORITY
+        ):
+            return True
+        return False
 
-def _no_time_equal(a: "Base", b: "Base"):
-    """Check if two objects are equal with no regard to time of their occurence
+    @abstractmethod
+    def __str__(self):
+        pass
 
-    Parameters
-    ----------
-    a: :class:`muspy.Base` and its subclasses
-        Pitch object to generate ABC note.
-    a: :class:`muspy.Base` and its subclasses
-        Pitch object to generate ABC note.
-    """
-    try:
-        temp_time = getattr(b, "time")
-        setattr(b, "time", getattr(a, "time"))
-        result = a == b
-        setattr(b, "time", temp_time)
-    except AttributeError:  # Either a, b or both have no 'time' attribute
-        result = a == b
-    return result
+
+class _ABCKeySignature(_ABCTrackElement):
+    PRIORITY = 2
+
+    def __init__(self, represented: "KeySignature"):
+        self.represented: "KeySignature"
+        super().__init__(represented)
+
+    def __str__(self):
+        note = Pitch(self.represented.root)
+        mode = self.represented.mode
+        return f"\nK:{note.name+mode}\n"
+
+
+class _ABCBarline(_ABCTrackElement):
+    PRIORITY = 1
+
+    def __init__(self, represented: "Barline"):
+        self.represented: "Barline"
+        super().__init__(represented)
+
+    def __str__(self):
+        return " | "
+
+
+class _ABCNote(_ABCTrackElement):
+    PRIORITY = 3
+
+    def __init__(self, represented: "Note", music: "Music"):
+        self.represented: "Note"
+        super().__init__(represented)
+        self._length = (
+            self.represented.duration
+            / music.resolution
+            * music.time_signatures[0].denominator
+            / 4
+        )
+
+    def __str__(self):
+        return self._octave_adjusted_note() + self._length_suffix()
+
+    def _octave_adjusted_note(self):
+        pitch = Pitch(midi=self.represented.pitch)
+        if pitch.octave <= 4:
+            comas = 4 - pitch.octave
+            return pitch.name[0] + "," * comas
+        else:
+            apostrophes = pitch.octave - 5
+            return pitch.name[0].lower() + "'" * apostrophes
+
+    def _length_suffix(self):
+        numerator, denominator = self._length.as_integer_ratio()
+        note_lenght_str = ""
+        if numerator != 1:
+            note_lenght_str += str(numerator)
+        if denominator != 1:
+            note_lenght_str += "/" + str(denominator)
+        return note_lenght_str
 
 
 def meter_and_unit(music: "Music") -> List[str]:
@@ -116,135 +179,6 @@ def generate_header(music: "Music") -> List[str]:
     return header_lines
 
 
-def note_to_abc_str(note: Pitch) -> str:
-    """Generate string note in ABC style from Pitch object.
-
-    Parameters
-    ----------
-    note : :class:`music21.pitch.Pitch`
-        Pitch object to generate ABC note.
-    """
-    octave = note.octave
-    if octave <= 4:
-        comas = 4 - octave
-        return note.name[0] + "," * comas
-    else:
-        apostrophes = octave - 5
-        return note.name[0].lower() + "'" * apostrophes
-
-
-def note_lenght_to_str(note_lenght: float) -> str:
-    """Convert note lenght to string.
-
-    Parameters
-    ----------
-    note_lenght : float, default: False
-        note length relative to the default note length
-    """
-    numerator, denominator = note_lenght.as_integer_ratio()
-    note_lenght_str = ""
-    if numerator != 1:
-        note_lenght_str += str(numerator)
-    if denominator != 1:
-        note_lenght_str += "/" + str(denominator)
-    return note_lenght_str
-
-
-def get_note_length(
-    note: Pitch, resolution: int, dflt_lenght_in_quarters: float
-) -> str:
-    """Generate a note length indication from Music object.
-    Use numeric symbols without '>', '<' signs.
-
-    Parameters
-    ----------
-    note : :class:`music21.pitch.Pitch`
-        Pitch object to generate ABC note.
-    resolution: int
-        Resolution
-    dflt_lenght_in_quarters: float
-        default note length relative to the quarters
-    """
-    note_length_in_quarters = note.duration / resolution
-    note_lenght_in_dflt_lenght = (
-        note_length_in_quarters * dflt_lenght_in_quarters
-    )
-    note_lenght_str = note_lenght_to_str(note_lenght_in_dflt_lenght)
-    return note_lenght_str
-
-
-def objectify_keys(keys: List["KeySignature"]) -> List[ObjectABC]:
-    """Generate list of ABC keys.
-
-    Parameters
-    ----------
-    keys : :class:`List[muspy.KeySignature]`
-        List of muspy KeySignature objects.
-    """
-    repetitions_indices = []
-    for i in range(len(keys) - 1):
-        a, b = keys[i : i + 2]
-        if _no_time_equal(a, b):
-            repetitions_indices.append(i + 1)
-    repetitions_indices.reverse()
-    for index in repetitions_indices:
-        keys.pop(index)
-
-    abc_keys = []
-    for key in keys:
-        note = Pitch(key.root)
-        mode = key.mode
-        key_str = f"\nK:{note.name+mode}\n"
-        abc_keys.append(ObjectABC(time=key.time, priority=2, abc_str=key_str))
-    return abc_keys
-
-
-def objectify_barlines(barlines: List["Barline"]) -> List[ObjectABC]:
-    """Generate list of ABC barlines.
-
-    Parameters
-    ----------
-    barlines : :class:`List[muspy.Barline]`
-        List of muspy Barline objects.
-    """
-    if (
-        barlines[0].time == 0
-    ):  # The first barline is skipped. Assumption that barlines are sorted
-        barlines = barlines[1:]
-    abc_barlines = []
-    for barline in barlines:
-        abc_barlines.append(
-            ObjectABC(time=barline.time, priority=1, abc_str=" | ")
-        )
-    return abc_barlines
-
-
-def objectify_notes(
-    notes: List["Note"], resolution, note_len
-) -> List[ObjectABC]:
-    """Generate list of ABC notes.
-
-    Parameters
-    ----------
-    notes : :class:`List[muspy.Note]`
-        List of muspy Note objects.
-    """
-    abc_notes = []
-    for note in notes:
-        new_note = ObjectABC(
-            time=note.time,
-            priority=3,
-            pitch=Pitch(midi=note.pitch),
-            duration=note.duration,
-            velocity=note.velocity,
-        )
-        note_str = note_to_abc_str(new_note.pitch)
-        note_str += get_note_length(new_note, resolution, note_len)
-        new_note.abc_str = note_str
-        abc_notes.append(new_note)
-    return abc_notes
-
-
 def generate_note_body(music: "Music") -> str:
     """Generate ABC note body from Music object.
 
@@ -253,19 +187,22 @@ def generate_note_body(music: "Music") -> str:
     music : :class:`muspy.Music`
         Music object to generate ABC note body.
     """
-    abc_objects = []
-    abc_objects += objectify_keys(music.key_signatures)
-    abc_objects += objectify_barlines(music.barlines)
+    keys = [_ABCKeySignature(key) for key in music.key_signatures]
+    redundant_key_incdices = []
+    for i in range(len(keys) - 1):
+        first, second = keys[i : i + 2]
+        if first == second:
+            redundant_key_incdices.append(i + 1)
+    redundant_key_incdices.reverse()
+    for index in redundant_key_incdices:
+        keys.pop(index)
 
-    resolution = music.resolution
-    dflt_len_in_quarters = music.time_signatures[0].denominator / 4
-    abc_objects += objectify_notes(
-        music.tracks[0].notes,
-        resolution=resolution,
-        note_len=dflt_len_in_quarters,
-    )
-    abc_objects.sort()
-    note_str = "".join(str(abc) for abc in abc_objects)
+    barlines = [_ABCBarline(barline) for barline in music.barlines]
+    notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
+
+    elements = keys + barlines + notes
+    elements.sort()
+    note_str = "".join(str(abc) for abc in elements)
     return note_str.lstrip().rstrip()
 
 
