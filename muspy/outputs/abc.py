@@ -179,6 +179,18 @@ def generate_header(music: "Music") -> List[str]:
     return header_lines
 
 
+def remove_consecutive_repeats(list: list):
+    """
+    Creates a copy of `list` with consecutive repeats of values skipped.
+    """
+    cleared = list[:1]
+    for element in list[1:]:
+        if element == cleared[-1]:
+            continue
+        cleared.append(element)
+    return cleared
+
+
 def generate_note_body(music: "Music") -> str:
     """Generate ABC note body from Music object.
 
@@ -188,14 +200,7 @@ def generate_note_body(music: "Music") -> str:
         Music object to generate ABC note body.
     """
     keys = [_ABCKeySignature(key) for key in music.key_signatures]
-    redundant_key_incdices = []
-    for i in range(len(keys) - 1):
-        first, second = keys[i : i + 2]
-        if first == second:
-            redundant_key_incdices.append(i + 1)
-    redundant_key_incdices.reverse()
-    for index in redundant_key_incdices:
-        keys.pop(index)
+    keys = remove_consecutive_repeats(keys)
 
     barlines = [_ABCBarline(barline) for barline in music.barlines]
     notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
