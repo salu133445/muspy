@@ -226,10 +226,6 @@ def write_abc(path: Union[str, Path], music: "Music"):
         Music object to write.
     """
 
-    path = str(path)
-    if not path.endswith(".abc"):
-        path += ".abc"
-
     file_lines = generate_header(music)
     file_lines.append(generate_note_body(music))
 
