@@ -102,24 +102,28 @@ class _ABCNote(_ABCTrackElement):
     def __init__(self, represented: "Note", music: "Music"):
         self.represented: "Note"
         super().__init__(represented)
-        self._length = (
-            self.represented.duration
-            / music.resolution
-            * music.time_signatures[0].denominator
-            / 4
-        )
+        duration_in_quarters = self.represented.duration / music.resolution
+        # denominator marks standard note length: 2-half note, 4-quarter,
+        # 8-eighth, etc.
+        quarter_to_unit_length = music.time_signatures[0].denominator / 4
+        self._length = duration_in_quarters * quarter_to_unit_length
 
     def __str__(self):
         return self._octave_adjusted_note() + self._length_suffix()
 
     def _octave_adjusted_note(self):
         pitch = Pitch(midi=self.represented.pitch)
+        note = pitch.name
+        if len(note) > 1:
+            if note[-1] == "#":  # sharp
+                note = "^" + note[0]
+            elif note[-1] == "-":  # flat
+                note = "_" + note[0]
         if pitch.octave <= 4:
-            comas = 4 - pitch.octave
-            return pitch.name[0] + "," * comas
+            note = note + "," * (4 - pitch.octave)
         else:
-            apostrophes = pitch.octave - 5
-            return pitch.name[0].lower() + "'" * apostrophes
+            note = note.lower() + "'" * (pitch.octave - 5)
+        return note
 
     def _length_suffix(self):
         numerator, denominator = self._length.as_integer_ratio()
