@@ -1,13 +1,16 @@
 """ABC output interface."""
 from abc import ABC, abstractmethod
+from math import floor
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 
 from music21.pitch import Pitch
 
+from ..classes import Barline
+
 if TYPE_CHECKING:
     from ..base import Base
-    from ..classes import Barline, KeySignature, Note
+    from ..classes import KeySignature, Note
     from ..music import Music
 
 
@@ -91,9 +94,24 @@ class _ABCBarline(_ABCTrackElement):
     def __init__(self, represented: "Barline"):
         self.represented: "Barline"
         super().__init__(represented)
+        self.started_repeats = 0
+        self.ended_repeats = 0
 
     def __str__(self):
-        return " | "
+        return (
+            " "
+            + ":" * self.ended_repeats
+            + "|"
+            + ":" * self.started_repeats
+            + " "
+        )
+
+    @staticmethod
+    def mark_repeats(
+        start: "_ABCBarline", end: "_ABCBarline", repeat_count: int = 1
+    ):
+        start.started_repeats += repeat_count
+        end.ended_repeats += repeat_count
 
 
 class _ABCNote(_ABCTrackElement):
@@ -195,6 +213,141 @@ def remove_consecutive_repeats(list: list):
     return cleared
 
 
+class _TrackCompactor:
+    """Compacts tracks by detecting repeats of bars"""
+
+    def __init__(self, track: "list[_ABCBarline|_ABCNote]"):
+        self.compacted = track
+        self._barlines_indices: list[int] = []
+        self._bars_count = -1
+
+    def _enclose(self):
+        if len(self.compacted) > 0:
+            if type(self.compacted[0]) != _ABCBarline:
+                barline = Barline(
+                    getattr(self.compacted[0].represented, "time")
+                )
+                self.compacted.insert(0, _ABCBarline(barline))
+            if type(self.compacted[-1]) != _ABCBarline:
+                barline = Barline(
+                    getattr(self.compacted[-1].represented, "time") + 1
+                )
+                self.compacted.append(_ABCBarline(barline))
+
+    def _detect_barlines(self):
+        for i in range(len(self.compacted)):
+            if type(self.compacted[i]) == _ABCBarline:
+                self._barlines_indices.append(i)
+        self._bars_count = len(self._barlines_indices) - 1
+
+    def _get_n_bars(self, start_index: int, n: int):
+        start = self._barlines_indices[start_index]
+        # include closing barline
+        end = self._barlines_indices[start_index + n] + 1
+        return self.compacted[start:end]
+
+    @staticmethod
+    def _equal_bars(a, b):
+        if len(a) != len(b):
+            return False
+        for a_element, b_element in zip(a, b):
+            if a_element != b_element:
+                return False
+        # No notation for nested repeats
+        if (
+            a[0].started_repeats != 0
+            or b[0].started_repeats != 0
+            or a[-1].ended_repeats != 0
+            or b[-1].ended_repeats != 0
+        ):
+            return False
+
+        return True
+
+    def _erase_n_bars(self, start_index: int, n: int):
+        start = self._barlines_indices[start_index]
+        end = self._barlines_indices[start_index + n]
+        erased_elements = end - start
+        self.compacted = self.compacted[:start] + self.compacted[end:]
+        for i in range(start_index + n, len(self._barlines_indices)):
+            self._barlines_indices[i] -= erased_elements
+        self._barlines_indices = (
+            self._barlines_indices[:start_index]
+            + self._barlines_indices[start_index + n :]
+        )
+        self._bars_count -= n
+
+    def _mark_repeat(
+        self, start_index: int, repeat_length: int, repeat_count: int
+    ):
+        self._erase_n_bars(
+            start_index + repeat_length, repeat_length * repeat_count
+        )
+        start_barline = self.compacted[self._barlines_indices[start_index]]
+        end_barline = self.compacted[
+            self._barlines_indices[start_index + repeat_length]
+        ]
+        _ABCBarline.mark_repeats(
+            start_barline,
+            end_barline,
+            repeat_count,
+        )
+
+    def _compact(self):
+        found_repeat = False
+        for repeat_length in range(1, floor(self._bars_count / 2)):
+            for start in range(self._bars_count + 1 - 2 * repeat_length):
+                repeat_count = 0
+                base = self._get_n_bars(start, repeat_length)
+                for repeat_start in range(
+                    start + repeat_length,
+                    self._bars_count + 1 - repeat_length,
+                    repeat_length,
+                ):
+                    repeat = self._get_n_bars(repeat_start, repeat_length)
+                    if self._equal_bars(base, repeat):
+                        repeat_count += 1
+                        found_repeat = True
+                    else:
+                        break
+                if repeat_count > 0:
+                    self._mark_repeat(start, repeat_length, repeat_count)
+                    break
+            if found_repeat:
+                break
+        return found_repeat
+
+    def compact(self):
+        self._enclose()
+        self._detect_barlines()
+        while self._compact():
+            pass
+        return self.compacted
+
+
+def mark_repetitions(track: "list[_ABCTrackElement]"):
+    same_key_fragments: list[list[_ABCTrackElement]] = []
+    key_changes: list[_ABCKeySignature] = []
+    last_key_change_index = -1
+    for i in range(len(track)):
+        if type(track[i]) == _ABCKeySignature:
+            same_key_fragments.append(track[last_key_change_index + 1 : i])
+            key_changes.append(track[i])
+            last_key_change_index = i
+    same_key_fragments.append(track[last_key_change_index + 1 : len(track)])
+
+    for i in range(len(same_key_fragments)):
+        same_key_fragments[i] = _TrackCompactor(
+            same_key_fragments[i]
+        ).compact()
+
+    new_track = same_key_fragments[0]
+    for i in range(len(key_changes)):
+        new_track.append(key_changes[i])
+        new_track += same_key_fragments[i + 1]
+    return new_track
+
+
 def generate_note_body(music: "Music") -> str:
     """Generate ABC note body from Music object.
 
@@ -209,9 +362,11 @@ def generate_note_body(music: "Music") -> str:
     barlines = [_ABCBarline(barline) for barline in music.barlines]
     notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
 
-    elements = keys + barlines + notes
-    elements.sort()
-    note_str = "".join(str(abc) for abc in elements)
+    track = keys + barlines + notes
+    track.sort()
+    track = mark_repetitions(track)
+
+    note_str = "".join(str(abc) for abc in track)
     return note_str.lstrip().rstrip()
 
 
