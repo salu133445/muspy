@@ -229,7 +229,6 @@ def write_abc(path: Union[str, Path], music: "Music"):
     file_lines = generate_header(music)
     file_lines.append(generate_note_body(music))
 
-    # TODO: catch exceptions
-    with open(path, "w") as file:
+    with open(path, "w", encoding="utf-8") as file:
         for line in file_lines:
             file.write(f"{line}\n")

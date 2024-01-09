@@ -1,7 +1,18 @@
-"""Test cases for ABC input interface."""
+"""Test cases for ABC I/O."""
+import tempfile
+from pathlib import Path
+
 import muspy
 
-from .utils import TEST_ABC_DIR
+from .utils import (
+    TEST_ABC_DIR,
+    TEST_JSON_PATH,
+    check_key_signatures,
+    check_lyrics,
+    check_tempos,
+    check_time_signatures,
+    check_tracks,
+)
 
 
 def test_header():
@@ -158,22 +169,25 @@ def test_chords():
         assert note.duration == int(0.5 * music.resolution)
 
 
-# ------- ABC OUTPUT TESTS -------
-def test_generate_header():
-    music = muspy.read(TEST_ABC_DIR / "header.abc")
-    header = muspy.outputs.abc.generate_header(music)
+def test_write():
+    music = muspy.load(TEST_JSON_PATH)
 
-    assert header[0] == "X: 1"
-    assert header[1] == "T: TEST: Header lines only"
-    assert header[2] == "C: Composer"
-    assert header[3] == "M: 3/4"
-    assert header[4] == "L: 1/4"
-    assert header[5] == "Q: 115"
-    assert header[6] == "K: Cmajor"
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.abc")
 
+    loaded = muspy.read(temp_dir / "test.abc")
 
-def test_empty_title():
-    music = muspy.read(TEST_ABC_DIR / "empty_title.abc")
-    header = muspy.outputs.abc.generate_header(music)
+    assert loaded.resolution == 24
+    assert loaded.metadata.title == "Für Elise"
+    assert loaded.metadata.source_filename == "test.abc"
+    assert loaded.metadata.source_format == "abc"
 
-    assert header[1] == "T: empty_title"
+    check_tempos(loaded.tempos, strict=False)
+    check_key_signatures(loaded.key_signatures)
+    check_time_signatures(loaded.time_signatures)
+    # check_lyrics(loaded.lyrics) # TODO: implement writing lyrics
+
+    # TODO: implement writing name of track to the field where music21 will
+    # read it from and assign it to Part
+    loaded.tracks[0].name = "Melody"
+    check_tracks(loaded.tracks)
