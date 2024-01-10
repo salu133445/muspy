@@ -375,7 +375,7 @@ def mark_repetitions(track: "list[_ABCTrackElement]"):
     return new_track
 
 
-def generate_note_body(music: "Music", **kwargs) -> "list[str]":
+def generate_note_body(music: "Music", compact_repeats: bool = False, **kwargs) -> "list[str]":
     """Generate ABC note body from Music object.
 
     Parameters
@@ -391,7 +391,9 @@ def generate_note_body(music: "Music", **kwargs) -> "list[str]":
 
     track = keys + barlines + notes
     track.sort()
-    track = mark_repetitions(track)
+
+    if compact_repeats:
+        track = mark_repetitions(track)
 
     break_lines(track, **kwargs)
 
