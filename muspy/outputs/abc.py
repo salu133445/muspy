@@ -371,7 +371,7 @@ def mark_repetitions(track: "list[_ABCTrackElement]"):
     return new_track
 
 
-def generate_note_body(music: "Music", **kwargs) -> str:
+def generate_note_body(music: "Music", **kwargs) -> "list[str]":
     """Generate ABC note body from Music object.
 
     Parameters
@@ -391,8 +391,12 @@ def generate_note_body(music: "Music", **kwargs) -> str:
 
     break_lines(track, **kwargs)
 
-    note_str = "".join(str(abc) for abc in track)
-    return note_str.lstrip().rstrip()
+    track_str = "".join(str(element) for element in track)
+    lines = track_str.split("\n")
+    lines = list(filter(None, lines))
+    for i in range(len(lines)):
+        lines[i] = lines[i].lstrip().rstrip()
+    return lines
 
 
 def write_abc(path: Union[str, Path], music: "Music", **kwargs):
@@ -407,7 +411,7 @@ def write_abc(path: Union[str, Path], music: "Music", **kwargs):
     """
 
     file_lines = generate_header(music)
-    file_lines.append(generate_note_body(music, **kwargs))
+    file_lines += generate_note_body(music, **kwargs)
 
     with open(path, "w", encoding="utf-8") as file:
         for line in file_lines:
