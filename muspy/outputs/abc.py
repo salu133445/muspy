@@ -299,7 +299,7 @@ class _TrackCompactor:
 
     def _compact(self):
         found_repeat = False
-        for repeat_length in range(1, floor(self._bars_count / 2)):
+        for repeat_length in range(1, floor(self._bars_count / 2) + 1):
             for start in range(self._bars_count + 1 - 2 * repeat_length):
                 repeat_count = 0
                 base = self._get_n_bars(start, repeat_length)
