@@ -96,15 +96,19 @@ class _ABCBarline(_ABCTrackElement):
         super().__init__(represented)
         self.started_repeats = 0
         self.ended_repeats = 0
+        self.breaks_line = False
 
     def __str__(self):
-        return (
+        barline = (
             " "
             + ":" * self.ended_repeats
             + "|"
             + ":" * self.started_repeats
             + " "
         )
+        if self.breaks_line:
+            barline += "\n"
+        return barline
 
     @staticmethod
     def mark_repeats(
@@ -325,6 +329,25 @@ class _TrackCompactor:
         return self.compacted
 
 
+def break_lines(track: "list[_ABCTrackElement]", bars_per_line: int = 4):
+    i = 0
+    bar_counter = 0
+    while i < len(track):
+        element = track[i]
+        if type(element) == _ABCBarline:
+            bar_counter = (bar_counter + 1) % bars_per_line
+            if bar_counter == 0:
+                element.breaks_line = True
+        elif type(element) == _ABCKeySignature:
+            bar_counter = 0
+            i += 1  # Skip opening barline of the first bar
+        i += 1
+    bar_counter = 0
+    for element in track[1:]:
+        if type(element) == _ABCBarline:
+            bar_counter = (bar_counter + 1) % bars_per_line
+
+
 def mark_repetitions(track: "list[_ABCTrackElement]"):
     same_key_fragments: list[list[_ABCTrackElement]] = []
     key_changes: list[_ABCKeySignature] = []
@@ -348,7 +371,7 @@ def mark_repetitions(track: "list[_ABCTrackElement]"):
     return new_track
 
 
-def generate_note_body(music: "Music") -> str:
+def generate_note_body(music: "Music", **kwargs) -> str:
     """Generate ABC note body from Music object.
 
     Parameters
@@ -366,11 +389,13 @@ def generate_note_body(music: "Music") -> str:
     track.sort()
     track = mark_repetitions(track)
 
+    break_lines(track, **kwargs)
+
     note_str = "".join(str(abc) for abc in track)
     return note_str.lstrip().rstrip()
 
 
-def write_abc(path: Union[str, Path], music: "Music"):
+def write_abc(path: Union[str, Path], music: "Music", **kwargs):
     """Write a Music object to an ABC file.
 
     Parameters
@@ -382,7 +407,7 @@ def write_abc(path: Union[str, Path], music: "Music"):
     """
 
     file_lines = generate_header(music)
-    file_lines.append(generate_note_body(music))
+    file_lines.append(generate_note_body(music, **kwargs))
 
     with open(path, "w", encoding="utf-8") as file:
         for line in file_lines:
