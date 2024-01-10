@@ -85,7 +85,11 @@ class _ABCKeySignature(_ABCTrackElement):
     def __str__(self):
         note = Pitch(self.represented.root)
         mode = self.represented.mode
-        return f"\nK:{note.name+mode}\n"
+        if mode is None:
+            key = f"\nK:{note.name}\n"
+        else:
+            key = f"\nK:{note.name}{mode}\n"
+        return key
 
 
 class _ABCBarline(_ABCTrackElement):
