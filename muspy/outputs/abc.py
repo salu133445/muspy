@@ -429,28 +429,37 @@ def find_rests(music: "Music"):
         prev_note = note
     return rests
 
-def split_symbol(el: "_ABCBarline", el_prev: "_ABCSymbol", end: int, music: "Music"):
+def split_symbol(bar_time: int, el_prev: "_ABCSymbol", end: int, music: "Music"):
     new_el1 = copy(el_prev.represented)
-    new_el1.duration = el.represented.time - el_prev.represented.time
+    new_el1.duration = bar_time - el_prev.represented.time
     new_el1 = type(el_prev)(new_el1, music, True)
 
     new_el2 = copy(el_prev.represented)
-    new_el2.duration = end - el.represented.time
-    new_el2.time = el.represented.time
+    new_el2.duration = end - bar_time
+    new_el2.time = bar_time
     new_el2 = type(el_prev)(new_el2, music, False)
     return new_el1, new_el2
 
 def adjust_symbol_duration_over_bars(track: "list[_ABCTrackElement]", music: "Music"):
     track_new = []
     el_prev = track[0]
+    if isinstance(el_prev, _ABCTimeSignature):
+        bar_lenght = 4 / el_prev.represented.denominator * el_prev.represented.numerator * music.resolution
 
     for el in track[1:]:
+        if isinstance(el, _ABCTimeSignature):
+            bar_lenght = 4 / el.represented.denominator * el.represented.numerator * music.resolution
         if isinstance(el, _ABCBarline) and isinstance(el_prev, _ABCSymbol):
             end = el_prev.represented.time + el_prev.represented.duration
             if end > el.represented.time:
                 # symbol lasts several bars
-                new_el1, new_el2 = split_symbol(el, el_prev, end, music)
+                new_el1, new_el2 = split_symbol(el.represented.time, el_prev, end, music)
                 track_new.append(new_el1)
+                # symbol lasts more than 2 bars
+                while (new_el2.represented.duration > bar_lenght):
+                    end = new_el2.represented.time + new_el2.represented.duration
+                    new_el3, new_el2 = split_symbol(el.represented.time + bar_lenght, new_el2, end, music)
+                    track_new.append(new_el3)
                 track_new.append(new_el2)
             else:
                 track_new.append(el_prev)
