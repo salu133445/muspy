@@ -4,7 +4,10 @@ from math import floor
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
 from collections import OrderedDict
+<<<<<<< HEAD
 from copy import copy
+=======
+>>>>>>> cf37858ecd96d0340e66fb2f6fd1c740741aef8c
 
 from music21.pitch import Pitch
 
@@ -127,9 +130,14 @@ class _ABCBarline(_ABCTrackElement):
 class _ABCSymbol(_ABCTrackElement):
     PRIORITY = 3
 
+<<<<<<< HEAD
     def __init__(self, represented: "Base", music: "Music", tie: "bool" = False):
         self.represented: "Base"
         self.tie = tie
+=======
+    def __init__(self, represented: "Base", music: "Music"):
+        self.represented: "Base"
+>>>>>>> cf37858ecd96d0340e66fb2f6fd1c740741aef8c
         super().__init__(represented)
         duration_in_quarters = self.represented.duration / music.resolution
         # denominator marks standard note length: 2-half note, 4-quarter,
@@ -148,9 +156,15 @@ class _ABCSymbol(_ABCTrackElement):
 
 class _ABCNote(_ABCSymbol):
 
+<<<<<<< HEAD
     def __init__(self, represented: "Note", music: "Music", tie: "bool" = False):
         self.represented: "Note"
         super().__init__(represented, music, tie)
+=======
+    def __init__(self, represented: "Note", music: "Music"):
+        self.represented: "Note"
+        super().__init__(represented, music)
+>>>>>>> cf37858ecd96d0340e66fb2f6fd1c740741aef8c
 
     def __str__(self):
         return self._octave_adjusted_note() + self._length_suffix() + '-'*self.tie
@@ -193,9 +207,15 @@ class Rest(Base):
 
 class _ABCRest(_ABCSymbol):
 
+<<<<<<< HEAD
     def __init__(self, represented: "Rest", music: "Music", tie: "bool" = False):
         self.represented: "Rest"
         super().__init__(represented, music, tie)
+=======
+    def __init__(self, represented: "Rest", music: "Music"):
+        self.represented: "Rest"
+        super().__init__(represented, music)
+>>>>>>> cf37858ecd96d0340e66fb2f6fd1c740741aef8c
 
     def __str__(self):
         return "z" + self._length_suffix()
@@ -470,7 +490,17 @@ def generate_note_body(music: "Music", compact_repeats: bool = False, **kwargs) 
     barlines = [_ABCBarline(barline) for barline in music.barlines]
     notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
 
+<<<<<<< HEAD
     rests = find_rests(music)
+=======
+    rests = []
+    prev_note = music.tracks[0].notes[0]
+    for note in music.tracks[0].notes[1:]:
+        gap_duration = note.time - (prev_note.time + prev_note.duration)
+        if gap_duration > 0:
+            rests.append(_ABCRest(Rest(prev_note.time + prev_note.duration, gap_duration), music))
+        prev_note = note
+>>>>>>> cf37858ecd96d0340e66fb2f6fd1c740741aef8c
 
     track = keys + barlines + notes + rests
     track.sort()
