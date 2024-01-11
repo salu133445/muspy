@@ -12,7 +12,7 @@ from ..classes import Barline, Base
 
 if TYPE_CHECKING:
     from ..base import Base
-    from ..classes import KeySignature, Note
+    from ..classes import Tempo, TimeSignature, KeySignature, Note
     from ..music import Music
 
 
@@ -77,8 +77,39 @@ class _ABCTrackElement(ABC):
         pass
 
 
-class _ABCKeySignature(_ABCTrackElement):
+class _ABCTimeSignature(_ABCTrackElement):
     PRIORITY = 1
+
+    def __init__(self, represented: "TimeSignature"):
+        self.represented: "TimeSignature"
+        super().__init__(represented)
+
+    def __str__(self):
+        numerator = self.represented.numerator
+        denominator = self.represented.denominator
+        if numerator == 4 and denominator == 4:
+            meter = "M: C"  # common time
+        elif numerator == 2 and denominator == 2:
+            meter = "M: C|"  # cut time
+        else:
+            meter = f"\nM: {numerator}/{denominator}"
+        return meter + f"\nL: 1/{denominator}"
+
+
+class _ABCTempo(_ABCTrackElement):
+    PRIORITY = 2
+
+    def __init__(self, represented: "Tempo"):
+        self.represented: "Tempo"
+        super().__init__(represented)
+
+    def __str__(self):
+        tempo = f"\nQ: {int(self.represented.qpm)}"
+        return tempo
+
+
+class _ABCKeySignature(_ABCTrackElement):
+    PRIORITY = 3
 
     def __init__(self, represented: "KeySignature"):
         self.represented: "KeySignature"
@@ -95,7 +126,7 @@ class _ABCKeySignature(_ABCTrackElement):
 
 
 class _ABCBarline(_ABCTrackElement):
-    PRIORITY = 2
+    PRIORITY = 4
 
     def __init__(self, represented: "Barline"):
         self.represented: "Barline"
@@ -125,7 +156,7 @@ class _ABCBarline(_ABCTrackElement):
 
 
 class _ABCSymbol(_ABCTrackElement):
-    PRIORITY = 3
+    PRIORITY = 5
 
     def __init__(self, represented: "Base", music: "Music", tie: "bool" = False):
         self.represented: "Base"
@@ -201,26 +232,6 @@ class _ABCRest(_ABCSymbol):
         return "z" + self._length_suffix()
 
 
-def meter_and_unit(music: "Music") -> List[str]:
-    """Return meter and note unit from Music object
-    in abc header format.
-
-    Parameters
-    ----------
-    music : :class:`muspy.Music`
-        Music object to generate ABC header.
-    """
-    numerator = music.time_signatures[0].numerator
-    denominator = music.time_signatures[0].denominator
-    if numerator == 4 and denominator == 4:
-        meter = "M: C"  # common time
-    elif numerator == 2 and denominator == 2:
-        meter = "M: C|"  # cut time
-    else:
-        meter = f"M: {numerator}/{denominator}"
-    return [meter, f"L: 1/{denominator}"]
-
-
 def generate_header(music: "Music") -> List[str]:
     """Generate ABC header from Music object.
 
@@ -239,13 +250,6 @@ def generate_header(music: "Music") -> List[str]:
     creators = music.metadata.creators
     if creators:
         header_lines.append(f"C: {','.join(creators)}")
-
-    header_lines += meter_and_unit(music=music)
-    if music.tempos[0].qpm != 120:  # tempo if is different than default 120
-        header_lines.append(f"Q: {int(music.tempos[0].qpm)}")
-    # note = Pitch(music.key_signatures[0].root)
-    # mode = music.key_signatures[0].mode if music.key_signatures[0].mode is not None else ''
-    # header_lines.append(f"K: {note.name + mode}")
     return header_lines
 
 
@@ -465,6 +469,12 @@ def generate_note_body(music: "Music", compact_repeats: bool = False, **kwargs) 
     music : :class:`muspy.Music`
         Music object to generate ABC note body.
     """
+    time_sigs = [_ABCTimeSignature(time_sig) for time_sig in music.time_signatures]
+    time_sigs = remove_consecutive_repeats(time_sigs)
+
+    tempos = [_ABCTempo(tempo) for tempo in music.tempos if tempo.qpm != 120]
+    tempos = remove_consecutive_repeats(tempos)
+
     keys = [_ABCKeySignature(key) for key in music.key_signatures]
     keys = remove_consecutive_repeats(keys)
 
@@ -473,7 +483,7 @@ def generate_note_body(music: "Music", compact_repeats: bool = False, **kwargs) 
 
     rests = find_rests(music)
 
-    track = keys + barlines + notes + rests
+    track = time_sigs + tempos + keys + barlines + notes + rests
     track.sort()
 
     track = adjust_symbol_duration_over_bars(track, music)
