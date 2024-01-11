@@ -165,7 +165,8 @@ class _ABCSymbol(_ABCTrackElement):
         duration_in_quarters = self.represented.duration / music.resolution
         # denominator marks standard note length: 2-half note, 4-quarter,
         # 8-eighth, etc.
-        quarter_to_unit_length = music.time_signatures[0].denominator / 4
+        time_signatures = [time_sig for time_sig in music.time_signatures if time_sig.time <= self.represented.time]
+        quarter_to_unit_length = time_signatures[-1].denominator / 4
         self._length = duration_in_quarters * quarter_to_unit_length
 
     def _length_suffix(self):
