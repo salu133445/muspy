@@ -1,10 +1,10 @@
 """ABC output interface."""
 from abc import ABC, abstractmethod
+from collections import OrderedDict
+from copy import copy
 from math import floor
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
-from collections import OrderedDict
-from copy import copy
 
 from music21.pitch import Pitch
 
@@ -12,7 +12,7 @@ from ..classes import Barline, Base
 
 if TYPE_CHECKING:
     from ..base import Base
-    from ..classes import Tempo, TimeSignature, KeySignature, Note
+    from ..classes import KeySignature, Note, Tempo, TimeSignature
     from ..music import Music
 
 
@@ -160,14 +160,20 @@ class _ABCBarline(_ABCTrackElement):
 class _ABCSymbol(_ABCTrackElement):
     PRIORITY = 5
 
-    def __init__(self, represented: "Base", music: "Music", tie: "bool" = False):
+    def __init__(
+        self, represented: "Base", music: "Music", tie: "bool" = False
+    ):
         self.represented: "Base"
         self.tie = tie
         super().__init__(represented)
         duration_in_quarters = self.represented.duration / music.resolution
         # denominator marks standard note length: 2-half note, 4-quarter,
         # 8-eighth, etc.
-        time_signatures = [time_sig for time_sig in music.time_signatures if time_sig.time <= self.represented.time]
+        time_signatures = [
+            time_sig
+            for time_sig in music.time_signatures
+            if time_sig.time <= self.represented.time
+        ]
         quarter_to_unit_length = time_signatures[-1].denominator / 4
         self._length = duration_in_quarters * quarter_to_unit_length
 
@@ -180,14 +186,20 @@ class _ABCSymbol(_ABCTrackElement):
             note_lenght_str += "/" + str(denominator)
         return note_lenght_str
 
-class _ABCNote(_ABCSymbol):
 
-    def __init__(self, represented: "Note", music: "Music", tie: "bool" = False):
+class _ABCNote(_ABCSymbol):
+    def __init__(
+        self, represented: "Note", music: "Music", tie: "bool" = False
+    ):
         self.represented: "Note"
         super().__init__(represented, music, tie)
 
     def __str__(self):
-        return self._octave_adjusted_note() + self._length_suffix() + '-'*self.tie
+        return (
+            self._octave_adjusted_note()
+            + self._length_suffix()
+            + "-" * self.tie
+        )
 
     def _octave_adjusted_note(self):
         pitch = Pitch(midi=self.represented.pitch)
@@ -203,6 +215,7 @@ class _ABCNote(_ABCSymbol):
             note = note.lower() + "'" * (pitch.octave - 5)
         return note
 
+
 class Rest(Base):
     """A container for rests.
 
@@ -214,20 +227,17 @@ class Rest(Base):
         Duration of the rest, in time steps.
     """
 
-    _attributes = OrderedDict(
-        [
-            ("time", int),
-            ("duration", int)
-        ]
-    )
+    _attributes = OrderedDict([("time", int), ("duration", int)])
 
     def __init__(self, time: int, duration: int):
         self.time = time
         self.duration = duration
 
-class _ABCRest(_ABCSymbol):
 
-    def __init__(self, represented: "Rest", music: "Music", tie: "bool" = False):
+class _ABCRest(_ABCSymbol):
+    def __init__(
+        self, represented: "Rest", music: "Music", tie: "bool" = False
+    ):
         self.represented: "Rest"
         super().__init__(represented, music, tie)
 
@@ -460,14 +470,14 @@ def break_lines(track: "list[_ABCTrackElement]", bars_per_line: int = 4):
 
 def mark_repetitions(track: "list[_ABCTrackElement]"):
     same_key_fragments: list[list[_ABCTrackElement]] = []
-    key_changes: list[_ABCKeySignature] = []
-    last_key_change_index = -1
+    changes: list[_ABCKeySignature | _ABCTimeSignature | _ABCTempo] = []
+    last_change_index = -1
     for i in range(len(track)):
-        if type(track[i]) == _ABCKeySignature:
-            same_key_fragments.append(track[last_key_change_index + 1 : i])
-            key_changes.append(track[i])
-            last_key_change_index = i
-    same_key_fragments.append(track[last_key_change_index + 1 : len(track)])
+        if type(track[i]) not in (_ABCBarline, _ABCNote):
+            same_key_fragments.append(track[last_change_index + 1 : i])
+            changes.append(track[i])
+            last_change_index = i
+    same_key_fragments.append(track[last_change_index + 1 : len(track)])
 
     for i in range(len(same_key_fragments)):
         same_key_fragments[i] = _TrackCompactor(
@@ -475,10 +485,11 @@ def mark_repetitions(track: "list[_ABCTrackElement]"):
         ).compact()
 
     new_track = same_key_fragments[0]
-    for i in range(len(key_changes)):
-        new_track.append(key_changes[i])
+    for i in range(len(changes)):
+        new_track.append(changes[i])
         new_track += same_key_fragments[i + 1]
     return new_track
+
 
 def find_rests(music: "Music"):
     rests = []
@@ -486,11 +497,19 @@ def find_rests(music: "Music"):
     for note in music.tracks[0].notes[1:]:
         gap_duration = note.time - (prev_note.time + prev_note.duration)
         if gap_duration > 0:
-            rests.append(_ABCRest(Rest(prev_note.time + prev_note.duration, gap_duration), music))
+            rests.append(
+                _ABCRest(
+                    Rest(prev_note.time + prev_note.duration, gap_duration),
+                    music,
+                )
+            )
         prev_note = note
     return rests
 
-def split_symbol(bar_time: int, el_prev: "_ABCSymbol", end: int, music: "Music"):
+
+def split_symbol(
+    bar_time: int, el_prev: "_ABCSymbol", end: int, music: "Music"
+):
     new_el1 = copy(el_prev.represented)
     new_el1.duration = bar_time - el_prev.represented.time
     new_el1 = type(el_prev)(new_el1, music, True)
@@ -501,25 +520,44 @@ def split_symbol(bar_time: int, el_prev: "_ABCSymbol", end: int, music: "Music")
     new_el2 = type(el_prev)(new_el2, music, False)
     return new_el1, new_el2
 
-def adjust_symbol_duration_over_bars(track: "list[_ABCTrackElement]", music: "Music"):
+
+def adjust_symbol_duration_over_bars(
+    track: "list[_ABCTrackElement]", music: "Music"
+):
     track_new = []
     el_prev = track[0]
     if isinstance(el_prev, _ABCTimeSignature):
-        bar_lenght = 4 / el_prev.represented.denominator * el_prev.represented.numerator * music.resolution
+        bar_lenght = (
+            4
+            / el_prev.represented.denominator
+            * el_prev.represented.numerator
+            * music.resolution
+        )
 
     for el in track[1:]:
         if isinstance(el, _ABCTimeSignature):
-            bar_lenght = 4 / el.represented.denominator * el.represented.numerator * music.resolution
+            bar_lenght = (
+                4
+                / el.represented.denominator
+                * el.represented.numerator
+                * music.resolution
+            )
         if isinstance(el, _ABCBarline) and isinstance(el_prev, _ABCSymbol):
             end = el_prev.represented.time + el_prev.represented.duration
             if end > el.represented.time:
                 # symbol lasts several bars
-                new_el1, new_el2 = split_symbol(el.represented.time, el_prev, end, music)
+                new_el1, new_el2 = split_symbol(
+                    el.represented.time, el_prev, end, music
+                )
                 track_new.append(new_el1)
                 # symbol lasts more than 2 bars
-                while (new_el2.represented.duration > bar_lenght):
-                    end = new_el2.represented.time + new_el2.represented.duration
-                    new_el3, new_el2 = split_symbol(el.represented.time + bar_lenght, new_el2, end, music)
+                while new_el2.represented.duration > bar_lenght:
+                    end = (
+                        new_el2.represented.time + new_el2.represented.duration
+                    )
+                    new_el3, new_el2 = split_symbol(
+                        el.represented.time + bar_lenght, new_el2, end, music
+                    )
                     track_new.append(new_el3)
                 track_new.append(new_el2)
             else:
@@ -532,7 +570,10 @@ def adjust_symbol_duration_over_bars(track: "list[_ABCTrackElement]", music: "Mu
 
     return track_new
 
-def generate_note_body(music: "Music", compact_repeats: bool = False, **kwargs) -> "list[str]":
+
+def generate_note_body(
+    music: "Music", compact_repeats: bool = False, **kwargs
+) -> "list[str]":
     """Generate ABC note body from Music object.
 
     Parameters
@@ -540,7 +581,9 @@ def generate_note_body(music: "Music", compact_repeats: bool = False, **kwargs) 
     music : :class:`muspy.Music`
         Music object to generate ABC note body.
     """
-    time_sigs = [_ABCTimeSignature(time_sig) for time_sig in music.time_signatures]
+    time_sigs = [
+        _ABCTimeSignature(time_sig) for time_sig in music.time_signatures
+    ]
     time_sigs = remove_consecutive_repeats(time_sigs)
 
     tempos = [_ABCTempo(tempo) for tempo in music.tempos if tempo.qpm != 120]
