@@ -523,15 +523,21 @@ def mark_repetitions(track: "list[_ABCTrackElement]"):
     return new_track
 
 
-def find_rests(music: "Music"):
+def find_rests(notes: "_ABCSymbol", music: "Music"):
     rests = []
-    prev_note = music.tracks[0].notes[0]
-    for note in music.tracks[0].notes[1:]:
-        gap_duration = note.time - (prev_note.time + prev_note.duration)
+    prev_note = notes[0]
+    for note in notes[1:]:
+        gap_duration = note.represented.time - (
+            prev_note.represented.time + prev_note.represented.duration
+        )
         if gap_duration > 0:
             rests.append(
                 _ABCRest(
-                    Rest(prev_note.time + prev_note.duration, gap_duration),
+                    Rest(
+                        prev_note.represented.time
+                        + prev_note.represented.duration,
+                        gap_duration,
+                    ),
                     music,
                 )
             )
@@ -632,9 +638,11 @@ def generate_note_body(
     for pitch in chord.pitches:
         print(pitch)
 
-    # rests = find_rests(music)
+    notes_chords = notes + chords
+    notes_chords.sort()
+    rests = find_rests(notes_chords, music)
 
-    track = time_sigs + tempos + keys + barlines + notes + chords  # + rests
+    track = time_sigs + tempos + keys + barlines + notes + chords + rests
     track.sort()
 
     track = adjust_symbol_duration_over_bars(track, music)
