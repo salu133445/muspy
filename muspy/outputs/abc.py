@@ -133,6 +133,7 @@ class _ABCBarline(_ABCTrackElement):
         super().__init__(represented)
         self.started_repeats = 0
         self.ended_repeats = 0
+        self.ended_line = False
         self.breaks_line = False
 
     def __str__(self):
@@ -143,9 +144,10 @@ class _ABCBarline(_ABCTrackElement):
                 ":" * self.started_repeats,
             )
         else:
-            return " {0}|{1} {2}".format(
+            return " {0}|{1}{2} {3}".format(
                 ":" * self.ended_repeats,
                 ":" * self.started_repeats,
+                "]" * self.ended_line,
                 "\n" if self.breaks_line else "",
             )
 
@@ -650,6 +652,10 @@ def generate_note_body(
         track = mark_repetitions(track)
 
     break_lines(track, **kwargs)
+
+    ended_barline = _ABCBarline(Barline(track[-1].represented.time + 1))
+    ended_barline.ended_line = True
+    track += [ended_barline]
 
     track_str = "".join(str(element) for element in track)
     lines = track_str.split("\n")
