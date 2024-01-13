@@ -12,7 +12,7 @@ from ..classes import Barline, Base
 
 if TYPE_CHECKING:
     from ..base import Base
-    from ..classes import KeySignature, Note, Tempo, TimeSignature
+    from ..classes import Chord, KeySignature, Note, Tempo, TimeSignature
     from ..music import Music
 
 
@@ -214,6 +214,38 @@ class _ABCNote(_ABCSymbol):
         else:
             note = note.lower() + "'" * (pitch.octave - 5)
         return note
+
+
+class _ABCChord(_ABCSymbol):
+    def __init__(
+        self, represented: "Chord", music: "Music", tie: "bool" = False
+    ):
+        self.represented: "Chord"
+        super().__init__(represented, music, tie)
+
+    def __str__(self):
+        return "[" + self.print_notes() + "-" * self.tie + "]"
+
+    def _octave_adjusted_note(self, pitch_numeric):
+        pitch = Pitch(midi=pitch_numeric)
+        note = pitch.name
+        if len(note) > 1:
+            if note[-1] == "#":  # sharp
+                note = "^" + note[0]
+            elif note[-1] == "-":  # flat
+                note = "_" + note[0]
+        if pitch.octave <= 4:
+            note = note + "," * (4 - pitch.octave)
+        else:
+            note = note.lower() + "'" * (pitch.octave - 5)
+        return note
+
+    def print_notes(self):
+        string = ""
+        for pitch in self.represented.pitches:
+            string += self._octave_adjusted_note(pitch)
+            string += self._length_suffix()
+        return string
 
 
 class Rest(Base):
@@ -594,10 +626,15 @@ def generate_note_body(
 
     barlines = [_ABCBarline(barline) for barline in music.barlines]
     notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
+    chords = [_ABCChord(chord, music) for chord in music.tracks[0].chords]
 
-    rests = find_rests(music)
+    chord = music.tracks[0].chords[0]
+    for pitch in chord.pitches:
+        print(pitch)
 
-    track = time_sigs + tempos + keys + barlines + notes + rests
+    # rests = find_rests(music)
+
+    track = time_sigs + tempos + keys + barlines + notes + chords  # + rests
     track.sort()
 
     track = adjust_symbol_duration_over_bars(track, music)
