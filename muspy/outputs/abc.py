@@ -136,16 +136,18 @@ class _ABCBarline(_ABCTrackElement):
         self.breaks_line = False
 
     def __str__(self):
-        barline = (
-            " "
-            + ":" * self.ended_repeats
-            + "|"
-            + ":" * self.started_repeats
-            + " "
-        )
-        if self.breaks_line:
-            barline += "\n"
-        return barline
+        if self.started_repeats > 0 and self.ended_repeats > 0:
+            return " {0}|{1}|{2} ".format(
+                ":" * self.ended_repeats,
+                "\n" if self.breaks_line else "",
+                ":" * self.started_repeats,
+            )
+        else:
+            return " {0}|{1} {2}".format(
+                ":" * self.ended_repeats,
+                ":" * self.started_repeats,
+                "\n" if self.breaks_line else "",
+            )
 
     @staticmethod
     def mark_repeats(
