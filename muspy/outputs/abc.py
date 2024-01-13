@@ -88,12 +88,12 @@ class _ABCTimeSignature(_ABCTrackElement):
         numerator = self.represented.numerator
         denominator = self.represented.denominator
         if numerator == 4 and denominator == 4:
-            meter = "M: C"  # common time
+            meter = "\nM: C\n"  # common time
         elif numerator == 2 and denominator == 2:
-            meter = "M: C|"  # cut time
+            meter = "\nM: C|\n"  # cut time
         else:
             meter = f"\nM: {numerator}/{denominator}"
-        return meter + f"\nL: 1/{denominator}"
+        return meter + f"\nL: 1/{denominator}\n"
 
 
 class _ABCTempo(_ABCTrackElement):
@@ -490,7 +490,9 @@ def break_lines(track: "list[_ABCTrackElement]", bars_per_line: int = 4):
             bar_counter = (bar_counter + 1) % bars_per_line
             if bar_counter == 0:
                 element.breaks_line = True
-        elif type(element) == _ABCKeySignature:
+        elif (type(element) == _ABCKeySignature) | (
+            type(element) == _ABCTimeSignature
+        ):
             bar_counter = 0
             i += 1  # Skip opening barline of the first bar
         i += 1
@@ -633,10 +635,6 @@ def generate_note_body(
     barlines = [_ABCBarline(barline) for barline in music.barlines]
     notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
     chords = [_ABCChord(chord, music) for chord in music.tracks[0].chords]
-
-    chord = music.tracks[0].chords[0]
-    for pitch in chord.pitches:
-        print(pitch)
 
     notes_chords = notes + chords
     notes_chords.sort()
