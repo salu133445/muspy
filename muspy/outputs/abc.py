@@ -635,14 +635,17 @@ def generate_note_body(
     keys = remove_consecutive_repeats(keys)
 
     barlines = [_ABCBarline(barline) for barline in music.barlines]
-    notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
-    chords = [_ABCChord(chord, music) for chord in music.tracks[0].chords]
+    notes_chords = []
+    rests = []
+    if music.tracks:
+        notes = [_ABCNote(note, music) for note in music.tracks[0].notes]
+        chords = [_ABCChord(chord, music) for chord in music.tracks[0].chords]
 
-    notes_chords = notes + chords
-    notes_chords.sort()
-    rests = find_rests(notes_chords, music)
+        notes_chords = notes + chords
+        notes_chords.sort()
+        rests = find_rests(notes_chords, music)
 
-    track = time_sigs + tempos + keys + barlines + notes + chords + rests
+    track = time_sigs + tempos + keys + barlines + notes_chords + rests
     track.sort()
 
     track = adjust_symbol_duration_over_bars(track, music)
