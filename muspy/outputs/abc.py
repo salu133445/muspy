@@ -270,112 +270,171 @@ class _TrackCompactor:
     """Compacts tracks by detecting repeats of bars"""
 
     def __init__(self, track: "list[_ABCBarline|_ABCNote]"):
-        self.compacted = track
-        self._barlines_indices: list[int] = []
-        self._bars_count = -1
-
-    def _enclose(self):
-        if len(self.compacted) > 0:
-            if type(self.compacted[0]) != _ABCBarline:
-                barline = Barline(
-                    getattr(self.compacted[0].represented, "time")
-                )
-                self.compacted.insert(0, _ABCBarline(barline))
-            if type(self.compacted[-1]) != _ABCBarline:
-                barline = Barline(
-                    getattr(self.compacted[-1].represented, "time") + 1
-                )
-                self.compacted.append(_ABCBarline(barline))
-
-    def _detect_barlines(self):
-        for i in range(len(self.compacted)):
-            if type(self.compacted[i]) == _ABCBarline:
-                self._barlines_indices.append(i)
-        self._bars_count = len(self._barlines_indices) - 1
-
-    def _get_n_bars(self, start_index: int, n: int):
-        start = self._barlines_indices[start_index]
-        # include closing barline
-        end = self._barlines_indices[start_index + n] + 1
-        return self.compacted[start:end]
+        self._sections_borders: list[_ABCBarline] = []
+        self._sections_occurences: list[int] = []
+        self._sections: list[list[_ABCNote]] = []
+        self.track = track
 
     @staticmethod
-    def _equal_bars(a, b):
-        if len(a) != len(b):
-            return False
-        for a_element, b_element in zip(a, b):
-            if a_element != b_element:
-                return False
-        # No notation for nested repeats
-        if (
-            a[0].started_repeats != 0
-            or b[0].started_repeats != 0
-            or a[-1].ended_repeats != 0
-            or b[-1].ended_repeats != 0
+    def _enclose(track: "list[_ABCBarline|_ABCNote]"):
+        """
+        Ensure that `track` is enclosed by barlines in order to make it
+        possible to mark repetitions involving either first or last bar of
+        track.
+        """
+        if len(track) > 0:
+            if type(track[0]) != _ABCBarline:
+                barline = Barline(getattr(track[0].represented, "time"))
+                track.insert(0, _ABCBarline(barline))
+            if type(track[-1]) != _ABCBarline:
+                barline = Barline(getattr(track[-1].represented, "time") + 1)
+                track.append(_ABCBarline(barline))
+        return track
+
+    def _disassemble(self):
+        """
+        Break track into sequences of notes and separating them barlines.
+        Prepare a counter for number of occurences for each sequence of notes.
+        """
+        last_barline_index = 0
+        enclosed = self._enclose(self.track)
+        self._sections_borders = [enclosed[0]]
+        self._sections_occurences = []
+        self._sections = []
+        for i in range(1, len(enclosed)):
+            element = enclosed[i]
+            if type(element) == _ABCBarline:
+                self._sections_borders.append(element)
+                self._sections_occurences.append(1)
+                self._sections.append(enclosed[last_barline_index + 1 : i])
+                last_barline_index = i
+
+    def _assemble(self):
+        """
+        Reassemble track from sections and separating them barlines.
+        Mark repetitions of sections based on corresponding counters.
+        """
+        track = [self._sections_borders[0]]
+        for occurences, section, closing_barline in zip(
+            self._sections_occurences,
+            self._sections,
+            self._sections_borders[1:],
         ):
-            return False
+            opening_barline = track[-1]
+            _ABCBarline.mark_repeats(
+                opening_barline, closing_barline, occurences - 1
+            )
+            track += section + [closing_barline]
+        return track
 
-        return True
+    def _get_section(self, index: int, n: int):
+        """
+        Get section of track starting with subsection at `index` and
+        containing `n` next subsections. Barlines separating subsections are
+        incorporated into retrieved section.
+        """
+        section = [*self._sections[index]]
+        for i in range(1, n):
+            section += [self._sections_borders[index + i]] + self._sections[
+                index + i
+            ]
+        return section
 
-    def _erase_n_bars(self, start_index: int, n: int):
-        start = self._barlines_indices[start_index]
-        end = self._barlines_indices[start_index + n]
-        erased_elements = end - start
-        self.compacted = self.compacted[:start] + self.compacted[end:]
-        for i in range(start_index + n, len(self._barlines_indices)):
-            self._barlines_indices[i] -= erased_elements
-        self._barlines_indices = (
-            self._barlines_indices[:start_index]
-            + self._barlines_indices[start_index + n :]
-        )
-        self._bars_count -= n
+    def _find_repeat(self, repeat_length: int):
+        """
+        Looks for the first repeat of given length in track
 
-    def _mark_repeat(
-        self, start_index: int, repeat_length: int, repeat_count: int
+        Parameters
+        ----------
+        repeat_length : int
+            number of sections to include in repeat
+
+        Returns
+        -------
+        tuple[int, int]
+            Index of section that starts repeating fragment and number of
+            repetitions
+        """
+        sections_count = len(self._sections)
+        repeat_count = 0
+        for start in range(sections_count - 2 * repeat_length + 1):
+            # ABC format has no syntax for nested repeats
+            occurences = self._sections_occurences[
+                start : start + repeat_length
+            ]
+            if any([n != 1 for n in occurences]):
+                continue
+            base = self._get_section(start, repeat_length)
+            for repeat_start in range(
+                start + repeat_length,
+                sections_count - repeat_length + 1,
+                repeat_length,
+            ):
+                repeat = self._get_section(repeat_start, repeat_length)
+                if base == repeat:
+                    repeat_count += 1
+                    # ABC reader can't handle markings for more than 2 repeats
+                    # (|: notes and bars :|)
+                    break
+                else:
+                    break
+            if repeat_count > 0:
+                return start, repeat_count
+        return 0, 0
+
+    def _remove_repeat(
+        self, index: int, repeat_length: int, repeat_count: int
     ):
-        self._erase_n_bars(
-            start_index + repeat_length, repeat_length * repeat_count
+        """
+        Replace a block of `repeat_count` repeats each containing
+        `repeat_length` sections starting at 'index' with concatenated
+        sections from original and mark its occurence count.
+        """
+        concatenated = self._get_section(index, repeat_length)
+        # include original
+        repeated_sections_count = repeat_length * (repeat_count + 1)
+        self._sections_borders = (
+            self._sections_borders[: index + 1]
+            + self._sections_borders[index + repeated_sections_count :]
         )
-        start_barline = self.compacted[self._barlines_indices[start_index]]
-        end_barline = self.compacted[
-            self._barlines_indices[start_index + repeat_length]
-        ]
-        _ABCBarline.mark_repeats(
-            start_barline,
-            end_barline,
-            repeat_count,
+        self._sections_occurences = (
+            self._sections_occurences[: index + 1]
+            + self._sections_occurences[index + repeated_sections_count :]
         )
+        self._sections = (
+            self._sections[: index + 1]
+            + self._sections[index + repeated_sections_count :]
+        )
+        self._sections_occurences[index] = repeat_count + 1
+        self._sections[index] = concatenated
 
     def _compact(self):
-        found_repeat = False
-        for repeat_length in range(1, floor(self._bars_count / 2) + 1):
-            for start in range(self._bars_count + 1 - 2 * repeat_length):
-                repeat_count = 0
-                base = self._get_n_bars(start, repeat_length)
-                for repeat_start in range(
-                    start + repeat_length,
-                    self._bars_count + 1 - repeat_length,
-                    repeat_length,
-                ):
-                    repeat = self._get_n_bars(repeat_start, repeat_length)
-                    if self._equal_bars(base, repeat):
-                        repeat_count += 1
-                        found_repeat = True
-                    else:
-                        break
-                if repeat_count > 0:
-                    self._mark_repeat(start, repeat_length, repeat_count)
+        """
+        Detect consecutive repetitions of track sections. Remove repeated
+        sections and mark occurence counts of originals.
+        """
+        repeat_length = floor(len(self._sections) / 2)
+        while repeat_length > 0:
+            start, repeat_count = self._find_repeat(repeat_length)
+            while repeat_count > 0:
+                self._remove_repeat(start, repeat_length, repeat_count)
+                repeat_length = floor(len(self._sections) / 2)
+                if repeat_length < 1:
                     break
-            if found_repeat:
-                break
-        return found_repeat
+                start, repeat_count = self._find_repeat(repeat_length)
+            repeat_length -= 1
 
     def compact(self):
-        self._enclose()
-        self._detect_barlines()
-        while self._compact():
-            pass
-        return self.compacted
+        """
+        Detect repetitions in track contained by object. Mark repeats of
+        sections of track on barlines enclosing them and remove repeated
+        elements.
+        """
+        if len(self.track) == 0:
+            return self.track
+        self._disassemble()
+        self._compact()
+        return self._assemble()
 
 
 def break_lines(track: "list[_ABCTrackElement]", bars_per_line: int = 4):
