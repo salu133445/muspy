@@ -510,10 +510,10 @@ def break_lines(track: "list[_ABCTrackElement]", bars_per_line: int = 4):
 
 def mark_repetitions(track: "list[_ABCTrackElement]"):
     same_key_fragments: list[list[_ABCTrackElement]] = []
-    changes: list[_ABCKeySignature | _ABCTimeSignature | _ABCTempo] = []
+    changes = []
     last_change_index = -1
     for i in range(len(track)):
-        if type(track[i]) not in (_ABCBarline, _ABCNote):
+        if track[i].TAKES_LINE:
             same_key_fragments.append(track[last_change_index + 1 : i])
             changes.append(track[i])
             last_change_index = i
