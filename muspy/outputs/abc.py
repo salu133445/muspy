@@ -105,7 +105,7 @@ class _ABCTempo(_ABCTrackElement):
         super().__init__(represented)
 
     def __str__(self):
-        tempo = f"\nQ: {int(self.represented.qpm)}"
+        tempo = f"\nQ: {int(self.represented.qpm)}\n"
         return tempo
 
 
