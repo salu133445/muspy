@@ -502,16 +502,10 @@ def break_lines(track: "list[_ABCTrackElement]", bars_per_line: int = 4):
             bar_counter = (bar_counter + 1) % bars_per_line
             if bar_counter == 0:
                 element.breaks_line = True
-        elif (type(element) == _ABCKeySignature) | (
-            type(element) == _ABCTimeSignature
-        ):
+        elif element.TAKES_LINE:
             bar_counter = 0
             i += 1  # Skip opening barline of the first bar
         i += 1
-    bar_counter = 0
-    for element in track[1:]:
-        if type(element) == _ABCBarline:
-            bar_counter = (bar_counter + 1) % bars_per_line
 
 
 def mark_repetitions(track: "list[_ABCTrackElement]"):
