@@ -632,7 +632,7 @@ def generate_note_body(
     ]
     time_sigs = remove_consecutive_repeats(time_sigs)
 
-    tempos = [_ABCTempo(tempo) for tempo in music.tempos if tempo.qpm != 120]
+    tempos = [_ABCTempo(tempo) for tempo in music.tempos]
     tempos = remove_consecutive_repeats(tempos)
 
     keys = [_ABCKeySignature(key) for key in music.key_signatures]
