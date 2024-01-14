@@ -24,6 +24,9 @@ class _ABCTrackElement(ABC):
     """
 
     PRIORITY = 0
+    # Whether element takes whole line in .abc file. Characteristic for
+    # fields setting parameters of music such as "K:" or "M:"
+    TAKES_LINE = False
 
     def __init__(self, represented: "Base") -> None:
         self.represented = represented
@@ -72,57 +75,63 @@ class _ABCTrackElement(ABC):
             return True
         return False
 
-    @abstractmethod
     def __str__(self):
+        if self.TAKES_LINE:
+            return f"\n{self._to_str()}\n"
+        return self._to_str()
+
+    @abstractmethod
+    def _to_str(self) -> str:
         pass
 
 
 class _ABCTimeSignature(_ABCTrackElement):
     PRIORITY = 1
+    TAKES_LINE = True
 
     def __init__(self, represented: "TimeSignature"):
         self.represented: "TimeSignature"
         super().__init__(represented)
 
-    def __str__(self):
+    def _to_str(self):
         numerator = self.represented.numerator
         denominator = self.represented.denominator
         if numerator == 4 and denominator == 4:
-            meter = "\nM: C\n"  # common time
+            meter = "M: C"  # common time
         elif numerator == 2 and denominator == 2:
-            meter = "\nM: C|\n"  # cut time
+            meter = "M: C|"  # cut time
         else:
-            meter = f"\nM: {numerator}/{denominator}"
-        return meter + f"\nL: 1/{denominator}\n"
+            meter = f"M: {numerator}/{denominator}"
+        length = f"L: 1/{denominator}"
+        return meter + "\n" + length
 
 
 class _ABCTempo(_ABCTrackElement):
     PRIORITY = 2
+    TAKES_LINE = True
 
     def __init__(self, represented: "Tempo"):
         self.represented: "Tempo"
         super().__init__(represented)
 
-    def __str__(self):
-        tempo = f"\nQ: {int(self.represented.qpm)}\n"
-        return tempo
+    def _to_str(self):
+        return f"Q: {int(self.represented.qpm)}"
 
 
 class _ABCKeySignature(_ABCTrackElement):
     PRIORITY = 3
+    TAKES_LINE = True
 
     def __init__(self, represented: "KeySignature"):
         self.represented: "KeySignature"
         super().__init__(represented)
 
-    def __str__(self):
+    def _to_str(self):
         note = Pitch(self.represented.root)
         mode = self.represented.mode
         if mode is None:
-            key = f"\nK:{note.name}\n"
-        else:
-            key = f"\nK:{note.name}{mode}\n"
-        return key
+            return f"K:{note.name}"
+        return f"K:{note.name}{mode}"
 
 
 class _ABCBarline(_ABCTrackElement):
@@ -136,7 +145,7 @@ class _ABCBarline(_ABCTrackElement):
         self.ended_line = False
         self.breaks_line = False
 
-    def __str__(self):
+    def _to_str(self):
         if self.started_repeats > 0 and self.ended_repeats > 0:
             return " {0}|{1}|{2} ".format(
                 ":" * self.ended_repeats,
@@ -197,7 +206,7 @@ class _ABCNote(_ABCSymbol):
         self.represented: "Note"
         super().__init__(represented, music, tie)
 
-    def __str__(self):
+    def _to_str(self):
         return (
             self._octave_adjusted_note()
             + self._length_suffix()
@@ -226,7 +235,7 @@ class _ABCChord(_ABCSymbol):
         self.represented: "Chord"
         super().__init__(represented, music, tie)
 
-    def __str__(self):
+    def _to_str(self):
         return "[" + self.print_notes() + "-" * self.tie + "]"
 
     def _octave_adjusted_note(self, pitch_numeric):
@@ -276,7 +285,7 @@ class _ABCRest(_ABCSymbol):
         self.represented: "Rest"
         super().__init__(represented, music, tie)
 
-    def __str__(self):
+    def _to_str(self):
         return "z" + self._length_suffix()
 
 
