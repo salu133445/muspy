@@ -12,7 +12,6 @@ from music21.pitch import Pitch
 from ..classes import Barline, Base
 
 if TYPE_CHECKING:
-    from ..base import Base
     from ..classes import Chord, KeySignature, Note, Tempo, TimeSignature
     from ..music import Music
 
