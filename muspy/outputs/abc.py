@@ -2,6 +2,7 @@
 from abc import ABC, abstractmethod
 from collections import OrderedDict
 from copy import copy
+from fractions import Fraction
 from math import floor
 from pathlib import Path
 from typing import TYPE_CHECKING, List, Union
@@ -177,15 +178,16 @@ class _ABCSymbol(_ABCTrackElement):
             if time_sig.time <= self.represented.time
         ]
         quarter_to_unit_length = time_signatures[-1].denominator / 4
-        self._length = duration_in_quarters * quarter_to_unit_length
+        self._length = Fraction(
+            duration_in_quarters * quarter_to_unit_length
+        ).limit_denominator()
 
     def _length_suffix(self):
-        numerator, denominator = self._length.as_integer_ratio()
         note_lenght_str = ""
-        if numerator != 1:
-            note_lenght_str += str(numerator)
-        if denominator != 1:
-            note_lenght_str += "/" + str(denominator)
+        if self._length.numerator != 1:
+            note_lenght_str += str(self._length.numerator)
+        if self._length.denominator != 1:
+            note_lenght_str += "/" + str(self._length.denominator)
         return note_lenght_str
 
 
