@@ -618,7 +618,7 @@ def adjust_symbol_duration_over_bars(
 
 
 def generate_note_body(
-    music: "Music", compact_repeats: bool = False, **kwargs
+    music: "Music", compact_repeats: bool = True, **kwargs
 ) -> "list[str]":
     """Generate ABC note body from Music object.
 

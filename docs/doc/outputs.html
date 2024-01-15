@@ -10,7 +10,7 @@
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
+
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
@@ -19,10 +19,10 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="muspy.processors" href="processors.html" />
-    <link rel="prev" title="muspy.metrics" href="metrics.html" /> 
+    <link rel="prev" title="muspy.metrics" href="metrics.html" />
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
@@ -89,7 +89,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+
   <section id="module-muspy.outputs">
 <span id="muspy-outputs"></span><h1>muspy.outputs<a class="headerlink" href="#module-muspy.outputs" title="Permalink to this headline"></a></h1>
 <p>Output interfaces.</p>
@@ -116,7 +116,7 @@ libraries and commonly-used representations in music generation.</p>
 <li><p>to_remi_event_representation</p></li>
 <li><p>to_representation</p></li>
 <li><p>write</p></li>
-<li></li>
+<li><p>write_abc</p></li>
 <li><p>write_audio</p></li>
 <li><p>write_midi</p></li>
 <li><p>write_musicxml</p></li>
@@ -509,6 +509,28 @@ hold (129).</p>
 </dd></dl>
 
 <dl class="py function">
+  <dt class="sig sig-object py" id="muspy.outputs.write_abc">
+  <span class="sig-prename descclassname"><span class="pre">muspy.outputs.</span></span><span class="sig-name descname"><span class="pre">write_abc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">music</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/abc.html#write_abc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.outputs.write_audio" title="Permalink to this definition"></a></dt>
+  <dd><p>Write a Music object to an ABC file.</p>
+  <dl class="field-list simple">
+  <dt class="field-odd">Parameters</dt>
+  <dd class="field-odd"><ul class="simple">
+  <li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em>) – Path to write the ABC file.</p></li>
+  <li><p><strong>music</strong> (<a class="reference internal" href="../doc/muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to write.</p></li>
+  </ul>
+  </dd>
+  </dl>
+  <dl class="field-list simple">
+    <dt class="field-odd">Kwargs</dt>
+    <dd class="field-odd"><ul class="simple">
+    <li><p><strong>bars_per_line</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#numeric-types-int-float-complex" title="(in Python v3.10)"><em>int</em></a>, <em>optional</em>) – Maximum number of bars that a single line of .abc file can contain. Defaults to 4.</p></li>
+    <li><p><strong>compact_repeats</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#boolean-type-bool" title="(in Python v3.10)"><em>bool</em></a>, <em>optional</em>) – Whether or not repeated sections of notes should be shortened. May cause errors in interpretation of music depending on reader used to read resultant .abc file. Defaults to True.</p></li>
+    </ul>
+    </dd>
+    </dl>
+  </dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="muspy.outputs.write_audio">
 <span class="sig-prename descclassname"><span class="pre">muspy.outputs.</span></span><span class="sig-name descname"><span class="pre">write_audio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">music</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">soundfont_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">44100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/outputs/audio.html#write_audio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.outputs.write_audio" title="Permalink to this definition"></a></dt>
 <dd><p>Write a Music object to an audio file.</p>
@@ -591,7 +613,7 @@ an uncompressed file, ‘.mxl’ for a compressed file).</p></li>
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+
 
 </footer>
         </div>
@@ -602,7 +624,7 @@ an uncompressed file, ‘.mxl’ for a compressed file).</p></li>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
 
 </body>
 </html>
