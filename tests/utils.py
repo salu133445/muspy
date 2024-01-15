@@ -15,7 +15,6 @@ TEST_MUSICXML_DIR = TEST_DATA_DIR / "musicxml"
 TEST_MUSESCORE_DIR = TEST_DATA_DIR / "musescore"
 TEST_MUSESCORE_LILYPOND_DIR = TEST_DATA_DIR / "musescore-lilypond"
 TEST_ABC_DIR = TEST_DATA_DIR / "abc"
-TEST_ABC_DIR_OUTPUT = TEST_DATA_DIR / "abc_output"
 
 
 def check_metadata(metadata, ext=None):
