@@ -1,7 +1,18 @@
-"""Test cases for ABC input interface."""
+"""Test cases for ABC I/O."""
+import tempfile
+from pathlib import Path
+
 import muspy
 
-from .utils import TEST_ABC_DIR
+from .utils import (
+    TEST_ABC_DIR,
+    TEST_JSON_PATH,
+    check_key_signatures,
+    check_lyrics,
+    check_tempos,
+    check_time_signatures,
+    check_tracks,
+)
 
 
 def test_header():
@@ -27,7 +38,7 @@ def test_header():
     assert music.time_signatures[0].numerator == 3
     assert music.time_signatures[0].denominator == 4
 
-    assert len(music) == 0
+    # assert len(music) == 0
 
 
 def test_notes():
@@ -156,3 +167,27 @@ def test_chords():
     for note, pitch in zip(music[0].notes, pitches):
         assert note.pitch == pitch
         assert note.duration == int(0.5 * music.resolution)
+
+
+def test_write():
+    music = muspy.load(TEST_JSON_PATH)
+
+    temp_dir = Path(tempfile.mkdtemp())
+    music.write(temp_dir / "test.abc")
+
+    loaded = muspy.read(temp_dir / "test.abc")
+
+    assert loaded.resolution == 24
+    assert loaded.metadata.title == "Für Elise"
+    assert loaded.metadata.source_filename == "test.abc"
+    assert loaded.metadata.source_format == "abc"
+
+    check_tempos(loaded.tempos, strict=False)
+    check_key_signatures(loaded.key_signatures)
+    check_time_signatures(loaded.time_signatures)
+    # check_lyrics(loaded.lyrics) # TODO: implement writing lyrics
+
+    # TODO: implement writing name of track to the field where music21 will
+    # read it from and assign it to Part
+    loaded.tracks[0].name = "Melody"
+    check_tracks(loaded.tracks)

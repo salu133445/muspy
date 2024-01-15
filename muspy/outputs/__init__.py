@@ -24,7 +24,7 @@ Functions
 - to_remi_event_representation
 - to_representation
 - write
--
+- write_abc
 - write_audio
 - write_midi
 - write_musicxml
@@ -46,6 +46,7 @@ from .pianoroll import to_pianoroll_representation, to_pypianoroll
 from .pitch import to_pitch_representation
 from .wrappers import save, to_object, to_representation, write
 from .yaml import save_yaml
+from .abc import write_abc
 
 __all__ = [
     "save",
@@ -66,6 +67,7 @@ __all__ = [
     "to_remi_event_representation",
     "to_representation",
     "write",
+    "write_abc",
     "write_audio",
     "write_midi",
     "write_musicxml",
