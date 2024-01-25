@@ -8,6 +8,7 @@ from numpy import ndarray
 from pretty_midi import PrettyMIDI
 from pypianoroll import Multitrack
 
+from .abc import write_abc
 from .audio import write_audio
 from .event import to_event_representation
 from .json import save_json
@@ -119,6 +120,8 @@ def write(
         return write_midi(path, music, **kwargs)
     if kind.lower() == "musicxml":
         return write_musicxml(path, music, **kwargs)
+    if kind.lower() == "abc":
+        return write_abc(path, music, **kwargs)
     if kind.lower() == "audio":
         return write_audio(path, music, **kwargs)
     raise ValueError(
