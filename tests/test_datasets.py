@@ -1,4 +1,5 @@
 """Test cases for dataset module."""
+import pickle
 import shutil
 
 import pytest
@@ -100,6 +101,18 @@ def test_to_pytorch_dataset():
     dataset = Music21Dataset("demos")
     pytorch_dataset = dataset.to_pytorch_dataset(representation="pitch")
     assert pytorch_dataset[0] is not None
+
+
+def test_pickle_pytorch_dataset():
+    """
+    PyTorch datasets must support pickling so that the dataloader can
+    use multiple workers when assembling a batch.
+    """
+    dataset = Music21Dataset("demos")
+    pytorch_dataset = dataset.to_pytorch_dataset(representation="pitch")
+    obj = pickle.dumps(pytorch_dataset)
+    dataset = pickle.loads(obj)
+    assert dataset[0] is not None
 
 
 def test_to_tensorflow_dataset():
