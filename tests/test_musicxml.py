@@ -684,3 +684,9 @@ def test_write_compressed():
     check_time_signatures(loaded.time_signatures)
     check_tracks(loaded.tracks, 10080)
     # TODO: Check lyrics and annotations
+
+def test_chord_symbols():
+    loaded = muspy.read('tests/data/musicxml-lilypond/71a_f-Guitar_notation.xml')
+    # loaded = muspy.read('tests/data/musicxml-lilypond/bass_test.mxl')
+    print(loaded)
+    return loaded

@@ -20,9 +20,10 @@ from ..classes import (
     Tempo,
     TimeSignature,
     Track,
+    ChordSymbol
 )
 from ..music import DEFAULT_RESOLUTION, Music
-from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS, NOTE_MAP, NOTE_TYPE_MAP
+from ..utils import CIRCLE_OF_FIFTHS, MODE_CENTERS, NOTE_MAP, NOTE_TYPE_MAP, ChordSymbolParser
 
 T = TypeVar("T")
 
@@ -648,6 +649,7 @@ def parse_part_elem(
         instrument_id: [] for instrument_id in instrument_info
     }
     lyrics: List[Lyric] = []
+    chord_symbols: List[ChordSymbol] = []
 
     # Initialize variables
     time = 0
@@ -711,6 +713,12 @@ def parse_part_elem(
                     dynamics = sound_elem_.get("dynamics")
                     if dynamics is not None:
                         velocity = round(float(dynamics))
+
+            # Harmony - chord symbols
+            elif elem.tag == 'harmony':
+                chord_symbol_parsed = ChordSymbolParser(elem, time+position)
+                chord_symbol = ChordSymbol(chord_symbol_parsed)
+                chord_symbols.append( chord_symbol )
 
             # Note elements
             elif elem.tag == "note":
@@ -847,7 +855,10 @@ def parse_part_elem(
     # Sort lyrics
     lyrics.sort(key=attrgetter("time"))
 
-    return notes, lyrics
+    # Sort chord_symbols
+    chord_symbols.sort(key=attrgetter("time"))
+
+    return notes, lyrics, chord_symbols
 
 
 def parse_metadata(root: Element) -> Metadata:
@@ -1040,11 +1051,11 @@ def read_musicxml(
             )
         part_elem = _get_required(root, "part")
         instrument_info = {"": {"program": 0, "is_drum": False}}
-        notes, lyrics = parse_part_elem(
+        notes, lyrics, chord_symbols = parse_part_elem(
             part_elem, resolution, instrument_info, measure_indices
         )
         tracks.append(
-            Track(program=0, is_drum=False, notes=notes[""], lyrics=lyrics)
+            Track(program=0, is_drum=False, notes=notes[""], lyrics=lyrics, harmony=chord_symbols)
         )
 
     else:
@@ -1059,7 +1070,7 @@ def read_musicxml(
                 continue
 
             # Parse part
-            notes, lyrics = parse_part_elem(
+            notes, lyrics, chord_symbols = parse_part_elem(
                 part_elem, resolution, part_info[part_id], measure_indices
             )
 
@@ -1071,6 +1082,7 @@ def read_musicxml(
                     name=part_info[part_id][instrument_id]["name"],
                     notes=instrument_notes,
                     lyrics=lyrics,
+                    harmony=chord_symbols
                 )
                 tracks.append(track)
 

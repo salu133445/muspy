@@ -33,6 +33,7 @@ from .schemas import DEFAULT_SCHEMA_VERSION
 DEFAULT_VELOCITY = 64
 NoteT = TypeVar("NoteT", bound="Note")
 ChordT = TypeVar("ChordT", bound="Chord")
+ChordSymbolT = TypeVar("ChordSymbolT", bound="Chord")
 TrackT = TypeVar("TrackT", bound="Track")
 
 __all__ = [
@@ -52,6 +53,29 @@ __all__ = [
 
 # pylint: disable=super-init-not-called
 
+import mir_eval
+import numpy as np
+from copy import deepcopy
+note_symbols_dict = {
+    0: 'C',
+    1: 'Db',
+    2: 'D',
+    3: 'Eb',
+    4: 'E',
+    5: 'F',
+    6: 'Gb',
+    7: 'G',
+    8: 'Ab',
+    9: 'A',
+    10: 'Bb',
+    11: 'B'
+}
+
+MIR_QUALITIES = mir_eval.chord.QUALITIES
+EXT_MIR_QUALITIES = deepcopy( MIR_QUALITIES )
+for k in list(EXT_MIR_QUALITIES.keys()) + ['7(b9)', '7(#9)', '7(#11)', '7(b13)']:
+    _, semitone_bitmap, _ = mir_eval.chord.encode( 'C' + (len(k) > 0)*':' + k, reduce_extended_chords=True )
+    EXT_MIR_QUALITIES[k] = semitone_bitmap
 
 def get_end_time(list_: List, is_sorted: bool = False, attr: str = "time"):
     """Return the end time of a list of objects.
@@ -631,6 +655,147 @@ class Chord(Base):
             self.velocity = lower
         return self
 
+# https://www.w3.org/2021/06/musicxml40/musicxml-reference/examples/tutorial-chord-symbols/
+# https://github.com/DCMLab/pitchplots/blob/master/modified_musicxml_parser.py#L908
+# https://lilypond.org/doc/v2.25/input/regression/musicxml/collated-files#g_t71-_002e_002e_002e-guitar-notation
+# https://www.w3.org/2021/06/musicxml40/tutorial/chord-symbols-and-diagrams/
+# https://www.w3.org/2021/06/musicxml40/musicxml-reference/data-types/
+# https://www.w3.org/2021/06/musicxml40/musicxml-reference/data-types/kind-value/
+# https://www.w3.org/2021/06/musicxml40/musicxml-reference/data-types/degree-symbol-value/
+# https://www.w3.org/2021/06/musicxml40/musicxml-reference/data-types/degree-type-value/
+class ChordSymbol(Base):
+    """A container for chord symbols.
+
+    Attributes
+    ----------
+    time : int
+        Start time of the chord symbol, in time steps.
+    root : str
+        Root note symbol in string format as returned by utils:ChordSymbolParser.
+    kind : str
+        Root kind symbol in string format as returned by utils:ChordSymbolParser.
+    degrees : List[str]
+        Root degrees as list of symbols in string format as returned by utils:ChordSymbolParser.
+    bass : str
+        Bass note symbol in string format as returned by utils:ChordSymbolParser.
+    binary_xml : np.array
+        Binary 12D representation of chord quality pitch classes, as produced by utils:ChordSymbolParses.
+    chord_symbol_xml : str
+        Chord symbol in string format as constructed from XML information.
+    chord_symbol_mir_eval : str
+        Chord symbol that can be parsed by mir_eval.chord.encode.
+    chord_symbol_mir_eval : np.array
+        Binary 12D representation of chord quality pitch classes that best matches chord qualities in mir_eval.chord.
+    root_pc : int
+        Pitch class of the root note.
+    """
+
+    _attributes = OrderedDict(
+        [
+            ("time", int),
+            ("root", str),
+            ("kind", str),
+            ("degrees", List[str]),
+            ("bass", str),
+            ("binary_xml", List[int]),
+            ("chord_symbol_xml", str),
+            ("chord_symbol_mir_eval", str),
+            ("binary_mir_eval", List[int]),
+            ("root_pc", int)
+        ]
+    )
+    _optional_attributes = []
+
+    def __init__(
+        self,
+        parsed_chord_symbol
+    ):
+        self.time = parsed_chord_symbol.time
+        self.root = parsed_chord_symbol.root
+        self.kind = parsed_chord_symbol.kind
+        self.degrees = parsed_chord_symbol.degrees
+        self.bass = parsed_chord_symbol.bass
+        self.binary_xml = parsed_chord_symbol.binary
+        self.construct_xml_symbol()
+        self.get_closest_mir_eval_symbol()
+
+    def construct_xml_symbol(self):
+        self.chord_symbol_xml = self.root + self.kind
+        for d in self.degrees:
+            self.chord_symbol_xml += d
+        if self.bass:
+            self.chord_symbol_xml += '/' + self.bass
+
+    def get_closest_mir_eval_symbol(self):
+        similarity_max = -1
+        key_max = None
+        for k in EXT_MIR_QUALITIES.keys():
+            tmp_similarity = np.sum(self.binary_xml == EXT_MIR_QUALITIES[k])
+            if similarity_max < tmp_similarity:
+                similarity_max = tmp_similarity
+                key_max = k
+        self.chord_symbol_mir_eval = self.root + ':' + key_max
+        self.binary_mir_eval = EXT_MIR_QUALITIES[key_max]
+        self.root_pc, _, _ = mir_eval.chord.encode( self.chord_symbol_mir_eval )
+
+    @property
+    def start(self):
+        """Start time of the chord symbol."""
+        return self.time
+
+    @start.setter
+    def start(self, start):
+        """Setter for start time."""
+        self.time = start
+
+    def adjust_time(
+        self: ChordSymbolT,
+        func: Callable[[int], int],
+        attr: str = None,
+        recursive: bool = True,
+    ) -> ChordSymbolT:
+        """Adjust the timing of the chord.
+
+        Parameters
+        ----------
+        func : callable
+            The function used to compute the new timing from the old
+            timing, i.e., `new_time = func(old_time)`.
+        attr : str, optional
+            Attribute to adjust. Defaults to adjust all attributes.
+        recursive : bool, default: True
+            Whether to apply recursively.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        if attr is not None and attr != "time":
+            raise AttributeError(f"'Note' object has no attribute '{attr}'")
+
+        self.time = func(self.time)
+        return self
+
+    def transpose(self: ChordSymbolT, semitone: int) -> ChordT:
+        """Transpose the notes by a number of semitones.
+
+        Parameters
+        ----------
+        semitone : int
+            Number of semitones to transpose the notes. A positive value
+            raises the pitches, while a negative value lowers the
+            pitches.
+
+        Returns
+        -------
+        Object itself.
+
+        """
+        self.root_pc = (self.root_pc + semitone)%12
+        self.pitch_classes += [(pitch + semitone)%12 for pitch in self.pitch_classes]
+        self.root = note_symbols_dict[self.root_pc]
+        return self
 
 class Track(ComplexBase):
     """A container for music track.
@@ -652,6 +817,8 @@ class Track(ComplexBase):
         Annotations.
     lyrics : list of :class:`muspy.Lyric`, default: []
         Lyrics.
+    harmony: list of :class:`muspy.ChordSymbol`, default: []
+        Harmony.
 
     Note
     ----
@@ -674,11 +841,12 @@ class Track(ComplexBase):
             ("notes", Note),
             ("chords", Chord),
             ("lyrics", Lyric),
+            ("harmony", ChordSymbol),
             ("annotations", Annotation),
         ]
     )
-    _optional_attributes = ["name", "notes", "chords", "lyrics", "annotations"]
-    _list_attributes = ["notes", "chords", "lyrics", "annotations"]
+    _optional_attributes = ["name", "notes", "chords", "lyrics", "harmony", "annotations"]
+    _list_attributes = ["notes", "chords", "lyrics", "harmony", "annotations"]
 
     def __init__(
         self,
@@ -688,6 +856,7 @@ class Track(ComplexBase):
         notes: List[Note] = None,
         chords: List[Chord] = None,
         lyrics: List[Lyric] = None,
+        harmony: List[ChordSymbol] = None,
         annotations: List[Annotation] = None,
     ):
         self.program = program if program is not None else 0
@@ -696,6 +865,7 @@ class Track(ComplexBase):
         self.notes = notes if notes is not None else []
         self.chords = chords if chords is not None else []
         self.lyrics = lyrics if lyrics is not None else []
+        self.harmony = harmony if harmony is not None else []
         self.annotations = annotations if annotations is not None else []
 
     def __len__(self) -> int:
@@ -769,6 +939,8 @@ class Track(ComplexBase):
         """
         for note in self.notes:
             note.transpose(semitone)
+        for chordsymbol in self.harmony:
+            chordsymbol.transpose(semitone)
         return self
 
     def trim(self: TrackT, end: int) -> TrackT:
