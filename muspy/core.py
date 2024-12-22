@@ -185,7 +185,7 @@ def get_end_time(obj: Union[Music, Track], is_sorted: bool = False) -> int:
 
 
 def get_real_end_time(music: Music, is_sorted: bool = False) -> float:
-    """Return the end time in realtime.
+    """Return the end time in real time (seconds).
 
     This includes tempos, key signatures, time signatures, note offsets,
     lyrics and annotations. Assume 120 qpm (quarter notes per minute) if
