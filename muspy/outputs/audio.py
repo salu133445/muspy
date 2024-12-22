@@ -29,6 +29,7 @@ def _check_soundfont(soundfont_path):
 
 def synthesize(
     music: "Music",
+    realize_annotations: bool = False,
     soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
     gain: float = 1,
@@ -40,6 +41,8 @@ def synthesize(
     ----------
     music : :class:`muspy.Music`
         Music object to write.
+    realize_annotations : bool, default: False
+        Should annotations be applied to loudness/timing of notes?
     soundfont_path : str or Path, optional
         Path to the soundfount file. Defaults to the path to the
         downloaded MuseScore General soundfont.
@@ -68,7 +71,7 @@ def synthesize(
 
         # Write the Music object to a temporary MIDI file
         midi_path = Path(temp_dir) / "temp.mid"
-        write_midi(midi_path, music)
+        write_midi(path = midi_path, music = music, realize_annotations = realize_annotations)
 
         # Synthesize the MIDI file using fluidsynth
         option_list = options.split(" ") if options is not None else []
@@ -100,6 +103,7 @@ def synthesize(
 def write_audio(
     path: Union[str, Path],
     music: "Music",
+    realize_annotations: bool = False,
     audio_format: str = "auto",
     soundfont_path: Union[str, Path] = None,
     rate: int = 44100,
@@ -116,6 +120,8 @@ def write_audio(
         Path to write the audio file.
     music : :class:`muspy.Music`
         Music object to write.
+    realize_annotations : bool, default: False
+        Should annotations be applied to loudness/timing of notes?
     audio_format : str, default: 'auto'
         File format to write. Defaults to infer from the extension.
     soundfont_path : str or Path, optional
@@ -142,7 +148,7 @@ def write_audio(
 
         # Write the Music object to a temporary MIDI file
         midi_path = Path(temp_dir) / "temp.mid"
-        write_midi(midi_path, music)
+        write_midi(path = midi_path, music = music, realize_annotations = realize_annotations)
 
         # Synthesize the MIDI file using fluidsynth
         option_list = options.split(" ") if options is not None else []
