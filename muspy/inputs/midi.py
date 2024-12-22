@@ -339,7 +339,7 @@ def read_midi_mido(
         Converted Music object.
 
     """
-    midi = MidiFile(filename=str(path))
+    midi = MidiFile(filename = str(path), charset = "utf8")
     music = from_mido(midi, duplicate_note_mode=duplicate_note_mode)
     music.metadata.source_filename = Path(path).name
     return music
@@ -504,13 +504,13 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
     if resolution is None:
         resolution = DEFAULT_RESOLUTION
 
-    tempo_realtimes, tempi = midi.get_tempo_changes()
+    tempo_real_times, tempi = midi.get_tempo_changes()
     assert len(tempi) > 0
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=RuntimeWarning)
         tempos = [
             Tempo(time=float(time), qpm=float(tempo))  # type: ignore
-            for time, tempo in zip(tempo_realtimes, tempi)
+            for time, tempo in zip(tempo_real_times, tempi)
         ]
 
     key_signatures = [
@@ -538,21 +538,21 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
     # Remove unnecessary tempo changes to speed up the search
     if len(tempi) > 1:
         last_tempo = tempi[0]
-        last_time = tempo_realtimes[0]
-        tempo_realtimes = tempo_realtimes.tolist()
+        last_time = tempo_real_times[0]
+        tempo_real_times = tempo_real_times.tolist()
         tempi = tempi.tolist()
         i = 1
-        while i < len(tempo_realtimes):
+        while i < len(tempo_real_times):
             if tempi[i] == last_tempo:
-                del tempo_realtimes[i]
+                del tempo_real_times[i]
                 del tempi[i]
-            elif tempo_realtimes[i] == last_time:
-                del tempo_realtimes[i - 1]
+            elif tempo_real_times[i] == last_time:
+                del tempo_real_times[i - 1]
                 del tempi[i - 1]
             else:
                 last_tempo = tempi[i]
                 i += 1
-        tempo_realtimes = np.array(tempo_realtimes)
+        tempo_real_times = np.array(tempo_real_times)
         tempi = np.array(tempi)
 
     if len(tempi) == 1:
@@ -564,14 +564,14 @@ def from_pretty_midi(midi: PrettyMIDI, resolution: int = None) -> Music:
     else:
         # Compute the tempo time in metrical timing of each tempo change
         tempo_times = np.cumsum(
-            np.diff(tempo_realtimes) * resolution * tempi[:-1] / 60.0
+            np.diff(tempo_real_times) * resolution * tempi[:-1] / 60.0
         )
         tempo_times = np.round(tempo_times).astype(int).tolist()
         tempo_times = np.insert(tempo_times, 0, 0)
 
         def map_time(time: float) -> int:
-            idx = np.searchsorted(tempo_realtimes, time, side="right") - 1
-            residual = time - tempo_realtimes[idx]
+            idx = np.searchsorted(tempo_real_times, time, side="right") - 1
+            residual = time - tempo_real_times[idx]
             factor = resolution * tempi[idx] / 60.0
             return round(tempo_times[idx] + residual * factor)
 
