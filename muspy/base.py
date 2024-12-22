@@ -12,6 +12,7 @@ Classes
 import copy
 from collections import OrderedDict
 from inspect import isclass
+from importlib import import_module
 from typing import (
     Any,
     Callable,
@@ -183,6 +184,24 @@ class Base:
                     kwargs[attr] = [attr_type.from_dict(v) for v in value]
                 else:
                     kwargs[attr] = attr_type.from_dict(value)
+            elif isclass(attr_type) and (
+                attr == "annotation" and attr_type is object and type(value) is object
+                ): # encounter an annotation
+                attr_type = getattr(
+                    import_module(name = ".annotations", package = "muspy"),
+                    value.pop("__class__.__name__")
+                )
+                kwargs[attr] = attr_type.from_dict(value)
+            elif isclass(attr_type) and (
+                attr in cls._list_attributes and attr == "notations" and attr_type is List[object]
+                ): # encounter an annotation in notations
+                kwargs[attr] = []
+                for v in value:
+                    attr_type = getattr(
+                        import_module(name = ".annotations", package = "muspy"),
+                        v.pop("__class__.__name__")
+                    )
+                    kwargs[attr].append(attr_type.from_dict(v))
             else:
                 if strict:
                     if attr in cls._list_attributes:
@@ -256,6 +275,17 @@ class Base:
                         )
                         for v in value
                     ]
+                elif isclass(attr_type) and (
+                    attr == "notations" and attr_type is List[object] and value is not None
+                    ): # encounter an annotation in notations
+                    ordered_dict[attr] = []
+                    for v in value:
+                        v_ordered_dict = v.to_ordered_dict(
+                            skip_missing=skip_missing, deepcopy=deepcopy
+                        )
+                        v_ordered_dict["__class__.__name__"] = v.__class__.__name__
+                        v_ordered_dict.move_to_end("__class__.__name__", last = False)
+                        ordered_dict[attr].append(v_ordered_dict)
                 elif deepcopy:
                     ordered_dict[attr] = copy.deepcopy(value)
                 else:
@@ -267,6 +297,15 @@ class Base:
                 ordered_dict[attr] = value.to_ordered_dict(
                     skip_missing=skip_missing, deepcopy=deepcopy
                 )
+            elif isclass(attr_type) and (
+                attr == "annotation" and attr_type is object and type(value) is object
+                ): # encounter an annotation
+                value_ordered_dict = value.to_ordered_dict(
+                    skip_missing=skip_missing, deepcopy=deepcopy
+                )
+                value_ordered_dict["__class__.__name__"] = value.__class__.__name__
+                value_ordered_dict.move_to_end("__class__.__name__", last = False)
+                ordered_dict[attr] = value_ordered_dict
             elif deepcopy:
                 ordered_dict[attr] = copy.deepcopy(value)
             else:
@@ -360,12 +399,18 @@ class Base:
             )
 
         # Apply recursively
-        if recursive and isclass(attr_type) and issubclass(attr_type, Base):
+        if recursive and isclass(attr_type) and (
+            issubclass(attr_type, Base) or
+            (
+                attr == "annotation" and attr_type is object and type(value) is object
+            ) or (
+                attr == "notations" and attr_type is List[object]
+            )):
             if attr in self._list_attributes:
-                for item in getattr(self, attr):
+                for item in value:
                     item.validate_type(recursive=recursive)
-            elif getattr(self, attr) is not None:
-                getattr(self, attr).validate_type(recursive=recursive)
+            elif value is not None:
+                value.validate_type(recursive=recursive)
 
     def validate_type(
         self: BaseT, attr: str = None, recursive: bool = True
@@ -402,13 +447,20 @@ class Base:
 
     def _validate(self, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
-        if isclass(attr_type) and issubclass(attr_type, Base):
+        value = getattr(self, attr)
+        if isclass(attr_type) and (
+            issubclass(attr_type, Base) or
+            (
+                attr == "annotation" and attr_type is object and type(value) is object
+            ) or (
+                attr == "notations" and attr_type is List[object]
+            )):
             if attr in self._list_attributes:
-                if getattr(self, attr):
-                    for item in getattr(self, attr):
+                if value:
+                    for item in value:
                         item.validate()
             else:
-                getattr(self, attr).validate()
+                value.validate()
         else:
             # Set recursive=False to avoid repeated checks invoked when
             # calling `validate` recursively
@@ -417,12 +469,18 @@ class Base:
                 raise ValueError("`time` must be nonnegative.")
 
         # Apply recursively
-        if recursive and isclass(attr_type) and issubclass(attr_type, Base):
+        if recursive and isclass(attr_type) and (
+            issubclass(attr_type, Base) or
+            (
+                attr == "annotation" and attr_type is object and type(value) is object
+            ) or (
+                attr == "notations" and attr_type is List[object]
+            )):
             if attr in self._list_attributes:
-                for item in getattr(self, attr):
+                for item in value:
                     item.validate(recursive=recursive)
-            elif getattr(self, attr) is not None:
-                getattr(self, attr).validate(recursive=recursive)
+            elif value is not None:
+                value.validate(recursive=recursive)
 
     def validate(
         self: BaseT, attr: str = None, recursive: bool = True
@@ -520,21 +578,28 @@ class Base:
         return True
 
     def _adjust_time(
-        self, func: Callable[[int], int], attr: str, recursive: bool
+        self, func: Callable[[int], int], attr: str, recursive: bool,
     ):
         attr_type = self._attributes[attr]
-        if attr == "time":
-            if "time" in self._list_attributes:
-                new_list = [func(item) for item in getattr(self, "time")]
-                setattr(self, "time", new_list)
-            else:
-                setattr(self, "time", func(getattr(self, attr)))
-        elif recursive and isclass(attr_type) and issubclass(attr_type, Base):
+        value = getattr(self, attr)
+        if attr == "time" or attr == "duration":
             if attr in self._list_attributes:
-                for item in getattr(self, attr):
+                new_list = [func(item) for item in value]
+                setattr(self, attr, new_list)
+            else:
+                setattr(self, attr, func(value))
+        elif recursive and isclass(attr_type) and (
+            issubclass(attr_type, Base) or
+            (
+                attr == "annotation" and attr_type is object and type(value) is object
+            ) or (
+                attr == "notations" and attr_type is List[object]
+            )):
+            if attr in self._list_attributes:
+                for item in value:
                     item.adjust_time(func, recursive=recursive)
-            elif getattr(self, attr) is not None:
-                getattr(self, attr).adjust_time(func, recursive=recursive)
+            elif value is not None:
+                value.adjust_time(func, recursive=recursive)
 
     def adjust_time(
         self: BaseT,
@@ -568,15 +633,22 @@ class Base:
 
     def _fix_type(self: BaseT, attr: str, recursive: bool):
         attr_type = self._attributes[attr]
-        if isclass(attr_type) and issubclass(attr_type, Base):
+        value = getattr(self, attr)
+        if attr in self._list_attributes or (
+            isclass(attr_type) and (
+                issubclass(attr_type, Base) or
+                (
+                    attr == "annotation" and attr_type is object and type(value) is object
+                ) or (
+                    attr == "notations" and attr_type is List[object]
+                ))):
             if attr in self._list_attributes:
-                if getattr(self, attr):
-                    for item in getattr(self, attr):
+                if value:
+                    for item in value:
                         item.fix_type()
             else:
-                getattr(self, attr).fix_type()
+                value.fix_type()
         else:
-            value = getattr(self, attr)
             if not isinstance(value, attr_type):
                 if isinstance(attr_type, tuple):
                     setattr(self, attr, attr_type[0](value))
@@ -584,12 +656,18 @@ class Base:
                     setattr(self, attr, attr_type(value))
 
         # Apply recursively
-        if recursive and isclass(attr_type) and issubclass(attr_type, Base):
+        if recursive and isclass(attr_type) and (
+            issubclass(attr_type, Base) or
+            (
+                attr == "annotation" and attr_type is object and type(value) is object
+            ) or (
+                attr == "notations" and attr_type is List[object]
+            )):
             if attr in self._list_attributes:
-                for item in getattr(self, attr):
+                for item in value:
                     item.fix_type(recursive=recursive)
-            elif getattr(self, attr) is not None:
-                getattr(self, attr).fix_type(recursive=recursive)
+            elif value is not None:
+                value.fix_type(recursive=recursive)
 
     def fix_type(
         self: BaseT, attr: str = None, recursive: bool = True
@@ -769,9 +847,7 @@ class ComplexBase(Base):
             return
 
         attr_type = self._attributes[attr]
-        is_complexbase = isclass(attr_type) and issubclass(
-            attr_type, ComplexBase
-        )
+        is_complexbase = isclass(attr_type) and issubclass(attr_type, ComplexBase)
         value = getattr(self, attr)
 
         # NOTE: The ordering mathers here. We first apply recursively
