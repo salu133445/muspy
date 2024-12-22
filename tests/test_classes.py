@@ -7,7 +7,7 @@ from muspy import Metadata, Music, Note, Tempo, Track
 
 def test_repr():
     note = Note(time=0, duration=1, pitch=60)
-    assert repr(note) == "Note(time=0, pitch=60, duration=1, velocity=64)"
+    assert repr(note) == "Note(time=0, pitch=60, duration=1, velocity=64, is_grace=False)"
 
 
 def test_from_dict():
