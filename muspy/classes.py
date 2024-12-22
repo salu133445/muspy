@@ -18,6 +18,7 @@ Classes
 - Track
 
 
+
 Variables
 ---------
 
@@ -93,6 +94,8 @@ class Metadata(Base):
         Schema version.
     title : str, optional
         Song title.
+    subtitle : str, optional
+        Song subtitle.
     creators : list of str, optional
         Creator(s) of the song.
     copyright : str, optional
@@ -110,6 +113,7 @@ class Metadata(Base):
         [
             ("schema_version", str),
             ("title", str),
+            ("subtitle", str),
             ("creators", str),
             ("copyright", str),
             ("collection", str),
@@ -119,6 +123,7 @@ class Metadata(Base):
     )
     _optional_attributes = [
         "title",
+        "subtitle",
         "creators",
         "copyright",
         "collection",
@@ -131,6 +136,7 @@ class Metadata(Base):
         self,
         schema_version: str = DEFAULT_SCHEMA_VERSION,
         title: str = None,
+        subtitle: str = None,
         creators: List[str] = None,
         copyright: str = None,
         collection: str = None,
@@ -139,6 +145,7 @@ class Metadata(Base):
     ):
         # pylint: disable=redefined-builtin
         self.schema_version = schema_version
+        self.subtitle = subtitle
         self.title = title
         self.creators = creators if creators is not None else []
         self.copyright = copyright
@@ -156,14 +163,18 @@ class Tempo(Base):
         Start time of the tempo, in time steps.
     qpm : float
         Tempo in qpm (quarters per minute).
+    text : str, optional
+        Text associated with the tempo (if applicable).
 
     """
 
-    _attributes = OrderedDict([("time", int), ("qpm", (float, int))])
+    _attributes = OrderedDict([("time", int), ("qpm", (float, int)), ("text", str)])
+    _optional_attributes = ["text"]
 
-    def __init__(self, time: int, qpm: float):
+    def __init__(self, time: int, qpm: float, text: str = None):
         self.time = time
         self.qpm = float(qpm)
+        self.text = text
 
     def _validate(self, attr: str, recursive: bool):
         super()._validate(attr, recursive)
@@ -259,13 +270,17 @@ class Beat(Base):
     ----------
     time : int
         Time of the beat, in time steps.
+    is_downbeat : bool, default: False
+        Is this beat a downbeat?
 
     """
 
-    _attributes = OrderedDict([("time", int)])
+    _attributes = OrderedDict([("time", int), ("is_downbeat", bool)])
+    _optional_attributes = ["is_downbeat"]
 
-    def __init__(self, time: int):
+    def __init__(self, time: int, is_downbeat: bool = False):
         self.time = time
+        self.is_downbeat = is_downbeat
 
 
 class Barline(Base):
@@ -275,13 +290,17 @@ class Barline(Base):
     ----------
     time : int
         Time of the barline, in time steps.
+    subtype : str, default: 'single'
+        Type of barline (double, dashed, etc.)
 
     """
 
-    _attributes = OrderedDict([("time", int)])
+    _attributes = OrderedDict([("time", int), ("subtype", str)])
+    _optional_attributes = ["subtype"]
 
-    def __init__(self, time: int):
+    def __init__(self, time: int, subtype: str = "single"):
         self.time = time
+        self.subtype = subtype if subtype is not None else "single"
 
 
 class Lyric(Base):
@@ -327,6 +346,26 @@ class Annotation(Base):
         self.annotation = annotation
         self.group = group
 
+    @property
+    def start(self):
+        """Start time of the annotation."""
+        return self.time
+
+    @start.setter
+    def start(self, start):
+        """Setter for start time."""
+        self.time = start
+
+    @property
+    def end(self):
+        """End time of the annotation."""
+        return self.time + (self.annotation.duration if hasattr(self.annotation, "duration") else 0)
+
+    @end.setter
+    def end(self, end):
+        """Setter for end time."""
+        self.duration = end - self.time
+
 
 class Note(Base):
     """A container for notes.
@@ -344,6 +383,10 @@ class Note(Base):
     pitch_str : str, optional
         Note pitch as a string, useful for distinguishing, e.g., C# and
         Db.
+    is_grace : bool, default: False
+        Is this note a grace note?
+    notations : List[any], optional
+        Note-specific annotations, such as articulations and noteheads.
 
     """
 
@@ -354,9 +397,12 @@ class Note(Base):
             ("duration", int),
             ("velocity", int),
             ("pitch_str", str),
+            ("is_grace", bool),
+            ("notations", List[object]),
         ]
     )
-    _optional_attributes = ["velocity", "pitch_str"]
+    _optional_attributes = ["velocity", "pitch_str", "is_grace", "notations"]
+    _list_attributes = ["notations"]
 
     def __init__(
         self,
@@ -365,12 +411,16 @@ class Note(Base):
         duration: int,
         velocity: int = None,
         pitch_str: str = None,
+        is_grace: bool = False,
+        notations: List[Any] = None,
     ):
         self.time = time
         self.pitch = pitch
         self.duration = duration
         self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
         self.pitch_str = pitch_str
+        self.is_grace = is_grace
+        self.notations = notations
 
     @property
     def start(self):
@@ -493,6 +543,8 @@ class Chord(Base):
     pitches_str : list of str, optional
         Note pitches as strings, useful for distinguishing, e.g., C# and
         Db.
+    is_grace : bool, default: False
+        Is this note a grace note?
 
     """
 
@@ -503,9 +555,10 @@ class Chord(Base):
             ("duration", int),
             ("velocity", int),
             ("pitches_str", str),
+            ("is_grace", bool),
         ]
     )
-    _optional_attributes = ["velocity", "pitches_str"]
+    _optional_attributes = ["velocity", "pitches_str", "is_grace"]
 
     def __init__(
         self,
@@ -514,12 +567,14 @@ class Chord(Base):
         duration: int,
         velocity: int = None,
         pitches_str: List[int] = None,
+        is_grace: bool = False,
     ):
         self.time = time
         self.pitches = pitches
         self.duration = duration
         self.velocity = velocity if velocity is not None else DEFAULT_VELOCITY
         self.pitches_str = pitches_str
+        self.is_grace = is_grace
 
     @property
     def start(self):
