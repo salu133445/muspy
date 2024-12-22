@@ -88,6 +88,7 @@ Contents
 
     getting_started
     classes/index
+    annotations/index
     timing
     io/index
     datasets/index
