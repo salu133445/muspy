@@ -21,6 +21,7 @@ Features
 
 """
 from . import (
+    annotations,
     base,
     classes,
     core,
@@ -34,6 +35,7 @@ from . import (
     schemas,
     visualization,
 )
+from .annotations import *
 from .base import *
 from .classes import *
 from .core import *
@@ -59,6 +61,7 @@ __all__ = [
     "schemas",
     "visualization",
 ]
+__all__.extend(annotations.__all__)
 __all__.extend(base.__all__)
 __all__.extend(classes.__all__)
 __all__.extend(core.__all__)
