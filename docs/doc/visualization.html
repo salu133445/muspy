@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.visualization &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -26,12 +30,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -40,6 +48,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
@@ -59,6 +68,30 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">muspy.visualization</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#classes">Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.visualization.show"><code class="docutils literal notranslate"><span class="pre">show()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.visualization.show_pianoroll"><code class="docutils literal notranslate"><span class="pre">show_pianoroll()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.visualization.show_score"><code class="docutils literal notranslate"><span class="pre">show_score()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.visualization.ScorePlotter"><code class="docutils literal notranslate"><span class="pre">ScorePlotter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.fig"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.fig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.axes"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.axes</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.resolution"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.resolution</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.note_spacing"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.note_spacing</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.font_path"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.font_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.font_scale"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.font_scale</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.set_baseline"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.set_baseline()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.adjust_fonts"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.adjust_fonts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.update_boundaries"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.update_boundaries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_staffs"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_staffs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_bar_line"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_bar_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_final_bar_line"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_final_bar_line()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_clef"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_clef()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_tempo"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_tempo()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_key_signature"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_key_signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_time_signature"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_time_signature()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_note"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_note()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.visualization.ScorePlotter.plot_object"><code class="docutils literal notranslate"><span class="pre">ScorePlotter.plot_object()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -78,9 +111,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Technical Documentation</a> &raquo;</li>
-      <li>muspy.visualization</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Technical Documentation</a></li>
+      <li class="breadcrumb-item active">muspy.visualization</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/salu133445/muspy/blob/master/doc/source/doc/visualization.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -91,28 +124,29 @@
            <div itemprop="articleBody">
              
   <section id="module-muspy.visualization">
-<span id="muspy-visualization"></span><h1>muspy.visualization<a class="headerlink" href="#module-muspy.visualization" title="Permalink to this headline"></a></h1>
+<span id="muspy-visualization"></span><h1>muspy.visualization<a class="headerlink" href="#module-muspy.visualization" title="Permalink to this heading"></a></h1>
 <p>Visualization tools.</p>
 <p>This module provides functions for visualizing a Music object.</p>
 <section id="classes">
-<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this headline"></a></h2>
+<h2>Classes<a class="headerlink" href="#classes" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>ScorePlotter</p></li>
 </ul>
 </section>
 <section id="functions">
-<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline"></a></h2>
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>show</p></li>
 <li><p>show_pianoroll</p></li>
 <li><p>show_score</p></li>
 </ul>
+</section>
 <dl class="py function">
 <dt class="sig sig-object py" id="muspy.visualization.show">
 <span class="sig-prename descclassname"><span class="pre">muspy.visualization.</span></span><span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">music</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/visualization/wrappers.html#show"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.visualization.show" title="Permalink to this definition"></a></dt>
 <dd><p>Show visualization.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to convert.</p></li>
 <li><p><strong>kind</strong> (<em>{'piano-roll'</em><em>, </em><em>'score'}</em>) – Target representation.</p></li>
@@ -132,24 +166,24 @@
 <span class="sig-prename descclassname"><span class="pre">muspy.visualization.</span></span><span class="sig-name descname"><span class="pre">show_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">music</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'treble'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clef_octave</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note_spacing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">font_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/visualization/score.html#show_score"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.visualization.show_score" title="Permalink to this definition"></a></dt>
 <dd><p>Show score visualization.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>music</strong> (<a class="reference internal" href="muspy.html#muspy.Music" title="muspy.Music"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.Music</span></code></a>) – Music object to show.</p></li>
-<li><p><strong>figsize</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>)</em><em>, </em><em>optional</em>) – Width and height in inches. Defaults to Matplotlib
+<li><p><strong>figsize</strong> (<em>(</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>)</em><em>, </em><em>optional</em>) – Width and height in inches. Defaults to Matplotlib
 configuration.</p></li>
 <li><p><strong>clef</strong> (<em>{'treble'</em><em>, </em><em>'alto'</em><em>, </em><em>'bass'}</em><em>, </em><em>default: 'treble'</em>) – Clef type.</p></li>
-<li><p><strong>clef_octave</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 0</em>) – Clef octave.</p></li>
-<li><p><strong>note_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 4</em>) – Spacing of notes.</p></li>
-<li><p><strong>font_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the music font. Defaults to the path to the downloaded
+<li><p><strong>clef_octave</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 0</em>) – Clef octave.</p></li>
+<li><p><strong>note_spacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 4</em>) – Spacing of notes.</p></li>
+<li><p><strong>font_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – Path to the music font. Defaults to the path to the downloaded
 Bravura font.</p></li>
-<li><p><strong>font_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em>, </em><em>default: 140</em>) – Font scaling factor for finetuning. The default value of 140 is
+<li><p><strong>font_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>default: 140</em>) – Font scaling factor for finetuning. The default value of 140 is
 optimized for the default Bravura font.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A ScorePlotter object that handles the score.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="muspy.html#muspy.ScorePlotter" title="muspy.ScorePlotter"><code class="xref py py-class docutils literal notranslate"><span class="pre">muspy.ScorePlotter</span></code></a></p>
 </dd>
 </dl>
@@ -164,8 +198,8 @@ optimized for the default Bravura font.</p></li>
 <span class="sig-name descname"><span class="pre">fig</span></span><a class="headerlink" href="#muspy.visualization.ScorePlotter.fig" title="Permalink to this definition"></a></dt>
 <dd><p>Figure object to plot the score on.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/figure_api.html#matplotlib.figure.Figure" title="(in Matplotlib v3.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure" title="(in Matplotlib v3.10.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.figure.Figure</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -175,8 +209,8 @@ optimized for the default Bravura font.</p></li>
 <span class="sig-name descname"><span class="pre">axes</span></span><a class="headerlink" href="#muspy.visualization.ScorePlotter.axes" title="Permalink to this definition"></a></dt>
 <dd><p>Axes object to plot the score on.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/api/axes_api.html#matplotlib.axes.Axes" title="(in Matplotlib v3.5.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code></a></p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -186,8 +220,8 @@ optimized for the default Bravura font.</p></li>
 <span class="sig-name descname"><span class="pre">resolution</span></span><a class="headerlink" href="#muspy.visualization.ScorePlotter.resolution" title="Permalink to this definition"></a></dt>
 <dd><p>Time steps per quarter note.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a></p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -197,8 +231,8 @@ optimized for the default Bravura font.</p></li>
 <span class="sig-name descname"><span class="pre">note_spacing</span></span><a class="headerlink" href="#muspy.visualization.ScorePlotter.note_spacing" title="Permalink to this definition"></a></dt>
 <dd><p>Spacing of notes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)">int</a>, default: 4</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>, default: 4</p>
 </dd>
 </dl>
 </dd></dl>
@@ -209,8 +243,8 @@ optimized for the default Bravura font.</p></li>
 <dd><p>Path to the music font. Defaults to the path to the downloaded
 Bravura font.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a> or Path, optional</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> or Path, optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,8 +255,8 @@ Bravura font.</p>
 <dd><p>Font scaling factor for finetuning. The default value of 140 is
 optimized for the default Bravura font.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)">float</a>, default: 140</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a>, default: 140</p>
 </dd>
 </dl>
 </dd></dl>
@@ -301,7 +335,6 @@ optimized for the default Bravura font.</p>
 
 </dd></dl>
 
-</section>
 </section>
 
 

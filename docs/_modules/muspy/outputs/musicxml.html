@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.outputs.musicxml &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html">
-            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>muspy.outputs.musicxml</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.outputs.musicxml</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,20 +85,164 @@
 <span></span><span class="sd">&quot;&quot;&quot;MusicXML output interface.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
 
 <span class="kn">from</span> <span class="nn">music21.musicxml.archiveTools</span> <span class="kn">import</span> <span class="n">compressXML</span>
+<span class="kn">from</span> <span class="nn">music21.instrument</span> <span class="kn">import</span> <span class="n">instrumentFromMidiProgram</span>
+<span class="kn">from</span> <span class="nn">music21.interval</span> <span class="kn">import</span> <span class="n">Interval</span>
 
-<span class="kn">from</span> <span class="nn">.music21</span> <span class="kn">import</span> <span class="n">to_music21</span>
+<span class="kn">from</span> <span class="nn">.music21</span> <span class="kn">import</span> <span class="n">to_music21</span><span class="p">,</span> <span class="n">PITCH_NAMES</span>
+<span class="kn">from</span> <span class="nn">.midi</span> <span class="kn">import</span> <span class="n">DRUM_CHANNEL</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+
+<span class="n">DRUMSET_INSTRUMENTS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;Acoustic Bass Drum&quot;</span><span class="p">,</span> <span class="mi">36</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Bass Drum 1&quot;</span><span class="p">,</span> <span class="mi">37</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Side Stick&quot;</span><span class="p">,</span> <span class="mi">38</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Acoustic Snare&quot;</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Hand Clap&quot;</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Electric Snare&quot;</span><span class="p">,</span> <span class="mi">41</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Floor Tom&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Closed Hi Hat&quot;</span><span class="p">,</span> <span class="mi">43</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;High Floor Tom&quot;</span><span class="p">,</span> <span class="mi">44</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Pedal Hi-Hat&quot;</span><span class="p">,</span> <span class="mi">45</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Tom&quot;</span><span class="p">,</span> <span class="mi">46</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Open Hi-Hat&quot;</span><span class="p">,</span> <span class="mi">47</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low-Mid Tom&quot;</span><span class="p">,</span> <span class="mi">48</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Hi Mid Tom&quot;</span><span class="p">,</span> <span class="mi">49</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Crash Cymbal 1&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;High Tom&quot;</span><span class="p">,</span> <span class="mi">51</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Ride Cymbal 1&quot;</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Chinese Cymbal&quot;</span><span class="p">,</span> <span class="mi">53</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Ride Bell&quot;</span><span class="p">,</span> <span class="mi">54</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Tambourine&quot;</span><span class="p">,</span> <span class="mi">55</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Splash Cymbal&quot;</span><span class="p">,</span> <span class="mi">56</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Cowbell&quot;</span><span class="p">,</span> <span class="mi">57</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Crash Cymbal 2&quot;</span><span class="p">,</span> <span class="mi">58</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Vibraslap&quot;</span><span class="p">,</span> <span class="mi">59</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Ride Cymbal 2&quot;</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Hi Bongo&quot;</span><span class="p">,</span> <span class="mi">61</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Bongo&quot;</span><span class="p">,</span> <span class="mi">62</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Mute Hi Conga&quot;</span><span class="p">,</span> <span class="mi">63</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Open Hi Conga&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Conga&quot;</span><span class="p">,</span> <span class="mi">65</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;High Timbale&quot;</span><span class="p">,</span> <span class="mi">66</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Timbale&quot;</span><span class="p">,</span> <span class="mi">67</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;High Agogo&quot;</span><span class="p">,</span> <span class="mi">68</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Agogo&quot;</span><span class="p">,</span> <span class="mi">69</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Cabasa&quot;</span><span class="p">,</span> <span class="mi">70</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Maracas&quot;</span><span class="p">,</span> <span class="mi">71</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Short Whistle&quot;</span><span class="p">,</span> <span class="mi">72</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Long Whistle&quot;</span><span class="p">,</span> <span class="mi">73</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Short Guiro&quot;</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Long Guiro&quot;</span><span class="p">,</span> <span class="mi">75</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Claves&quot;</span><span class="p">,</span> <span class="mi">76</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Hi Wood Block&quot;</span><span class="p">,</span> <span class="mi">77</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Low Wood Block&quot;</span><span class="p">,</span> <span class="mi">78</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Mute Cuica&quot;</span><span class="p">,</span> <span class="mi">79</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Open Cuica&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Mute Triangle&quot;</span><span class="p">,</span> <span class="mi">81</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;Open Triangle&quot;</span><span class="p">,</span> <span class="mi">82</span><span class="p">),</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_transpose_element</span><span class="p">(</span><span class="n">transposition</span><span class="p">:</span> <span class="n">Interval</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the XML Element object that represents the transpose information for the given transposition.&quot;&quot;&quot;</span>
+
+    <span class="c1"># get information about the transposition (chromatic, diatonic, octave)</span>
+    <span class="n">genericSteps</span> <span class="o">=</span> <span class="n">transposition</span><span class="o">.</span><span class="n">diatonic</span><span class="o">.</span><span class="n">generic</span><span class="o">.</span><span class="n">directed</span> <span class="k">if</span> <span class="n">transposition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="n">musicxmlOctaveShift</span><span class="p">,</span> <span class="n">musicxmlDiatonic</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">genericSteps</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">musicxmlChromatic</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">transposition</span><span class="o">.</span><span class="n">chromatic</span><span class="o">.</span><span class="n">semitones</span><span class="p">)</span> <span class="o">%</span> <span class="mi">12</span> <span class="k">if</span> <span class="n">transposition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">genericSteps</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">musicxmlDiatonic</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">musicxmlOctaveShift</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">musicxmlChromatic</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># create MusicXML elements</span>
+    <span class="n">mxTranspose</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;transpose&quot;</span><span class="p">)</span>
+    <span class="n">mxDiatonic</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">mxTranspose</span><span class="p">,</span> <span class="s2">&quot;diatonic&quot;</span><span class="p">)</span> <span class="c1"># diatonic shift</span>
+    <span class="n">mxDiatonic</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">musicxmlDiatonic</span><span class="p">)</span>
+    <span class="n">mxChromatic</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">mxTranspose</span><span class="p">,</span> <span class="s2">&quot;chromatic&quot;</span><span class="p">)</span> <span class="c1"># chromatic shift</span>
+    <span class="n">mxChromatic</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">musicxmlChromatic</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">musicxmlOctaveShift</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># if there is an octave shift</span>
+        <span class="n">mxOctaveChange</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">mxTranspose</span><span class="p">,</span> <span class="s2">&quot;octave-change&quot;</span><span class="p">)</span>
+        <span class="n">mxOctaveChange</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">musicxmlOctaveShift</span><span class="p">)</span>
+
+    <span class="c1"># return element</span>
+    <span class="k">return</span> <span class="n">mxTranspose</span>
+
+
+<span class="k">def</span> <span class="nf">get_instrument_elements</span><span class="p">(</span><span class="n">instrument_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">percussion_map_pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">part_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return two XML elements, representing the score-instrument and midi-instrument elements for a given instrument.&quot;&quot;&quot;</span>
+
+    <span class="c1"># get the instrument id</span>
+    <span class="n">instrument_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">part_id</span><span class="si">}</span><span class="s2">-T</span><span class="si">{</span><span class="n">percussion_map_pitch</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="c1"># create score instrument</span>
+    <span class="n">score_instrument</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;score-instrument&quot;</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="n">instrument_id</span><span class="p">)</span>
+    <span class="n">instrument_name_element</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">score_instrument</span><span class="p">,</span> <span class="s2">&quot;instrument-name&quot;</span><span class="p">)</span>
+    <span class="n">instrument_name_element</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">instrument_name</span>
+
+    <span class="c1"># create midi instrument</span>
+    <span class="n">midi_instrument</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;midi-instrument&quot;</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="n">instrument_id</span><span class="p">)</span>
+    <span class="n">midi_channel</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">,</span> <span class="s2">&quot;midi-channel&quot;</span><span class="p">)</span>
+    <span class="n">midi_channel</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">DRUM_CHANNEL</span><span class="p">)</span> <span class="c1"># set to the drum channel</span>
+    <span class="n">midi_program</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">,</span> <span class="s2">&quot;midi-program&quot;</span><span class="p">)</span>
+    <span class="n">midi_program</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span> <span class="c1"># default</span>
+    <span class="n">midi_unpitched</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">,</span> <span class="s2">&quot;midi-unpitched&quot;</span><span class="p">)</span>
+    <span class="n">midi_unpitched</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">percussion_map_pitch</span><span class="p">)</span> <span class="c1"># midi pitch that maps to this instrument</span>
+    <span class="n">midi_volume</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">,</span> <span class="s2">&quot;volume&quot;</span><span class="p">)</span>
+    <span class="n">midi_volume</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;78.7402&quot;</span> <span class="c1"># MuseScore default</span>
+    <span class="n">midi_pan</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">,</span> <span class="s2">&quot;pan&quot;</span><span class="p">)</span>
+    <span class="n">midi_pan</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="c1"># no pan of the instrument</span>
+
+    <span class="c1"># return the score and midi instrument elements</span>
+    <span class="k">return</span> <span class="n">score_instrument</span><span class="p">,</span> <span class="n">midi_instrument</span>
+
+
+<span class="k">def</span> <span class="nf">get_unpitched_and_instrument_elements</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">part_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">,</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return two XML elements, the unpitched element of a pitched drum note,</span>
+<span class="sd">    and the instrument element associated with the new unpitched drum note.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># get info about pitch</span>
+    <span class="n">pitch_element</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;pitch&quot;</span><span class="p">)</span>
+    <span class="n">pitch_step</span> <span class="o">=</span> <span class="n">pitch_element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;step&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+    <span class="n">pitch_octave</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pitch_element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;octave&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">pitch_alter</span> <span class="o">=</span> <span class="n">pitch_element</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;alter&quot;</span><span class="p">)</span>
+    <span class="n">pitch_alter</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mi">0</span> <span class="k">if</span> <span class="n">pitch_alter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">pitch_alter</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># reconstruct midi pitch from the pitch information gathered in previous step</span>
+    <span class="n">percussion_map_pitch</span> <span class="o">=</span> <span class="n">PITCH_NAMES</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pitch_step</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">12</span> <span class="o">*</span> <span class="p">(</span><span class="n">pitch_octave</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="n">pitch_alter</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># remove any pitch-related elements from note</span>
+    <span class="n">note</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pitch_element</span><span class="p">)</span>
+    <span class="n">accidental_element</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;accidental&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">accidental_element</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">note</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">accidental_element</span><span class="p">)</span>
+
+    <span class="c1"># create unpitched XML element</span>
+    <span class="n">unpitched</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;unpitched&quot;</span><span class="p">)</span>
+    <span class="n">display_step</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">unpitched</span><span class="p">,</span> <span class="s2">&quot;display-step&quot;</span><span class="p">)</span>
+    <span class="n">display_step</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">pitch_step</span>
+    <span class="n">display_octave</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">unpitched</span><span class="p">,</span> <span class="s2">&quot;display-octave&quot;</span><span class="p">)</span>
+    <span class="n">display_octave</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">pitch_octave</span><span class="p">)</span>
+
+    <span class="c1"># create note instrument element</span>
+    <span class="n">note_instrument</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;instrument&quot;</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">part_id</span><span class="si">}</span><span class="s2">-T</span><span class="si">{</span><span class="n">percussion_map_pitch</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># return elements</span>
+    <span class="k">return</span> <span class="n">unpitched</span><span class="p">,</span> <span class="n">note_instrument</span>
 
 
 <div class="viewcode-block" id="write_musicxml"><a class="viewcode-back" href="../../../io/musicxml.html#muspy.write_musicxml">[docs]</a><span class="k">def</span> <span class="nf">write_musicxml</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">compressed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write a Music object to a MusicXML file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a Music object to a MusicXML file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -103,8 +256,65 @@
 <span class="sd">        an uncompressed file, &#39;.mxl&#39; for a compressed file).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">score</span> <span class="o">=</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+
+    <span class="c1"># ensure path is a string</span>
     <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="c1"># make sure music is not in real time</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">real_time</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot write to MusicXML when `music` is in real time (`music.real_time` == True).&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get music as a music21 score</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">to_music21</span><span class="p">(</span><span class="n">music</span> <span class="o">=</span> <span class="n">music</span><span class="p">)</span>
+
+    <span class="c1"># write as xml temporarily, correct some of music21&#39;s mistakes</span>
+    <span class="n">path_temp</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.temp.xml&quot;</span>
+    <span class="n">score</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fmt</span> <span class="o">=</span> <span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">fp</span> <span class="o">=</span> <span class="n">path_temp</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">path_temp</span><span class="p">)</span><span class="o">.</span><span class="n">getroot</span><span class="p">()</span>
+
+    <span class="c1"># make sure transpositions are present in XML file</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;part&quot;</span><span class="p">)):</span>
+        <span class="n">first_measure</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;measure&quot;</span><span class="p">)</span>
+        <span class="n">transposition</span> <span class="o">=</span> <span class="n">instrumentFromMidiProgram</span><span class="p">(</span><span class="n">number</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">program</span><span class="p">)</span><span class="o">.</span><span class="n">transposition</span> <span class="c1"># get the transposition</span>
+        <span class="k">if</span> <span class="n">transposition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">first_measure</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;attributes/transpose&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">attributes</span> <span class="o">=</span> <span class="n">first_measure</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attributes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;attributes&quot;</span><span class="p">)</span>
+                <span class="n">first_measure</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">attributes</span><span class="p">)</span>
+            <span class="n">attributes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_transpose_element</span><span class="p">(</span><span class="n">transposition</span> <span class="o">=</span> <span class="n">transposition</span><span class="p">))</span>
+
+    <span class="c1"># get indicies of drum tracks</span>
+    <span class="n">drum_track_indicies</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">is_drum</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">))))</span>
+
+    <span class="c1"># make sure drum midi instruments are written correctly in the part list</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;part-list/score-part&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">drum_track_indicies</span><span class="p">:</span> <span class="c1"># skip over non-drum tracks</span>
+            <span class="k">continue</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;part-abbreviation&quot;</span><span class="p">))</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;score-instrument&quot;</span><span class="p">))</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">elem</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;midi-instrument&quot;</span><span class="p">))</span>
+        <span class="n">midi_instruments</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">instrument_name</span><span class="p">,</span> <span class="n">percussion_map_pitch</span> <span class="ow">in</span> <span class="n">DRUMSET_INSTRUMENTS</span><span class="p">:</span>
+            <span class="n">score_instrument</span><span class="p">,</span> <span class="n">midi_instrument</span> <span class="o">=</span> <span class="n">get_instrument_elements</span><span class="p">(</span><span class="n">instrument_name</span> <span class="o">=</span> <span class="n">instrument_name</span><span class="p">,</span> <span class="n">percussion_map_pitch</span> <span class="o">=</span> <span class="n">percussion_map_pitch</span><span class="p">,</span> <span class="n">part_id</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+            <span class="n">elem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">score_instrument</span><span class="p">)</span>
+            <span class="n">midi_instruments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">)</span>
+        <span class="n">elem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ET</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s2">&quot;midi-device&quot;</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">midi_instrument</span> <span class="ow">in</span> <span class="n">midi_instruments</span><span class="p">:</span>
+            <span class="n">elem</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">midi_instrument</span><span class="p">)</span>
+
+    <span class="c1"># make sure to update pitched drum notes to unpitched</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">elem</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;part&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">drum_track_indicies</span><span class="p">:</span> <span class="c1"># skip over non-drum tracks</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">elem</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;measure/note&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;rest&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># skip over rests</span>
+                <span class="k">continue</span>
+            <span class="n">unpitched</span><span class="p">,</span> <span class="n">note_instrument</span> <span class="o">=</span> <span class="n">get_unpitched_and_instrument_elements</span><span class="p">(</span><span class="n">note</span> <span class="o">=</span> <span class="n">note</span><span class="p">,</span> <span class="n">part_id</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">))</span>
+            <span class="n">unpitched_position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;chord&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">note</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">unpitched_position</span><span class="p">,</span> <span class="n">unpitched</span><span class="p">)</span>
+            <span class="n">note</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">unpitched_position</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="n">note_instrument</span><span class="p">)</span>
+
+    <span class="c1"># infer compression</span>
     <span class="k">if</span> <span class="n">compressed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.xml&quot;</span><span class="p">,</span> <span class="s2">&quot;.musicxml&quot;</span><span class="p">)):</span>
             <span class="n">compressed</span> <span class="o">=</span> <span class="kc">False</span>
@@ -113,12 +323,15 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot infer file type from the extension.&quot;</span><span class="p">)</span>
 
+    <span class="c1"># compress the file (or not)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">ElementTree</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="c1"># ET.indent(tree, space = &quot;\t&quot;, level = 0)</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path_temp</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">compressed</span><span class="p">:</span>
-        <span class="n">score</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.temp.xml&quot;</span><span class="p">)</span>
-        <span class="n">compressXML</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.temp.xml&quot;</span><span class="p">,</span> <span class="n">deleteOriginal</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;.temp.mxl&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">score</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;xml&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+        <span class="n">compressXML</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="n">path_temp</span><span class="p">,</span> <span class="n">deleteOriginal</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">src</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">.temp.mxl&quot;</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># don&#39;t compress</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">src</span> <span class="o">=</span> <span class="n">path_temp</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">path</span><span class="p">)</span></div>
 </pre></div>
 
            </div>

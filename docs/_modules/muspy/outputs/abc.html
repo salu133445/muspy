@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>muspy.outputs.abc &mdash; MusPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../annotations/index.html">Annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../synthesis.html">Synthesis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MusPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.outputs.abc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for muspy.outputs.abc</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;ABC output interface.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">fractions</span> <span class="kn">import</span> <span class="n">Fraction</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">floor</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">music21.pitch</span> <span class="kn">import</span> <span class="n">Pitch</span>
+
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Barline</span><span class="p">,</span> <span class="n">Base</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Chord</span><span class="p">,</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Note</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span>
+    <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCTrackElement</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for wrappers around MusPy classes.</span>
+<span class="sd">    Handles converting elements of the music track to ABC notation and</span>
+<span class="sd">    ordering them in it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PRIORITY</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># Whether element takes whole line in .abc file. Characteristic for</span>
+    <span class="c1"># fields setting parameters of music such as &quot;K:&quot; or &quot;M:&quot;</span>
+    <span class="n">TAKES_LINE</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Base&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span> <span class="o">=</span> <span class="n">represented</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;_ABCTrackElement&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if `other` represents the same set of musical data, possibly</span>
+<span class="sd">        occuring in a different moment of music track</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">temp_time</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">represented</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">temp_time</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">represented</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__lt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;_ABCTrackElement&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if element should be written in ABC notation before `other`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">PRIORITY</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">PRIORITY</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__gt__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;_ABCTrackElement&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if element should be written in ABC notation after `other`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">PRIORITY</span> <span class="o">&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">PRIORITY</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">TAKES_LINE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_to_str</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_to_str</span><span class="p">()</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCTimeSignature</span><span class="p">(</span><span class="n">_ABCTrackElement</span><span class="p">):</span>
+    <span class="n">PRIORITY</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">TAKES_LINE</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;TimeSignature&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;TimeSignature&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">numerator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">numerator</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">denominator</span>
+        <span class="k">if</span> <span class="n">numerator</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">denominator</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">meter</span> <span class="o">=</span> <span class="s2">&quot;M: C&quot;</span>  <span class="c1"># common time</span>
+        <span class="k">elif</span> <span class="n">numerator</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">denominator</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">meter</span> <span class="o">=</span> <span class="s2">&quot;M: C|&quot;</span>  <span class="c1"># cut time</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">meter</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;M: </span><span class="si">{</span><span class="n">numerator</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">denominator</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">length</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;L: 1/</span><span class="si">{</span><span class="n">denominator</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">meter</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">length</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCTempo</span><span class="p">(</span><span class="n">_ABCTrackElement</span><span class="p">):</span>
+    <span class="n">PRIORITY</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">TAKES_LINE</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Tempo&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Tempo&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Q: </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCKeySignature</span><span class="p">(</span><span class="n">_ABCTrackElement</span><span class="p">):</span>
+    <span class="n">PRIORITY</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">TAKES_LINE</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;KeySignature&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;KeySignature&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="n">Pitch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">mode</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;K:</span><span class="si">{</span><span class="n">note</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;K:</span><span class="si">{</span><span class="n">note</span><span class="o">.</span><span class="n">name</span><span class="si">}{</span><span class="n">mode</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCBarline</span><span class="p">(</span><span class="n">_ABCTrackElement</span><span class="p">):</span>
+    <span class="n">PRIORITY</span> <span class="o">=</span> <span class="mi">4</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Barline&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Barline&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">started_repeats</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ended_repeats</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ended_line</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">breaks_line</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_repeats</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_repeats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; </span><span class="si">{0}</span><span class="s2">|</span><span class="si">{1}</span><span class="s2">|</span><span class="si">{2}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;:&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_repeats</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">breaks_line</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;:&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_repeats</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot; </span><span class="si">{0}</span><span class="s2">|</span><span class="si">{1}{2}</span><span class="s2"> </span><span class="si">{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="s2">&quot;:&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_repeats</span><span class="p">,</span>
+                <span class="s2">&quot;:&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">started_repeats</span><span class="p">,</span>
+                <span class="s2">&quot;]&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ended_line</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">breaks_line</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">mark_repeats</span><span class="p">(</span>
+        <span class="n">start</span><span class="p">:</span> <span class="s2">&quot;_ABCBarline&quot;</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="s2">&quot;_ABCBarline&quot;</span><span class="p">,</span> <span class="n">repeat_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="p">):</span>
+        <span class="n">start</span><span class="o">.</span><span class="n">started_repeats</span> <span class="o">+=</span> <span class="n">repeat_count</span>
+        <span class="n">end</span><span class="o">.</span><span class="n">ended_repeats</span> <span class="o">+=</span> <span class="n">repeat_count</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCSymbol</span><span class="p">(</span><span class="n">_ABCTrackElement</span><span class="p">):</span>
+    <span class="n">PRIORITY</span> <span class="o">=</span> <span class="mi">5</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Base&quot;</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">tie</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Base&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tie</span> <span class="o">=</span> <span class="n">tie</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">)</span>
+        <span class="n">duration_in_quarters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+        <span class="c1"># denominator marks standard note length: 2-half note, 4-quarter,</span>
+        <span class="c1"># 8-eighth, etc.</span>
+        <span class="n">time_signatures</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">time_sig</span>
+            <span class="k">for</span> <span class="n">time_sig</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span>
+            <span class="k">if</span> <span class="n">time_sig</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span>
+        <span class="p">]</span>
+        <span class="n">quarter_to_unit_length</span> <span class="o">=</span> <span class="n">time_signatures</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">denominator</span> <span class="o">/</span> <span class="mi">4</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_length</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span>
+            <span class="n">duration_in_quarters</span> <span class="o">*</span> <span class="n">quarter_to_unit_length</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">limit_denominator</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_length_suffix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">note_lenght_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">.</span><span class="n">numerator</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">note_lenght_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">.</span><span class="n">numerator</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">.</span><span class="n">denominator</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">note_lenght_str</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_length</span><span class="o">.</span><span class="n">denominator</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">note_lenght_str</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCNote</span><span class="p">(</span><span class="n">_ABCSymbol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Note&quot;</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">tie</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Note&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="n">tie</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_octave_adjusted_note</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_suffix</span><span class="p">()</span>
+            <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tie</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_octave_adjusted_note</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">pitch</span> <span class="o">=</span> <span class="n">Pitch</span><span class="p">(</span><span class="n">midi</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">pitch</span><span class="p">)</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="n">pitch</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">note</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">:</span>  <span class="c1"># sharp</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span> <span class="o">+</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">note</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>  <span class="c1"># flat</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pitch</span><span class="o">.</span><span class="n">octave</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">note</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span> <span class="o">-</span> <span class="n">pitch</span><span class="o">.</span><span class="n">octave</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">pitch</span><span class="o">.</span><span class="n">octave</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">note</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCChord</span><span class="p">(</span><span class="n">_ABCSymbol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Chord&quot;</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">tie</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Chord&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="n">tie</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;[&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">print_notes</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tie</span> <span class="o">+</span> <span class="s2">&quot;]&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_octave_adjusted_note</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pitch_numeric</span><span class="p">):</span>
+        <span class="n">pitch</span> <span class="o">=</span> <span class="n">Pitch</span><span class="p">(</span><span class="n">midi</span><span class="o">=</span><span class="n">pitch_numeric</span><span class="p">)</span>
+        <span class="n">note</span> <span class="o">=</span> <span class="n">pitch</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">note</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">note</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;#&quot;</span><span class="p">:</span>  <span class="c1"># sharp</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot;^&quot;</span> <span class="o">+</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">note</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>  <span class="c1"># flat</span>
+                <span class="n">note</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">note</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pitch</span><span class="o">.</span><span class="n">octave</span> <span class="o">&lt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">note</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">4</span> <span class="o">-</span> <span class="n">pitch</span><span class="o">.</span><span class="n">octave</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">note</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;&#39;&quot;</span> <span class="o">*</span> <span class="p">(</span><span class="n">pitch</span><span class="o">.</span><span class="n">octave</span> <span class="o">-</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">note</span>
+
+    <span class="k">def</span> <span class="nf">print_notes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">pitches</span><span class="p">:</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_octave_adjusted_note</span><span class="p">(</span><span class="n">pitch</span><span class="p">)</span>
+            <span class="n">string</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_suffix</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">string</span>
+
+
+<span class="k">class</span> <span class="nc">Rest</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for rests.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int</span>
+<span class="sd">        Time of the rest, in time steps.</span>
+<span class="sd">    duration: int</span>
+<span class="sd">        Duration of the rest, in time steps.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
+
+
+<span class="k">class</span> <span class="nc">_ABCRest</span><span class="p">(</span><span class="n">_ABCSymbol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Rest&quot;</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">tie</span><span class="p">:</span> <span class="s2">&quot;bool&quot;</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">represented</span><span class="p">:</span> <span class="s2">&quot;Rest&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">represented</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="n">tie</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;z&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_length_suffix</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">generate_header</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate ABC header from Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
+<span class="sd">        Music object to generate ABC header.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">header_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;X: 1&quot;</span><span class="p">]</span>
+
+    <span class="c1"># set filename as title if no other title</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">title</span>
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+    <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;T: </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">creators</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">creators</span>
+    <span class="k">if</span> <span class="n">creators</span><span class="p">:</span>
+        <span class="n">header_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C: </span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">creators</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">header_lines</span>
+
+
+<span class="k">def</span> <span class="nf">remove_consecutive_repeats</span><span class="p">(</span><span class="nb">list</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a copy of `list` with consecutive repeats of values skipped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cleared</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="n">cleared</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">continue</span>
+        <span class="n">cleared</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cleared</span>
+
+
+<span class="k">class</span> <span class="nc">_TrackCompactor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compacts tracks by detecting repeats of bars&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">track</span><span class="p">:</span> <span class="s2">&quot;list[_ABCBarline|_ABCNote]&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">_ABCBarline</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">_ABCNote</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track</span> <span class="o">=</span> <span class="n">track</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_enclose</span><span class="p">(</span><span class="n">track</span><span class="p">:</span> <span class="s2">&quot;list[_ABCBarline|_ABCNote]&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensure that `track` is enclosed by barlines in order to make it</span>
+<span class="sd">        possible to mark repetitions involving either first or last bar of</span>
+<span class="sd">        track.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">track</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="n">_ABCBarline</span><span class="p">:</span>
+                <span class="n">barline</span> <span class="o">=</span> <span class="n">Barline</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">))</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_ABCBarline</span><span class="p">(</span><span class="n">barline</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">!=</span> <span class="n">_ABCBarline</span><span class="p">:</span>
+                <span class="n">barline</span> <span class="o">=</span> <span class="n">Barline</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">represented</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_ABCBarline</span><span class="p">(</span><span class="n">barline</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">track</span>
+
+    <span class="k">def</span> <span class="nf">_disassemble</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Break track into sequences of notes and separating them barlines.</span>
+<span class="sd">        Prepare a counter for number of occurences for each sequence of notes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">last_barline_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">enclosed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_enclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span> <span class="o">=</span> <span class="p">[</span><span class="n">enclosed</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">enclosed</span><span class="p">)):</span>
+            <span class="n">element</span> <span class="o">=</span> <span class="n">enclosed</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">==</span> <span class="n">_ABCBarline</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">enclosed</span><span class="p">[</span><span class="n">last_barline_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">i</span><span class="p">])</span>
+                <span class="n">last_barline_index</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="k">def</span> <span class="nf">_assemble</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reassemble track from sections and separating them barlines.</span>
+<span class="sd">        Mark repetitions of sections based on corresponding counters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">track</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">occurences</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">closing_barline</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span>
+        <span class="p">):</span>
+            <span class="n">opening_barline</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">_ABCBarline</span><span class="o">.</span><span class="n">mark_repeats</span><span class="p">(</span>
+                <span class="n">opening_barline</span><span class="p">,</span> <span class="n">closing_barline</span><span class="p">,</span> <span class="n">occurences</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="p">)</span>
+            <span class="n">track</span> <span class="o">+=</span> <span class="n">section</span> <span class="o">+</span> <span class="p">[</span><span class="n">closing_barline</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">track</span>
+
+    <span class="k">def</span> <span class="nf">_get_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get section of track starting with subsection at `index` and</span>
+<span class="sd">        containing `n` next subsections. Barlines separating subsections are</span>
+<span class="sd">        incorporated into retrieved section.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">section</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="n">index</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+            <span class="n">section</span> <span class="o">+=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="n">i</span><span class="p">]]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span>
+                <span class="n">index</span> <span class="o">+</span> <span class="n">i</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="n">section</span>
+
+    <span class="k">def</span> <span class="nf">_find_repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repeat_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Looks for the first repeat of given length in track</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        repeat_length : int</span>
+<span class="sd">            number of sections to include in repeat</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple[int, int]</span>
+<span class="sd">            Index of section that starts repeating fragment and number of</span>
+<span class="sd">            repetitions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sections_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">)</span>
+        <span class="n">repeat_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sections_count</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">repeat_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="c1"># ABC format has no syntax for nested repeats</span>
+            <span class="n">occurences</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="p">[</span>
+                <span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">repeat_length</span>
+            <span class="p">]</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">n</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">occurences</span><span class="p">]):</span>
+                <span class="k">continue</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_section</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">repeat_length</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">repeat_start</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+                <span class="n">start</span> <span class="o">+</span> <span class="n">repeat_length</span><span class="p">,</span>
+                <span class="n">sections_count</span> <span class="o">-</span> <span class="n">repeat_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">repeat_length</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="n">repeat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_section</span><span class="p">(</span><span class="n">repeat_start</span><span class="p">,</span> <span class="n">repeat_length</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="n">repeat</span><span class="p">:</span>
+                    <span class="n">repeat_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="c1"># ABC reader can&#39;t handle markings for more than 2 repeats</span>
+                    <span class="c1"># (|: notes and bars :|)</span>
+                    <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">repeat_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">start</span><span class="p">,</span> <span class="n">repeat_count</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="nf">_remove_repeat</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">repeat_length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">repeat_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Replace a block of `repeat_count` repeats each containing</span>
+<span class="sd">        `repeat_length` sections starting at &#39;index&#39; with concatenated</span>
+<span class="sd">        sections from original and mark its occurence count.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">concatenated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_section</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">repeat_length</span><span class="p">)</span>
+        <span class="c1"># include original</span>
+        <span class="n">repeated_sections_count</span> <span class="o">=</span> <span class="n">repeat_length</span> <span class="o">*</span> <span class="p">(</span><span class="n">repeat_count</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="p">[:</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections_borders</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="n">repeated_sections_count</span> <span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="p">[:</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="n">repeated_sections_count</span> <span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">[:</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="n">repeated_sections_count</span> <span class="p">:]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections_occurences</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">repeat_count</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">concatenated</span>
+
+    <span class="k">def</span> <span class="nf">_compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect consecutive repetitions of track sections. Remove repeated</span>
+<span class="sd">        sections and mark occurence counts of originals.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">repeat_length</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">while</span> <span class="n">repeat_length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_repeat</span><span class="p">(</span><span class="n">repeat_length</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">repeat_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_remove_repeat</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">repeat_length</span><span class="p">,</span> <span class="n">repeat_count</span><span class="p">)</span>
+                <span class="n">repeat_length</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sections</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">repeat_length</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">repeat_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_repeat</span><span class="p">(</span><span class="n">repeat_length</span><span class="p">)</span>
+            <span class="n">repeat_length</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">compact</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Detect repetitions in track contained by object. Mark repeats of</span>
+<span class="sd">        sections of track on barlines enclosing them and remove repeated</span>
+<span class="sd">        elements.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">track</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">track</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_disassemble</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compact</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_assemble</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">break_lines</span><span class="p">(</span><span class="n">track</span><span class="p">:</span> <span class="s2">&quot;list[_ABCTrackElement]&quot;</span><span class="p">,</span> <span class="n">bars_per_line</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">bar_counter</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">track</span><span class="p">):</span>
+        <span class="n">element</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="o">==</span> <span class="n">_ABCBarline</span><span class="p">:</span>
+            <span class="n">bar_counter</span> <span class="o">=</span> <span class="p">(</span><span class="n">bar_counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="n">bars_per_line</span>
+            <span class="k">if</span> <span class="n">bar_counter</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">element</span><span class="o">.</span><span class="n">breaks_line</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">element</span><span class="o">.</span><span class="n">TAKES_LINE</span><span class="p">:</span>
+            <span class="n">bar_counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Skip opening barline of the first bar</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">mark_repetitions</span><span class="p">(</span><span class="n">track</span><span class="p">:</span> <span class="s2">&quot;list[_ABCTrackElement]&quot;</span><span class="p">):</span>
+    <span class="n">same_key_fragments</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">_ABCTrackElement</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">changes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">last_change_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">track</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">track</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">TAKES_LINE</span><span class="p">:</span>
+            <span class="n">same_key_fragments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="n">last_change_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">i</span><span class="p">])</span>
+            <span class="n">changes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">last_change_index</span> <span class="o">=</span> <span class="n">i</span>
+    <span class="n">same_key_fragments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="n">last_change_index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">track</span><span class="p">)])</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">same_key_fragments</span><span class="p">)):</span>
+        <span class="n">same_key_fragments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">_TrackCompactor</span><span class="p">(</span>
+            <span class="n">same_key_fragments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">compact</span><span class="p">()</span>
+
+    <span class="n">new_track</span> <span class="o">=</span> <span class="n">same_key_fragments</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">changes</span><span class="p">)):</span>
+        <span class="n">new_track</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">changes</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="n">new_track</span> <span class="o">+=</span> <span class="n">same_key_fragments</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">new_track</span>
+
+
+<span class="k">def</span> <span class="nf">find_rests</span><span class="p">(</span><span class="n">notes</span><span class="p">:</span> <span class="s2">&quot;_ABCSymbol&quot;</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">):</span>
+    <span class="n">rests</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prev_note</span> <span class="o">=</span> <span class="n">notes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">notes</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="n">gap_duration</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span> <span class="o">-</span> <span class="p">(</span>
+            <span class="n">prev_note</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">prev_note</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">duration</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">gap_duration</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">rests</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">_ABCRest</span><span class="p">(</span>
+                    <span class="n">Rest</span><span class="p">(</span>
+                        <span class="n">prev_note</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span>
+                        <span class="o">+</span> <span class="n">prev_note</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">duration</span><span class="p">,</span>
+                        <span class="n">gap_duration</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">music</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">prev_note</span> <span class="o">=</span> <span class="n">note</span>
+    <span class="k">return</span> <span class="n">rests</span>
+
+
+<span class="k">def</span> <span class="nf">split_symbol</span><span class="p">(</span>
+    <span class="n">bar_time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">el_prev</span><span class="p">:</span> <span class="s2">&quot;_ABCSymbol&quot;</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span>
+<span class="p">):</span>
+    <span class="n">new_el1</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="p">)</span>
+    <span class="n">new_el1</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">bar_time</span> <span class="o">-</span> <span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span>
+    <span class="n">new_el1</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">el_prev</span><span class="p">)(</span><span class="n">new_el1</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">new_el2</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="p">)</span>
+    <span class="n">new_el2</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">bar_time</span>
+    <span class="n">new_el2</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">bar_time</span>
+    <span class="n">new_el2</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">el_prev</span><span class="p">)(</span><span class="n">new_el2</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_el1</span><span class="p">,</span> <span class="n">new_el2</span>
+
+
+<span class="k">def</span> <span class="nf">adjust_symbol_duration_over_bars</span><span class="p">(</span>
+    <span class="n">track</span><span class="p">:</span> <span class="s2">&quot;list[_ABCTrackElement]&quot;</span><span class="p">,</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span>
+<span class="p">):</span>
+    <span class="n">track_new</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">el_prev</span> <span class="o">=</span> <span class="n">track</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el_prev</span><span class="p">,</span> <span class="n">_ABCTimeSignature</span><span class="p">):</span>
+        <span class="n">bar_lenght</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">4</span>
+            <span class="o">/</span> <span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">denominator</span>
+            <span class="o">*</span> <span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">numerator</span>
+            <span class="o">*</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">track</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">_ABCTimeSignature</span><span class="p">):</span>
+            <span class="n">bar_lenght</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="mi">4</span>
+                <span class="o">/</span> <span class="n">el</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">denominator</span>
+                <span class="o">*</span> <span class="n">el</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">numerator</span>
+                <span class="o">*</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el</span><span class="p">,</span> <span class="n">_ABCBarline</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">el_prev</span><span class="p">,</span> <span class="n">_ABCSymbol</span><span class="p">):</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">el_prev</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">duration</span>
+            <span class="k">if</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="n">el</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span><span class="p">:</span>
+                <span class="c1"># symbol lasts several bars</span>
+                <span class="n">new_el1</span><span class="p">,</span> <span class="n">new_el2</span> <span class="o">=</span> <span class="n">split_symbol</span><span class="p">(</span>
+                    <span class="n">el</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">el_prev</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">music</span>
+                <span class="p">)</span>
+                <span class="n">track_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_el1</span><span class="p">)</span>
+                <span class="c1"># symbol lasts more than 2 bars</span>
+                <span class="k">while</span> <span class="n">new_el2</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">duration</span> <span class="o">&gt;</span> <span class="n">bar_lenght</span><span class="p">:</span>
+                    <span class="n">end</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">new_el2</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">new_el2</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">duration</span>
+                    <span class="p">)</span>
+                    <span class="n">new_el3</span><span class="p">,</span> <span class="n">new_el2</span> <span class="o">=</span> <span class="n">split_symbol</span><span class="p">(</span>
+                        <span class="n">el</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">bar_lenght</span><span class="p">,</span> <span class="n">new_el2</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">music</span>
+                    <span class="p">)</span>
+                    <span class="n">track_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_el3</span><span class="p">)</span>
+                <span class="n">track_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_el2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">track_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el_prev</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">track_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">el_prev</span><span class="p">)</span>
+        <span class="n">el_prev</span> <span class="o">=</span> <span class="n">el</span>
+
+    <span class="n">track_new</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">track_new</span>
+
+
+<span class="k">def</span> <span class="nf">generate_note_body</span><span class="p">(</span>
+    <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">compact_repeats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;list[str]&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate ABC note body from Music object.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
+<span class="sd">        Music object to generate ABC note body.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time_sigs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">_ABCTimeSignature</span><span class="p">(</span><span class="n">time_sig</span><span class="p">)</span> <span class="k">for</span> <span class="n">time_sig</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span>
+    <span class="p">]</span>
+    <span class="n">time_sigs</span> <span class="o">=</span> <span class="n">remove_consecutive_repeats</span><span class="p">(</span><span class="n">time_sigs</span><span class="p">)</span>
+
+    <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ABCTempo</span><span class="p">(</span><span class="n">tempo</span><span class="p">)</span> <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">]</span>
+    <span class="n">tempos</span> <span class="o">=</span> <span class="n">remove_consecutive_repeats</span><span class="p">(</span><span class="n">tempos</span><span class="p">)</span>
+
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ABCKeySignature</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">]</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="n">remove_consecutive_repeats</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+
+    <span class="n">barlines</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ABCBarline</span><span class="p">(</span><span class="n">barline</span><span class="p">)</span> <span class="k">for</span> <span class="n">barline</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">barlines</span><span class="p">]</span>
+    <span class="n">notes_chords</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">rests</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
+        <span class="n">notes</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ABCNote</span><span class="p">(</span><span class="n">note</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span> <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">notes</span><span class="p">]</span>
+        <span class="n">chords</span> <span class="o">=</span> <span class="p">[</span><span class="n">_ABCChord</span><span class="p">(</span><span class="n">chord</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span> <span class="k">for</span> <span class="n">chord</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chords</span><span class="p">]</span>
+
+        <span class="n">notes_chords</span> <span class="o">=</span> <span class="n">notes</span> <span class="o">+</span> <span class="n">chords</span>
+        <span class="n">notes_chords</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">rests</span> <span class="o">=</span> <span class="n">find_rests</span><span class="p">(</span><span class="n">notes_chords</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span>
+
+    <span class="n">track</span> <span class="o">=</span> <span class="n">time_sigs</span> <span class="o">+</span> <span class="n">tempos</span> <span class="o">+</span> <span class="n">keys</span> <span class="o">+</span> <span class="n">barlines</span> <span class="o">+</span> <span class="n">notes_chords</span> <span class="o">+</span> <span class="n">rests</span>
+    <span class="n">track</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="n">track</span> <span class="o">=</span> <span class="n">adjust_symbol_duration_over_bars</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="n">music</span><span class="p">)</span>
+    <span class="n">track</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">compact_repeats</span><span class="p">:</span>
+        <span class="n">track</span> <span class="o">=</span> <span class="n">mark_repetitions</span><span class="p">(</span><span class="n">track</span><span class="p">)</span>
+
+    <span class="n">break_lines</span><span class="p">(</span><span class="n">track</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">ended_barline</span> <span class="o">=</span> <span class="n">_ABCBarline</span><span class="p">(</span><span class="n">Barline</span><span class="p">(</span><span class="n">track</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">represented</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">ended_barline</span><span class="o">.</span><span class="n">ended_line</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">track</span> <span class="o">+=</span> <span class="p">[</span><span class="n">ended_barline</span><span class="p">]</span>
+
+    <span class="n">track_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">element</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">track</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="n">track_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">lines</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)):</span>
+        <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">lines</span>
+
+
+<div class="viewcode-block" id="write_abc"><a class="viewcode-back" href="../../../io/abc.html#muspy.write_abc">[docs]</a><span class="k">def</span> <span class="nf">write_abc</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a Music object to an ABC file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    path : str or Path</span>
+<span class="sd">        Path to write the ABC file.</span>
+<span class="sd">    music : :class:`muspy.Music`</span>
+<span class="sd">        Music object to write.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file_lines</span> <span class="o">=</span> <span class="n">generate_header</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+    <span class="n">file_lines</span> <span class="o">+=</span> <span class="n">generate_note_body</span><span class="p">(</span><span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_lines</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">line</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Hao-Wen Dong.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

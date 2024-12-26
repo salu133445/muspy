@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.base &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>muspy.base</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.base</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -87,6 +96,7 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isclass</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
@@ -103,12 +113,12 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Base&quot;</span><span class="p">,</span> <span class="s2">&quot;ComplexBase&quot;</span><span class="p">]</span>
 
-<span class="n">BaseType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;BaseType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Base&quot;</span><span class="p">)</span>
-<span class="n">ComplexBaseType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ComplexBaseType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;ComplexBase&quot;</span><span class="p">)</span>
+<span class="n">BaseT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;BaseT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Base&quot;</span><span class="p">)</span>
+<span class="n">ComplexBaseT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ComplexBaseT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;ComplexBase&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_type_string</span><span class="p">(</span><span class="n">attr_type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return a string represeting acceptable type(s).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a string represeting acceptable type(s).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span>
@@ -121,7 +131,7 @@
 
 
 <div class="viewcode-block" id="Base"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base">[docs]</a><span class="k">class</span> <span class="nc">Base</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Base class for MusPy classes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for MusPy classes.</span>
 
 <span class="sd">    This is the base class for MusPy classes. It provides two handy I/O</span>
 <span class="sd">    methods---`from_dict` and `to_ordered_dict`. It also provides</span>
@@ -211,17 +221,17 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">,</span> <span class="n">memo</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">())</span>
 
 <div class="viewcode-block" id="Base.from_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.from_dict">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseType</span><span class="p">],</span>
+        <span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">BaseT</span><span class="p">],</span>
         <span class="n">dict_</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">,</span>
         <span class="n">strict</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">cast</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return an instance constructed from a dictionary.</span>
 
 <span class="sd">        Instantiate an object whose attributes and the corresponding</span>
 <span class="sd">        values are given as a dictionary.</span>
@@ -258,6 +268,24 @@
                     <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">attr_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+                <span class="p">):</span> <span class="c1"># encounter an annotation</span>
+                <span class="n">attr_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                    <span class="n">import_module</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;.annotations&quot;</span><span class="p">,</span> <span class="n">package</span> <span class="o">=</span> <span class="s2">&quot;muspy&quot;</span><span class="p">),</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;__class__.__name__&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">attr_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_list_attributes</span> <span class="ow">and</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+                <span class="p">):</span> <span class="c1"># encounter an annotation in notations</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">attr_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span>
+                        <span class="n">import_module</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;.annotations&quot;</span><span class="p">,</span> <span class="n">package</span> <span class="o">=</span> <span class="s2">&quot;muspy&quot;</span><span class="p">),</span>
+                        <span class="n">v</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;__class__.__name__&quot;</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">attr_type</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">strict</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
@@ -298,7 +326,7 @@
 <div class="viewcode-block" id="Base.to_ordered_dict"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.to_ordered_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_ordered_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">deepcopy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the object as an OrderedDict.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the object as an OrderedDict.</span>
 
 <span class="sd">        Return an ordered dictionary that stores the attributes and</span>
 <span class="sd">        their values as key-value pairs.</span>
@@ -331,6 +359,17 @@
                         <span class="p">)</span>
                         <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span>
                     <span class="p">]</span>
+                <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                    <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span> <span class="ow">and</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="p">):</span> <span class="c1"># encounter an annotation in notations</span>
+                    <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                        <span class="n">v_ordered_dict</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span>
+                            <span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span>
+                        <span class="p">)</span>
+                        <span class="n">v_ordered_dict</span><span class="p">[</span><span class="s2">&quot;__class__.__name__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+                        <span class="n">v_ordered_dict</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s2">&quot;__class__.__name__&quot;</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                        <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_ordered_dict</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">deepcopy</span><span class="p">:</span>
                     <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -342,14 +381,23 @@
                 <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span>
                     <span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span>
                 <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+                <span class="p">):</span> <span class="c1"># encounter an annotation</span>
+                <span class="n">value_ordered_dict</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">to_ordered_dict</span><span class="p">(</span>
+                    <span class="n">skip_missing</span><span class="o">=</span><span class="n">skip_missing</span><span class="p">,</span> <span class="n">deepcopy</span><span class="o">=</span><span class="n">deepcopy</span>
+                <span class="p">)</span>
+                <span class="n">value_ordered_dict</span><span class="p">[</span><span class="s2">&quot;__class__.__name__&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+                <span class="n">value_ordered_dict</span><span class="o">.</span><span class="n">move_to_end</span><span class="p">(</span><span class="s2">&quot;__class__.__name__&quot;</span><span class="p">,</span> <span class="n">last</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value_ordered_dict</span>
             <span class="k">elif</span> <span class="n">deepcopy</span><span class="p">:</span>
                 <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">ordered_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
         <span class="k">return</span> <span class="n">ordered_dict</span></div>
 
-<div class="viewcode-block" id="Base.copy"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a shallow copy of the object.</span>
+<div class="viewcode-block" id="Base.copy"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a shallow copy of the object.</span>
 
 <span class="sd">        This is equivalent to :py:func:`copy.copy(self)`.</span>
 
@@ -360,8 +408,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Base.deepcopy"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.deepcopy">[docs]</a>    <span class="k">def</span> <span class="nf">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return a deep copy of the object.</span>
+<div class="viewcode-block" id="Base.deepcopy"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.deepcopy">[docs]</a>    <span class="k">def</span> <span class="nf">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a deep copy of the object.</span>
 
 <span class="sd">        This is equivalent to :py:func:`copy.deepcopy(self)`</span>
 
@@ -373,7 +421,7 @@
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Base.pretty_str"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.pretty_str">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the attributes as a string in a YAML-like format.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the attributes as a string in a YAML-like format.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -397,7 +445,7 @@
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Base.print"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">skip_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Print the attributes in a YAML-like format.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the attributes in a YAML-like format.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -435,17 +483,23 @@
             <span class="p">)</span>
 
         <span class="c1"># Apply recursively</span>
-        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+            <span class="p">)):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">validate_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">validate_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">validate_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.validate_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.validate_type">[docs]</a>    <span class="k">def</span> <span class="nf">validate_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Raise an error if an attribute is of an invalid type.</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise an error if an attribute is of an invalid type.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
@@ -477,13 +531,20 @@
 
     <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+            <span class="p">)):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                         <span class="n">item</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Set recursive=False to avoid repeated checks invoked when</span>
             <span class="c1"># calling `validate` recursively</span>
@@ -492,17 +553,23 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`time` must be nonnegative.&quot;</span><span class="p">)</span>
 
         <span class="c1"># Apply recursively</span>
-        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+            <span class="p">)):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.validate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.validate">[docs]</a>    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Raise an error if an attribute has an invalid type or value.</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise an error if an attribute has an invalid type or value.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
@@ -533,7 +600,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="Base.is_valid_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid_type">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if an attribute is of a valid type.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if an attribute is of a valid type.</span>
 
 <span class="sd">        This will apply recursively to an attribute&#39;s attributes.</span>
 
@@ -564,7 +631,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="Base.is_valid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.is_valid">[docs]</a>    <span class="k">def</span> <span class="nf">is_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if an attribute has a valid type and value.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if an attribute has a valid type and value.</span>
 
 <span class="sd">        This will recursively apply to an attribute&#39;s attributes.</span>
 
@@ -595,29 +662,36 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
     <span class="k">def</span> <span class="nf">_adjust_time</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="n">new_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">)]</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">new_list</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)))</span>
-        <span class="k">elif</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;time&quot;</span> <span class="ow">or</span> <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;duration&quot;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="n">new_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">func</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">new_list</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+            <span class="p">)):</span>
+            <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.adjust_time">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Adjust the timing of time-stamped objects.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjust the timing of time-stamped objects.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -641,17 +715,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_adjust_time</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">_fix_type</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_fix_type</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+                <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span>
+                    <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                    <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+                <span class="p">))):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                         <span class="n">item</span><span class="o">.</span><span class="n">fix_type</span><span class="p">()</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">fix_type</span><span class="p">()</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">fix_type</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">):</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">value</span><span class="p">))</span>
@@ -659,17 +740,23 @@
                     <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
         <span class="c1"># Apply recursively</span>
-        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">recursive</span> <span class="ow">and</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">Base</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;annotation&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="nb">object</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">object</span>
+            <span class="p">)</span> <span class="ow">or</span> <span class="p">(</span>
+                <span class="n">attr</span> <span class="o">==</span> <span class="s2">&quot;notations&quot;</span> <span class="ow">and</span> <span class="n">attr_type</span> <span class="ow">is</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]</span>
+            <span class="p">)):</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list_attributes</span><span class="p">:</span>
-                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
                     <span class="n">item</span><span class="o">.</span><span class="n">fix_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span><span class="o">.</span><span class="n">fix_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">value</span><span class="o">.</span><span class="n">fix_type</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Base.fix_type"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Base.fix_type">[docs]</a>    <span class="k">def</span> <span class="nf">fix_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Fix the types of attributes.</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">BaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fix the types of attributes.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -692,7 +779,7 @@
 
 
 <div class="viewcode-block" id="ComplexBase"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase">[docs]</a><span class="k">class</span> <span class="nc">ComplexBase</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class that supports advanced operations on list attributes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class that supports advanced operations on list attributes.</span>
 
 <span class="sd">    This class extend the Base class with advanced operations on list</span>
 <span class="sd">    attributes, including `append`, `remove_invalid`, `remove_duplicate`</span>
@@ -705,13 +792,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__iadd__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">ComplexBaseType</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;Expect the second operand to be of type &quot;</span>
@@ -733,8 +818,8 @@
             <span class="sa">f</span><span class="s2">&quot;Cannot find a list attribute for type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
-<div class="viewcode-block" id="ComplexBase.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Append an object to the corresponding list.</span>
+<div class="viewcode-block" id="ComplexBase.append"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.append">[docs]</a>    <span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append an object to the corresponding list.</span>
 
 <span class="sd">        This will automatically determine the list attributes to append</span>
 <span class="sd">        based on the type of the object.</span>
@@ -749,11 +834,11 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="ComplexBase.extend"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span>
-        <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">],</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">],</span>
         <span class="n">deepcopy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Extend the list(s) with another object or iterable.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extend the list(s) with another object or iterable.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -815,9 +900,9 @@
             <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">value</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">attr_type</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="ComplexBase.remove_invalid"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_invalid">[docs]</a>    <span class="k">def</span> <span class="nf">remove_invalid</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove invalid items from a list attribute.</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove invalid items from a list attribute.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -846,9 +931,7 @@
             <span class="k">return</span>
 
         <span class="n">attr_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="n">is_complexbase</span> <span class="o">=</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span>
-            <span class="n">attr_type</span><span class="p">,</span> <span class="n">ComplexBase</span>
-        <span class="p">)</span>
+        <span class="n">is_complexbase</span> <span class="o">=</span> <span class="n">isclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">attr_type</span><span class="p">,</span> <span class="n">ComplexBase</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
 
         <span class="c1"># NOTE: The ordering mathers here. We first apply recursively</span>
@@ -870,9 +953,9 @@
         <span class="n">value</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">new_value</span>
 
 <div class="viewcode-block" id="ComplexBase.remove_duplicate"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.remove_duplicate">[docs]</a>    <span class="k">def</span> <span class="nf">remove_duplicate</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Remove duplicate items from a list attribute.</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove duplicate items from a list attribute.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -910,9 +993,9 @@
                     <span class="n">value</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">recursive</span><span class="o">=</span><span class="n">recursive</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ComplexBase.sort"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ComplexBase.sort">[docs]</a>    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseType</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Sort a list attribute.</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ComplexBaseT</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComplexBaseT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sort a list attribute.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.outputs.music21 &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html">
-            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>muspy.outputs.music21</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.outputs.music21</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -74,71 +83,65 @@
              
   <h1>Source code for muspy.outputs.music21</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Music21 converter interface.&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">fractions</span> <span class="kn">import</span> <span class="n">Fraction</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">groupby</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="n">sub</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 
-<span class="kn">from</span> <span class="nn">music21.key</span> <span class="kn">import</span> <span class="n">Key</span>
 <span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="kn">import</span> <span class="n">Contributor</span><span class="p">,</span> <span class="n">Copyright</span>
 <span class="kn">from</span> <span class="nn">music21.metadata</span> <span class="kn">import</span> <span class="n">Metadata</span> <span class="k">as</span> <span class="n">M21MetaData</span>
 <span class="kn">from</span> <span class="nn">music21.meter</span> <span class="kn">import</span> <span class="n">TimeSignature</span> <span class="k">as</span> <span class="n">M21TimeSignature</span>
-<span class="kn">from</span> <span class="nn">music21.note</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">M21Note</span>
+<span class="kn">from</span> <span class="nn">music21.key</span> <span class="kn">import</span> <span class="n">KeySignature</span> <span class="k">as</span> <span class="n">M21KeySignature</span>
+<span class="kn">from</span> <span class="nn">music21.note</span> <span class="kn">import</span> <span class="n">Note</span> <span class="k">as</span> <span class="n">M21Note</span><span class="p">,</span> <span class="n">noteheadTypeNames</span>
 <span class="kn">from</span> <span class="nn">music21.stream</span> <span class="kn">import</span> <span class="n">Part</span><span class="p">,</span> <span class="n">Score</span>
-<span class="kn">from</span> <span class="nn">music21.tempo</span> <span class="kn">import</span> <span class="n">MetronomeMark</span>
+<span class="kn">from</span> <span class="nn">music21.exceptions21</span> <span class="kn">import</span> <span class="n">StreamException</span>
+<span class="kn">from</span> <span class="nn">music21.duration</span> <span class="kn">import</span> <span class="n">Duration</span>
+<span class="kn">from</span> <span class="nn">music21.clef</span> <span class="kn">import</span> <span class="n">PercussionClef</span>
+<span class="kn">from</span> <span class="nn">music21.instrument</span> <span class="kn">import</span> <span class="n">instrumentFromMidiProgram</span>
+<span class="kn">from</span> <span class="nn">music21.chord</span> <span class="kn">import</span> <span class="n">Chord</span> <span class="k">as</span> <span class="n">M21Chord</span>
+<span class="kn">from</span> <span class="nn">music21.harmony</span> <span class="kn">import</span> <span class="n">ChordSymbol</span> <span class="k">as</span> <span class="n">M21ChordSymbol</span>
+<span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">tempo</span> <span class="k">as</span> <span class="n">M21Tempo</span>
+<span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">articulations</span> <span class="k">as</span> <span class="n">M21Articulation</span>
+<span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">expressions</span> <span class="k">as</span> <span class="n">M21Expression</span>
+<span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">spanner</span> <span class="k">as</span> <span class="n">M21Spanner</span>
+<span class="kn">from</span> <span class="nn">music21</span> <span class="kn">import</span> <span class="n">dynamics</span> <span class="k">as</span> <span class="n">M21Dynamic</span>
+<span class="kn">import</span> <span class="nn">music21.musicxml.archiveTools</span>
+<span class="kn">import</span> <span class="nn">music21.beam</span>
 
-<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">KeySignature</span><span class="p">,</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Tempo</span><span class="p">,</span> <span class="n">TimeSignature</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">,</span> <span class="n">MODE_CENTERS</span>
+<span class="kn">from</span> <span class="nn">..classes</span> <span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">Annotation</span>
+<span class="kn">from</span> <span class="nn">.midi</span> <span class="kn">import</span> <span class="n">PITCH_NAMES</span><span class="p">,</span> <span class="n">DRUM_CHANNEL</span><span class="p">,</span> <span class="n">clean_up_subtype</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">..music</span> <span class="kn">import</span> <span class="n">Music</span>
 
-<span class="n">PITCH_NAMES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;C#&quot;</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span> <span class="s2">&quot;D#&quot;</span><span class="p">,</span> <span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">,</span> <span class="s2">&quot;F#&quot;</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;G#&quot;</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="s2">&quot;A#&quot;</span><span class="p">,</span> <span class="s2">&quot;B&quot;</span><span class="p">]</span>
+<span class="c1"># silence weird warnings from music21</span>
+<span class="k">def</span> <span class="nf">noop</span><span class="p">(</span><span class="nb">input</span><span class="p">):</span>
+    <span class="k">pass</span>
+<span class="n">music21</span><span class="o">.</span><span class="n">musicxml</span><span class="o">.</span><span class="n">archiveTools</span><span class="o">.</span><span class="n">environLocal</span><span class="o">.</span><span class="n">warn</span> <span class="o">=</span> <span class="n">noop</span>
+<span class="n">music21</span><span class="o">.</span><span class="n">beam</span><span class="o">.</span><span class="n">environLocal</span><span class="o">.</span><span class="n">warn</span> <span class="o">=</span> <span class="n">noop</span>
 
 
-<span class="k">def</span> <span class="nf">_get_pitch_name</span><span class="p">(</span><span class="n">note_number</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">octave</span><span class="p">,</span> <span class="n">pitch_class</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">note_number</span><span class="p">,</span> <span class="mi">12</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">pitch_class</span><span class="p">]</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">octave</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_octave_from_pitch</span><span class="p">(</span><span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Given the MIDI pitch number, return the octave of that note.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">pitch</span> <span class="o">//</span> <span class="mi">12</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 
 
-<span class="k">def</span> <span class="nf">to_music21_metronome</span><span class="p">(</span><span class="n">tempo</span><span class="p">:</span> <span class="n">Tempo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetronomeMark</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Tempo object as a music21 MetronomeMark object.&quot;&quot;&quot;</span>
-    <span class="n">metronome</span> <span class="o">=</span> <span class="n">MetronomeMark</span><span class="p">(</span><span class="n">number</span><span class="o">=</span><span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span>
-    <span class="n">metronome</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span>
-    <span class="k">return</span> <span class="n">metronome</span>
-
-
-<span class="k">def</span> <span class="nf">to_music21_key</span><span class="p">(</span><span class="n">key_signature</span><span class="p">:</span> <span class="n">KeySignature</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Key</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a KeySignature object as a music21 Key object.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">root_str</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">tonic</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">root_str</span>
-    <span class="k">elif</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">tonic</span> <span class="o">=</span> <span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">root</span><span class="p">]</span>
-    <span class="k">elif</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="n">MODE_CENTERS</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">]</span>
-            <span class="n">tonic</span> <span class="o">=</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span> <span class="o">+</span> <span class="n">offset</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">tonic</span> <span class="o">=</span> <span class="n">CIRCLE_OF_FIFTHS</span><span class="p">[</span><span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">def</span> <span class="nf">convert_chromatic_to_circle_of_fifths_steps</span><span class="p">(</span><span class="n">transpose_chromatic</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a number of semitones to transpose, return the necessary number of steps to</span>
+<span class="sd">    make the same transposition on the circle of fifths.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transpose_chromatic</span> <span class="o">=</span> <span class="n">transpose_chromatic</span> <span class="o">%</span> <span class="o">-</span><span class="mi">12</span> <span class="c1"># get in range 0 through 12</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">-</span><span class="n">transpose_chromatic</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">transpose_chromatic</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;One of `root`, `root_str` or `fifths` must be specified.&quot;</span>
-        <span class="p">)</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="n">Key</span><span class="p">(</span><span class="n">tonic</span><span class="o">=</span><span class="n">tonic</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
-    <span class="n">key</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span>
-    <span class="k">return</span> <span class="n">key</span>
-
-
-<span class="k">def</span> <span class="nf">to_music21_time_signature</span><span class="p">(</span>
-    <span class="n">time_signature</span><span class="p">:</span> <span class="n">TimeSignature</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M21TimeSignature</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a TimeSignature object as a music21 TimeSignature.&quot;&quot;&quot;</span>
-    <span class="n">m21_time_signature</span> <span class="o">=</span> <span class="n">M21TimeSignature</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s2">&quot;</span>
-    <span class="p">)</span>
-    <span class="n">m21_time_signature</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span>
-    <span class="k">return</span> <span class="n">m21_time_signature</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">transpose_chromatic</span> <span class="o">+</span> <span class="mi">6</span><span class="p">)</span> <span class="o">%</span> <span class="o">-</span><span class="mi">12</span>
 
 
 <span class="k">def</span> <span class="nf">to_music21_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">:</span> <span class="n">Metadata</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">M21MetaData</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Metadata object as a music21 Metadata object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Metadata object as a music21 Metadata object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -166,7 +169,7 @@
 
 
 <div class="viewcode-block" id="to_music21"><a class="viewcode-back" href="../../../io/music21.html#muspy.to_music21">[docs]</a><span class="k">def</span> <span class="nf">to_music21</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Score</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object as a music21 Score object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Music object as a music21 Score object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -179,41 +182,368 @@
 <span class="sd">        Converted music21 Score object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Create a new score</span>
+
+    <span class="c1"># so that we do not operate on the original music object</span>
+    <span class="n">music</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">music</span><span class="p">)</span>
+
+    <span class="c1"># make sure music is not in real time</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">real_time</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot convert to music21 when `music` is in real time (`music.real_time` == True).&quot;</span><span class="p">)</span>
+
+    <span class="c1"># create a new score</span>
     <span class="n">score</span> <span class="o">=</span> <span class="n">Score</span><span class="p">()</span>
 
-    <span class="c1"># Metadata</span>
-    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
-        <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_metadata</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="p">))</span>
+    <span class="c1"># helper functions</span>
+    <span class="n">get_offset</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">time</span><span class="p">:</span> <span class="n">time</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
+    <span class="k">def</span> <span class="nf">get_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Duration</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to get the duration of something, returning a music21 Duration object.</span>
+<span class="sd">        Make sure the duration is valid so no bugs are thrown.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m21_duration</span> <span class="o">=</span> <span class="n">Duration</span><span class="p">(</span><span class="n">quarterLength</span> <span class="o">=</span> <span class="n">Fraction</span><span class="p">(</span><span class="n">duration</span><span class="p">,</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">tup</span><span class="o">.</span><span class="n">durationNormal</span><span class="o">.</span><span class="n">quarterLength</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="mi">9</span><span class="p">))</span> <span class="k">for</span> <span class="n">tup</span> <span class="ow">in</span> <span class="n">m21_duration</span><span class="o">.</span><span class="n">tuplets</span><span class="p">)):</span> <span class="c1"># check for invalid durations</span>
+            <span class="k">return</span> <span class="n">Duration</span><span class="p">(</span><span class="n">quarterLength</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">m21_duration</span>
+    <span class="n">get_time_from_offset</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">offset</span><span class="p">:</span> <span class="n">offset</span> <span class="o">*</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
 
-    <span class="c1"># Tracks</span>
-    <span class="k">for</span> <span class="n">track</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">:</span>
-        <span class="c1"># Create a new part</span>
+    <span class="c1"># metadata</span>
+    <span class="k">if</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">score</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">to_music21_metadata</span><span class="p">(</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="c1"># tracks</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">track</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">tracks</span><span class="p">):</span>
+
+        <span class="c1"># create a new part</span>
         <span class="n">part</span> <span class="o">=</span> <span class="n">Part</span><span class="p">()</span>
         <span class="n">part</span><span class="o">.</span><span class="n">partName</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">part_id</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;P</span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="c1"># Add tempos</span>
-        <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_metronome</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>
+        <span class="c1"># set instrument</span>
+        <span class="k">if</span> <span class="n">track</span><span class="o">.</span><span class="n">is_drum</span><span class="p">:</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">clef</span> <span class="o">=</span> <span class="n">PercussionClef</span><span class="p">()</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">DRUM_CHANNEL</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">channel</span> <span class="o">=</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">15</span> <span class="c1"># .mid has 15 channels for instruments other than drums</span>
+            <span class="n">channel</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">channel</span> <span class="o">&gt;=</span> <span class="n">DRUM_CHANNEL</span><span class="p">)</span> <span class="c1"># avoid drum channel by adding one if the channel is greater than 8</span>
+        <span class="n">instrument</span> <span class="o">=</span> <span class="n">instrumentFromMidiProgram</span><span class="p">(</span><span class="n">number</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">program</span><span class="p">)</span>
+        <span class="n">instrument</span><span class="o">.</span><span class="n">partId</span> <span class="o">=</span> <span class="n">part_id</span>
+        <span class="n">instrument</span><span class="o">.</span><span class="n">partName</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">instrument</span><span class="o">.</span><span class="n">instrumentId</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">part_id</span><span class="si">}</span><span class="s2">-T1&quot;</span>
+        <span class="n">instrument</span><span class="o">.</span><span class="n">instrumentName</span> <span class="o">=</span> <span class="n">track</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">instrument</span><span class="o">.</span><span class="n">midiChannel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instrument</span><span class="p">)</span>
 
-        <span class="c1"># Add time signatures</span>
-        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_time_signature</span><span class="p">(</span><span class="n">time_signature</span><span class="p">))</span>
+        <span class="c1"># amount to adjust tone</span>
+        <span class="n">part</span><span class="o">.</span><span class="n">atSoundingPitch</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">transpose_chromatic</span> <span class="o">=</span> <span class="n">instrument</span><span class="o">.</span><span class="n">transposition</span><span class="o">.</span><span class="n">chromatic</span><span class="o">.</span><span class="n">semitones</span> <span class="k">if</span> <span class="n">instrument</span><span class="o">.</span><span class="n">transposition</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">def</span> <span class="nf">get_note_str_and_octave</span><span class="p">(</span><span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pitch_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Helper function for extracting the note&#39;s string and octave for music21.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">pitch_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">PITCH_NAMES</span><span class="p">[</span><span class="n">pitch</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">PITCH_NAMES</span><span class="p">)]</span>
+            <span class="n">n_accidentals</span> <span class="o">=</span> <span class="n">pitch_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="n">pitch_str</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)</span>
+            <span class="n">note_str</span> <span class="o">=</span> <span class="n">PITCH_NAMES</span><span class="p">[(</span><span class="n">PITCH_NAMES</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">pitch_str</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">n_accidentals</span> <span class="o">-</span> <span class="n">transpose_chromatic</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">PITCH_NAMES</span><span class="p">)]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span>
+            <span class="n">note_octave</span> <span class="o">=</span> <span class="n">get_octave_from_pitch</span><span class="p">(</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">pitch</span> <span class="o">-</span> <span class="n">transpose_chromatic</span><span class="p">)</span> <span class="c1"># adjust pitch for tuning of instrument</span>
+            <span class="k">return</span> <span class="n">note_str</span><span class="p">,</span> <span class="n">note_octave</span>
 
-        <span class="c1"># Add key signatures</span>
-        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_music21_key</span><span class="p">(</span><span class="n">key_signature</span><span class="p">))</span>
+        <span class="c1"># add tempos</span>
+        <span class="k">for</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">tempos</span><span class="p">:</span> <span class="c1"># loop through tempos</span>
+            <span class="k">if</span> <span class="n">tempo</span><span class="o">.</span><span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">tempo</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&lt;sym&gt;&quot;</span><span class="p">):</span> <span class="c1"># bpm is explicitly supplied in text or not supplied at all</span>
+                <span class="n">m21_tempo</span> <span class="o">=</span> <span class="n">M21Tempo</span><span class="o">.</span><span class="n">MetronomeMark</span><span class="p">(</span><span class="n">number</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span> <span class="c1"># create tempo marking with bpm</span>
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># bpm is implied by tempo name</span>
+                <span class="n">m21_tempo</span> <span class="o">=</span> <span class="n">M21Tempo</span><span class="o">.</span><span class="n">MetronomeMark</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="n">numberSounding</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">qpm</span><span class="p">)</span> <span class="c1"># create tempo marking with text</span>
+            <span class="n">m21_tempo</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">get_offset</span><span class="p">(</span><span class="n">time</span> <span class="o">=</span> <span class="n">tempo</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="c1"># define offset</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offsetOrItemOrList</span> <span class="o">=</span> <span class="n">m21_tempo</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">itemOrNone</span> <span class="o">=</span> <span class="n">m21_tempo</span><span class="p">)</span>
 
-        <span class="c1"># Add notes to part</span>
+        <span class="c1"># add time signatures</span>
+        <span class="k">for</span> <span class="n">time_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">time_signatures</span><span class="p">:</span> <span class="c1"># loop through time signatures</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="n">m21_time_signature</span> <span class="o">=</span> <span class="n">M21TimeSignature</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_signature</span><span class="o">.</span><span class="n">numerator</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">time_signature</span><span class="o">.</span><span class="n">denominator</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># instantiate time signature object</span>
+            <span class="n">m21_time_signature</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">get_offset</span><span class="p">(</span><span class="n">time</span> <span class="o">=</span> <span class="n">time_signature</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="c1"># define offset</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offsetOrItemOrList</span> <span class="o">=</span> <span class="n">m21_time_signature</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">itemOrNone</span> <span class="o">=</span> <span class="n">m21_time_signature</span><span class="p">)</span>
+
+        <span class="c1"># add key signatures</span>
+        <span class="k">for</span> <span class="n">key_signature</span> <span class="ow">in</span> <span class="n">music</span><span class="o">.</span><span class="n">key_signatures</span><span class="p">:</span> <span class="c1"># loop through key signatures</span>
+            <span class="n">m21_key_signature</span> <span class="o">=</span> <span class="n">M21KeySignature</span><span class="p">(</span><span class="n">sharps</span> <span class="o">=</span> <span class="p">(</span><span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span> <span class="o">-</span> <span class="n">convert_chromatic_to_circle_of_fifths_steps</span><span class="p">(</span><span class="n">transpose_chromatic</span> <span class="o">=</span> <span class="n">transpose_chromatic</span><span class="p">))</span> <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">fifths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># create key object</span>
+            <span class="n">m21_key_signature</span> <span class="o">=</span> <span class="n">m21_key_signature</span><span class="o">.</span><span class="n">asKey</span><span class="p">(</span><span class="n">mode</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">mode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;major&quot;</span><span class="p">)</span>
+            <span class="n">m21_key_signature</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">get_offset</span><span class="p">(</span><span class="n">time</span> <span class="o">=</span> <span class="n">key_signature</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="c1"># define offset</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offsetOrItemOrList</span> <span class="o">=</span> <span class="n">m21_key_signature</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">itemOrNone</span> <span class="o">=</span> <span class="n">m21_key_signature</span><span class="p">)</span>
+
+        <span class="c1"># add notes to part (and grace notes, lyrics, noteheads, and articulations)</span>
+        <span class="n">lyrics</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">lyric</span><span class="o">.</span><span class="n">time</span><span class="p">:</span> <span class="n">lyric</span><span class="o">.</span><span class="n">lyric</span> <span class="k">for</span> <span class="n">lyric</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">lyrics</span><span class="p">}</span> <span class="c1"># put lyrics into dictionary (where keys are the time)</span>
+        <span class="c1"># chords: Dict[Tuple[int, int, bool], list] = dict()</span>
+
+        <span class="c1"># loop through notes</span>
+        <span class="n">note_notations</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># store any note notations as annotations</span>
         <span class="k">for</span> <span class="n">note</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">notes</span><span class="p">:</span>
-            <span class="n">m21_note</span> <span class="o">=</span> <span class="n">M21Note</span><span class="p">(</span><span class="n">_get_pitch_name</span><span class="p">(</span><span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">))</span>
-            <span class="n">m21_note</span><span class="o">.</span><span class="n">quarterLength</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
-            <span class="n">offset</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="o">/</span> <span class="n">music</span><span class="o">.</span><span class="n">resolution</span>
-            <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">m21_note</span><span class="p">)</span>
 
-        <span class="c1"># Append the part to score</span>
+            <span class="c1"># create M21 Note object</span>
+            <span class="n">note_str</span><span class="p">,</span> <span class="n">note_octave</span> <span class="o">=</span> <span class="n">get_note_str_and_octave</span><span class="p">(</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch</span><span class="p">,</span> <span class="n">pitch_str</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">pitch_str</span><span class="p">)</span>
+            <span class="n">m21_note</span> <span class="o">=</span> <span class="n">M21Note</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">note_str</span><span class="p">,</span> <span class="n">octave</span> <span class="o">=</span> <span class="n">note_octave</span><span class="p">)</span> <span class="c1"># create note object</span>
+
+            <span class="c1"># check if grace note</span>
+            <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">is_grace</span><span class="p">:</span> <span class="c1"># check if grace note</span>
+                <span class="n">m21_note</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s2">&quot;eighth&quot;</span> <span class="c1"># so it looks like a normal grace note with a flag</span>
+                <span class="n">m21_note</span> <span class="o">=</span> <span class="n">m21_note</span><span class="o">.</span><span class="n">getGrace</span><span class="p">()</span> <span class="c1"># convert to grace note</span>
+            <span class="c1"># if the note is a normal note</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">m21_note</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">get_duration</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">m21_note</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;zero&quot;</span><span class="p">:</span> <span class="c1"># ignore notes with invalid durations</span>
+                    <span class="k">continue</span>
+                <span class="c1"># check if there is a lyric at that note</span>
+                <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span> <span class="ow">in</span> <span class="n">lyrics</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">m21_note</span><span class="o">.</span><span class="n">lyric</span> <span class="o">=</span> <span class="n">lyrics</span><span class="p">[</span><span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">]</span> <span class="c1"># add lyric</span>
+
+            <span class="c1"># check if there are any relevant notations</span>
+            <span class="k">if</span> <span class="n">note</span><span class="o">.</span><span class="n">notations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="c1"># add notations to note_notations</span>
+                <span class="n">note_notations</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">Annotation</span><span class="p">(</span><span class="n">time</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="n">annotation</span> <span class="o">=</span> <span class="n">notation</span><span class="p">)</span> <span class="k">for</span> <span class="n">notation</span> <span class="ow">in</span> <span class="n">note</span><span class="o">.</span><span class="n">notations</span><span class="p">])</span>
+
+                <span class="c1"># check if there is a notehead at that note</span>
+                <span class="n">note_noteheads</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">notehead</span><span class="p">:</span> <span class="n">notehead</span><span class="o">.</span><span class="n">subtype</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
+                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">notation</span><span class="p">:</span> <span class="n">notation</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;Notehead&quot;</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">notations</span><span class="p">)</span>
+                <span class="p">))</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">note_noteheads</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">note_noteheads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">noteheadTypeNames</span><span class="p">:</span> <span class="c1"># check if notehead is a valid notehead for music21</span>
+                    <span class="n">m21_note</span><span class="o">.</span><span class="n">notehead</span> <span class="o">=</span> <span class="n">note_noteheads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># add notehead</span>
+                <span class="k">del</span> <span class="n">note_noteheads</span>
+
+                <span class="c1"># check if there is an articulation(s) at that note</span>
+                <span class="n">note_articulations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span>
+                    <span class="k">lambda</span> <span class="n">articulation</span><span class="p">:</span> <span class="n">clean_up_subtype</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">articulation</span><span class="o">.</span><span class="n">subtype</span><span class="p">),</span>
+                    <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">notation</span><span class="p">:</span> <span class="n">notation</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;Articulation&quot;</span> <span class="ow">or</span> <span class="n">notation</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;Symbol&quot;</span><span class="p">,</span> <span class="n">note</span><span class="o">.</span><span class="n">notations</span><span class="p">)</span>
+                <span class="p">))</span>
+                <span class="k">for</span> <span class="n">articulation</span> <span class="ow">in</span> <span class="n">note_articulations</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">articulation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="s2">&quot;accent&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Accent</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;staccato&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Staccato</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;staccatissimo&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Staccatissimo</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;tenuto&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Tenuto</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;pizzicato&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;snap&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">SnapPizzicato</span><span class="p">())</span>
+                        <span class="k">elif</span> <span class="s2">&quot;nail&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">NailPizzicato</span><span class="p">())</span>
+                        <span class="k">else</span><span class="p">:</span> <span class="c1"># normal pizzicato is default</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Pizzicato</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;spiccato&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Spiccato</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;bow&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;up&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">UpBow</span><span class="p">())</span>
+                        <span class="k">else</span><span class="p">:</span> <span class="c1"># down is default</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">DownBow</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">articulation</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;mute&quot;</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">))):</span> <span class="c1"># brass mute</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">BrassIndication</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;muted&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">articulation</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;open&quot;</span><span class="p">,</span> <span class="s2">&quot;ouvert&quot;</span><span class="p">))):</span> <span class="c1"># open</span>
+                        <span class="k">if</span> <span class="s2">&quot;string&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">OpenString</span><span class="p">())</span>
+                        <span class="k">else</span><span class="p">:</span> <span class="c1"># defaults to brass open mute</span>
+                            <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">BrassIndication</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;open&quot;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="s2">&quot;doit&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Doit</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;fall&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Falloff</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;plop&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Plop</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;scoop&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Scoop</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;harmonic&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Harmonic</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;stopped&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Stopped</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;stress&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Stress</span><span class="p">())</span>
+                    <span class="k">if</span> <span class="s2">&quot;unstress&quot;</span> <span class="ow">in</span> <span class="n">articulation</span><span class="p">:</span>
+                        <span class="n">m21_note</span><span class="o">.</span><span class="n">articulations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">M21Articulation</span><span class="o">.</span><span class="n">Unstress</span><span class="p">())</span>
+                <span class="k">del</span> <span class="n">note_articulations</span>
+
+            <span class="c1"># add note to chords</span>
+            <span class="c1"># chord_descriptor_tuple = (note.time, note.duration, note.is_grace)</span>
+            <span class="c1"># if chord_descriptor_tuple not in chords.keys():</span>
+            <span class="c1">#     chords[chord_descriptor_tuple] = []</span>
+            <span class="c1"># chords[chord_descriptor_tuple].append(m21_note)</span>
+
+            <span class="c1"># add note to part</span>
+            <span class="n">m21_note</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">get_offset</span><span class="p">(</span><span class="n">time</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+            <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offsetOrItemOrList</span> <span class="o">=</span> <span class="n">m21_note</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">itemOrNone</span> <span class="o">=</span> <span class="n">m21_note</span><span class="p">)</span>
+
+        <span class="c1"># add chords to part</span>
+        <span class="c1"># for chord_descriptor_tuple, chord_notes in chords.items():</span>
+        <span class="c1">#     m21_chord = M21Chord(notes = chord_notes)</span>
+        <span class="c1">#     m21_chord.offset = get_offset(time = chord_descriptor_tuple[0])</span>
+        <span class="c1">#     part.insert(offsetOrItemOrList = m21_chord.offset, itemOrNone = m21_chord)</span>
+        <span class="c1"># del chords # clean up some memory</span>
+
+        <span class="c1"># clean up some memory</span>
+        <span class="k">del</span> <span class="n">lyrics</span>
+
+        <span class="c1"># add expressive features to part</span>
+        <span class="k">for</span> <span class="n">annotation</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">music</span><span class="o">.</span><span class="n">annotations</span> <span class="o">+</span> <span class="n">track</span><span class="o">.</span><span class="n">annotations</span> <span class="o">+</span> <span class="n">note_notations</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">annotation</span><span class="o">.</span><span class="n">time</span><span class="p">):</span>
+
+            <span class="c1"># clean up subtype if necessary</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;subtype&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">clean_up_subtype</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">)</span> <span class="c1"># clean up the subtype</span>
+
+            <span class="c1"># some boolean flags</span>
+            <span class="n">annotation_type</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="n">is_fermata</span> <span class="o">=</span> <span class="p">(</span><span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;Fermata&quot;</span><span class="p">)</span> <span class="c1"># fermata</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">annotation_type</span> <span class="o">==</span> <span class="n">keyword</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Articulation&quot;</span><span class="p">,</span> <span class="s2">&quot;Symbol&quot;</span><span class="p">))):</span> <span class="c1"># instance where fermatas are hidden as articulations</span>
+                <span class="n">is_fermata</span> <span class="o">=</span> <span class="s2">&quot;fermata&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="c1"># Text, TextSpanner</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">annotation_type</span> <span class="o">==</span> <span class="n">keyword</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Text&quot;</span><span class="p">,</span> <span class="s2">&quot;TextSpanner&quot;</span><span class="p">))):</span>
+                <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">TextExpression</span><span class="p">(</span><span class="n">content</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;TextSpanner&quot;</span><span class="p">:</span> <span class="c1"># text spanners</span>
+                    <span class="n">m21_annotation</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">get_duration</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">m21_annotation</span><span class="o">.</span><span class="n">duration</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s2">&quot;zero&quot;</span><span class="p">:</span> <span class="c1"># ignore notes with invalid durations</span>
+                        <span class="k">continue</span>
+
+            <span class="c1"># RehearsalMark</span>
+            <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;RehearsalMark&quot;</span><span class="p">:</span>
+                <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">RehearsalMark</span><span class="p">(</span><span class="n">content</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+            <span class="c1"># Dynamic</span>
+            <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;Dynamic&quot;</span><span class="p">:</span>
+                <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Dynamic</span><span class="o">.</span><span class="n">Dynamic</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">)</span>
+
+            <span class="c1"># Chord Symbol</span>
+            <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;ChordSymbol&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21ChordSymbol</span><span class="p">(</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">root_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span> <span class="c1"># not all chords are supported, so we do our best, and ignore unknown chord symbols</span>
+                    <span class="k">continue</span>
+
+            <span class="c1"># Fermata</span>
+            <span class="k">elif</span> <span class="n">is_fermata</span><span class="p">:</span>
+                <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Fermata</span><span class="p">()</span>
+
+            <span class="c1"># Ornament, Articulation, Symbol, TechAnnotation</span>
+            <span class="k">elif</span> <span class="nb">any</span><span class="p">((</span><span class="n">annotation_type</span> <span class="o">==</span> <span class="n">keyword</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;Ornament&quot;</span><span class="p">,</span> <span class="s2">&quot;Articulation&quot;</span><span class="p">,</span> <span class="s2">&quot;Symbol&quot;</span><span class="p">,</span> <span class="s2">&quot;TechAnnotation&quot;</span><span class="p">))):</span>
+                <span class="k">if</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;TechAnnotation&quot;</span><span class="p">:</span> <span class="c1"># just to make things easier</span>
+                    <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">tech_type</span> <span class="k">if</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">tech_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">text</span> <span class="c1"># add subtype field to techannotation</span>
+                <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">clean_up_subtype</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">)</span> <span class="c1"># clean up the subtype for tech annotation</span>
+                <span class="k">if</span> <span class="s2">&quot;mordent&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span> <span class="c1"># mordent</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="s2">&quot;invert&quot;</span><span class="p">))):</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">InvertedMordent</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c1"># default is normal</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Mordent</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="s2">&quot;trill&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span> <span class="c1"># trill</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">keyword</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;reverse&quot;</span><span class="p">,</span> <span class="s2">&quot;invert&quot;</span><span class="p">))):</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">InvertedTrill</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c1"># default is normal</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Trill</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="s2">&quot;schleifer&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span> <span class="c1"># schleifer</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Schleifer</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="s2">&quot;shake&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span> <span class="c1"># shake</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Shake</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="s2">&quot;tremolo&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span> <span class="c1"># tremolo</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Tremolo</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="s2">&quot;turn&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span> <span class="c1"># turn</span>
+                    <span class="k">if</span> <span class="s2">&quot;reverse&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">InvertedTurn</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c1"># default is normal turn</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Turn</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span> <span class="c1"># unknown ornament or articulation</span>
+                    <span class="k">continue</span>
+
+            <span class="c1"># TrillSpanner, HairPinSpanner, SlurSpanner, GlissandoSpanner, OttavaSpanner, TrillSpanner; anything that spans multiple notes</span>
+            <span class="k">elif</span> <span class="nb">any</span><span class="p">((</span><span class="n">annotation_type</span> <span class="o">==</span> <span class="n">keyword</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;TrillSpanner&quot;</span><span class="p">,</span> <span class="s2">&quot;HairPinSpanner&quot;</span><span class="p">,</span> <span class="s2">&quot;SlurSpanner&quot;</span><span class="p">,</span> <span class="s2">&quot;GlissandoSpanner&quot;</span><span class="p">,</span> <span class="s2">&quot;OttavaSpanner&quot;</span><span class="p">,</span> <span class="s2">&quot;TrillSpanner&quot;</span><span class="p">))):</span>
+                <span class="n">spanned_notes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">note</span><span class="p">:</span> <span class="n">get_time_from_offset</span><span class="p">(</span><span class="n">offset</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">time</span> <span class="ow">and</span> <span class="n">get_time_from_offset</span><span class="p">(</span><span class="n">offset</span> <span class="o">=</span> <span class="n">note</span><span class="o">.</span><span class="n">offset</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">annotation</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">duration</span><span class="p">),</span> <span class="n">part</span><span class="o">.</span><span class="n">getElementsByClass</span><span class="p">(</span><span class="n">M21Note</span><span class="p">)))</span>
+                <span class="c1"># TempoSpanner</span>
+                <span class="k">if</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;TempoSpanner&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span> <span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;accel&quot;</span><span class="p">,</span> <span class="s2">&quot;leg&quot;</span><span class="p">))):</span> <span class="c1"># speed-ups; accelerando, leggiero</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Tempo</span><span class="o">.</span><span class="n">AccelerandoSpanner</span><span class="p">(</span><span class="o">*</span><span class="n">spanned_notes</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c1"># slow-downs; lentando, rallentando, ritardando, smorzando, sostenuto, allargando, etc.; the default</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Tempo</span><span class="o">.</span><span class="n">RitardandoSpanner</span><span class="p">(</span><span class="o">*</span><span class="n">spanned_notes</span><span class="p">)</span>
+                <span class="c1"># HairPinSpanner</span>
+                <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;HairPinSpanner&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="n">keyword</span> <span class="ow">in</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">))</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;dim&quot;</span><span class="p">,</span> <span class="s2">&quot;decres&quot;</span><span class="p">))):</span> <span class="c1"># diminuendo</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Dynamic</span><span class="o">.</span><span class="n">Diminuendo</span><span class="p">(</span><span class="o">*</span><span class="n">spanned_notes</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span> <span class="c1"># crescendo</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Dynamic</span><span class="o">.</span><span class="n">Crescendo</span><span class="p">(</span><span class="o">*</span><span class="n">spanned_notes</span><span class="p">)</span>
+                <span class="c1"># SlurSpanner</span>
+                <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;SlurSpanner&quot;</span><span class="p">:</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Spanner</span><span class="o">.</span><span class="n">Slur</span><span class="p">(</span><span class="o">*</span><span class="n">spanned_notes</span><span class="p">)</span>
+                <span class="c1"># GlissandoSpanner</span>
+                <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;GlissandoSpanner&quot;</span><span class="p">:</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Spanner</span><span class="o">.</span><span class="n">Glissando</span><span class="p">(</span><span class="o">*</span><span class="n">spanned_notes</span><span class="p">,</span> <span class="n">lineType</span> <span class="o">=</span> <span class="s2">&quot;wavy&quot;</span> <span class="k">if</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">is_wavy</span> <span class="k">else</span> <span class="s2">&quot;solid&quot;</span><span class="p">)</span>
+                <span class="c1"># OttavaSpanner</span>
+                <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;OttavaSpanner&quot;</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Spanner</span><span class="o">.</span><span class="n">Ottava</span><span class="p">(</span><span class="nb">type</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">,</span> <span class="n">transposing</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="p">(</span><span class="n">M21Spanner</span><span class="o">.</span><span class="n">SpannerException</span><span class="p">):</span> <span class="c1"># some unknown type of ottava</span>
+                        <span class="k">continue</span>
+                <span class="c1"># TrillSpanner</span>
+                <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;TrillSpanner&quot;</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">spanned_notes</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">TrillExtension</span><span class="p">(</span><span class="n">spanned_notes</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spanned_notes</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="c1"># unknown spanner</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="c1"># Arpeggio</span>
+            <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;Arpeggio&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span> <span class="o">==</span> <span class="s2">&quot;bracket&quot;</span><span class="p">:</span>
+                    <span class="n">arpeggio_type</span> <span class="o">=</span> <span class="s2">&quot;bracket&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;up&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span>
+                    <span class="n">arpeggio_type</span> <span class="o">=</span> <span class="s2">&quot;up&quot;</span>
+                <span class="k">elif</span> <span class="s2">&quot;down&quot;</span> <span class="ow">in</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">:</span>
+                    <span class="n">arpeggio_type</span> <span class="o">=</span> <span class="s2">&quot;down&quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">arpeggio_type</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span>
+                <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">ArpeggioMark</span><span class="p">(</span><span class="n">arpeggioType</span> <span class="o">=</span> <span class="n">arpeggio_type</span><span class="p">)</span>
+
+            <span class="c1"># Tremolo</span>
+            <span class="k">elif</span> <span class="n">annotation_type</span> <span class="o">==</span> <span class="s2">&quot;Tremolo&quot;</span><span class="p">:</span>
+                <span class="n">number_of_marks</span> <span class="o">=</span> <span class="n">sub</span><span class="p">(</span><span class="n">pattern</span> <span class="o">=</span> <span class="s2">&quot;[^\d]&quot;</span><span class="p">,</span> <span class="n">repl</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">string</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">subtype</span><span class="p">)</span>
+                <span class="n">m21_annotation</span> <span class="o">=</span> <span class="n">M21Expression</span><span class="o">.</span><span class="n">Tremolo</span><span class="p">(</span><span class="n">numberOfMarks</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">number_of_marks</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">number_of_marks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">3</span><span class="p">)</span>
+                <span class="k">del</span> <span class="n">number_of_marks</span>
+
+            <span class="c1"># TremoloBar</span>
+            <span class="c1"># elif annotation_type == &quot;TremoloBar&quot;:</span>
+            <span class="c1">#     pass # to be implemented on a later date</span>
+
+            <span class="c1"># ChordLine</span>
+            <span class="c1"># elif annotation_type == &quot;ChordLine&quot;:</span>
+            <span class="c1">#     pass # to be implemented on a later data</span>
+
+            <span class="c1"># Bend</span>
+            <span class="c1"># elif annotation_type == &quot;Bend&quot;:</span>
+            <span class="c1">#     pass # to be implemented on a later date</span>
+
+            <span class="c1"># PedalSpanner</span>
+            <span class="c1"># elif annotation_type == &quot;PedalSpanner&quot;:</span>
+            <span class="c1">#     pass # music21 does not have pedals</span>
+
+            <span class="c1"># VibratoSpanner</span>
+            <span class="c1"># elif annotation_type == &quot;VibratoSpanner&quot;:</span>
+            <span class="c1">#     pass # so rare that this is not worth implementing</span>
+
+            <span class="c1"># if the annotation is unknown, skip it</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># insert annotation into part</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">m21_annotation</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">get_offset</span><span class="p">(</span><span class="n">time</span> <span class="o">=</span> <span class="n">annotation</span><span class="o">.</span><span class="n">time</span><span class="p">)</span>
+                <span class="n">part</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">offsetOrItemOrList</span> <span class="o">=</span> <span class="n">m21_annotation</span><span class="o">.</span><span class="n">offset</span><span class="p">,</span> <span class="n">itemOrNone</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">m21_annotation</span><span class="p">))</span> <span class="c1"># as to avoid the StreamException object * is already found in this Stream</span>
+            <span class="k">except</span> <span class="n">StreamException</span> <span class="k">as</span> <span class="n">stream_exception</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stream_exception</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+
+        <span class="c1"># append the part to score</span>
         <span class="n">score</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
 
+    <span class="c1"># return the score</span>
     <span class="k">return</span> <span class="n">score</span></div>
 </pre></div>
 

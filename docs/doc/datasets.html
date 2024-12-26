@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.datasets &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,9 @@
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -27,12 +31,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html">
-            <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -41,6 +49,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets/index.html">Datasets</a></li>
@@ -53,6 +62,127 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">muspy.datasets</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#base-classes">Base Classes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dataset-classes">Dataset Classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.ABCFolderDataset"><code class="docutils literal notranslate"><span class="pre">ABCFolderDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.ABCFolderDataset.read"><code class="docutils literal notranslate"><span class="pre">ABCFolderDataset.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.ABCFolderDataset.on_the_fly"><code class="docutils literal notranslate"><span class="pre">ABCFolderDataset.on_the_fly()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Dataset.info"><code class="docutils literal notranslate"><span class="pre">Dataset.info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Dataset.citation"><code class="docutils literal notranslate"><span class="pre">Dataset.citation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Dataset.save"><code class="docutils literal notranslate"><span class="pre">Dataset.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Dataset.split"><code class="docutils literal notranslate"><span class="pre">Dataset.split()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Dataset.to_pytorch_dataset"><code class="docutils literal notranslate"><span class="pre">Dataset.to_pytorch_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Dataset.to_tensorflow_dataset"><code class="docutils literal notranslate"><span class="pre">Dataset.to_tensorflow_dataset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.DatasetInfo"><code class="docutils literal notranslate"><span class="pre">DatasetInfo</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.EMOPIADataset"><code class="docutils literal notranslate"><span class="pre">EMOPIADataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.EMOPIADataset.get_raw_filenames"><code class="docutils literal notranslate"><span class="pre">EMOPIADataset.get_raw_filenames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.EMOPIADataset.read"><code class="docutils literal notranslate"><span class="pre">EMOPIADataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.EssenFolkSongDatabase"><code class="docutils literal notranslate"><span class="pre">EssenFolkSongDatabase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.FolderDataset"><code class="docutils literal notranslate"><span class="pre">FolderDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.root"><code class="docutils literal notranslate"><span class="pre">FolderDataset.root</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.converted_dir"><code class="docutils literal notranslate"><span class="pre">FolderDataset.converted_dir</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.read"><code class="docutils literal notranslate"><span class="pre">FolderDataset.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.load"><code class="docutils literal notranslate"><span class="pre">FolderDataset.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.exists"><code class="docutils literal notranslate"><span class="pre">FolderDataset.exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.converted_exists"><code class="docutils literal notranslate"><span class="pre">FolderDataset.converted_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.get_converted_filenames"><code class="docutils literal notranslate"><span class="pre">FolderDataset.get_converted_filenames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.use_converted"><code class="docutils literal notranslate"><span class="pre">FolderDataset.use_converted()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.get_raw_filenames"><code class="docutils literal notranslate"><span class="pre">FolderDataset.get_raw_filenames()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.on_the_fly"><code class="docutils literal notranslate"><span class="pre">FolderDataset.on_the_fly()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.FolderDataset.convert"><code class="docutils literal notranslate"><span class="pre">FolderDataset.convert()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.HaydnOp20Dataset"><code class="docutils literal notranslate"><span class="pre">HaydnOp20Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.HaydnOp20Dataset.read"><code class="docutils literal notranslate"><span class="pre">HaydnOp20Dataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.HymnalDataset"><code class="docutils literal notranslate"><span class="pre">HymnalDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.HymnalDataset.read"><code class="docutils literal notranslate"><span class="pre">HymnalDataset.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.HymnalDataset.download"><code class="docutils literal notranslate"><span class="pre">HymnalDataset.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.HymnalTuneDataset"><code class="docutils literal notranslate"><span class="pre">HymnalTuneDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.HymnalTuneDataset.read"><code class="docutils literal notranslate"><span class="pre">HymnalTuneDataset.read()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.HymnalTuneDataset.download"><code class="docutils literal notranslate"><span class="pre">HymnalTuneDataset.download()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.JSBChoralesDataset"><code class="docutils literal notranslate"><span class="pre">JSBChoralesDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.JSBChoralesDataset.read"><code class="docutils literal notranslate"><span class="pre">JSBChoralesDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.LakhMIDIAlignedDataset"><code class="docutils literal notranslate"><span class="pre">LakhMIDIAlignedDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.LakhMIDIAlignedDataset.read"><code class="docutils literal notranslate"><span class="pre">LakhMIDIAlignedDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.LakhMIDIDataset"><code class="docutils literal notranslate"><span class="pre">LakhMIDIDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.LakhMIDIDataset.read"><code class="docutils literal notranslate"><span class="pre">LakhMIDIDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.LakhMIDIMatchedDataset"><code class="docutils literal notranslate"><span class="pre">LakhMIDIMatchedDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.LakhMIDIMatchedDataset.read"><code class="docutils literal notranslate"><span class="pre">LakhMIDIMatchedDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.MAESTRODatasetV1"><code class="docutils literal notranslate"><span class="pre">MAESTRODatasetV1</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.MAESTRODatasetV1.read"><code class="docutils literal notranslate"><span class="pre">MAESTRODatasetV1.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.MAESTRODatasetV2"><code class="docutils literal notranslate"><span class="pre">MAESTRODatasetV2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.MAESTRODatasetV2.read"><code class="docutils literal notranslate"><span class="pre">MAESTRODatasetV2.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.MAESTRODatasetV3"><code class="docutils literal notranslate"><span class="pre">MAESTRODatasetV3</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.MAESTRODatasetV3.read"><code class="docutils literal notranslate"><span class="pre">MAESTRODatasetV3.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.Music21Dataset"><code class="docutils literal notranslate"><span class="pre">Music21Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.Music21Dataset.convert"><code class="docutils literal notranslate"><span class="pre">Music21Dataset.convert()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.MusicDataset"><code class="docutils literal notranslate"><span class="pre">MusicDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.MusicDataset.root"><code class="docutils literal notranslate"><span class="pre">MusicDataset.root</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.MusicDataset.filenames"><code class="docutils literal notranslate"><span class="pre">MusicDataset.filenames</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.MusicNetDataset"><code class="docutils literal notranslate"><span class="pre">MusicNetDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.MusicNetDataset.read"><code class="docutils literal notranslate"><span class="pre">MusicNetDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.NESMusicDatabase"><code class="docutils literal notranslate"><span class="pre">NESMusicDatabase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.NESMusicDatabase.read"><code class="docutils literal notranslate"><span class="pre">NESMusicDatabase.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.NottinghamDatabase"><code class="docutils literal notranslate"><span class="pre">NottinghamDatabase</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.RemoteABCFolderDataset"><code class="docutils literal notranslate"><span class="pre">RemoteABCFolderDataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.RemoteDataset"><code class="docutils literal notranslate"><span class="pre">RemoteDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteDataset.root"><code class="docutils literal notranslate"><span class="pre">RemoteDataset.root</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteDataset.exists"><code class="docutils literal notranslate"><span class="pre">RemoteDataset.exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteDataset.source_exists"><code class="docutils literal notranslate"><span class="pre">RemoteDataset.source_exists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteDataset.download"><code class="docutils literal notranslate"><span class="pre">RemoteDataset.download()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteDataset.extract"><code class="docutils literal notranslate"><span class="pre">RemoteDataset.extract()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteDataset.download_and_extract"><code class="docutils literal notranslate"><span class="pre">RemoteDataset.download_and_extract()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.RemoteFolderDataset"><code class="docutils literal notranslate"><span class="pre">RemoteFolderDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteFolderDataset.root"><code class="docutils literal notranslate"><span class="pre">RemoteFolderDataset.root</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteFolderDataset.read"><code class="docutils literal notranslate"><span class="pre">RemoteFolderDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.RemoteMusicDataset"><code class="docutils literal notranslate"><span class="pre">RemoteMusicDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteMusicDataset.root"><code class="docutils literal notranslate"><span class="pre">RemoteMusicDataset.root</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.RemoteMusicDataset.filenames"><code class="docutils literal notranslate"><span class="pre">RemoteMusicDataset.filenames</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.WikifoniaDataset"><code class="docutils literal notranslate"><span class="pre">WikifoniaDataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#muspy.datasets.WikifoniaDataset.read"><code class="docutils literal notranslate"><span class="pre">WikifoniaDataset.read()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.get_dataset"><code class="docutils literal notranslate"><span class="pre">get_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#muspy.datasets.list_datasets"><code class="docutils literal notranslate"><span class="pre">list_datasets()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="external.html">muspy.external</a></li>
@@ -79,9 +209,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="index.html">Technical Documentation</a> &raquo;</li>
-      <li>muspy.datasets</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Technical Documentation</a></li>
+      <li class="breadcrumb-item active">muspy.datasets</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/salu133445/muspy/blob/master/doc/source/doc/datasets.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -92,14 +222,14 @@
            <div itemprop="articleBody">
              
   <section id="module-muspy.datasets">
-<span id="muspy-datasets"></span><h1>muspy.datasets<a class="headerlink" href="#module-muspy.datasets" title="Permalink to this headline"></a></h1>
+<span id="muspy-datasets"></span><h1>muspy.datasets<a class="headerlink" href="#module-muspy.datasets" title="Permalink to this heading"></a></h1>
 <p>Dataset classes.</p>
 <p>This module provides an easy-to-use dataset management system. Each
 supported dataset in MusPy comes with a class inherited from the base
 MusPy Dataset class. It also provides interfaces to PyTorch and
 TensorFlow for creating input pipelines for machine learning.</p>
 <section id="base-classes">
-<h2>Base Classes<a class="headerlink" href="#base-classes" title="Permalink to this headline"></a></h2>
+<h2>Base Classes<a class="headerlink" href="#base-classes" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>ABCFolderDataset</p></li>
 <li><p>Dataset</p></li>
@@ -113,7 +243,7 @@ TensorFlow for creating input pipelines for machine learning.</p>
 </ul>
 </section>
 <section id="dataset-classes">
-<h2>Dataset Classes<a class="headerlink" href="#dataset-classes" title="Permalink to this headline"></a></h2>
+<h2>Dataset Classes<a class="headerlink" href="#dataset-classes" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>EssenFolkSongDatabase</p></li>
 <li><p>EMOPIADataset</p></li>
@@ -132,6 +262,7 @@ TensorFlow for creating input pipelines for machine learning.</p>
 <li><p>NottinghamDatabase</p></li>
 <li><p>WikifoniaDataset</p></li>
 </ul>
+</section>
 <dl class="py class">
 <dt class="sig sig-object py" id="muspy.datasets.ABCFolderDataset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">muspy.datasets.</span></span><span class="sig-name descname"><span class="pre">ABCFolderDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convert</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_converted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#ABCFolderDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.ABCFolderDataset" title="Permalink to this definition"></a></dt>
@@ -154,11 +285,8 @@ TensorFlow for creating input pipelines for machine learning.</p>
 <span class="sig-name descname"><span class="pre">on_the_fly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#ABCFolderDataset.on_the_fly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.ABCFolderDataset.on_the_fly" title="Permalink to this definition"></a></dt>
 <dd><p>Enable on-the-fly mode and convert the data on the fly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -192,16 +320,16 @@ the size of the dataset. <code class="docutils literal notranslate"><span class=
 <span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.Dataset.save" title="Permalink to this definition"></a></dt>
 <dd><p>Save all the music objects to a directory.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory to save the data.</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory to save the data.</p></li>
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>default: 'json'</em>) – File format to save the data.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
 disable multiprocessing.</p></li>
-<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This
+<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="muspy.html#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a>.</p></li>
 </ul>
 </dd>
@@ -213,18 +341,18 @@ corrupted.</p></li>
 <span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.Dataset.split" title="Permalink to this definition"></a></dt>
 <dd><p>Return the dataset as a PyTorch dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – If given and exists, path to the file to read the split
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – If given and exists, path to the file to read the split
 from. If None or not exists, path to save the split.</p></li>
-<li><p><strong>splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>list of float</em><em>, </em><em>optional</em>) – Ratios for train-test-validation splits. If None, return the
+<li><p><strong>splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Ratios for train-test-validation splits. If None, return the
 full dataset as a whole. If float, return train and test
 splits. If list of two floats, return train and test splits.
 If list of three floats, return train, test and validation
 splits.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>array_like</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random state used to create the splits. If int or
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>array_like</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random state used to create the splits. If int or
 array_like, the value is passed to
-<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, and the created
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, and the created
 RandomState object is used to create the splits. If
 RandomState, it will be used to create the splits.</p></li>
 </ul>
@@ -237,30 +365,30 @@ RandomState, it will be used to create the splits.</p></li>
 <span class="sig-name descname"><span class="pre">to_pytorch_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.to_pytorch_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.Dataset.to_pytorch_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Return the dataset as a PyTorch dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>factory</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to be applied to the Music objects. The input is a
 Music object, and the output is an array or a tensor.</p></li>
-<li><p><strong>representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Target representation. See <a class="reference internal" href="muspy.html#muspy.to_representation" title="muspy.to_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_representation()</span></code></a>
+<li><p><strong>representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Target representation. See <a class="reference internal" href="muspy.html#muspy.to_representation" title="muspy.to_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_representation()</span></code></a>
 for available representation.</p></li>
-<li><p><strong>split_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – If given and exists, path to the file to read the split
+<li><p><strong>split_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – If given and exists, path to the file to read the split
 from. If None or not exists, path to save the split.</p></li>
-<li><p><strong>splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>list of float</em><em>, </em><em>optional</em>) – Ratios for train-test-validation splits. If None, return the
+<li><p><strong>splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Ratios for train-test-validation splits. If None, return the
 full dataset as a whole. If float, return train and test
 splits. If list of two floats, return train and test splits.
 If list of three floats, return train, test and validation
 splits.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>array_like</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random state used to create the splits. If int or
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>array_like</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random state used to create the splits. If int or
 array_like, the value is passed to
-<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, and the created
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, and the created
 RandomState object is used to create the splits. If
 RandomState, it will be used to create the splits.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Converted PyTorch dataset(s).</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>class:torch.utils.data.Dataset` or Dict of                 :class:torch.utils.data.Dataset`</p>
 </dd>
 </dl>
@@ -271,27 +399,27 @@ RandomState, it will be used to create the splits.</p></li>
 <span class="sig-name descname"><span class="pre">to_tensorflow_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">representation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#Dataset.to_tensorflow_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.Dataset.to_tensorflow_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Return the dataset as a TensorFlow dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>factory</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Function to be applied to the Music objects. The input is a
 Music object, and the output is an array or a tensor.</p></li>
-<li><p><strong>representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em>, </em><em>optional</em>) – Target representation. See <a class="reference internal" href="muspy.html#muspy.to_representation" title="muspy.to_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_representation()</span></code></a>
+<li><p><strong>representation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Target representation. See <a class="reference internal" href="muspy.html#muspy.to_representation" title="muspy.to_representation"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.to_representation()</span></code></a>
 for available representation.</p></li>
-<li><p><strong>split_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – If given and exists, path to the file to read the split
+<li><p><strong>split_filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em><em>, </em><em>optional</em>) – If given and exists, path to the file to read the split
 from. If None or not exists, path to save the split.</p></li>
-<li><p><strong>splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.10)"><em>float</em></a><em> or </em><em>list of float</em><em>, </em><em>optional</em>) – Ratios for train-test-validation splits. If None, return the
+<li><p><strong>splits</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a><em>, </em><em>optional</em>) – Ratios for train-test-validation splits. If None, return the
 full dataset as a whole. If float, return train and test
 splits. If list of two floats, return train and test splits.
 If list of three floats, return train, test and validation
 splits.</p></li>
-<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>array_like</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random state used to create the splits. If int or
+<li><p><strong>random_state</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>array_like</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random state used to create the splits. If int or
 array_like, the value is passed to
-<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v1.22)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, and the created
+<a class="reference external" href="https://numpy.org/doc/stable/reference/random/legacy.html#numpy.random.RandomState" title="(in NumPy v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.random.RandomState</span></code></a>, and the created
 RandomState object is used to create the splits. If
 RandomState, it will be used to create the splits.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
 <li><p>class:tensorflow.data.Dataset` or Dict of</p></li>
 <li><p>class:tensorflow.data.dataset` – Converted TensorFlow dataset(s).</p></li>
@@ -349,24 +477,24 @@ object.</p>
 <span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#muspy.datasets.FolderDataset.root" title="Permalink to this definition"></a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a> or Path</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> or Path</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>convert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to convert the dataset to MusPy JSON/YAML files. If
+<li><p><strong>convert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to convert the dataset to MusPy JSON/YAML files. If
 False, will check if converted data exists. If so, disable
 on-the-fly mode. If not, enable on-the-fly mode and warns.</p></li>
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>default: 'json'</em>) – File format to save the data.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
 disable multiprocessing.</p></li>
-<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This can
+<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This can
 be helpful if some source files are known to be corrupted.</p></li>
-<li><p><strong>use_converted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Force to disable on-the-fly mode and use converted data.
+<li><p><strong>use_converted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Force to disable on-the-fly mode and use converted data.
 Defaults to True if converted data exist, otherwise False.</p></li>
 </ul>
 </dd>
@@ -436,11 +564,8 @@ sample is loaded from the precomputed converted data.</p>
 <span class="sig-name descname"><span class="pre">use_converted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#FolderDataset.use_converted"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.FolderDataset.use_converted" title="Permalink to this definition"></a></dt>
 <dd><p>Disable on-the-fly mode and use converted data.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -456,11 +581,8 @@ sample is loaded from the precomputed converted data.</p>
 <span class="sig-name descname"><span class="pre">on_the_fly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#FolderDataset.on_the_fly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.FolderDataset.on_the_fly" title="Permalink to this definition"></a></dt>
 <dd><p>Enable on-the-fly mode and convert the data on the fly.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -474,23 +596,20 @@ sample is loaded from the precomputed converted data.</p>
 <code class="docutils literal notranslate"><span class="pre">filenames</span></code> attribute. For example, the file at
 <code class="docutils literal notranslate"><span class="pre">filenames[i]</span></code> will be converted and saved to <code class="docutils literal notranslate"><span class="pre">{i}.json</span></code>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>default: 'json'</em>) – File format to save the data.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
 disable multiprocessing.</p></li>
-<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This
+<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
 <li><p><strong>**kwargs</strong> – Keyword arguments to pass to <a class="reference internal" href="muspy.html#muspy.save" title="muspy.save"><code class="xref py py-func docutils literal notranslate"><span class="pre">muspy.save()</span></code></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Object itself.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -524,11 +643,8 @@ corrupted.</p></li>
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/hymnal.html#HymnalDataset.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.HymnalDataset.download" title="Permalink to this definition"></a></dt>
 <dd><p>Download the source datasets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -550,11 +666,8 @@ corrupted.</p></li>
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/hymnal.html#HymnalTuneDataset.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.HymnalTuneDataset.download" title="Permalink to this definition"></a></dt>
 <dd><p>Download the source datasets.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>Object itself.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -650,11 +763,11 @@ corrupted.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">muspy.datasets.</span></span><span class="sig-name descname"><span class="pre">Music21Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">composer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/music21.html#Music21Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.Music21Dataset" title="Permalink to this definition"></a></dt>
 <dd><p>A class of datasets containing files in music21 corpus.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>composer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Name of a composer or a collection. Please refer to the music21
+<li><p><strong>composer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Name of a composer or a collection. Please refer to the music21
 corpus reference page for a full list [1].</p></li>
-<li><p><strong>extensions</strong> (<em>list of str</em>) – File extensions of desired files.</p></li>
+<li><p><strong>extensions</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – File extensions of desired files.</p></li>
 </ul>
 </dd>
 </dl>
@@ -665,13 +778,13 @@ corpus reference page for a full list [1].</p></li>
 <span class="sig-name descname"><span class="pre">convert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_exceptions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/music21.html#Music21Dataset.convert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.Music21Dataset.convert" title="Permalink to this definition"></a></dt>
 <dd><p>Convert and save the Music objects.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory to save the data.</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory to save the data.</p></li>
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>default: 'json'</em>) – File format to save the data.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
 disable multiprocessing.</p></li>
-<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This
+<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This
 can be helpful if some source files are known to be
 corrupted.</p></li>
 </ul>
@@ -686,9 +799,9 @@ corrupted.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">muspy.datasets.</span></span><span class="sig-name descname"><span class="pre">MusicDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#MusicDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.MusicDataset" title="Permalink to this definition"></a></dt>
 <dd><p>Class for datasets of MusPy JSON/YAML files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory of the dataset.</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory of the dataset.</p></li>
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – File formats to include in the dataset. Defaults to include
 both JSON and YAML files.</p></li>
 </ul>
@@ -699,7 +812,7 @@ both JSON and YAML files.</p></li>
 <span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#muspy.datasets.MusicDataset.root" title="Permalink to this definition"></a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Path</p>
 </dd>
 </dl>
@@ -710,8 +823,8 @@ both JSON and YAML files.</p></li>
 <span class="sig-name descname"><span class="pre">filenames</span></span><a class="headerlink" href="#muspy.datasets.MusicDataset.filenames" title="Permalink to this definition"></a></dt>
 <dd><p>Path to the files, relative to <cite>root</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of Path</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a> of Path</p>
 </dd>
 </dl>
 </dd></dl>
@@ -784,22 +897,22 @@ set the class attribute <code class="docutils literal notranslate"><span class="
 <span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#muspy.datasets.RemoteDataset.root" title="Permalink to this definition"></a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a> or Path</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> or Path</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
+<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises</dt>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>RuntimeError:</strong> – If <code class="docutils literal notranslate"><span class="pre">download_and_extract</span></code> is False but file
     <code class="docutils literal notranslate"><span class="pre">{root}/.muspy.success</span></code> does not exist (see below).</p>
 </dd>
@@ -861,17 +974,14 @@ following information of each source file.</p>
 <span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteDataset.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.RemoteDataset.download" title="Permalink to this definition"></a></dt>
 <dd><p>Download the dataset source(s).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Object itself.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -881,17 +991,14 @@ following information of each source file.</p>
 <span class="sig-name descname"><span class="pre">extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteDataset.extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.RemoteDataset.extract" title="Permalink to this definition"></a></dt>
 <dd><p>Extract the downloaded archive(s).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive after extraction.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive after extraction.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Object itself.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -901,18 +1008,15 @@ following information of each source file.</p>
 <span class="sig-name descname"><span class="pre">download_and_extract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteDataset.download_and_extract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.RemoteDataset.download_and_extract" title="Permalink to this definition"></a></dt>
 <dd><p>Download source datasets and extract the downloaded archives.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to be verbose.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Object itself.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Object itself.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -928,26 +1032,26 @@ following information of each source file.</p>
 <span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#muspy.datasets.RemoteFolderDataset.root" title="Permalink to this definition"></a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)">str</a> or Path</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> or Path</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
-<li><p><strong>convert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to convert the dataset to MusPy JSON/YAML files. If
+<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
+<li><p><strong>convert</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to convert the dataset to MusPy JSON/YAML files. If
 False, will check if converted data exists. If so, disable
 on-the-fly mode. If not, enable on-the-fly mode and warns.</p></li>
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>default: 'json'</em>) – File format to save the data.</p></li>
-<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
+<li><p><strong>n_jobs</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>default: 1</em>) – Maximum number of concurrently running jobs. If equal to 1,
 disable multiprocessing.</p></li>
-<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This can
+<li><p><strong>ignore_exceptions</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: True</em>) – Whether to ignore errors and skip failed conversions. This can
 be helpful if some source files are known to be corrupted.</p></li>
-<li><p><strong>use_converted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>optional</em>) – Force to disable on-the-fly mode and use converted data.
+<li><p><strong>use_converted</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) – Force to disable on-the-fly mode and use converted data.
 Defaults to True if converted data exist, otherwise False.</p></li>
 </ul>
 </dd>
@@ -974,12 +1078,12 @@ Defaults to True if converted data exist, otherwise False.</p></li>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">muspy.datasets.</span></span><span class="sig-name descname"><span class="pre">RemoteMusicDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">download_and_extract</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cleanup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/base.html#RemoteMusicDataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.RemoteMusicDataset" title="Permalink to this definition"></a></dt>
 <dd><p>Base class for remote datasets of MusPy JSON/YAML files.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory of the dataset.</p></li>
-<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
-<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
-<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
+<li><p><strong>root</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><em>Path</em>) – Root directory of the dataset.</p></li>
+<li><p><strong>download_and_extract</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to download and extract the dataset.</p></li>
+<li><p><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to overwrite existing file(s).</p></li>
+<li><p><strong>cleanup</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>default: False</em>) – Whether to remove the source archive(s).</p></li>
 <li><p><strong>kind</strong> (<em>{'json'</em><em>, </em><em>'yaml'}</em><em>, </em><em>optional</em>) – File formats to include in the dataset. Defaults to include
 both JSON and YAML files.</p></li>
 <li><p><strong>verbose</strong> (<em>bool. default: True</em>) – Whether to be verbose.</p></li>
@@ -991,7 +1095,7 @@ both JSON and YAML files.</p></li>
 <span class="sig-name descname"><span class="pre">root</span></span><a class="headerlink" href="#muspy.datasets.RemoteMusicDataset.root" title="Permalink to this definition"></a></dt>
 <dd><p>Root directory of the dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Path</p>
 </dd>
 </dl>
@@ -1002,8 +1106,8 @@ both JSON and YAML files.</p></li>
 <span class="sig-name descname"><span class="pre">filenames</span></span><a class="headerlink" href="#muspy.datasets.RemoteMusicDataset.filenames" title="Permalink to this definition"></a></dt>
 <dd><p>Path to the files, relative to <cite>root</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of Path</p>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)">list</a> of Path</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1036,14 +1140,11 @@ both JSON and YAML files.</p></li>
 <span class="sig-prename descclassname"><span class="pre">muspy.datasets.</span></span><span class="sig-name descname"><span class="pre">get_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/wrapper.html#get_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.get_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Return a certain dataset class by key.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><em>str</em></a>) – Dataset key (case-insensitive).</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Dataset key (case-insensitive).</p>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p></p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>The corresponding dataset class.</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>The corresponding dataset class.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1053,16 +1154,12 @@ both JSON and YAML files.</p></li>
 <span class="sig-prename descclassname"><span class="pre">muspy.datasets.</span></span><span class="sig-name descname"><span class="pre">list_datasets</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/muspy/datasets/wrapper.html#list_datasets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#muspy.datasets.list_datasets" title="Permalink to this definition"></a></dt>
 <dd><p>Return all supported dataset classes as a list.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p></p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>A list of all supported dataset classes.</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A list of all supported dataset classes.</p>
 </dd>
 </dl>
 </dd></dl>
 
-</section>
 </section>
 
 

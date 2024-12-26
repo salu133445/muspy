@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>muspy.annotations &mdash; MusPy  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../annotations/index.html">Annotations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../io/index.html">Input/Output Interfaces</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../representations/index.html">Representations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../synthesis.html">Synthesis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">Visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../metrics.html">Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../doc/index.html">Technical Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MusPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.annotations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for muspy.annotations</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Annotation classes.</span>
+
+<span class="sd">This module defines the annotation classes of MusPy,</span>
+<span class="sd">which represent expression markings present in music.</span>
+
+<span class="sd">Classes</span>
+<span class="sd">-------</span>
+
+<span class="sd">- Arpeggio</span>
+<span class="sd">- Articulation</span>
+<span class="sd">- Bend</span>
+<span class="sd">- ChordLine</span>
+<span class="sd">- ChordSymbol</span>
+<span class="sd">- Dynamic</span>
+<span class="sd">- Fermata</span>
+<span class="sd">- GlissandoSpanner</span>
+<span class="sd">- HairPinSpanner</span>
+<span class="sd">- Notehead</span>
+<span class="sd">- Ornament</span>
+<span class="sd">- OttavaSpanner</span>
+<span class="sd">- PedalSpanner</span>
+<span class="sd">- Point</span>
+<span class="sd">- RehearsalMark</span>
+<span class="sd">- SlurSpanner</span>
+<span class="sd">- Spanner</span>
+<span class="sd">- Subtype</span>
+<span class="sd">- SubtypeSpanner</span>
+<span class="sd">- Symbol</span>
+<span class="sd">- TechAnnotation</span>
+<span class="sd">- TempoSpanner</span>
+<span class="sd">- Text</span>
+<span class="sd">- TextSpanner</span>
+<span class="sd">- Tremolo</span>
+<span class="sd">- TremoloBar</span>
+<span class="sd">- TrillSpanner</span>
+<span class="sd">- VibratoSpanner</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
+<span class="kn">from</span> <span class="nn">.classes</span> <span class="kn">import</span> <span class="n">DEFAULT_VELOCITY</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Arpeggio&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Articulation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Bend&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ChordLine&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ChordSymbol&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dynamic&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Fermata&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GlissandoSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;HairPinSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Notehead&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Ornament&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;OttavaSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PedalSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Point&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RehearsalMark&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SlurSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Spanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Subtype&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SubtypeSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Symbol&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TechAnnotation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TempoSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Text&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TextSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Tremolo&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TremoloBar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TrillSpanner&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;VibratoSpanner&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># pylint: disable=super-init-not-called</span>
+
+
+<div class="viewcode-block" id="Text"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Text">[docs]</a><span class="k">class</span> <span class="nc">Text</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for text.</span>
+<span class="sd">    Meant to be stored as an annotation, so the class itself has no timestamp (the timestamp is stored in the annotation object).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text : str</span>
+<span class="sd">        The text contained in the text element.</span>
+<span class="sd">    is_system : bool, default: False</span>
+<span class="sd">        Is this text system-wide (True) or just for a specific staff (False)?</span>
+<span class="sd">    style : str, optional</span>
+<span class="sd">        The style of the text element.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_system</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">is_system</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">style</span></div>
+
+
+<div class="viewcode-block" id="Subtype"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Subtype">[docs]</a><span class="k">class</span> <span class="nc">Subtype</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for objects with the a subtype attribute.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : Any</span>
+<span class="sd">        The subtype attribute.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span></div>
+
+
+<div class="viewcode-block" id="RehearsalMark"><a class="viewcode-back" href="../../doc/muspy.html#muspy.RehearsalMark">[docs]</a><span class="k">class</span> <span class="nc">RehearsalMark</span><span class="p">(</span><span class="n">Text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for rehearsal marks.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text : str</span>
+<span class="sd">        The text contained in the text element.</span>
+<span class="sd">    is_system : bool, default: True</span>
+<span class="sd">        Is this text system-wide (True) or just for a specific staff (False)?</span>
+<span class="sd">    style : str, optional</span>
+<span class="sd">        The style of the text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">,</span> <span class="n">is_system</span> <span class="o">=</span> <span class="n">is_system</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="n">style</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChordSymbol"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ChordSymbol">[docs]</a><span class="k">class</span> <span class="nc">ChordSymbol</span><span class="p">(</span><span class="n">Text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for chord symbols.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root_str : str</span>
+<span class="sd">        Root pitch as a string, useful for distinguishing, e.g., C# and Db.</span>
+<span class="sd">    name : str, default: &#39;Maj&#39;</span>
+<span class="sd">        The text contained in the chord symbol element.</span>
+<span class="sd">    text : str, optional</span>
+<span class="sd">        The full text contained in the chord symbol.</span>
+<span class="sd">    is_system : bool, default: False</span>
+<span class="sd">        Is this text system-wide (True) or just for a specific staff (False)?</span>
+<span class="sd">    style : str, optional</span>
+<span class="sd">        The style of the text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;root_str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Maj&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="n">root_str</span> <span class="o">+</span> <span class="p">(</span><span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">text</span><span class="p">,</span> <span class="n">is_system</span> <span class="o">=</span> <span class="n">is_system</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="n">style</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_str</span> <span class="o">=</span> <span class="n">root_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="TechAnnotation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.TechAnnotation">[docs]</a><span class="k">class</span> <span class="nc">TechAnnotation</span><span class="p">(</span><span class="n">Text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for technical annotations.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    text : str</span>
+<span class="sd">        The text contained in the text element.</span>
+<span class="sd">    tech_type : str, optional</span>
+<span class="sd">        The type of technical annotation to play.</span>
+<span class="sd">    is_system : bool, default: False</span>
+<span class="sd">        Is this text system-wide (True) or just for a specific staff (False)?</span>
+<span class="sd">    style : str, optional</span>
+<span class="sd">        The style of the text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;tech_type&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;tech_type&quot;</span><span class="p">,</span> <span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tech_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">is_system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">,</span> <span class="n">is_system</span> <span class="o">=</span> <span class="n">is_system</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="n">style</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tech_type</span> <span class="o">=</span> <span class="n">tech_type</span></div>
+
+
+<div class="viewcode-block" id="Dynamic"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Dynamic">[docs]</a><span class="k">class</span> <span class="nc">Dynamic</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for dynamic markings.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str</span>
+<span class="sd">        The type of dynamic.</span>
+<span class="sd">    velocity : int, default: `muspy.DEFAULT_VELOCITY` (64)</span>
+<span class="sd">        The velocity associated with the dynamic marking.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">DEFAULT_VELOCITY</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span></div>
+
+
+<div class="viewcode-block" id="Fermata"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Fermata">[docs]</a><span class="k">class</span> <span class="nc">Fermata</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for fermatas.</span>
+<span class="sd">    Meant to be stored as an annotation, so the class itself has no timestamp (the timestamp is stored in the annotation object).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    is_fermata_above : bool, default: True</span>
+<span class="sd">        Whether this fermata is above or below the note to which it applies.</span>
+<span class="sd">    subtype : str, optional</span>
+<span class="sd">        The subtype of fermata contained in the text element.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;is_fermata_above&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_fermata_above&quot;</span><span class="p">,</span> <span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_fermata_above</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_fermata_above</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">is_fermata_above</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subtype</span> <span class="o">=</span> <span class="s2">&quot;fermata above&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fermata_above</span> <span class="k">else</span> <span class="s2">&quot;fermata below&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Arpeggio"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Arpeggio">[docs]</a><span class="k">class</span> <span class="nc">Arpeggio</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for arpeggios.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str, default: &#39;default&#39;</span>
+<span class="sd">        Arpeggio subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;default&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Tremolo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Tremolo">[docs]</a><span class="k">class</span> <span class="nc">Tremolo</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for tremolos.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str, default: &#39;r8&#39;</span>
+<span class="sd">        Tremolo subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;r8&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ChordLine"><a class="viewcode-back" href="../../doc/muspy.html#muspy.ChordLine">[docs]</a><span class="k">class</span> <span class="nc">ChordLine</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for MuseScore ChordLines.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str, default: &#39;fall&#39;</span>
+<span class="sd">        Subtype of the ChordLine.</span>
+<span class="sd">    is_straight : bool, default: False</span>
+<span class="sd">        Is the ChordLine straight?</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_straight&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="s2">&quot;is_straight&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fall&quot;</span><span class="p">,</span> <span class="n">is_straight</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_straight</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">is_straight</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ornament"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Ornament">[docs]</a><span class="k">class</span> <span class="nc">Ornament</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for ornaments.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str</span>
+<span class="sd">        Ornament subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Articulation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Articulation">[docs]</a><span class="k">class</span> <span class="nc">Articulation</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for articulations.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str</span>
+<span class="sd">        Articulation subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Notehead"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Notehead">[docs]</a><span class="k">class</span> <span class="nc">Notehead</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for noteheads.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str</span>
+<span class="sd">        Notehead subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Symbol"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Symbol">[docs]</a><span class="k">class</span> <span class="nc">Symbol</span><span class="p">(</span><span class="n">Subtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for symbols.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subtype : str</span>
+<span class="sd">        Symbol subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Point"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Point">[docs]</a><span class="k">class</span> <span class="nc">Point</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for MuseScore Point objects.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int</span>
+<span class="sd">        The time of the point (in time steps).</span>
+<span class="sd">    pitch : int</span>
+<span class="sd">        The pitch of the point.</span>
+<span class="sd">    vibrato : int, default: 0</span>
+<span class="sd">        The vibrato.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;pitch&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;vibrato&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;vibrato&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pitch</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">vibrato</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pitch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vibrato</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">vibrato</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Bend"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Bend">[docs]</a><span class="k">class</span> <span class="nc">Bend</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for bends.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : List[:class:`muspy.Point`]</span>
+<span class="sd">        List of points that make up the bend.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;points&quot;</span><span class="p">,</span> <span class="n">Point</span><span class="p">)])</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span></div>
+
+
+<div class="viewcode-block" id="TremoloBar"><a class="viewcode-back" href="../../doc/muspy.html#muspy.TremoloBar">[docs]</a><span class="k">class</span> <span class="nc">TremoloBar</span><span class="p">(</span><span class="n">Bend</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for MuseScore TremoloBar objects.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : List[:class:`muspy.Point`]</span>
+<span class="sd">        List of points that make up the TremoloBar.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;points&quot;</span><span class="p">,</span> <span class="n">Point</span><span class="p">)])</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;points&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Point</span><span class="p">]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Spanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Spanner">[docs]</a><span class="k">class</span> <span class="nc">Spanner</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A parent-class container for MuseScore Spanners.</span>
+<span class="sd">    Meant to be stored as an annotation, so the class itself has no timestamp (the timestamp is stored in the annotation object).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span></div>
+
+
+<div class="viewcode-block" id="SubtypeSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.SubtypeSpanner">[docs]</a><span class="k">class</span> <span class="nc">SubtypeSpanner</span><span class="p">(</span><span class="n">Subtype</span><span class="p">,</span> <span class="n">Spanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for spanners whose only attribute is a subtype.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    subtype : Any</span>
+<span class="sd">        Subtype.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">object</span><span class="p">):</span>
+        <span class="n">Subtype</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span>
+        <span class="n">Spanner</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TempoSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.TempoSpanner">[docs]</a><span class="k">class</span> <span class="nc">TempoSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for spanners relating to a tempo change.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    subtype : str</span>
+<span class="sd">        Type of tempo change.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TextSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.TextSpanner">[docs]</a><span class="k">class</span> <span class="nc">TextSpanner</span><span class="p">(</span><span class="n">Text</span><span class="p">,</span> <span class="n">Spanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for text that spans a specific duration.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    text : str</span>
+<span class="sd">        The text contained in the text element.</span>
+<span class="sd">    is_system : bool, default: False</span>
+<span class="sd">        Is this text system-wide (True) or just for a specific staff (False)?</span>
+<span class="sd">    style : str, optional</span>
+<span class="sd">        The style of the text.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;style&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_system&quot;</span><span class="p">,</span> <span class="s2">&quot;style&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">is_system</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">Text</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="p">,</span> <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="p">,</span> <span class="n">is_system</span> <span class="o">=</span> <span class="n">is_system</span><span class="p">,</span> <span class="n">style</span> <span class="o">=</span> <span class="n">style</span><span class="p">)</span>
+        <span class="n">Spanner</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span> <span class="o">=</span> <span class="bp">self</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="HairPinSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.HairPinSpanner">[docs]</a><span class="k">class</span> <span class="nc">HairPinSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for hairpins (crescendos, decrescendos).</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    subtype : str, optional</span>
+<span class="sd">        The text associated with the hairpin spanner.</span>
+<span class="sd">    hairpin_type : int, default: -1</span>
+<span class="sd">        The type of hairpin found within the MusicXML element.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;hairpin_type&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="s2">&quot;hairpin_type&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">hairpin_type</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hairpin_type</span> <span class="o">=</span> <span class="n">hairpin_type</span></div>
+
+
+<div class="viewcode-block" id="SlurSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.SlurSpanner">[docs]</a><span class="k">class</span> <span class="nc">SlurSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for slurs.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    is_slur : bool, default: True</span>
+<span class="sd">        Is this object a slur (True), meaning it connects different</span>
+<span class="sd">        pitches, or a tie (False), meaning it connects the same pitch?</span>
+<span class="sd">    subtype : str, optional</span>
+<span class="sd">        If not provided, `subtype` is set to &#39;slur&#39; or &#39;tie&#39;, depending</span>
+<span class="sd">        on the `is_slur` argument.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_slur&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_slur&quot;</span><span class="p">,</span> <span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">is_slur</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_slur</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">is_slur</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subtype</span> <span class="o">=</span> <span class="s2">&quot;slur&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_slur</span> <span class="k">else</span> <span class="s2">&quot;tie&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PedalSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.PedalSpanner">[docs]</a><span class="k">class</span> <span class="nc">PedalSpanner</span><span class="p">(</span><span class="n">Spanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for pedal markings.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">)])</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TrillSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.TrillSpanner">[docs]</a><span class="k">class</span> <span class="nc">TrillSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for trill spanners.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    subtype : str, default: &#39;trill&#39;</span>
+<span class="sd">        Subtype of trill.</span>
+<span class="sd">    ornament : str, optional</span>
+<span class="sd">        Subtype of ornament associated with the trill.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;ornament&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="s2">&quot;ornament&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;trill&quot;</span><span class="p">,</span> <span class="n">ornament</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ornament</span> <span class="o">=</span> <span class="n">ornament</span></div>
+
+
+<div class="viewcode-block" id="VibratoSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.VibratoSpanner">[docs]</a><span class="k">class</span> <span class="nc">VibratoSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for MuseScore Vibrato elements.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps</span>
+<span class="sd">    subtype : str, default: &#39;vibratoSawtooth&#39;</span>
+<span class="sd">        Subtype of vibrato</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;vibratoSawtooth&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="GlissandoSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.GlissandoSpanner">[docs]</a><span class="k">class</span> <span class="nc">GlissandoSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for glissando markings.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    is_wavy : bool, optional, default: False</span>
+<span class="sd">        Is this Glissano wavy (True) or straight (False)?</span>
+<span class="sd">    subtype : str, optional, default: &#39;straight&#39;</span>
+<span class="sd">        If not provided, `subtype` is set to &#39;wavy&#39; or &#39;straight&#39;, depending</span>
+<span class="sd">        on the `is_wavy` argument.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;is_wavy&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_wavy&quot;</span><span class="p">,</span> <span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">is_wavy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_wavy</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">is_wavy</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">subtype</span> <span class="o">=</span> <span class="s2">&quot;wavy&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_wavy</span> <span class="k">else</span> <span class="s2">&quot;straight&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="OttavaSpanner"><a class="viewcode-back" href="../../doc/muspy.html#muspy.OttavaSpanner">[docs]</a><span class="k">class</span> <span class="nc">OttavaSpanner</span><span class="p">(</span><span class="n">SubtypeSpanner</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for ottava markings.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    duration : int</span>
+<span class="sd">        Duration of spanner, in time steps.</span>
+<span class="sd">    subtype : str, optional, default: &#39;8va&#39;</span>
+<span class="sd">        Subtype of ottava.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;8va&quot;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Hao-Wen Dong.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

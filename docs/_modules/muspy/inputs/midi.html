@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.inputs.midi &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html">
-            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>muspy.inputs.midi</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.inputs.midi</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -104,7 +113,7 @@
 
 
 <div class="viewcode-block" id="MIDIError"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.inputs.MIDIError">[docs]</a><span class="k">class</span> <span class="nc">MIDIError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;An error class for MIDI related exceptions.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An error class for MIDI related exceptions.&quot;&quot;&quot;</span></div>
 
 
 <span class="k">def</span> <span class="nf">_is_drum</span><span class="p">(</span><span class="n">channel</span><span class="p">):</span>
@@ -113,7 +122,7 @@
 
 
 <div class="viewcode-block" id="from_mido"><a class="viewcode-back" href="../../../io/mido.html#muspy.inputs.from_mido">[docs]</a><span class="k">def</span> <span class="nf">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a mido MidiFile object as a Music object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a mido MidiFile object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -141,7 +150,7 @@
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_active_track</span><span class="p">(</span><span class="n">t_idx</span><span class="p">,</span> <span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the active track.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the active track.&quot;&quot;&quot;</span>
         <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">program</span><span class="p">,</span> <span class="n">channel</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">tracks</span><span class="p">[</span><span class="n">t_idx</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">tracks</span><span class="p">[</span><span class="n">t_idx</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
@@ -392,7 +401,7 @@
 <span class="k">def</span> <span class="nf">read_midi_mido</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using mido backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using mido backend.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -414,7 +423,7 @@
 <span class="sd">        Converted Music object.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">midi</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="n">midi</span> <span class="o">=</span> <span class="n">MidiFile</span><span class="p">(</span><span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">charset</span> <span class="o">=</span> <span class="s2">&quot;utf8&quot;</span><span class="p">)</span>
     <span class="n">music</span> <span class="o">=</span> <span class="n">from_mido</span><span class="p">(</span><span class="n">midi</span><span class="p">,</span> <span class="n">duplicate_note_mode</span><span class="o">=</span><span class="n">duplicate_note_mode</span><span class="p">)</span>
     <span class="n">music</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">source_filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
     <span class="k">return</span> <span class="n">music</span>
@@ -423,7 +432,7 @@
 <span class="k">def</span> <span class="nf">from_pretty_midi_key_signature</span><span class="p">(</span>
     <span class="n">key_signature</span><span class="p">:</span> <span class="n">PmKeySignature</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KeySignature</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a pretty_midi KeySignature object as a KeySignature.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a pretty_midi KeySignature object as a KeySignature.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -455,7 +464,7 @@
 <span class="k">def</span> <span class="nf">from_pretty_midi_time_signature</span><span class="p">(</span>
     <span class="n">time_signature</span><span class="p">:</span> <span class="n">PmTimeSignature</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeSignature</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a pretty_midi TimeSignature object as a TimeSignature.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a pretty_midi TimeSignature object as a TimeSignature.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -483,7 +492,7 @@
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_lyric</span><span class="p">(</span><span class="n">lyric</span><span class="p">:</span> <span class="n">PmLyric</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Lyric</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a pretty_midi Lyric object as a Lyric object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a pretty_midi Lyric object as a Lyric object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -510,7 +519,7 @@
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_note</span><span class="p">(</span><span class="n">note</span><span class="p">:</span> <span class="n">PmNote</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Note</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return pretty_midi Note object as a Note object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return pretty_midi Note object as a Note object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -539,7 +548,7 @@
 
 
 <span class="k">def</span> <span class="nf">from_pretty_midi_instrument</span><span class="p">(</span><span class="n">instrument</span><span class="p">:</span> <span class="n">Instrument</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Track</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a pretty_midi Instrument object as a Track object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a pretty_midi Instrument object as a Track object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -561,7 +570,7 @@
 
 
 <div class="viewcode-block" id="from_pretty_midi"><a class="viewcode-back" href="../../../io/pretty_midi.html#muspy.inputs.from_pretty_midi">[docs]</a><span class="k">def</span> <span class="nf">from_pretty_midi</span><span class="p">(</span><span class="n">midi</span><span class="p">:</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a pretty_midi PrettyMIDI object as a Music object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a pretty_midi PrettyMIDI object as a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -579,13 +588,13 @@
     <span class="k">if</span> <span class="n">resolution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">resolution</span> <span class="o">=</span> <span class="n">DEFAULT_RESOLUTION</span>
 
-    <span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span> <span class="o">=</span> <span class="n">midi</span><span class="o">.</span><span class="n">get_tempo_changes</span><span class="p">()</span>
+    <span class="n">tempo_real_times</span><span class="p">,</span> <span class="n">tempi</span> <span class="o">=</span> <span class="n">midi</span><span class="o">.</span><span class="n">get_tempo_changes</span><span class="p">()</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">RuntimeWarning</span><span class="p">)</span>
         <span class="n">tempos</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">Tempo</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">time</span><span class="p">),</span> <span class="n">qpm</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">tempo</span><span class="p">))</span>  <span class="c1"># type: ignore</span>
-            <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">tempi</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">tempo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tempo_real_times</span><span class="p">,</span> <span class="n">tempi</span><span class="p">)</span>
         <span class="p">]</span>
 
     <span class="n">key_signatures</span> <span class="o">=</span> <span class="p">[</span>
@@ -613,21 +622,21 @@
     <span class="c1"># Remove unnecessary tempo changes to speed up the search</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">last_tempo</span> <span class="o">=</span> <span class="n">tempi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">last_time</span> <span class="o">=</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">tempo_realtimes</span> <span class="o">=</span> <span class="n">tempo_realtimes</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">last_time</span> <span class="o">=</span> <span class="n">tempo_real_times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">tempo_real_times</span> <span class="o">=</span> <span class="n">tempo_real_times</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">tempi</span> <span class="o">=</span> <span class="n">tempi</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">):</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempo_real_times</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_tempo</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">del</span> <span class="n">tempo_real_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="k">del</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="k">elif</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_time</span><span class="p">:</span>
-                <span class="k">del</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">tempo_real_times</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">last_time</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">tempo_real_times</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
                 <span class="k">del</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">last_tempo</span> <span class="o">=</span> <span class="n">tempi</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
                 <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="n">tempo_realtimes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">)</span>
+        <span class="n">tempo_real_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempo_real_times</span><span class="p">)</span>
         <span class="n">tempi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tempi</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -639,14 +648,14 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Compute the tempo time in metrical timing of each tempo change</span>
         <span class="n">tempo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">)</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60.0</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">tempo_real_times</span><span class="p">)</span> <span class="o">*</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60.0</span>
         <span class="p">)</span>
         <span class="n">tempo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="n">tempo_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">map_time</span><span class="p">(</span><span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">tempo_realtimes</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
-            <span class="n">residual</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">tempo_realtimes</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">tempo_real_times</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">residual</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">tempo_real_times</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
             <span class="n">factor</span> <span class="o">=</span> <span class="n">resolution</span> <span class="o">*</span> <span class="n">tempi</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60.0</span>
             <span class="k">return</span> <span class="nb">round</span><span class="p">(</span><span class="n">tempo_times</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">+</span> <span class="n">residual</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span>
 
@@ -657,7 +666,7 @@
 
 
 <span class="k">def</span> <span class="nf">read_midi_pretty_midi</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using pretty_midi backend.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object using pretty_midi backend.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -680,7 +689,7 @@
     <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mido&quot;</span><span class="p">,</span>
     <span class="n">duplicate_note_mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fifo&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a MIDI file into a Music object.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

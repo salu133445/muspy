@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.outputs.wrappers &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html">
-            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>muspy.outputs.wrappers</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.outputs.wrappers</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -83,6 +92,7 @@
 <span class="kn">from</span> <span class="nn">pretty_midi</span> <span class="kn">import</span> <span class="n">PrettyMIDI</span>
 <span class="kn">from</span> <span class="nn">pypianoroll</span> <span class="kn">import</span> <span class="n">Multitrack</span>
 
+<span class="kn">from</span> <span class="nn">.abc</span> <span class="kn">import</span> <span class="n">write_abc</span>
 <span class="kn">from</span> <span class="nn">.audio</span> <span class="kn">import</span> <span class="n">write_audio</span>
 <span class="kn">from</span> <span class="nn">.event</span> <span class="kn">import</span> <span class="n">to_event_representation</span>
 <span class="kn">from</span> <span class="nn">.json</span> <span class="kn">import</span> <span class="n">save_json</span>
@@ -101,7 +111,7 @@
 <div class="viewcode-block" id="save"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.save">[docs]</a><span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">,</span> <span class="n">TextIO</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Save a Music object loselessly to a JSON or a YAML file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Save a Music object loselessly to a JSON or a YAML file.</span>
 
 <span class="sd">    This is a wrapper function for :func:`muspy.save_json` and</span>
 <span class="sd">    :func:`muspy.save_yaml`.</span>
@@ -157,7 +167,7 @@
 <div class="viewcode-block" id="write"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.write">[docs]</a><span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI/MusicXML/ABC/audio file.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a Music object to a MIDI/MusicXML/ABC/audio file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -194,6 +204,8 @@
         <span class="k">return</span> <span class="n">write_midi</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;musicxml&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_musicxml</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;abc&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">write_abc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">kind</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;audio&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">write_audio</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">music</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -205,7 +217,7 @@
 <div class="viewcode-block" id="to_object"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_object">[docs]</a><span class="k">def</span> <span class="nf">to_object</span><span class="p">(</span>
     <span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Stream</span><span class="p">,</span> <span class="n">MidiFile</span><span class="p">,</span> <span class="n">PrettyMIDI</span><span class="p">,</span> <span class="n">Multitrack</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object as an object in other libraries.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Music object as an object in other libraries.</span>
 
 <span class="sd">    Supported classes are `music21.Stream`, :class:`mido.MidiTrack`,</span>
 <span class="sd">    :class:`pretty_midi.PrettyMIDI` and :class:`pypianoroll.Multitrack`.</span>
@@ -240,7 +252,7 @@
 
 
 <div class="viewcode-block" id="to_representation"><a class="viewcode-back" href="../../../doc/outputs.html#muspy.to_representation">[docs]</a><span class="k">def</span> <span class="nf">to_representation</span><span class="p">(</span><span class="n">music</span><span class="p">:</span> <span class="s2">&quot;Music&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ndarray</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Return a Music object in a specific representation.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a Music object in a specific representation.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

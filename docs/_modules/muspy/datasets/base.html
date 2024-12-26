@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.datasets.base &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html">
-            <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../../index.html">
+            
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>muspy.datasets.base</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.datasets.base</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -110,12 +119,12 @@
     <span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">Dataset</span> <span class="k">as</span> <span class="n">TorchDataset</span>
 
 
-<span class="n">RemoteDatasetType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RemoteDatasetType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;RemoteDataset&quot;</span><span class="p">)</span>
-<span class="n">FolderDatasetType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;FolderDatasetType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;FolderDataset&quot;</span><span class="p">)</span>
+<span class="n">RemoteDatasetT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;RemoteDatasetT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;RemoteDataset&quot;</span><span class="p">)</span>
+<span class="n">FolderDatasetT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;FolderDatasetT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;FolderDataset&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="DatasetInfo"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.DatasetInfo">[docs]</a><span class="k">class</span> <span class="nc">DatasetInfo</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;A container for dataset information.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for dataset information.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -139,7 +148,7 @@
 
 
 <div class="viewcode-block" id="Dataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset">[docs]</a><span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Base class for MusPy datasets.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for MusPy datasets.</span>
 
 <span class="sd">    To build a custom dataset, it should inherit this class and overide</span>
 <span class="sd">    the methods ``__getitem__`` and ``__len__`` as well as the class</span>
@@ -161,12 +170,12 @@
 
 <div class="viewcode-block" id="Dataset.info"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.info">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">info</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return the dataset infomation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dataset infomation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_info</span></div>
 
 <div class="viewcode-block" id="Dataset.citation"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.citation">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">citation</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Print the citation infomation.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the citation infomation.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_citation</span></div>
 
 <div class="viewcode-block" id="Dataset.save"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.Dataset.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span>
@@ -178,7 +187,7 @@
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Save all the music objects to a directory.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save all the music objects to a directory.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -243,7 +252,7 @@
         <span class="n">splits</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -265,7 +274,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">splits</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
@@ -303,7 +312,7 @@
 
         <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">indices_</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">indices</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">indices_</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">indices</span></div>
@@ -317,7 +326,7 @@
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;TorchDataset&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TorchDataset&quot;</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dataset as a PyTorch dataset.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -366,15 +375,16 @@
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Optional package pytorch is required.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">err</span>
 
         <span class="k">class</span> <span class="nc">TorchMusicFactoryDataset</span><span class="p">(</span><span class="n">TorchDataset</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;A PyTorch dataset built from a Music dataset.</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;A PyTorch dataset built from a Music dataset.</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
 <span class="sd">            dataset : :class:`muspy.Dataset`</span>
 <span class="sd">                Dataset object to base on.</span>
 <span class="sd">            factory : Callable</span>
-<span class="sd">                Function to be applied to the Music objects. The input is a</span>
-<span class="sd">                Music object, and the output is an array or a tensor.</span>
+<span class="sd">                Function to be applied to the Music objects. The input</span>
+<span class="sd">                is a Music object, and the output is an array or a</span>
+<span class="sd">                tensor.</span>
 
 <span class="sd">            &quot;&quot;&quot;</span>
 
@@ -385,6 +395,7 @@
                 <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Full&quot;</span><span class="p">,</span>
                 <span class="n">indices</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="p">):</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">factory</span> <span class="o">=</span> <span class="n">factory</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span>
@@ -411,7 +422,7 @@
                 <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
 
         <span class="k">class</span> <span class="nc">TorchRepresentationDataset</span><span class="p">(</span><span class="n">TorchMusicFactoryDataset</span><span class="p">):</span>
-            <span class="sd">&quot;&quot;&quot;A PyTorch music dataset.</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;A PyTorch music dataset.</span>
 
 <span class="sd">            Parameters</span>
 <span class="sd">            ----------</span>
@@ -480,7 +491,7 @@
         <span class="n">random_state</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;TFDataset&quot;</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;TFDataset&quot;</span><span class="p">]]:</span>
-        <span class="sd">&quot;&quot;&quot;Return the dataset as a TensorFlow dataset.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the dataset as a TensorFlow dataset.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -562,7 +573,7 @@
 
 
 <div class="viewcode-block" id="RemoteDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for remote MusPy datasets.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for remote MusPy datasets.</span>
 
 <span class="sd">    This class extends :class:`muspy.Dataset` to support remote</span>
 <span class="sd">    datasets. To build a custom remote dataset, please refer to the</span>
@@ -667,13 +678,13 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="RemoteDataset.exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.source_exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.source_exists">[docs]</a>    <span class="k">def</span> <span class="nf">source_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if all the sources exist, otherwise False.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if all the sources exist, otherwise False.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">source</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sources</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
             <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">source</span><span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">]</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">filename</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
@@ -689,9 +700,9 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.download"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download">[docs]</a>    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Download the dataset source(s).</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetT</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the dataset source(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -725,9 +736,9 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.extract">[docs]</a>    <span class="k">def</span> <span class="nf">extract</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Extract the downloaded archive(s).</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetT</span><span class="p">,</span> <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the downloaded archive(s).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -756,12 +767,12 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="RemoteDataset.download_and_extract"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteDataset.download_and_extract">[docs]</a>    <span class="k">def</span> <span class="nf">download_and_extract</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetType</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">RemoteDatasetT</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">cleanup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Download source datasets and extract the downloaded archives.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RemoteDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download source datasets and extract the downloaded archives.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -793,7 +804,7 @@
 
 
 <div class="viewcode-block" id="MusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.MusicDataset">[docs]</a><span class="k">class</span> <span class="nc">MusicDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for datasets of MusPy JSON/YAML files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for datasets of MusPy JSON/YAML files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -842,7 +853,7 @@
 
 
 <div class="viewcode-block" id="RemoteMusicDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteMusicDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteMusicDataset</span><span class="p">(</span><span class="n">MusicDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for remote datasets of MusPy JSON/YAML files.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for remote datasets of MusPy JSON/YAML files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -896,7 +907,7 @@
 
 
 <div class="viewcode-block" id="FolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset">[docs]</a><span class="k">class</span> <span class="nc">FolderDataset</span><span class="p">(</span><span class="n">Dataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for datasets storing files in a folder.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for datasets storing files in a folder.</span>
 
 <span class="sd">    This class extends :class:`muspy.Dataset` to support folder</span>
 <span class="sd">    datasets. To build a custom folder dataset, please refer to the</span>
@@ -995,7 +1006,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">converted_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Path to the root directory of the converted dataset.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Path to the root directory of the converted dataset.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;_converted&quot;</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1008,31 +1019,31 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_filenames</span><span class="p">)</span>
 
 <div class="viewcode-block" id="FolderDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
 
 <div class="viewcode-block" id="FolderDataset.load"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Load a file into a Music object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load a file into a Music object.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">load</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">filename</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="FolderDataset.exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.exists">[docs]</a>    <span class="k">def</span> <span class="nf">exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the dataset exists, otherwise False.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="FolderDataset.converted_exists"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.converted_exists">[docs]</a>    <span class="k">def</span> <span class="nf">converted_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return True if the saved dataset exists, otherwise False.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return True if the saved dataset exists, otherwise False.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span> <span class="o">/</span> <span class="s2">&quot;.muspy.success&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
 <div class="viewcode-block" id="FolderDataset.get_converted_filenames"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.get_converted_filenames">[docs]</a>    <span class="k">def</span> <span class="nf">get_converted_filenames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a list of converted filenames.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of converted filenames.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">converted_dir</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s2">&quot;*.&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="FolderDataset.use_converted"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.use_converted">[docs]</a>    <span class="k">def</span> <span class="nf">use_converted</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Disable on-the-fly mode and use converted data.</span>
+<div class="viewcode-block" id="FolderDataset.use_converted"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.use_converted">[docs]</a>    <span class="k">def</span> <span class="nf">use_converted</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Disable on-the-fly mode and use converted data.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1052,7 +1063,7 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="FolderDataset.get_raw_filenames"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.get_raw_filenames">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_filenames</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Return a list of raw filenames.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of raw filenames.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="n">filename</span>
@@ -1063,8 +1074,8 @@
             <span class="p">)</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="FolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
+<div class="viewcode-block" id="FolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1079,14 +1090,14 @@
         <span class="k">return</span> <span class="bp">self</span></div>
 
 <div class="viewcode-block" id="FolderDataset.convert"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.FolderDataset.convert">[docs]</a>    <span class="k">def</span> <span class="nf">convert</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetT</span><span class="p">,</span>
         <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;json&quot;</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">ignore_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Convert and save the Music objects.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert and save the Music objects.</span>
 
 <span class="sd">        The converted files will be named by its index and saved to</span>
 <span class="sd">        ``root/_converted``. The original filenames can be found in the</span>
@@ -1135,7 +1146,7 @@
 
 
 <div class="viewcode-block" id="RemoteFolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteFolderDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteFolderDataset</span><span class="p">(</span><span class="n">FolderDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for remote datasets storing files in a folder.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for remote datasets storing files in a folder.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -1204,12 +1215,12 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="RemoteFolderDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteFolderDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
 <div class="viewcode-block" id="ABCFolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset">[docs]</a><span class="k">class</span> <span class="nc">ABCFolderDataset</span><span class="p">(</span><span class="n">FolderDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class for datasets storing ABC files in a folder.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for datasets storing ABC files in a folder.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1221,17 +1232,17 @@
     <span class="n">_extension</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span>
 
 <div class="viewcode-block" id="ABCFolderDataset.read"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Music</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a file into a Music object.&quot;&quot;&quot;</span>
         <span class="n">filename_</span><span class="p">,</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename_</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename_</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="n">end</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;%&quot;</span><span class="p">):</span>
                     <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">read_abc_string</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>  <span class="c1"># type: ignore</span></div>
 
-<div class="viewcode-block" id="ABCFolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
+<div class="viewcode-block" id="ABCFolderDataset.on_the_fly"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.ABCFolderDataset.on_the_fly">[docs]</a>    <span class="k">def</span> <span class="nf">on_the_fly</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">FolderDatasetT</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FolderDatasetT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enable on-the-fly mode and convert the data on the fly.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1252,7 +1263,7 @@
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 
                     <span class="c1"># Detect parts in a file</span>
                     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
@@ -1274,7 +1285,7 @@
 
 
 <div class="viewcode-block" id="RemoteABCFolderDataset"><a class="viewcode-back" href="../../../doc/muspy.html#muspy.RemoteABCFolderDataset">[docs]</a><span class="k">class</span> <span class="nc">RemoteABCFolderDataset</span><span class="p">(</span><span class="n">ABCFolderDataset</span><span class="p">,</span> <span class="n">RemoteDataset</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Base class for remote datasets storing ABC files in a folder.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for remote datasets storing ABC files in a folder.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>muspy.classes &mdash; MusPy  documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -13,7 +15,9 @@
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -24,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html">
-            <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html">
+            
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -38,6 +46,7 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../classes/index.html">MusPy Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../annotations/index.html">Annotations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../timing.html">Timing in MusPy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../io/index.html">Input/Output Interfaces</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../datasets/index.html">Datasets</a></li>
@@ -61,9 +70,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-      <li>muspy.classes</li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">muspy.classes</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -81,6 +90,7 @@
 <span class="sd">-------</span>
 
 <span class="sd">- Annotation</span>
+<span class="sd">- Barline</span>
 <span class="sd">- Beat</span>
 <span class="sd">- Chord</span>
 <span class="sd">- KeySignature</span>
@@ -92,6 +102,7 @@
 <span class="sd">- Track</span>
 
 
+
 <span class="sd">Variables</span>
 <span class="sd">---------</span>
 
@@ -99,19 +110,19 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">from</span> <span class="nn">.base</span> <span class="kn">import</span> <span class="n">Base</span><span class="p">,</span> <span class="n">ComplexBase</span>
 <span class="kn">from</span> <span class="nn">.schemas</span> <span class="kn">import</span> <span class="n">DEFAULT_SCHEMA_VERSION</span>
 
 <span class="n">DEFAULT_VELOCITY</span> <span class="o">=</span> <span class="mi">64</span>
-<span class="n">NoteType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;NoteType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Note&quot;</span><span class="p">)</span>
-<span class="n">ChordType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ChordType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Chord&quot;</span><span class="p">)</span>
-<span class="n">TrackType</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TrackType&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Track&quot;</span><span class="p">)</span>
+<span class="n">NoteT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;NoteT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Note&quot;</span><span class="p">)</span>
+<span class="n">ChordT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;ChordT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Chord&quot;</span><span class="p">)</span>
+<span class="n">TrackT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TrackT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Track&quot;</span><span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;Annotation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Barline&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Beat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Chord&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DEFAULT_VELOCITY&quot;</span><span class="p">,</span>
@@ -128,7 +139,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="n">list_</span><span class="p">:</span> <span class="n">List</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Return the end time of a list of objects.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the end time of a list of objects.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -159,7 +170,7 @@
 
 
 <div class="viewcode-block" id="Metadata"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Metadata">[docs]</a><span class="k">class</span> <span class="nc">Metadata</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for metadata.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for metadata.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -167,6 +178,8 @@
 <span class="sd">        Schema version.</span>
 <span class="sd">    title : str, optional</span>
 <span class="sd">        Song title.</span>
+<span class="sd">    subtitle : str, optional</span>
+<span class="sd">        Song subtitle.</span>
 <span class="sd">    creators : list of str, optional</span>
 <span class="sd">        Creator(s) of the song.</span>
 <span class="sd">    copyright : str, optional</span>
@@ -184,6 +197,7 @@
         <span class="p">[</span>
             <span class="p">(</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;subtitle&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;creators&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;copyright&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;collection&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
@@ -193,6 +207,7 @@
     <span class="p">)</span>
     <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;title&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;subtitle&quot;</span><span class="p">,</span>
         <span class="s2">&quot;creators&quot;</span><span class="p">,</span>
         <span class="s2">&quot;copyright&quot;</span><span class="p">,</span>
         <span class="s2">&quot;collection&quot;</span><span class="p">,</span>
@@ -205,6 +220,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">schema_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DEFAULT_SCHEMA_VERSION</span><span class="p">,</span>
         <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">subtitle</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">creators</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">copyright</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">collection</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -213,6 +229,7 @@
     <span class="p">):</span>
         <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schema_version</span> <span class="o">=</span> <span class="n">schema_version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtitle</span> <span class="o">=</span> <span class="n">subtitle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">creators</span> <span class="o">=</span> <span class="n">creators</span> <span class="k">if</span> <span class="n">creators</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">copyright</span> <span class="o">=</span> <span class="n">copyright</span>
@@ -222,7 +239,7 @@
 
 
 <div class="viewcode-block" id="Tempo"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Tempo">[docs]</a><span class="k">class</span> <span class="nc">Tempo</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for key signatures.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for key signatures.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -230,14 +247,18 @@
 <span class="sd">        Start time of the tempo, in time steps.</span>
 <span class="sd">    qpm : float</span>
 <span class="sd">        Tempo in qpm (quarters per minute).</span>
+<span class="sd">    text : str, optional</span>
+<span class="sd">        Text associated with the tempo (if applicable).</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;qpm&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">))])</span>
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;qpm&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">qpm</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">qpm</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qpm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">qpm</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
 
     <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_validate</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">recursive</span><span class="p">)</span>
@@ -246,7 +267,7 @@
 
 
 <div class="viewcode-block" id="KeySignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.KeySignature">[docs]</a><span class="k">class</span> <span class="nc">KeySignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for key signatures.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for key signatures.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -296,7 +317,7 @@
 
 
 <div class="viewcode-block" id="TimeSignature"><a class="viewcode-back" href="../../doc/muspy.html#muspy.TimeSignature">[docs]</a><span class="k">class</span> <span class="nc">TimeSignature</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for time signatures.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for time signatures.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -327,14 +348,14 @@
 
 
 <div class="viewcode-block" id="Beat"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Beat">[docs]</a><span class="k">class</span> <span class="nc">Beat</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for beats.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for beats.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    time : int</span>
 <span class="sd">        Time of the beat, in time steps.</span>
 <span class="sd">    is_downbeat : bool, default: False</span>
-<span class="sd">        Whether it is a downbeat.</span>
+<span class="sd">        Is this beat a downbeat?</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -346,8 +367,28 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">is_downbeat</span> <span class="o">=</span> <span class="n">is_downbeat</span></div>
 
 
+<div class="viewcode-block" id="Barline"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Barline">[docs]</a><span class="k">class</span> <span class="nc">Barline</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for barlines.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : int</span>
+<span class="sd">        Time of the barline, in time steps.</span>
+<span class="sd">    subtype : str, default: &#39;single&#39;</span>
+<span class="sd">        Type of barline (double, dashed, etc.)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_attributes</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;subtype&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)])</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;subtype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">subtype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;single&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subtype</span> <span class="o">=</span> <span class="n">subtype</span> <span class="k">if</span> <span class="n">subtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;single&quot;</span></div>
+
+
 <div class="viewcode-block" id="Lyric"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Lyric">[docs]</a><span class="k">class</span> <span class="nc">Lyric</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for lyrics.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for lyrics.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -366,7 +407,7 @@
 
 
 <div class="viewcode-block" id="Annotation"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Annotation">[docs]</a><span class="k">class</span> <span class="nc">Annotation</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for annotations.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for annotations.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -387,11 +428,31 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">annotation</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">annotation</span> <span class="o">=</span> <span class="n">annotation</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start time of the annotation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
+
+    <span class="nd">@start</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">start</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;End time of the annotation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">duration</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotation</span><span class="p">,</span> <span class="s2">&quot;duration&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="nd">@end</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span></div>
 
 
 <div class="viewcode-block" id="Note"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Note">[docs]</a><span class="k">class</span> <span class="nc">Note</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for notes.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for notes.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -406,6 +467,10 @@
 <span class="sd">    pitch_str : str, optional</span>
 <span class="sd">        Note pitch as a string, useful for distinguishing, e.g., C# and</span>
 <span class="sd">        Db.</span>
+<span class="sd">    is_grace : bool, default: False</span>
+<span class="sd">        Is this note a grace note?</span>
+<span class="sd">    notations : List[any], optional</span>
+<span class="sd">        Note-specific annotations, such as articulations and noteheads.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -416,9 +481,12 @@
             <span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;pitch_str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;is_grace&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;notations&quot;</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch_str&quot;</span><span class="p">]</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;pitch_str&quot;</span><span class="p">,</span> <span class="s2">&quot;is_grace&quot;</span><span class="p">,</span> <span class="s2">&quot;notations&quot;</span><span class="p">]</span>
+    <span class="n">_list_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;notations&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -427,31 +495,35 @@
         <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pitch_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_grace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">notations</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">=</span> <span class="n">pitch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span> <span class="k">if</span> <span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_VELOCITY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitch_str</span> <span class="o">=</span> <span class="n">pitch_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_grace</span> <span class="o">=</span> <span class="n">is_grace</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">notations</span> <span class="o">=</span> <span class="n">notations</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start time of the note.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start time of the note.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
     <span class="nd">@start</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">start</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;End time of the note.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;End time of the note.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
 
     <span class="nd">@end</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
     <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
@@ -469,12 +541,12 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="Note.adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Note.adjust_time">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">NoteType</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">NoteT</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoteType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Adjust the timing of the note.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoteT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjust the timing of the note.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -499,8 +571,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">old_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Note.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Note.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">NoteType</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoteType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Transpose the note by a number of semitones.</span>
+<div class="viewcode-block" id="Note.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Note.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">NoteT</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoteT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transpose the note by a number of semitones.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -516,8 +588,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="o">+=</span> <span class="n">semitone</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Note.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Note.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">NoteType</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoteType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Clip the velocity of the note.</span>
+<div class="viewcode-block" id="Note.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Note.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">NoteT</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoteT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the velocity of the note.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -540,7 +612,7 @@
 
 
 <div class="viewcode-block" id="Chord"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Chord">[docs]</a><span class="k">class</span> <span class="nc">Chord</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for chords.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for chords.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -555,6 +627,8 @@
 <span class="sd">    pitches_str : list of str, optional</span>
 <span class="sd">        Note pitches as strings, useful for distinguishing, e.g., C# and</span>
 <span class="sd">        Db.</span>
+<span class="sd">    is_grace : bool, default: False</span>
+<span class="sd">        Is this note a grace note?</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -565,9 +639,10 @@
             <span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
             <span class="p">(</span><span class="s2">&quot;pitches_str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;is_grace&quot;</span><span class="p">,</span> <span class="nb">bool</span><span class="p">),</span>
         <span class="p">]</span>
     <span class="p">)</span>
-    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;pitches_str&quot;</span><span class="p">]</span>
+    <span class="n">_optional_attributes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="s2">&quot;pitches_str&quot;</span><span class="p">,</span> <span class="s2">&quot;is_grace&quot;</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -576,31 +651,33 @@
         <span class="n">duration</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">velocity</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pitches_str</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">is_grace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">=</span> <span class="n">pitches</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">velocity</span> <span class="o">=</span> <span class="n">velocity</span> <span class="k">if</span> <span class="n">velocity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_VELOCITY</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pitches_str</span> <span class="o">=</span> <span class="n">pitches_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_grace</span> <span class="o">=</span> <span class="n">is_grace</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Start time of the chord.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start time of the chord.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
     <span class="nd">@start</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for start time.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">=</span> <span class="n">start</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;End time of the chord.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;End time of the chord.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span>
 
     <span class="nd">@end</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setter for end time.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
 
     <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
@@ -623,12 +700,12 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 <div class="viewcode-block" id="Chord.adjust_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Chord.adjust_time">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_time</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">:</span> <span class="n">ChordType</span><span class="p">,</span>
+        <span class="bp">self</span><span class="p">:</span> <span class="n">ChordT</span><span class="p">,</span>
         <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">recursive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChordType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Adjust the timing of the chord.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChordT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Adjust the timing of the chord.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -653,8 +730,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">duration</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">old_time</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Chord.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Chord.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ChordType</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChordType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
+<div class="viewcode-block" id="Chord.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Chord.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ChordT</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChordT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -671,8 +748,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span> <span class="o">+=</span> <span class="p">[</span><span class="n">pitch</span> <span class="o">+</span> <span class="n">semitone</span> <span class="k">for</span> <span class="n">pitch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitches</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Chord.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Chord.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ChordType</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChordType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Clip the velocity of the chord.</span>
+<div class="viewcode-block" id="Chord.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Chord.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">ChordT</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ChordT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the velocity of the chord.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -695,7 +772,7 @@
 
 
 <div class="viewcode-block" id="Track"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track">[docs]</a><span class="k">class</span> <span class="nc">Track</span><span class="p">(</span><span class="n">ComplexBase</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;A container for music track.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A container for music track.</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -778,7 +855,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`program` must be in between 0 to 127.&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Track.get_end_time"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the time of the last event.</span>
 
 <span class="sd">        This includes notes, chords, lyrics and annotations.</span>
 
@@ -795,8 +872,8 @@
             <span class="n">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">annotations</span><span class="p">,</span> <span class="n">is_sorted</span><span class="p">),</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="Track.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">TrackType</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Clip the velocity of each note.</span>
+<div class="viewcode-block" id="Track.clip"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.clip">[docs]</a>    <span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">TrackT</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">upper</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">127</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clip the velocity of each note.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -814,8 +891,8 @@
             <span class="n">note</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Track.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">TrackType</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
+<div class="viewcode-block" id="Track.transpose"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.transpose">[docs]</a>    <span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">TrackT</span><span class="p">,</span> <span class="n">semitone</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transpose the notes by a number of semitones.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -833,8 +910,8 @@
             <span class="n">note</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">semitone</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="Track.trim"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">TrackType</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackType</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Trim the track.</span>
+<div class="viewcode-block" id="Track.trim"><a class="viewcode-back" href="../../doc/muspy.html#muspy.Track.trim">[docs]</a>    <span class="k">def</span> <span class="nf">trim</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">TrackT</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrackT</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trim the track.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -848,6 +925,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notes</span> <span class="o">=</span> <span class="n">_trim_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chords</span> <span class="o">=</span> <span class="n">_trim_list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chords</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">lyrics</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">annotations</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">time</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">]</span>
         <span class="k">return</span> <span class="bp">self</span></div></div>
 </pre></div>
 
