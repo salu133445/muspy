@@ -444,7 +444,9 @@ class Music(ComplexBase):
     def convert_to_real_time(self) -> MusicT:
         """
         Convert all times and durations in this object into real time (seconds).
-        Returns a new :class:`muspy.Music` object.
+        Returns a new :class:`muspy.Music` object. However, note that many
+        methods of the :class:`muspy.Music` object work improperly or contain
+        unexpected behavior.
 
         Returns
         -------
@@ -496,25 +498,44 @@ class Music(ComplexBase):
 
         # update
         music.real_time = True
+        music.resolution = None # resolution is irrelevant when in real time
 
         # return the music object with real times
         return music
 
-    def realize_annotations(self) -> MusicT:
+    def realize_annotations(
+            self,
+            velocity_increase_factor: float = 2.0,
+            accent_velocity_increase_factor: float = 1.5,
+            pedal_duration_change_factor: float = 3.0,
+            staccato_duration_change_factor: float = 5.0,
+            default_dynamic: str = "mf",
+            ) -> MusicT:
         """
         Realize all annotations through note velocities and durations.
         Returns a new :class:`muspy.Music` object.
 
+        Parameters
+        ----------
+        velocity_increase_factor : float, default: 2.0
+            factor by which to increase velocity when an annotation 
+            GRADUALLY increases velocity (e.g. crescendo)
+        accent_velocity_increase_factor : float, default: 1.5
+            factor by which to increase velocity when an articulation 
+            INSTANTANEOUSLY increases velocity
+        pedal_duration_change_factor : float, default: 3.0
+            factor by which the sustain pedal increases the duration of 
+            each note
+        staccato_duration_change_factor : float, default: 5.0
+            factor by which a staccato decreases the duration of a note
+        default_dynamic : str, default: 'mf'
+            default dynamic marking
+        
         Returns
         -------
         New :class:`muspy.Music` object with altered notes and chords (via their velocities and durations).
         """
-        # variables
-        velocity_increase_factor = 2 # factor by which to increase velocity when an expressive feature GRADUALLY increases velocity
-        accent_velocity_increase_factor = 1.5 # factor by which to increase velocity when an accent INSTANTANEOUSLY increases velocity
-        pedal_duration_change_factor = 3 # factor by which the sustain pedal increases the duration of each note
-        staccato_duration_change_factor = 5 # factor by which a staccato decreases the duration of a note
-        default_dynamic = "mf" # default dynamic marking
+        # deal with different dynamic markings
         dynamic_velocity_map = {
             "pppppp": 4, "ppppp": 8, "pppp": 12, "ppp": 16, "pp": 33, "p": 49, "mp": 64,
             "mf": 80, "f": 96, "ff": 112, "fff": 126, "ffff": 127, "fffff": 127, "ffffff": 127,
