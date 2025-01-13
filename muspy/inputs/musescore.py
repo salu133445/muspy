@@ -210,7 +210,7 @@ def parse_repeats(elem: Element) -> Tuple[list, list]:
             end_repeats.append([])
         # check for endRepeat
         if measure.find(path = "endRepeat") is not None:
-            repeat_times = int(_get_text(element = measure, path = "endRepeat", default = 2)) - 1 # default is 2 because by default, a repeat causes a section to be played twice
+            repeat_times = max(int(_get_text(element = measure, path = "endRepeat", default = 2)), 2) - 1 # default is 2 because by default, a repeat causes a section to be played twice
             end_repeats[len(start_repeats) - 1].extend([i] * repeat_times)
 
     # if there is an implied repeat at the end
