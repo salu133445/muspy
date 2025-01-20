@@ -272,7 +272,11 @@ def to_mido_meta_track(music: "Music", realize_annotations: bool = False) -> Mid
                 tempo_times.append(temporal_feature.time)
                 tempo_changes.append(current_tempo)
             elif isinstance(temporal_feature, TimeSignature): # if time signature
-                meta_track.append(MetaMessage(type = "time_signature", time = temporal_feature.time, numerator = temporal_feature.numerator, denominator = temporal_feature.denominator))
+                numerator = temporal_feature.numerator
+                denominator = temporal_feature.denominator
+                if (0 <= numerator <= 255) and ((0 < denominator <= 255) and (denominator & (denominator - 1) == 0)): # ensure denominator is a power of 2
+                    meta_track.append(MetaMessage(type = "time_signature", time = temporal_feature.time, numerator = numerator, denominator = denominator))
+                del numerator, denominator
                 # current_time_signature = temporal_feature # update current_time_signature
     else:
         meta_track.append(MetaMessage(type = "set_tempo", time = 0, tempo = DEFAULT_TEMPO))
@@ -506,7 +510,7 @@ def to_mido_track(
             note.time = max(0, note.time - (music.resolution * GRACE_NOTE_FORWARD_SHIFT_CONSTANT)) # no grace notes on the first note, to avoid negative times
 
         # ensure note time is an integer
-        note.time = int(note.time) # ensure note time is an integer
+        note.time = max(int(note.time), 0) # ensure note time is an integer and non-negative
 
         # add note to track
         midi_track.extend(to_mido_note_on_note_off(note = note, channel = channel, use_note_off_message = use_note_off_message))
