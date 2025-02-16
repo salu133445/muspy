@@ -756,6 +756,8 @@ def parse_constant_features(
         measure_len_text = measure.get("len")
         if measure_len_text is not None:
             measure_len_fraction = float(Fraction(measure_len_text))
+        else:
+            measure_len_fraction = 1.0
 
         # get voice elements
         voices = list(measure.findall(path = "voice"))  # MuseScore 3.x, 4.x
@@ -900,7 +902,7 @@ def parse_constant_features(
 
         # update time
         # time_ += max_position # get the maximum position (don't want some unfinished voice)
-        time_ += round(measure_len_fraction * measure_len)
+        time_ += round((measure_len_fraction * 4 * resolution) if measure_len_fraction != 1.0 else measure_len)
 
     # Sort tempos, key and time signatures
     tempos.sort(key = attrgetter("time"))
@@ -970,6 +972,8 @@ def parse_staff(
         measure_len_text = measure.get("len")
         if measure_len_text is not None:
             measure_len_fraction = float(Fraction(measure_len_text))
+        else:
+            measure_len_fraction = 1.0
 
         # Get voice elements
         voices = list(measure.findall(path = "voice")) # MuseScore 3.x
@@ -1270,7 +1274,7 @@ def parse_staff(
 
         # update time
         # time_ += max_position # get the maximum position (don't want some unfinished voice)
-        time_ += round(measure_len_fraction * measure_len)
+        time_ += round((measure_len_fraction * 4 * resolution) if measure_len_fraction != 1.0 else measure_len)
 
     # Sort notes
     notes.sort(key = attrgetter("time", "pitch", "duration", "velocity"))
