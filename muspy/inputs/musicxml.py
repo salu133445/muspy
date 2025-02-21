@@ -218,7 +218,7 @@ def get_measure_ordering(elem: Element, timeout: int = None) -> List[int]:
         if jump is not None and ((jump.get("dalsegno") is not None) or (jump.get("dacapo") is not None)) and before_jump: # if jump is found
             is_dalsegno = jump.get("dalsegno") is not None
             # set jump related indicies
-            jump_to_idx = markers.get("segno" if is_dalsegno else "start")
+            jump_to_idx = markers.get("segno" if is_dalsegno else "start", 0)
             play_until_idx = markers.get("tocoda") if markers.get("tocoda") is not None else markers.get("fine")
             continue_at_idx = markers.get("coda") # will be None if there is no coda
             # set boolean flags
@@ -297,8 +297,8 @@ def get_improved_measure_ordering(measures: List[Element], measure_indicies: Lis
 
         # check if the measure is a repeat
         measure_repeat_count = _get_text(element = measure, path = "forward/duration") # check if this measure is a repeat
-        if measure_repeat_count is not None and len(list(filter(lambda elem: elem.tag == "note", measure))) == 0:
-            duration = int(measure_repeat_count) // measure_len # duration of measure repeat (in measures)
+        duration = 0 if measure_repeat_count is None else (int(measure_repeat_count) // measure_len)
+        if measure_repeat_count is not None and len(list(filter(lambda elem: elem.tag == "note", measure))) == 0 and duration > 0:
             measure_repeat_counts[i:(i + duration)] = [duration] * duration
             i += duration
         else:
@@ -402,7 +402,7 @@ def parse_part_info(part_header: Element, part: Element) -> OrderedDict:
         part_info["program"] = (int(program.text) - 1) if program.text is not None else 0
     else:
         part_info["program"] = 0
-    is_drum = (((int(_get_text(element = part_header, path = "midi-instrument/midi-channel", default = 0)) - 1) == 9) or
+    is_drum = ((((int(_get_text(element = part_header, path = "midi-instrument/midi-channel", default = 0)) - 1) == 9) and (_get_text(element = part_header, path = "midi-instrument/midi-unpitched") is not None)) or
                (_get_text(element = part, path = "measure/attributes/clef/sign", default = "") == "percussion") or
                ("drum" in str(part_info["name"]).lower()))
     part_info["is_drum"] = is_drum
@@ -413,7 +413,9 @@ def parse_part_info(part_header: Element, part: Element) -> OrderedDict:
         for midi_instrument in part_header.findall(path = "midi-instrument"):
             midi_instrument_id = midi_instrument.get("id")
             if midi_instrument_id is not None:
-                instrument_id_to_pitch[midi_instrument_id] = int(_get_required_text(element = midi_instrument, path = "midi-unpitched")) - 1 # subtract 1 because of discrepancy between 1-based and 0-based indexing
+                midi_unpitched = _get_text(element = midi_instrument, path = "midi-unpitched")
+                if midi_unpitched is not None:
+                    instrument_id_to_pitch[midi_instrument_id] = int(midi_unpitched) - 1 # subtract 1 because of discrepancy between 1-based and 0-based indexing
         part_info["instrument_id_to_pitch"] = instrument_id_to_pitch
 
     return part_info
@@ -468,7 +470,11 @@ def parse_metronome(elem: Element) -> Optional[float]:
     if beat_unit is not None:
         per_minute = _get_text(element = elem, path = "per-minute")
         if per_minute is not None and beat_unit in NOTE_TYPE_MAP:
-            qpm = NOTE_TYPE_MAP[beat_unit] * float(per_minute)
+            try:
+                per_minute = float(per_minute)
+            except ValueError: # non-float string as per-minute
+                return None
+            qpm = NOTE_TYPE_MAP[beat_unit] * per_minute
             if elem.find(path = "beat-unit-dot") is not None:
                 qpm *= 1.5
             return qpm
@@ -500,7 +506,7 @@ def parse_key(elem: Element, transpose_chromatic: int = 0) -> Tuple[int, str, in
         return None, None, 0, None
     fifths = int(fifths_text) + transpose_chromatic # adjust for tuning
     mode = _get_text(element = elem, path = "mode")
-    if mode is None:
+    if mode is None or mode.lower() == "none":
         return None, None, fifths, None
     idx = MODE_CENTERS[mode] + fifths
     if idx < 0 or idx > 20:
@@ -511,7 +517,7 @@ def parse_key(elem: Element, transpose_chromatic: int = 0) -> Tuple[int, str, in
 
 def parse_lyric(elem: Element) -> str:
     """Return the lyric text parsed from a lyric element."""
-    text = _get_required_text(element = elem, path = "text")
+    text = _get_text(element = elem, path = "text")
     syllabic = elem.find(path = "syllabic")
     if syllabic is not None:
         if syllabic.text == "begin":
@@ -544,7 +550,10 @@ def parse_pitch(elem: Element, transpose_chromatic: int = 0) -> Tuple[int, str]:
 
     # get the base pitch
     base_pitch = NOTE_TO_PITCH_INDEX_MAP[pitch_str] + (12 * (pitch_octave + 1))
-    pitch_alter = int(_get_text(element = elem, path = "alter", default = "0"))
+    pitch_alter = float(_get_text(element = elem, path = "alter", default = "0"))
+    if pitch_alter % 1 != 0:
+        raise MusicXMLWarning(f"MusPy does not currently support parsing microtonal (non-integer) pitch-alterations such as {pitch_alter}. Truncating pitch alteration to {int(pitch_alter)}.")
+    pitch_alter = int(pitch_alter)
     pitch = base_pitch + pitch_alter
 
     # alter pitch_str according to pitch_alter
@@ -685,8 +694,8 @@ def parse_constant_features(
                 start_of_tempo = (sound is not None and sound.get("tempo") is not None) or (metronome is not None)
                 start_of_words = (words is not None)
                 start_of_rehearsal = (rehearsal is not None)
-                start_of_spanner = (words is not None and len(direction_types) == 2 and direction_types[1][0].get("type") == "start" and direction_types[0][0].tag == "words" and (words.text is not None and words.text != ""))
-                end_of_spanner = (words is None and len(direction_types) == 1 and direction_types[0][0].get("type") == "stop" and f"{direction_types[0][0].get('number')}-{direction_types[0][0].tag}" in spanners.keys())
+                start_of_spanner = (words is not None and len(direction_types) == 2 and (len(direction_types[1]) > 0 and direction_types[1][0].get("type") == "start") and (len(direction_types[0]) > 0 and direction_types[0][0].tag == "words") and (words.text is not None and words.text != ""))
+                end_of_spanner = (words is None and len(direction_types) == 1 and len(direction_types[0]) > 0 and direction_types[0][0].get("type") == "stop" and f"{direction_types[0][0].get('number')}-{direction_types[0][0].tag}" in spanners.keys())
 
                 # tempo elements
                 if start_of_tempo:
@@ -917,8 +926,8 @@ def parse_part(
                 start_of_pedal = (pedal is not None)
                 start_of_ottava = (ottava is not None and ottava.get("type") != "stop")
                 start_of_words = (words is not None)
-                start_of_spanner = (words is not None and len(direction_types) == 2 and direction_types[1][0].get("type") == "start" and direction_types[0][0].tag == "words" and (words.text is not None and words.text != ""))
-                end_of_spanner = (words is None and len(direction_types) == 1 and direction_types[0][0].get("type") == "stop" and f"{direction_types[0][0].get('number')}-{direction_types[0][0].tag}" in spanners.keys())
+                start_of_spanner = (words is not None and len(direction_types) == 2 and (len(direction_types[1]) > 0 and direction_types[1][0].get("type") == "start") and (len(direction_types[0]) > 0 and direction_types[0][0].tag == "words") and (words.text is not None and words.text != ""))
+                end_of_spanner = (words is None and len(direction_types) == 1 and len(direction_types[0]) > 0 and direction_types[0][0].get("type") == "stop" and f"{direction_types[0][0].get('number')}-{direction_types[0][0].tag}" in spanners.keys())
 
                 # dynamics
                 if start_of_dynamics:
@@ -1067,7 +1076,7 @@ def parse_part(
                             # start of trill spanner
                             if ornament.tag == "trill-mark":
                                 annotations.append(Annotation(time = time_ + position, annotation = TrillSpanner(duration = 0, subtype = "trill")))
-                                if len(ornaments) > 1 and ornaments[i + 1].get("type") == "start":
+                                if len(ornaments) > 1 and i < len(ornaments) - 1 and ornaments[i + 1].get("type") == "start":
                                     spanners[f"{ornaments[i + 1].get('number')}-{ornaments[i + 1].tag}"] = (time_ + position, len(annotations) - 1) # add (start_time, index) associated with this spanner number
                                     analyze_current_ornament = False # skip the next ornament, as it's the start of a trill spanner
 
@@ -1157,7 +1166,8 @@ def parse_part(
                 # lyrics
                 for lyric in elem.findall(path = "lyric"):
                     lyric_text = parse_lyric(elem = lyric)
-                    lyrics.append(Lyric(time = time_ + position, lyric = lyric_text))
+                    if lyric_text is not None:
+                        lyrics.append(Lyric(time = time_ + position, lyric = lyric_text))
 
                 # Handle grace note
                 if is_grace:
@@ -1248,6 +1258,7 @@ def read_musicxml(path: Union[str, Path], resolution: int = None, compressed: bo
     path = str(path)
     root = _get_root(path = path, compressed = compressed)
     # ET.ElementTree(root).write(f"{dirname(path)}/xml.xml")
+    # ET.ElementTree(root).write(f"/home/pnlong/muspy_test/xml.xml")
 
     # metadata
     metadata = parse_metadata(root = root)
