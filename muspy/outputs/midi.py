@@ -44,7 +44,7 @@ DRUM_CHANNEL = 9 # MIDI Drum Channel
 FERMATA_TEMPO_SLOWDOWN = 3 # factor by which to slow down the tempo when there is a fermata
 N_NOTES = 128 # number of notes for midi
 RESOLUTION = 12 # resolution for MusicRender
-PEDAL_DURATION_CHANGE_FACTOR = 3 # factor by which the sustain pedal increases the duration of each note
+PEDAL_DURATION_CHANGE_FACTOR = 2 # factor by which the sustain pedal increases the duration of each note
 STACCATO_DURATION_CHANGE_FACTOR = 5 # factor by which a staccato decreases the duration of a note
 VELOCITY_INCREASE_FACTOR = 2 # factor by which to increase velocity when an expressive feature GRADUALLY increases velocity
 ACCENT_VELOCITY_INCREASE_FACTOR = 1.5 # factor by which to increase velocity when an accent INSTANTANEOUSLY increases velocity
@@ -55,6 +55,7 @@ N_TEMPO_SPANNER_SUBDIVISIONS = 5 # number of subdivisions for increasing/decreas
 GRACE_NOTE_FORWARD_SHIFT_CONSTANT = 0.15 # fraction of a quarter note's duration to shift a note forward if it is a grace note
 SWING_PROPORTION = 0.6666666667 # on what fraction of a beat does a swung eight note fall
 OPTIMAL_RESOLUTION = 480 # we don't want too small of a resolution, or it's hard to apply expressive features
+MAX_NOTE_DURATION_CHANGE_THRESHOLD = 2.5 # a note's duration cannot be changed to over this amount times its original duration
 MAX_VELOCITY = 127 # maximum velocity for midi
 DEFAULT_DYNAMIC = "mf" # not to be confused with representation.DEFAULT_DYNAMIC
 DYNAMIC_VELOCITY_MAP = {
@@ -431,6 +432,9 @@ def to_mido_track(
     # note on and note off messages
     for note in track.notes:
 
+        # note original note duration
+        original_duration = note.duration
+
         # apply expressive features if desired
         if realize_annotations:
 
@@ -511,6 +515,9 @@ def to_mido_track(
 
         # ensure note time is an integer
         note.time = max(int(note.time), 0) # ensure note time is an integer and non-negative
+
+        # ensure note duration isn't overly long
+        note.duration = min(note.duration, original_duration * MAX_NOTE_DURATION_CHANGE_THRESHOLD)
 
         # add note to track
         midi_track.extend(to_mido_note_on_note_off(note = note, channel = channel, use_note_off_message = use_note_off_message))
@@ -696,6 +703,9 @@ def to_pretty_midi_instrument(
         # determine velocity from dynamic marking
         note.velocity = annotations_by_time[note.time][0].annotation.velocity # the first index is always the dynamic
 
+        # make note of original note duration
+        original_duration = note.duration
+
         # apply expressive features if desired
         if realize_annotations:
             for annotation in annotations_by_time[note.time][1:]: # skip the first index, since we just dealt with it
@@ -762,6 +772,9 @@ def to_pretty_midi_instrument(
 
         # ensure note time is an integer
         note.time = int(note.time) # ensure note time is an integer
+
+        # ensure note duration isn't overly long
+        note.duration = min(note.duration, original_duration * MAX_NOTE_DURATION_CHANGE_THRESHOLD)
 
         # add note to instrument
         instrument.notes.append(to_pretty_midi_note(note = note, map_time = map_time))
