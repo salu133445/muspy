@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, TypeVar, Union
 from xml.etree.ElementTree import Element
 from zipfile import ZipFile
+import warnings
 
 from ..classes import *
 from ..annotations import *
@@ -552,7 +553,7 @@ def parse_pitch(elem: Element, transpose_chromatic: int = 0) -> Tuple[int, str]:
     base_pitch = NOTE_TO_PITCH_INDEX_MAP[pitch_str] + (12 * (pitch_octave + 1))
     pitch_alter = float(_get_text(element = elem, path = "alter", default = "0"))
     if pitch_alter % 1 != 0:
-        raise MusicXMLWarning(f"MusPy does not currently support parsing microtonal (non-integer) pitch-alterations such as {pitch_alter}. Truncating pitch alteration to {int(pitch_alter)}.")
+        warnings.warn(f"MusPy does not currently support parsing microtonal (non-integer) pitch-alterations such as {pitch_alter}. Truncating pitch alteration to {int(pitch_alter)}.", category = MusicXMLWarning)
     pitch_alter = int(pitch_alter)
     pitch = base_pitch + pitch_alter
 
