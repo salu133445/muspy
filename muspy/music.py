@@ -210,7 +210,7 @@ class Music(ComplexBase):
                 break
             real_time += (tempo.time - position) * factor / qpm
             position = tempo.time
-            qpm = tempo.qpm
+            qpm = tempo.qpm if tempo.qpm > 0 else qpm
         real_time += (time - position) * factor / qpm
 
         return real_time
@@ -518,19 +518,19 @@ class Music(ComplexBase):
         Parameters
         ----------
         velocity_increase_factor : float, default: 2.0
-            factor by which to increase velocity when an annotation 
+            factor by which to increase velocity when an annotation
             GRADUALLY increases velocity (e.g. crescendo)
         accent_velocity_increase_factor : float, default: 1.5
-            factor by which to increase velocity when an articulation 
+            factor by which to increase velocity when an articulation
             INSTANTANEOUSLY increases velocity
         pedal_duration_change_factor : float, default: 3.0
-            factor by which the sustain pedal increases the duration of 
+            factor by which the sustain pedal increases the duration of
             each note
         staccato_duration_change_factor : float, default: 5.0
             factor by which a staccato decreases the duration of a note
         default_dynamic : str, default: 'mf'
             default dynamic marking
-        
+
         Returns
         -------
         New :class:`muspy.Music` object with altered notes and chords (via their velocities and durations).
