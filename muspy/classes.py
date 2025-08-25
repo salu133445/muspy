@@ -222,7 +222,7 @@ class KeySignature(Base):
         time: int,
         root: int = None,
         mode: str = None,
-        fifths: int = None,
+        fifths: int = 0,
         root_str: str = None,
     ):
         self.time = time
@@ -239,18 +239,19 @@ class TimeSignature(Base):
     ----------
     time : int
         Start time of the time signature, in time steps.
-    numerator : int
-        Numerator of the time signature.
-    denominator : int
-        Denominator of the time signature.
+    numerator : int, default: 4
+        Numerator of the time signature, defaults to 4.
+    denominator : int, default: 4
+        Denominator of the time signature, defaults to 4.
 
     """
 
     _attributes = OrderedDict(
         [("time", int), ("numerator", int), ("denominator", int)]
     )
+    _optional_attributes = ["numerator", "denominator"]
 
-    def __init__(self, time: int, numerator: int, denominator: int):
+    def __init__(self, time: int, numerator: int = 4, denominator: int = 4):
         self.time = time
         self.numerator = numerator
         self.denominator = denominator

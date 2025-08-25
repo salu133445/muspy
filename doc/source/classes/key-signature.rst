@@ -10,7 +10,7 @@ Attributes Description                   Type Default
 time       Start time                    int
 root       Root note as a number         int
 mode       Mode (e.g., "major")          str
-fifths     Number of sharps or flats     int
+fifths     Number of sharps or flats     int  0
 root_str   Root note as a string         int
 ========== ============================= ==== =======
 
