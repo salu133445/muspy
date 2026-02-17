@@ -421,7 +421,7 @@ def to_music21(music: "Music") -> Score:
 
             # Tremolo
             elif annotation_type == "Tremolo":
-                number_of_marks = sub(pattern = "[^\d]", repl = "", string = annotation.annotation.subtype)
+                number_of_marks = sub(pattern = r"[^\d]", repl = "", string = annotation.annotation.subtype)
                 m21_annotation = M21Expression.Tremolo(numberOfMarks = (int(number_of_marks) // 8) if len(number_of_marks) > 0 else 3)
                 del number_of_marks
 
