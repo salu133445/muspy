@@ -40,18 +40,17 @@ Documentation is available [here](https://salu133445.github.io/muspy) and as doc
 Citing
 ------
 
-Please cite the following paper if you use MusPy in a published work:
+If you use MusPyExpress in a published work, please cite:
 
-Hao-Wen Dong, Ke Chen, Julian McAuley, and Taylor Berg-Kirkpatrick, "MusPy: A Toolkit for Symbolic Music Generation," in _Proceedings of the 21st International Society for Music Information Retrieval Conference (ISMIR)_, 2020.
-
-[[homepage](https://salu133445.github.io/muspy/)]
-[[video](https://youtu.be/atdHMEuAYno)]
-[[paper](https://salu133445.github.io/muspy/pdf/muspy_ismir2020_paper.pdf)]
-[[slides](https://salu133445.github.io/muspy/pdf/muspy_ismir2020_slides.pdf)]
-[[poster](https://salu133445.github.io/muspy/pdf/muspy_ismir2020_poster.pdf)]
-[[arXiv](https://arxiv.org/abs/2008.01951)]
-[[code](https://github.com/salu133445/muspy)]
-[[documentation](https://salu133445.github.io/muspy/)]
+```bibtex
+@inproceedings{long2025muspyexpress,
+  title={MusPyExpress: Extending MusPy with Enhanced Expression Text Support},
+  author={Long, Phillip and Dong, Hao-Wen and McAuley, Julian and Novack, Zachary},
+  booktitle={NeurIPS 2025 Workshop on AI for Music: Where Creativity Meets Computation},
+  year={2025},
+  url={https://openreview.net/forum?id=6X0FJI4yGf}
+}
+```
 
 
 Disclaimer
