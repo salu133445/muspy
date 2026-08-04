@@ -37,11 +37,14 @@ def to_music21_key(key_signature: KeySignature) -> Key:
     elif key_signature.root is not None:
         tonic = PITCH_NAMES[key_signature.root]
     elif key_signature.fifths is not None:
-        if key_signature.mode is not None:
-            offset = MODE_CENTERS[key_signature.mode]
-            tonic = CIRCLE_OF_FIFTHS[key_signature.fifths + offset][1]
-        else:
-            tonic = CIRCLE_OF_FIFTHS[key_signature.fifths][1]
+        # `fifths` is the number of sharps/flats (positive for sharps).
+        # Convert it to a position on the circle of fifths by adding the
+        # mode offset. Default to the major offset when the mode is missing
+        # (e.g. key signatures parsed from MuseScore files).
+        offset = MODE_CENTERS.get(
+            key_signature.mode, MODE_CENTERS["major"]
+        )
+        tonic = CIRCLE_OF_FIFTHS[key_signature.fifths + offset][1]
     else:
         raise ValueError(
             "One of `root`, `root_str` or `fifths` must be specified."
